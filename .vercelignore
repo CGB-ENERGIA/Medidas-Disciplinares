@@ -1,0 +1,10 @@
+# Nada disto precisa ir para a Vercel (os dados já estão no Neon)
+dados/
+modelos/
+testes/
+scripts/
+docs/
+banco/
+dev/
+.env
+.env.*

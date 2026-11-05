@@ -1,0 +1,48 @@
+﻿item;descricao;nivel;medida_padrao;medida_reincidencia;alinea_sugerida
+1;Faltar sem justificativa;Leve;Advertência por escrito;Suspensão de 1 dia;e
+2;Descumprir procedimento sem risco à saúde ou segurança;Leve;Advertência por escrito;Suspensão de 1 dia;h
+3;Deixar resíduos no local de trabalho;Leve;Advertência por escrito;Suspensão de 1 dia;e
+4;Não utilizar crachá;Leve;Advertência por escrito;Suspensão de 1 dia;h
+5;Fumar em áreas comuns fechadas;Leve;Advertência por escrito;Suspensão de 1 dia;h
+6;Deixar de participar do DDS;Leve;Advertência por escrito;Suspensão de 1 dia;h
+7;Descumprir prazos, entregar atividades incompletas ou prestação de contas incoerente;Leve;Advertência por escrito;Suspensão de 1 dia;e
+8;Descumprir a jornada de trabalho sem autorização prévia;Leve;Advertência por escrito;Suspensão de 1 dia;h
+9;Dirigir mais de 10 horas ininterruptas a serviço;Leve;Advertência por escrito;Suspensão de 1 dia;h
+10;Exceder em até 20% o limite de velocidade (Anexo III);Leve;Advertência por escrito;Suspensão de 1 dia;h
+11;Usar bens da empresa para fins alheios ao trabalho sem autorização;Média;Suspensão de 1 dia;Suspensão de 2 dias;b
+12;Visita não autorizada de terceiros nos alojamentos;Média;Suspensão de 1 dia;Suspensão de 2 dias;h
+13;Ser o real infrator de trânsito em nível leve ou médio;Média;Suspensão de 1 dia;Suspensão de 2 dias;h
+14;Tratar cliente ou colegas de forma desrespeitosa ou preconceituosa;Média;Suspensão de 1 dia;Suspensão de 2 dias;j
+15;Usar celular em deslocamento ou em atividade que desvie a atenção;Média;Suspensão de 1 dia;Suspensão de 2 dias;h
+16;Faltar a treinamento ou exame periódico sem justificativa;Média;Suspensão de 1 dia;Suspensão de 2 dias;e
+17;Descumprir procedimento que traga risco à saúde ou segurança;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+18;Usar EPI, EPC ou ferramenta danificada, vencida ou não autorizada;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+19;Ser o real infrator de trânsito em nível grave;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+20;Ameaça de agressão física ou agressão verbal;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;j
+21;Violar o Código de Ética expondo a imagem da empresa;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;b
+22;Ser omisso ou conivente com práticas em desacordo com as normas;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;e
+23;Deixar de supervisionar as rotinas dos subordinados;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;e
+24;Descumprir as normas da ordem de serviço;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+25;Não fazer ou fazer incompleta a Análise Preliminar de Risco;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+26;Exceder em mais de 20% o limite de velocidade (Anexo III);Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+27;Liderança permitir serviço em desacordo com o POP;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+28;Liderança recusar participar de investigação de acidente;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+29;Desvio ou extravio de materiais, equipamentos ou combustível;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;e
+30;Dar carona a terceiros em horário de trabalho ou fardado;Grave;Suspensão de até 3 dias;Suspensão de até 6 dias;h
+31;Informar quantidade falsa de material para se apropriar dele;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;a
+32;Lançar informações falsas em sistemas (Leitura, Cobrança, Atendimento);Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;a
+33;Receber suborno ou vantagem indevida;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;a
+34;Assinar documentos por outras pessoas;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;a
+35;Não usar EPI em atividade, ou usar EPI danificado ou inadequado;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+36;Improvisar ferramentas de trabalho;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+37;Envolver-se em acidente de trânsito de forma dolosa;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;b
+38;Conduzir moto sem antena corta-pipa ou sem o kit motoqueiro;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+39;Indisciplina, insubordinação ou desobediência;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+40;Não comunicar imediatamente um incidente ao SESMT;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+41;Portar arma branca ou de fogo nas dependências ou veículos;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;b
+42;Não recusar tarefa com risco grave e iminente comprovado;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+43;Realizar atividades não autorizadas, como em áreas de risco;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+44;Realizar atividade sem autorização ou qualificação;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;h
+45;Consumir álcool ou drogas no trabalho ou trabalhar sob efeito;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;f
+46;Agressão física;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;j
+47;Assédio sexual;Gravíssima;Suspensão de 5 dias;Suspensão de 10 dias ou desligamento;b

@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+.vercel/
+# dados pessoais reais: não vão para o GitHub
+dados/colaboradores.csv
+dados/gestores.csv
+dados/historico_medidas_importado.csv
+testes/Solicitacoes_de_exemplo_Medidas_Disciplinares.xlsx

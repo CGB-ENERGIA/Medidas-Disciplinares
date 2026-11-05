@@ -1,0 +1,22 @@
+﻿categoria;rotulo;item;alinea;texto_modelo;documentos_base
+ponto_manual;Marcação manual do ponto;8;h;realizou a marcação do ponto de forma manual, em desacordo com as normas internas e os procedimentos adotados pela empresa para o controle da jornada;573
+ponto_ausente;Deixou de marcar o ponto;8;h;deixou de realizar a marcação do ponto, não registrando corretamente a jornada de trabalho, em desacordo com as normas internas e os procedimentos adotados pela empresa para o controle da jornada;273
+intervalo;Intervalo de refeição não cumprido;8;h;descumpriu o intervalo intrajornada destinado à refeição e ao descanso, em desacordo com o Termo de Regulamentação de Serviço Externo e sem a devida autorização da liderança responsável;8
+velocidade;Excesso de velocidade;26;h;conduziu o veículo{placa} em velocidade superior à máxima permitida{local}, conforme registro do sistema de rastreamento, em desacordo com as normas de condução da empresa e com a legislação de trânsito;49
+alcool;Bebida alcoólica (posse ou conivência);45;h;foi constatado o armazenamento de bebida alcoólica nas dependências do alojamento da empresa{local}, em desacordo com as regras internas de conduta e de utilização dos alojamentos;7
+epi;EPI/EPC ausente, inadequado ou danificado;35;h;executou atividade{local} sem a utilização dos EPIs obrigatórios, em desacordo com as normas e procedimentos de segurança da empresa;34
+escada;Escada sem amarração/travamento;17;h;deixou de realizar a amarração e o travamento da escada{local}, em desacordo com o procedimento operacional aplicável à execução segura da atividade;16
+apr;APR não realizada ou incompleta;25;h;deixou de realizar a Análise Preliminar de Risco (APR) antes do início das atividades{local}, procedimento indispensável para a identificação dos riscos e a definição das medidas de controle;13
+padrinho;Atividade sem padrinho / falha do padrinho de segurança;27;h;executou atividade{local} sem a devida supervisão do padrinho de segurança, em desacordo com os procedimentos internos e as normas de segurança da empresa;8
+improviso;Ferramenta improvisada;36;h;fez uso de ferramenta improvisada durante a execução da atividade{local}, em desacordo com os procedimentos de segurança e as normas internas da empresa;2
+seguranca;Procedimento de segurança (aterramento, sinalização);17;h;deixou de cumprir os procedimentos operacionais de segurança durante a execução da atividade{local}, em desacordo com as normas de segurança da empresa;39
+falta;Falta sem justificativa;1;e;deixou de comparecer às suas atividades laborais sem apresentar qualquer justificativa;23
+atraso;Atraso / falta de pontualidade;8;e;não compareceu pontualmente para o desempenho de suas atividades laborais, ocasionando atraso no atendimento das atividades programadas;3
+meta;Meta diária / atividades não cumpridas;7;h;deixou de executar os serviços que lhe foram previamente atribuídos, não cumprindo a meta diária estabelecida pela liderança;13
+prazo;Descumprimento de prazo de nota/serviço;7;e;descumpriu o prazo estabelecido para atendimento da nota de serviço{local}, em desacordo com os procedimentos da empresa;15
+registro;Registro incorreto em sistema (baixa, código, fotos, TOI);7;h;realizou o registro de informações em desacordo com os procedimentos e critérios estabelecidos pela empresa{local};37
+tecnica;Falha técnica na execução (selagem, medidor, ramal, ligação);2;h;executou o serviço{local} em desacordo com o padrão técnico e os procedimentos operacionais exigidos pela empresa;22
+veiculo;Veículo/patrimônio sem zelo ou checklist;2;h;utilizou o veículo da empresa{placa} em desacordo com as orientações e os procedimentos internos{local};9
+deslocamento;Deslocamento/viagem fora da programação;2;h;realizou deslocamento fora da programação estabelecida pela liderança, sem a devida autorização{local};8
+insubordinacao;Recusa de ordem / insubordinação / desrespeito;39;h;deixou de cumprir determinação de sua liderança imediata relacionada às suas atribuições funcionais;7
+procedimento;Descumprimento de procedimento operacional (geral);2;h;deixou de observar os procedimentos operacionais e as orientações internas da empresa{local};7

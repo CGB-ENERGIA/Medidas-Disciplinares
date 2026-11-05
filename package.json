@@ -1,0 +1,16 @@
+{
+  "name": "medidas-disciplinares-cgb",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env --no-warnings dev/servidor-local.mjs",
+    "db:testar": "node --env-file=.env banco/rodar.mjs testar",
+    "db:schema": "node --env-file=.env banco/rodar.mjs schema",
+    "db:importar": "node --env-file=.env banco/rodar.mjs importar"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "1.0.2",
+    "csv-parse": "5.6.0",
+    "pg": "8.13.1"
+  }
+}
