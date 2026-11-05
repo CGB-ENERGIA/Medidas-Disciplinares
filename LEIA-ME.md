@@ -3,7 +3,7 @@
 Protótipo do fluxo de medidas disciplinares (supervisor → coordenador → DP → aplicação → arquivamento).
 Versão de 05/11/2026.
 
-Link do protótipo antigo (com dados embutidos): https://claude.ai/artifact/54y5vcBuEuNSmn7q5UFF14
+Endereço do sistema: https://medidas-disciplinares.vercel.app
 
 ## Como funciona agora
 
