@@ -46,16 +46,42 @@ create table if not exists equipes (
 create index if not exists equipes_supervisor_idx  on equipes (supervisor);
 create index if not exists equipes_coordenador_idx on equipes (coordenador);
 
--- ---------- Usuários do sistema (preenchida quando o login entrar)
+-- ---------- Usuários do sistema (login por usuário e senha; não usa e-mail)
 create table if not exists usuarios (
-  id           uuid primary key default gen_random_uuid(),
-  email        text not null unique,
-  nome         text not null,
-  perfil       text not null check (perfil in ('supervisor', 'coordenador', 'dp')),
-  chave_pessoa text,           -- chave em equipes.supervisor ou equipes.coordenador
-  ativo        boolean not null default true,
-  criado_em    timestamptz not null default now()
+  id                uuid primary key default gen_random_uuid(),
+  usuario           text,          -- nome de login (minúsculo, ex.: joao.silva)
+  email             text unique,   -- opcional, não é usado no login
+  nome              text not null,
+  perfil            text not null check (perfil in ('supervisor', 'coordenador', 'dp')),
+  chave_pessoa      text,          -- chave em equipes.supervisor ou equipes.coordenador
+  senha_hash        text,          -- scrypt, nunca a senha em texto
+  trocar_senha      boolean not null default true,   -- obriga trocar a senha no próximo acesso
+  tentativas_falhas integer not null default 0,
+  bloqueado_ate     timestamptz,   -- bloqueio temporário após várias senhas erradas
+  ultimo_acesso     timestamptz,
+  ativo             boolean not null default true,
+  criado_em         timestamptz not null default now()
 );
+-- (para bancos criados antes do login: acrescenta o que falta)
+alter table usuarios alter column email drop not null;
+alter table usuarios add column if not exists usuario text;
+alter table usuarios add column if not exists senha_hash text;
+alter table usuarios add column if not exists trocar_senha boolean not null default true;
+alter table usuarios add column if not exists tentativas_falhas integer not null default 0;
+alter table usuarios add column if not exists bloqueado_ate timestamptz;
+alter table usuarios add column if not exists ultimo_acesso timestamptz;
+create unique index if not exists usuarios_usuario_idx on usuarios (usuario);
+
+-- ---------- Sessões de login (o navegador guarda só um código; aqui fica o hash dele)
+create table if not exists sessoes (
+  token_hash text primary key,
+  usuario_id uuid not null references usuarios (id) on delete cascade,
+  criada_em  timestamptz not null default now(),
+  expira_em  timestamptz not null,
+  ip         text,
+  agente     text
+);
+create index if not exists sessoes_usuario_idx on sessoes (usuario_id);
 
 -- ---------- Anexo I da Política de Consequências (PG.001.SGI 019)
 create table if not exists desvios (

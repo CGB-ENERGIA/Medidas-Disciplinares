@@ -1,11 +1,10 @@
-// GET /api/colaboradores → colaboradores com a equipe
-// Filtros opcionais: ?base=BCB  ?supervisor=LUIS%20FILIPE  ?coordenador=AFONSO  ?inativos=1
-// A busca por nome/chapa continua no próprio site (lista pequena, busca sem acento já pronta lá).
-// Quando o login entrar, o filtro por supervisor/coordenador passa a vir do usuário logado, não da URL.
-import { consulta, ok, rota } from "./_lib/db.js";
+// GET /api/colaboradores → colaboradores com a equipe (exige login; só o que o perfil pode ver)
+// Filtros opcionais: ?base=BCB  ?supervisor=…  ?coordenador=…  ?inativos=1
+import { consulta, rota } from "./_lib/db.js";
+import { comLogin, escopoEquipe, ok } from "./_lib/auth.js";
 
-export const GET = rota(async (_req, q) => {
-  const onde = [], p = [];
+export const GET = rota(comLogin(async (_req, q, u) => {
+  const p = [], onde = [escopoEquipe(u, p)];
   const add = (cond, valor) => { p.push(valor); onde.push(`${cond} $${p.length}`); };
   if (q.get("inativos") !== "1") onde.push("c.ativo");
   if (q.get("base")) add("c.base =", q.get("base"));
@@ -16,7 +15,7 @@ export const GET = rota(async (_req, q) => {
     select c.chapa, c.nome, c.funcao, c.base, c.centro_custo, c.sexo, c.sexo_origem, c.ativo,
            e.setor, e.equipe, e.tipo_equipe, e.supervisor, e.coordenador
       from colaboradores c left join equipes e using (chapa)
-     ${onde.length ? "where " + onde.join(" and ") : ""}
+     where ${onde.join(" and ")}
      order by c.nome`, p);
   return ok({ total: linhas.length, colaboradores: linhas });
-});
+}));

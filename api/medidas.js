@@ -2,13 +2,15 @@
 // Filtros opcionais: ?chapa=12518  ?status=dp  ?origem=sistema|planilha|ponto  ?base=BCB
 //                    ?supervisor=…  ?coordenador=…  ?desde=2026-01-01  ?limite=500
 // Por enquanto só leitura. Criar e mudar status entram no próximo passo, junto com o login.
+// Exige login; só devolve medidas de colaboradores que o perfil pode ver.
 import { consulta, ok, erro, rota } from "./_lib/db.js";
+import { comLogin, escopoEquipe } from "./_lib/auth.js";
 
 const STATUS = ["coord", "dp", "aplicacao", "conferencia", "concluida", "recusada", "cancelada"];
 const ORIGENS = ["sistema", "planilha", "ponto"];
 
-export const GET = rota(async (_req, q) => {
-  const onde = [], p = [];
+export const GET = rota(comLogin(async (_req, q, u) => {
+  const p = [], onde = [escopoEquipe(u, p)];
   const add = (cond, valor) => { p.push(valor); onde.push(`${cond} $${p.length}`); };
   if (q.get("status") && !STATUS.includes(q.get("status"))) return erro("status inválido.");
   if (q.get("origem") && !ORIGENS.includes(q.get("origem"))) return erro("origem inválida.");
@@ -34,8 +36,8 @@ export const GET = rota(async (_req, q) => {
       from medidas m
       join colaboradores c on c.chapa = m.colaborador_chapa
       left join equipes e on e.chapa = m.colaborador_chapa
-     ${onde.length ? "where " + onde.join(" and ") : ""}
+     where ${onde.join(" and ")}
      order by m.data_ocorrido desc, m.id desc
      limit $${p.length}`, p);
   return ok({ total: linhas.length, medidas: linhas });
-});
+}));

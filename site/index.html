@@ -1,6 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Fluxo de Medidas Disciplinares</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: barra de perfil no topo; fila de solicitações à esquerda, detalhe com ações à direita (empilha no celular).
    Cores e fonte do Manual de Identidade Visual CGB 1.3: vinho #711424 (Pantone 229C) e família Arial. */
@@ -348,6 +350,7 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: 
 .top h1 { font-size: 21px; }
 .top p:not(.eyebrow) { display: none; }
 .app { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; align-items: start; }
+.app:has(> nav[hidden]) { grid-template-columns: minmax(0, 1fr); }
 .side { position: sticky; top: calc(14px + env(safe-area-inset-top, 0px)); display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px; box-shadow: 0 1px 3px rgba(43, 42, 42, 0.06); }
 .side-grp { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--soft); padding: 10px 10px 4px; }
 .side-grp:first-child { padding-top: 2px; }
@@ -861,6 +864,17 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: 
 .login { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (max-width: 860px) { .login { grid-template-columns: minmax(0, 1fr); } }
 .login-card input:disabled { background: var(--sunken); color: var(--muted); }
+.login-unico { max-width: 440px; margin: 32px auto; }
+.login-form { display: grid; gap: 12px; }
+.login-form .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pop-conta { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.usu-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; align-items: end; }
+.usu-senha { border: 2px solid var(--ok, #1a7f37); border-radius: 12px; padding: 14px; display: grid; gap: 8px; margin-top: 10px; }
+.usu-senha code { font-size: 20px; letter-spacing: 0.08em; user-select: all; }
+.usu-tab { width: 100%; border-collapse: collapse; font-size: 14px; }
+.usu-tab th, .usu-tab td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.usu-tab td .btn { font-size: 12px; padding: 4px 8px; }
+.usu-scroll { overflow-x: auto; }
 .login-contas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
 .conta { text-align: left; display: grid; gap: 3px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--accent); }
 .conta:hover { background: var(--accent-soft); border-color: var(--accent); }
@@ -917,10 +931,212 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: 
 .faq .ans { padding: 0 4px 13px; max-width: 70ch; color: var(--fg); }
 .faq .ans p { margin: 0 0 6px; }
 .faq .ans p:last-child { margin: 0; }
+
+/* =====================================================================
+   VISUAL 2026 — mesmas cores da CGB (vinho #711424), acabamento moderno:
+   fonte Inter, cantos mais suaves, sombras leves, campos e botões maiores,
+   menu lateral mais limpo e login em tela dividida com a marca.
+   (O documento oficial/PDF continua no modelo da empresa, sem mudança.)
+   ===================================================================== */
+:root {
+  --bg: #f5f3f3;
+  --surface: #ffffff;
+  --sunken: #f1eeee;
+  --line: #e7e2e3;
+  --fg: #231f20;
+  --muted: #6e6869;
+  --soft: #a39d9e;
+  --accent-soft: #f8edef;
+  --line-accent: #ecd3d9;
+  --display: "Inter", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --body: "Inter", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --mono: "Inter", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
+  --sh-1: 0 1px 2px rgba(35, 31, 32, 0.04), 0 1px 3px rgba(35, 31, 32, 0.05);
+  --sh-2: 0 2px 4px rgba(35, 31, 32, 0.04), 0 8px 24px rgba(74, 11, 22, 0.08);
+  --sh-3: 0 12px 40px rgba(74, 11, 22, 0.16);
+  --ring: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+:root[data-tema="escuro"] {
+  --bg: #121011; --surface: #1c1819; --sunken: #262122; --line: #352e30;
+  --sh-1: none; --sh-2: 0 8px 24px rgba(0, 0, 0, 0.35); --sh-3: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+body { font-family: var(--body); font-size: 14.5px; letter-spacing: -0.006em; -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss01"; }
+.wrap { max-width: 1280px; gap: 20px; padding-block: 18px 56px; }
+h1, h2, h3 { letter-spacing: -0.02em; }
+h1 { font-style: normal; font-weight: 800; }
+h2 { font-size: 18px; font-weight: 750; }
+h3 { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; }
+
+/* Aviso do topo: discreto */
+.banner { background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-left: 3px solid #d9a032; border-radius: var(--r-sm); padding: 9px 14px; box-shadow: var(--sh-1); }
+.banner b { color: var(--fg); }
+
+/* Cabeçalho */
+.top { position: relative; z-index: 20; border-radius: var(--r-lg); padding: 14px 18px 14px 22px;
+  background: radial-gradient(120% 160% at 100% 0%, #8f2236 0%, transparent 55%), linear-gradient(120deg, #4a0b16 0%, #711424 70%);
+  box-shadow: var(--sh-2); }
+.top::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 22px); }
+.top > * { position: relative; z-index: 1; }
+.top h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.top .eyebrow { font-size: 10.5px; letter-spacing: 0.16em; }
+.logo-img { height: 40px; }
+.marca-txt { border-left-color: rgba(255,255,255,0.22); }
+.perfil-chip { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); backdrop-filter: blur(6px); }
+.perfil-chip:hover, .perfil-chip[aria-expanded="true"] { background: rgba(255,255,255,0.18); }
+.tema-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+.perfil-pop { border-radius: var(--r-md); box-shadow: var(--sh-3); padding: 14px; gap: 10px; }
+
+/* Menu lateral */
+.app { grid-template-columns: 232px minmax(0, 1fr); gap: 20px; }
+.side { border-radius: var(--r-lg); padding: 10px; box-shadow: var(--sh-1); border-color: var(--line); }
+.side-grp { font-size: 10px; letter-spacing: 0.14em; color: var(--soft); padding: 14px 12px 6px; }
+.side button { position: relative; padding: 9px 12px; border-radius: var(--r-sm); font-weight: 600; font-size: 14px; color: var(--muted); transition: background .15s, color .15s; }
+.side button:hover { background: var(--sunken); color: var(--fg); }
+.side button[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+.side button[aria-current="page"]::before { content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+.side .count { background: var(--accent); font-weight: 700; font-size: 11.5px; padding: 1px 7px; }
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { border-radius: var(--r-md); }
+  .side button[aria-current="page"]::before { display: none; }
+}
+.app:has(> nav[hidden]) { grid-template-columns: minmax(0, 1fr); }
+
+/* Painéis e cartões */
+.panel { border-radius: var(--r-lg); padding: 20px; gap: 16px; border-color: var(--line); box-shadow: var(--sh-1); }
+.kpi, .al-card, .base-card, .cc-card, .pend-apl, .al-resumo, .cta-painel, .rc { border-radius: var(--r-lg); box-shadow: var(--sh-1); border-color: var(--line); }
+.kpi { padding: 16px 18px; }
+.kpi:hover { transform: translateY(-2px); box-shadow: var(--sh-2); }
+.kpi-n { font-weight: 800; letter-spacing: -0.03em; font-size: 32px; }
+.kpi-acao { background: radial-gradient(120% 140% at 100% 0%, #8f2236 0%, transparent 60%), linear-gradient(135deg, #711424, #4a0b16); border: 0; }
+.item, .espera-item, .msg, .al-item, .aten-item, .reinc-item, .mod-op, .rev, .img-item, .anexo, .hist-card { border-radius: var(--r-md); }
+.item { padding: 12px 14px; transition: border-color .15s, box-shadow .15s; }
+.item:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); box-shadow: var(--sh-1); }
+.wiz-hero { border-radius: var(--r-lg); background: radial-gradient(120% 160% at 100% 0%, #8f2236 0%, transparent 55%), linear-gradient(120deg, #4a0b16, #711424 70%); }
+.wiz-main { border-radius: var(--r-lg); }
+
+/* Botões */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 8px 16px; border-radius: var(--r-sm); font-weight: 650; border-color: var(--line); background: var(--surface); box-shadow: var(--sh-1); transition: background .15s, border-color .15s, box-shadow .15s, transform .05s; }
+.btn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn.primary { background: linear-gradient(180deg, #7d1a2c, #711424); border-color: #5e101e; box-shadow: 0 1px 2px rgba(74,11,22,.25), inset 0 1px 0 rgba(255,255,255,.12); }
+.btn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #711424, #5e101e); }
+.btn.danger { background: var(--surface); }
+.btn.danger:hover:not(:disabled) { background: var(--crit-soft); border-color: var(--crit); }
+.btn .ico { margin-right: 0; }
+.chip, .dv-kw { padding: 5px 12px; }
+.link { font-weight: 650; }
+
+/* Campos */
+label { font-weight: 600; font-size: 13.5px; }
+select, input[type="text"], input[type="date"], input[type="number"], input[type="password"], textarea {
+  width: 100%; min-height: 42px; border: 1px solid var(--line); background: var(--surface); color: var(--fg);
+  border-radius: var(--r-sm); padding: 10px 12px; font-weight: 400; box-shadow: inset 0 1px 1px rgba(35,31,32,0.03);
+  transition: border-color .15s, box-shadow .15s; }
+select:hover, input:hover, textarea:hover { border-color: color-mix(in srgb, var(--accent) 25%, var(--line)); }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
+textarea { min-height: 96px; }
+fieldset { border-radius: var(--r-md); padding: 16px; }
+.note { border-radius: var(--r-sm); }
+
+/* Selos e tabelas */
+.pill { font-weight: 650; padding: 3px 10px; }
+.tag { border-radius: 6px; }
+th { font-size: 11px; letter-spacing: 0.07em; font-weight: 700; background: var(--sunken); }
+th:first-child { border-top-left-radius: 8px; } th:last-child { border-top-right-radius: 8px; }
+td { border-bottom-color: var(--line); }
+tbody tr:hover td { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.toast { border-radius: 12px; box-shadow: var(--sh-3); padding: 12px 18px; }
+
+/* =========================== Login em tela dividida =========================== */
+body.tela-login .banner, body.tela-login .top { display: none; }
+body.tela-login .wrap { max-width: none; padding: 0; min-height: 100vh; min-height: 100dvh; }
+body.tela-login .app, body.tela-login main { display: block; }
+.login-split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 100vh; min-height: 100dvh; background: var(--bg); }
+.login-marca { position: relative; overflow: hidden; color: #fff; padding: clamp(28px, 5vw, 64px); display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
+  background: radial-gradient(90% 70% at 100% 0%, #9b2a3f 0%, transparent 60%), radial-gradient(70% 60% at 0% 100%, #2e0710 0%, transparent 70%), linear-gradient(140deg, #4a0b16 0%, #711424 60%, #7d1a2c 100%); }
+.login-marca::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 26px); }
+.login-marca::after { content: ""; position: absolute; width: 520px; height: 520px; right: -180px; bottom: -200px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 0 0 60px rgba(255,255,255,0.025), 0 0 0 140px rgba(255,255,255,0.02); pointer-events: none; }
+.login-marca > * { position: relative; z-index: 1; }
+.login-logo { height: 52px; width: auto; display: block; align-self: flex-start; object-fit: contain; }
+.login-titulo { display: grid; gap: 14px; max-width: 30rem; }
+.login-titulo .eyebrow { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+.login-titulo h1 { color: #fff; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; }
+.login-titulo p { margin: 0; color: rgba(255,255,255,0.82); font-size: 15.5px; line-height: 1.6; }
+.login-itens { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 12px; }
+.login-itens li { display: flex; gap: 12px; align-items: flex-start; color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.45; }
+.login-itens svg { flex: none; width: 34px; height: 34px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.14);
+  fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.login-itens b { display: block; color: #fff; font-weight: 650; }
+.login-rodape { font-size: 12px; color: rgba(255,255,255,0.6); }
+.login-lado { display: grid; place-items: center; padding: clamp(24px, 5vw, 64px) clamp(16px, 4vw, 48px); }
+.login-caixa { width: min(100%, 400px); display: grid; gap: 22px; }
+.login-caixa h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.025em; }
+.login-caixa .sub { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
+.login-form { gap: 16px; }
+.login-form input { min-height: 46px; font-size: 15px; }
+.login-form .btn.primary { width: 100%; min-height: 48px; font-size: 15px; }
+.login-form .actions { display: grid; gap: 10px; }
+.login-ajuda { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.login-ajuda svg { flex: none; width: 18px; height: 18px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; }
+.login-caixa .note { margin: 0; }
+@media (max-width: 860px) {
+  .login-split { grid-template-columns: minmax(0, 1fr); }
+  .login-marca { padding: 22px 18px 26px; gap: 18px; }
+  .login-marca::after, .login-itens, .login-rodape { display: none; }
+  .login-logo { height: 38px; }
+  .login-titulo h1 { font-size: 26px; }
+  .login-titulo p { font-size: 14px; }
+  .login-lado { place-items: start center; padding-top: 28px; }
+}
+
+/* Usuários (DP) */
+.usu-senha { border: 1px solid var(--ok); background: var(--ok-soft); border-radius: var(--r-md); }
+.usu-senha code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-weight: 700; color: var(--fg); background: var(--surface); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--ok); justify-self: start; }
+
+
+/* ---------- Sombras mais presentes nos cards ---------- */
+:root {
+  --simbolo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%20143%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22c%22%3E%3Crect%20width%3D%2296%22%20height%3D%22143%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20clip-path%3D%22url(%23c)%22%20d%3D%22M48.0%201.6%20L70.23%2023.83%20L48.0%2046.07%20L25.77%2023.83Z%20M24.17%2025.43%20L46.4%2047.67%20L24.17%2069.9%20L1.93%2047.67Z%20M0.33%2049.27%20L22.57%2071.5%20L0.33%2093.73%20L-21.9%2071.5Z%20M71.83%2025.43%20L94.07%2047.67%20L71.83%2069.9%20L49.6%2047.67Z%20M24.17%2073.1%20L46.4%2095.33%20L24.17%20117.57%20L1.93%2095.33Z%20M95.67%2049.27%20L117.9%2071.5%20L95.67%2093.73%20L73.43%2071.5Z%20M71.83%2073.1%20L94.07%2095.33%20L71.83%20117.57%20L49.6%2095.33Z%20M48.0%2096.93%20L70.23%20119.17%20L48.0%20141.4%20L25.77%20119.17Z%22%2F%3E%3C%2Fsvg%3E");
+  --sh-1: 0 1px 2px rgba(35, 31, 32, 0.06), 0 4px 14px rgba(74, 11, 22, 0.07);
+  --sh-2: 0 2px 6px rgba(35, 31, 32, 0.06), 0 14px 34px rgba(74, 11, 22, 0.13);
+}
+:root[data-tema="escuro"] { --sh-1: 0 1px 2px rgba(0,0,0,0.4), 0 4px 14px rgba(0,0,0,0.35); --sh-2: 0 2px 6px rgba(0,0,0,0.4), 0 14px 34px rgba(0,0,0,0.55); }
+.panel, .kpi, .al-card, .base-card, .cc-card, .pend-apl, .al-resumo, .cta-painel, .rc, .side, .wiz-main,
+.item, .espera-item, .msg, .al-item, .aten-item, .reinc-item, .mod-op, .rev, .img-item, .dp-box, .al-grp, .stat, .hist-card, .conta { box-shadow: var(--sh-1); }
+.item, .espera-item, .msg, .al-item, .aten-item, .reinc-item, .mod-op, .cta-painel, .kpi { transition: box-shadow .18s, transform .18s, border-color .18s, background .18s; }
+.item:hover, .espera-item:hover, .msg:hover, .al-item:hover, .aten-item:hover, .reinc-item:hover, .mod-op:hover, .cta-painel:hover { box-shadow: var(--sh-2); transform: translateY(-1px); }
+.kpi-static:hover { box-shadow: var(--sh-1); transform: none; }
+.top, .wiz-hero { box-shadow: 0 4px 10px rgba(74, 11, 22, 0.14), 0 18px 40px rgba(74, 11, 22, 0.20); }
+.kpi-acao { box-shadow: 0 6px 18px rgba(74, 11, 22, 0.28); }
+.btn.primary { box-shadow: 0 1px 2px rgba(74,11,22,.25), 0 4px 12px rgba(74,11,22,.22), inset 0 1px 0 rgba(255,255,255,.12); }
+
+/* ---------- Marca d'água: só o símbolo da CGB ---------- */
+body::before { content: ""; position: fixed; z-index: 0; pointer-events: none;
+  width: min(46vw, 440px); aspect-ratio: 96 / 143; right: max(-60px, -4vw); bottom: -70px;
+  background: var(--accent); opacity: 0.05;
+  -webkit-mask: var(--simbolo) center / contain no-repeat; mask: var(--simbolo) center / contain no-repeat; }
+:root[data-tema="escuro"] body::before { background: #ffffff; opacity: 0.035; }
+.wrap { position: relative; z-index: 1; }
+body.tela-login::before { display: none; }
+/* no cabeçalho, símbolo pequeno e discreto atrás do perfil */
+.top::before { content: ""; position: absolute; pointer-events: none; z-index: 0; right: 24%; top: -30px; width: 120px; aspect-ratio: 96 / 143;
+  background: #ffffff; opacity: 0.06; -webkit-mask: var(--simbolo) center / contain no-repeat; mask: var(--simbolo) center / contain no-repeat; }
+@media (max-width: 760px) { .top::before { right: -20px; } }
+/* no login, símbolo grande no painel da marca */
+.login-marca::after { width: min(62%, 420px); height: auto; aspect-ratio: 96 / 143; right: -6%; bottom: -12%; border: 0; border-radius: 0; box-shadow: none;
+  background: #ffffff; opacity: 0.08; -webkit-mask: var(--simbolo) center / contain no-repeat; mask: var(--simbolo) center / contain no-repeat; }
+@media (max-width: 860px) { .login-marca::after { display: block; width: 180px; right: -30px; bottom: -60px; } }
+@media (prefers-reduced-motion: reduce) { .btn, .side button, .item, select, input, textarea { transition: none; } }
 </style>
 
 <div class="wrap">
-  <p class="banner">Protótipo de demonstração. O cadastro e o histórico de medidas vêm das planilhas da CGB. As solicitações em andamento são <b>exemplos para teste</b> (medidas inventadas em colaboradores reais) e ficam só neste navegador. Para começar do zero, use <b>Zerar meus testes</b> no menu do perfil; para trazer o exemplo de volta, use <b>Carregar exemplo</b>.</p>
+  <p class="banner">Versão em teste. O cadastro e o histórico de medidas vêm do banco de dados da CGB. As solicitações novas ainda ficam só neste navegador (a gravação no banco é a próxima etapa). Para ver o fluxo com exemplos, use <b>Carregar exemplo</b> no menu do perfil.</p>
 
   <header class="top">
     <div class="marca">
@@ -952,6 +1168,7 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: 
         <div class="pop-nota" id="perfil-nota"></div>
         <button type="button" class="btn exemplo-btn" id="carregar-exemplo">Carregar exemplo em todas as etapas</button>
         <button type="button" class="btn zerar-btn" id="zerar-testes">Zerar meus testes</button>
+        <div class="pop-conta" id="pop-conta" hidden><button type="button" class="btn" data-act="trocar-senha">Trocar minha senha</button><button type="button" class="btn sair" data-act="sair">Sair</button></div>
       </div>
     </div>
     <div class="roles" id="sessao" hidden></div>
@@ -1453,6 +1670,8 @@ const ICON = {
   padrao: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   imprimir: '<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
   anexar: '<path d="M20 11.5 12.5 19a5 5 0 0 1-7-7L13 4.5a3.3 3.3 0 0 1 4.7 4.7L10.2 16.7a1.7 1.7 0 0 1-2.4-2.4L14.5 7.6"/>',
+  senha: '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  usuarios: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.6-.4 4.8 1 5.5 4.4"/>',
   regras: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 13h6M9 16h4"/>',
   ajuda: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><path d="M12 16.8v.2"/>'
 };
@@ -2102,7 +2321,7 @@ body{margin:0;padding:24px;font-family:Arial,sans-serif;background:#f4f4f4}.doc{
 
 // ---------- Login e permissões ----------
 // Guardado para depois: com LOGIN_ATIVO = true o site abre na tela de login e cada perfil vê só as suas bases.
-const LOGIN_ATIVO = false;
+const LOGIN_ATIVO = true; // login por usuário e senha (API /api/login); cada perfil recebe do servidor só o que pode ver
 const ACESSO_LIVRE = { id: "livre", nome: "", role: "supervisor", bases: "todas" };
 // Contas de demonstração. No sistema real: e-mail corporativo e senha pelo Supabase, com o perfil e as bases cadastrados pelo DP.
 const USUARIOS = [
@@ -2137,27 +2356,161 @@ function entrar(id) {
   state.histColab = (comHist || vis[0] || {}).id;
   montarListaColab(); render(); window.scrollTo(0, 0); toast(`Entrou como ${u.nome}.`);
 }
-function sair() { pararDitado(); state.user = null; state.form = null; render(); window.scrollTo(0, 0); }
-function viewLogin() {
-  return `<div class="login">
-    <section class="panel login-card">
-      <div><h2>Entrar no sistema</h2><p class="muted" style="margin:4px 0 0">Cada pessoa vê só o que o seu perfil permite.</p></div>
-      <label for="login-email">E-mail corporativo<input type="text" id="login-email" placeholder="nome.sobrenome@cgbengenharia.com.br" disabled></label>
-      <p class="note warn" style="margin:0">Protótipo: o login real (e-mail e senha) entra na versão com Supabase. Para testar, escolha uma conta de demonstração abaixo.</p>
-      <div class="login-contas">${USUARIOS.map(u => `<button class="conta" data-login="${u.id}">
-        <span class="conta-role">${ROLE_NOME[u.role]}</span><strong>${esc(u.nome)}</strong><span class="muted">${nomeBases(u)}</span></button>`).join("")}</div>
+async function sair() { pararDitado(); try { await fetch("/api/logout", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" }); } catch {} location.reload(); }
+// ---------- Login (usuário e senha) ----------
+async function api(url, metodo = "GET", corpo) {
+  const r = await fetch(url, { method: metodo, cache: "no-store", headers: corpo ? { "content-type": "application/json" } : {}, body: corpo ? JSON.stringify(corpo) : undefined });
+  let d = {}; try { d = await r.json(); } catch {}
+  if (r.status === 401 && url !== "/api/login" && state.user) { toast("Sua sessão terminou. Entre de novo."); setTimeout(() => location.reload(), 1500); }
+  if (!r.ok) throw Object.assign(new Error(d.erro || `Erro ${r.status}`), { status: r.status });
+  return d;
+}
+const ICO_LOGIN = {
+  fluxo: '<path d="M4 6h10M4 12h16M4 18h7"/><circle cx="18" cy="6" r="2"/><circle cx="15" cy="18" r="2"/>',
+  regra: '<path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  doc: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'
+};
+const icoLogin = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICO_LOGIN[k]}</svg>`;
+function telaDividida(conteudo) {
+  const logo = (document.querySelector(".logo-img") || {}).src || "";
+  return `<div class="login-split">
+    <section class="login-marca" aria-label="CGB Energia">
+      ${logo ? `<img class="login-logo" src="${logo}" alt="CGB">` : ""}
+      <div class="login-titulo">
+        <p class="eyebrow">Sistema de Medidas Disciplinares</p>
+        <h1>Da solicitação ao arquivamento, num fluxo só.</h1>
+        <p>Política de Consequências PG.001.SGI 019: cada medida com a sugestão certa, o documento pronto e o histórico guardado.</p>
+        <ul class="login-itens">
+          <li>${icoLogin("fluxo")}<span><b>Fluxo acompanhado</b>Supervisor, coordenador e DP, cada um na sua etapa.</span></li>
+          <li>${icoLogin("regra")}<span><b>Sugestão pela política</b>Reincidência e gravidade calculadas automaticamente.</span></li>
+          <li>${icoLogin("doc")}<span><b>Documento pronto</b>PDF no modelo oficial, para assinar e arquivar.</span></li>
+        </ul>
+      </div>
+      <p class="login-rodape">CGB Energia · uso interno. Cada perfil vê só as equipes sob sua responsabilidade.</p>
     </section>
-    <section class="panel">
-      <h3>O que cada perfil acessa</h3>
-      <div class="acessos">${["supervisor", "coordenador", "dp"].map(k => `<div class="acesso"><strong>${ROLE_NOME[k]}</strong><ul>${ACESSO[k].map(t => `<li>${t}</li>`).join("")}</ul></div>`).join("")}</div>
-      <p class="muted" style="margin:0;font-size:13px">No sistema real, o supervisor vê só a própria equipe e as bases de cada coordenador são definidas pelo DP.</p>
-    </section>
+    <section class="login-lado">${conteudo}</section>
   </div>`;
 }
+function viewLogin() {
+  return telaDividida(`<div class="login-caixa">
+      <div><h2>Entrar</h2><p class="sub">Use o usuário e a senha que o DP passou para você.</p></div>
+      <form id="form-login" class="login-form">
+        <label for="login-usuario">Usuário<input type="text" id="login-usuario" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: joao.silva" required autofocus></label>
+        <label for="login-senha">Senha<input type="password" id="login-senha" name="password" autocomplete="current-password" required></label>
+        <p class="note crit" id="form-erro" role="alert" hidden></p>
+        <div class="actions"><button class="btn primary" type="submit">Entrar</button></div>
+      </form>
+      <div class="login-ajuda">${icoLogin("info")}<span>Esqueceu a senha ou foi bloqueado? Peça ao DP para redefinir. Após 5 tentativas erradas, o acesso fica bloqueado por 15 minutos.</span></div>
+    </div>`);
+}
+function viewTrocarSenha(obrigatoria) {
+  const form = `<div class="login-caixa">
+      <div><h2>${obrigatoria ? "Crie a sua senha" : "Trocar minha senha"}</h2>
+        <p class="sub">${obrigatoria ? `Olá, ${esc(state.user.nome)}. Você está com uma senha temporária. Troque por uma senha só sua para continuar.` : "Informe a senha atual e a nova."}</p></div>
+      <form id="form-senha" class="login-form">
+        <input type="text" name="username" autocomplete="username" value="${esc(state.user.k)}" hidden>
+        <label for="senha-atual">${obrigatoria ? "Senha temporária" : "Senha atual"}<input type="password" id="senha-atual" autocomplete="current-password" required></label>
+        <label for="senha-nova">Senha nova <small>Pelo menos 8 caracteres, com letras e números.</small><input type="password" id="senha-nova" autocomplete="new-password" minlength="8" required></label>
+        <label for="senha-conf">Repita a senha nova<input type="password" id="senha-conf" autocomplete="new-password" minlength="8" required></label>
+        <p class="note crit" id="form-erro" role="alert" hidden></p>
+        <div class="actions"><button class="btn primary" type="submit">Salvar senha</button>${obrigatoria ? `<button type="button" class="btn" data-act="sair">Sair</button>` : `<button type="button" class="btn" data-tab="inicio">Cancelar</button>`}</div>
+      </form>
+    </div>`;
+  return obrigatoria ? telaDividida(form) : `<section class="panel" style="max-width:520px">${form}</section>`;
+}
+const PERFIL_TXT = { supervisor: "Supervisor", coordenador: "Coordenador", dp: "DP" };
+async function carregarUsuarios() {
+  try { state.usu = await api("/api/usuarios"); } catch (e) { state.usu = { erro: e.message }; }
+  if (state.tab === "usuarios") render();
+}
+function viewUsuarios() {
+  if (!state.usu) { carregarUsuarios(); return `<section class="panel"><h2>Usuários</h2><p class="muted" style="margin:0">Carregando…</p></section>`; }
+  if (state.usu.erro) return `<section class="panel"><h2>Usuários</h2><p class="note warn" style="margin:0">${esc(state.usu.erro)}</p></section>`;
+  const { usuarios, chaves } = state.usu, f = state.usuForm || (state.usuForm = { perfil: "supervisor", usuario: "", nome: "", chave: "" });
+  const rotuloChave = (perfil, x) => `${perfil === "coordenador" ? (x.nome || nomeP(x.chave)) : nomeP(x.chave)} (${x.n} colaboradores)`;
+  const vinculo = u => u.perfil === "dp" ? "Todas as bases" : u.chave ? (u.perfil === "coordenador" ? nomeCoord(u.chave) : nomeP(u.chave)) : "—";
+  const situacao = u => !u.ativo ? "Desativado" : u.bloqueado ? "Bloqueado (senhas erradas)" : u.trocar_senha ? "Aguardando trocar a senha" : "Ativo";
+  const quando = d => d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nunca entrou";
+  const s = state.usuSenha;
+  return `<section class="panel">
+    <h2>Usuários</h2>
+    <p class="muted" style="margin:0">Cada pessoa entra com usuário e senha. Supervisor vê só a própria equipe, coordenador só as equipes dele, DP vê tudo.
+      Ao criar ou redefinir, o sistema gera uma <b>senha temporária</b>: passe para a pessoa, que troca no primeiro acesso.</p>
+    ${s ? `<div class="usu-senha" role="status"><strong>Senha temporária de ${esc(s.usuario)}</strong><code>${esc(s.senha)}</code>
+      <span class="muted" style="font-size:13px">Ela aparece só agora. Passe para a pessoa por um canal seguro; no primeiro acesso ela cria a própria senha.</span>
+      <div class="actions"><button class="btn" data-act="usu-copiar">Copiar</button><button class="btn" data-act="usu-fechar-senha">Já passei, fechar</button></div></div>` : ""}
+    <form id="form-usuario" class="usu-form" style="margin-top:12px">
+      <label for="nu-usuario">Usuário <small>ex.: joao.silva</small><input type="text" id="nu-usuario" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(f.usuario)}" required></label>
+      <label for="nu-nome">Nome completo<input type="text" id="nu-nome" autocomplete="off" value="${esc(f.nome)}" required></label>
+      <label for="nu-perfil">Perfil<select id="nu-perfil">${["supervisor", "coordenador", "dp"].map(k => `<option value="${k}" ${f.perfil === k ? "selected" : ""}>${PERFIL_TXT[k]}</option>`).join("")}</select></label>
+      ${f.perfil === "dp" ? "" : `<label for="nu-chave">${f.perfil === "supervisor" ? "Qual supervisor" : "Qual coordenador"} <small>da estrutura de equipes</small><select id="nu-chave" required><option value="">Escolha…</option>${(chaves[f.perfil] || []).map(x => `<option value="${esc(x.chave)}" ${f.chave === x.chave ? "selected" : ""}>${esc(rotuloChave(f.perfil, x))}</option>`).join("")}</select></label>`}
+      <div class="actions"><button class="btn primary" type="submit">Criar usuário</button></div>
+    </form>
+    <p class="note warn" id="form-erro" role="alert" hidden></p>
+  </section>
+  <section class="panel">
+    <h3>${usuarios.length} usuário${usuarios.length === 1 ? "" : "s"}</h3>
+    <div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Vê</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
+    ${usuarios.map(u => `<tr><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${PERFIL_TXT[u.perfil]}</td><td>${esc(vinculo(u))}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
+      <td><div class="actions" style="gap:6px">${u.usuario === state.user.k ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
+        <button class="btn ${u.ativo ? "danger" : ""}" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>`}</div></td></tr>`).join("")}
+    </tbody></table></div>
+  </section>`;
+}
+function erroForm(msg) { const b = document.getElementById("form-erro"); if (b) { b.textContent = msg; b.hidden = !msg; } }
+document.addEventListener("submit", async e => {
+  const f = e.target; if (!["form-login", "form-senha", "form-usuario"].includes(f.id)) return;
+  e.preventDefault();
+  const btn = f.querySelector("button[type=submit]"); if (btn.disabled) return; btn.disabled = true; erroForm("");
+  try {
+    if (f.id === "form-login") {
+      await api("/api/login", "POST", { usuario: document.getElementById("login-usuario").value, senha: document.getElementById("login-senha").value });
+      location.reload(); return;
+    }
+    if (f.id === "form-senha") {
+      const nova = document.getElementById("senha-nova").value;
+      if (nova !== document.getElementById("senha-conf").value) throw new Error("A confirmação não é igual à senha nova.");
+      await api("/api/senha", "POST", { atual: document.getElementById("senha-atual").value, nova });
+      if (state.user.trocarSenha) { location.reload(); return; }
+      state.tab = "inicio"; render(); toast("Senha trocada."); return;
+    }
+    if (f.id === "form-usuario") {
+      const u = state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; const ch = document.getElementById("nu-chave"); u.chave = ch ? ch.value : "";
+      const d = await api("/api/usuarios", "POST", { usuario: u.usuario, nome: u.nome, perfil: u.perfil, chave: u.chave });
+      state.usuSenha = { usuario: d.usuario, senha: d.senha_temporaria }; state.usuForm = null; state.usu = null; render(); return;
+    }
+  } catch (err) { erroForm(err.message); }
+  btn.disabled = false;
+});
+document.addEventListener("change", e => {
+  if (e.target.id !== "nu-perfil") return;
+  const u = state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.perfil = e.target.value; u.chave = ""; render();
+});
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("button[data-act]"); if (!b) return;
+  const act = b.dataset.act;
+  if (act === "trocar-senha") { document.getElementById("perfil-pop").hidden = true; state.tab = "senha"; render(); window.scrollTo(0, 0); return; }
+  if (act === "usu-copiar") { try { await navigator.clipboard.writeText(state.usuSenha.senha); toast("Senha copiada."); } catch { toast("Não deu para copiar: selecione a senha e copie."); } return; }
+  if (act === "usu-fechar-senha") { state.usuSenha = null; render(); return; }
+  if (act === "usu-reset" || act === "usu-ativo") {
+    const nome = b.dataset.u, ativar = b.dataset.v === "1";
+    const pergunta = act === "usu-reset" ? `Gerar uma senha temporária nova para ${nome}? A senha atual deixa de valer e as sessões abertas são encerradas.` : ativar ? `Reativar o acesso de ${nome}?` : `Desativar o acesso de ${nome}? A pessoa não consegue mais entrar.`;
+    if (!confirm(pergunta)) return;
+    try {
+      const d = await api("/api/usuarios", "PATCH", act === "usu-reset" ? { id: b.dataset.id, redefinir_senha: true } : { id: b.dataset.id, ativo: ativar });
+      if (d.senha_temporaria) state.usuSenha = { usuario: nome, senha: d.senha_temporaria };
+      state.usu = null; render(); toast(act === "usu-reset" ? "Senha redefinida." : ativar ? "Usuário reativado." : "Usuário desativado.");
+    } catch (err) { toast(err.message); }
+  }
+});
 
 function render() {
+  document.body.classList.toggle("tela-login", LOGIN_ATIVO && (!state.user || !!state.user.trocarSenha));
   const ses = document.getElementById("sessao"), nav = document.getElementById("tabs"), v0 = document.getElementById("view");
-  document.getElementById("ver-como").hidden = LOGIN_ATIVO;
+  document.getElementById("ver-como").hidden = LOGIN_ATIVO && !state.user;
+  document.getElementById("roles").hidden = LOGIN_ATIVO;
+  document.getElementById("pop-conta").hidden = !(LOGIN_ATIVO && state.user);
   document.querySelectorAll("#roles button").forEach(b => b.setAttribute("aria-pressed", b.dataset.role === state.role));
   { const ps = pessoasDoPerfil(state.role), sel = document.getElementById("pessoa");
     sel.closest("label").hidden = !ps.length || LOGIN_ATIVO;
@@ -2167,9 +2520,15 @@ function render() {
     document.getElementById("perfil-nome").textContent = nome;
     document.getElementById("perfil-av").textContent = state.role === "dp" ? "DP" : pp ? pp.nome.split(" ").slice(0, 2).map(w => w[0]).join("") : ROLE_NOME[state.role].slice(0, 2).toUpperCase();
     document.getElementById("perfil-nota").textContent = state.role === "dp" ? "O DP vê todas as bases e equipes." : pp ? `Você vê só ${pp.desc.split(" · ").slice(-1)[0]} da sua equipe.` : "Escolha uma pessoa para ver só a equipe dela."; }
+  if (LOGIN_ATIVO && state.user) { const u = state.user, vinc = u.chave ? (u.role === "coordenador" ? nomeCoord(u.chave) : nomeP(u.chave)) : "";
+    document.getElementById("perfil-role").textContent = ROLE_NOME[u.role] + (vinc && vinc !== u.nome ? ` · ${vinc}` : "");
+    document.getElementById("perfil-nome").textContent = u.nome;
+    document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+    document.getElementById("perfil-nota").textContent = u.role === "dp" ? "O DP vê todas as bases e equipes." : u.role === "coordenador" ? "Você vê só as equipes em que é coordenador." : "Você vê só a sua equipe."; }
   if (!LOGIN_ATIVO) state.user = ACESSO_LIVRE;
   if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
-  ses.hidden = !LOGIN_ATIVO; nav.hidden = false;
+  if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
+  ses.hidden = true; nav.hidden = false;
   if (LOGIN_ATIVO) ses.innerHTML = `<h3>Conectado como</h3><div class="sessao-box"><div><strong>${esc(state.user.nome)}</strong><span>${ROLE_NOME[state.role]} · ${nomeBases(state.user)}</span></div><button class="btn sair" data-act="sair">Sair</button></div>`;
   const pend = REG.filter(r => !r.imp && veReg(r) && ehPendente(r, state.role)).length;
   const tabs = [["inicio", "Início"], ["fila", "Solicitações", pend]];
@@ -2177,7 +2536,9 @@ function render() {
   tabs.push(["entrada", "Caixa de entrada", naoLidas()], ["enviados", "Enviados"]);
   tabs.push(["painel", "Painel"], ["historico", "Histórico do colaborador"]);
   if (state.role === "dp") tabs.push(["importacao", "Banco de dados"]);
+  if (state.role === "dp" && LOGIN_ATIVO) tabs.push(["usuarios", "Usuários"]);
   tabs.push(["regras", "Regras da política"], ["ajuda", "Como usar e dúvidas"]);
+  if (LOGIN_ATIVO) tabs.push(["senha", "Minha senha"]);
   if (!tabs.some(t => t[0] === state.tab)) state.tab = "inicio";
   const grupo = { inicio: "Trabalho", entrada: "Mensagens", painel: "Consulta", regras: "Ajuda" };
   const v = document.getElementById("view");
@@ -2185,7 +2546,7 @@ function render() {
   if (corpo !== null) tabs.forEach(t => { if (t[0] === "entrada") t[2] = naoLidas(); });
   document.getElementById("tabs").innerHTML = tabs.map(([k, l, c]) =>
     `${grupo[k] ? `<span class="side-grp">${grupo[k]}</span>` : ""}<button data-tab="${k}" aria-current="${state.tab === k ? "page" : "false"}">${icone(k)}<span class="side-l">${l}</span>${c ? `<span class="count">${c}</span>` : ""}</button>`).join("");
-  v.innerHTML = corpo !== null ? corpo : state.tab === "inicio" ? viewInicio() : state.tab === "fila" ? viewFila() : state.tab === "nova" ? viewNova() : state.tab === "historico" ? viewHist() : state.tab === "painel" ? viewPainel() : state.tab === "importacao" ? viewImport() : state.tab === "padrao" ? viewPadrao() : state.tab === "ajuda" ? viewAjuda() : viewRegras();
+  v.innerHTML = corpo !== null ? corpo : state.tab === "inicio" ? viewInicio() : state.tab === "fila" ? viewFila() : state.tab === "nova" ? viewNova() : state.tab === "historico" ? viewHist() : state.tab === "painel" ? viewPainel() : state.tab === "usuarios" ? viewUsuarios() : state.tab === "senha" ? viewTrocarSenha(false) : state.tab === "importacao" ? viewImport() : state.tab === "padrao" ? viewPadrao() : state.tab === "ajuda" ? viewAjuda() : viewRegras();
   if (state.tab === "nova") { atualizarSugestaoForm(); renderTexto(); agendarRascunho(); } else if (DITADO.on) pararDitado();
 }
 
@@ -3960,6 +4321,14 @@ async function iniciar() {
   const v = document.getElementById("view");
   v.innerHTML = `<section class="panel"><h2>Carregando…</h2><p class="muted" style="margin:0">Buscando colaboradores e histórico no banco de dados.</p></section>`;
   try {
+    const re = await fetch("/api/eu", { cache: "no-store" });
+    if (re.status === 401) { state.user = null; render(); return; }
+    if (!re.ok) throw new Error("HTTP " + re.status);
+    const eu = await re.json();
+    state.user = { id: eu.usuario, k: eu.usuario, nome: eu.nome, role: eu.perfil, bases: "todas", chave: eu.chave, trocarSenha: eu.trocar_senha };
+    state.role = eu.perfil;
+    state.pessoa = eu.perfil !== "dp" && eu.chave ? { role: eu.perfil, k: eu.chave } : null;
+    if (eu.trocar_senha) { render(); return; }
     const r = await fetch("/api/carga", { cache: "no-store" });
     if (!r.ok) throw new Error("HTTP " + r.status);
     const d = await r.json();
@@ -3976,7 +4345,7 @@ async function iniciar() {
   // Bases atualizadas pelo DP (cadastro, equipes, frota) guardadas neste navegador
   carregarBasesSalvas(); aplicarSexosSalvos(); try { montarListaColab(); } catch {}
   // Protótipo: abre com o exemplo em todas as etapas, a não ser que a pessoa tenha zerado os testes.
-  try { if (localStorage.getItem("cgb-exemplo-v2") !== "off") carregarExemplo(true); } catch { carregarExemplo(true); }
+  if (!LOGIN_ATIVO) { try { if (localStorage.getItem("cgb-exemplo-v2") !== "off") carregarExemplo(true); } catch { carregarExemplo(true); } }
   render();
 }
 iniciar();

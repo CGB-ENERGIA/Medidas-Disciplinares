@@ -14,6 +14,15 @@ Eles ficam só no banco (Neon), e o site busca pela API (`/api/carga`) ao abrir.
 site (navegador) → API (pasta api/, na Vercel) → banco Neon
 ```
 
+## Login e níveis de acesso
+
+- Cada pessoa entra com **usuário e senha** (sem e-mail). A sessão dura 10 horas.
+- **Supervisor** vê só a própria equipe; **coordenador**, só as equipes em que é coordenador; **DP** vê tudo. O filtro é feito no servidor (API), não só na tela.
+- O DP cria, redefine a senha e desativa usuários na aba **Usuários**. O sistema gera uma senha temporária, e a pessoa cria a própria senha no primeiro acesso.
+- Senha: pelo menos 8 caracteres, com letras e números. Após 5 senhas erradas seguidas, o usuário fica bloqueado por 15 minutos.
+- **Primeiro usuário do DP** (só uma vez, no terminal, na pasta do projeto):
+  `npm run usuario:criar -- --usuario seu.usuario --nome "Seu Nome" --perfil dp`
+
 ## Como abrir no seu computador
 
 1. Tenha o arquivo `.env` com a `DATABASE_URL` do Neon (veja `.env.example`).
