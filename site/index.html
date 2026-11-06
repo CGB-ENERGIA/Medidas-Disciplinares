@@ -2728,8 +2728,8 @@ function render() {
   if (state.role === "dp") tabs.push(["importacao", "Banco de dados"]);
   if (state.role === "dp" && LOGIN_ATIVO) tabs.push(["usuarios", "Usuários"]);
   tabs.push(["regras", "Regras da política"], ["ajuda", "Como usar e dúvidas"]);
-  if (LOGIN_ATIVO) tabs.push(["senha", "Minha senha"]);
-  if (!tabs.some(t => t[0] === state.tab)) state.tab = "inicio";
+  // "Minha senha" fica só no menu do perfil (canto superior direito), não no menu lateral
+  if (!tabs.some(t => t[0] === state.tab) && !(LOGIN_ATIVO && state.tab === "senha")) state.tab = "inicio";
   const grupo = { inicio: "Trabalho", entrada: "Mensagens", painel: "Consulta", regras: "Ajuda" };
   const v = document.getElementById("view");
   const corpo = state.tab === "entrada" || state.tab === "enviados" ? viewCaixa(state.tab) : null;
