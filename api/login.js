@@ -16,9 +16,9 @@ export const POST = rota(async request => {
   const [u] = await consulta(`select id, usuario, nome, perfil, chave_pessoa, senha_hash, trocar_senha, ativo,
                                      bloqueado_ate > now() as bloqueado
                                 from usuarios where usuario = $1`, [usuario]);
-  if (u && u.bloqueado) return erro(`Muitas tentativas erradas. Tente de novo em ${BLOQUEIO_MIN} minutos ou peça ao DP para redefinir a senha.`, 429);
-
   const certa = await conferirSenha(senha, u && u.senha_hash); // roda mesmo sem usuário, para não revelar quem existe
+  // Bloqueado: senha errada recebe a mesma resposta de sempre (não revela que o usuário existe); só quem acertou fica sabendo do bloqueio
+  if (u && u.bloqueado) return certa ? erro(`Muitas tentativas erradas. Tente de novo em ${BLOQUEIO_MIN} minutos ou peça ao DP para redefinir a senha.`, 429) : erro(INVALIDO, 401);
   if (!u || !u.ativo || !certa) {
     if (u) await consulta(`update usuarios set
         tentativas_falhas = case when tentativas_falhas + 1 >= $2 then 0 else tentativas_falhas + 1 end,

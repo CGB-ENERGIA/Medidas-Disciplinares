@@ -178,6 +178,11 @@ create trigger medidas_atualizado_em before update on medidas
   for each row execute function tocar_atualizado_em();
 
 -- ---------- Histórico de cada medida (só inserção: nunca editar nem apagar)
+-- Solicitações do sistema: o registro completo que a tela usa (relato, texto, histórico, fotos, imagens do documento).
+-- As colunas acima são preenchidas a partir dele, para consultas e indicadores.
+alter table medidas add column if not exists dados jsonb;
+create index if not exists medidas_sistema_idx on medidas (status) where origem = 'sistema';
+
 create table if not exists medidas_historico (
   id           bigint generated always as identity primary key,
   medida_id    bigint not null references medidas (id),

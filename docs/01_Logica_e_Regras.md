@@ -127,9 +127,10 @@ Mensagens geradas pelo histórico de cada medida. O supervisor recebe só: Docum
 - Exportação completa em Excel e CSV: medidas, fluxo, colaboradores, Anexo I e dicionário.
 - **Atualizar bases:** o DP envia o cadastro do RM, a base-resumo de equipes e a planilha da frota. O site mostra quem entrou, saiu ou mudou antes de aplicar. Quem sai some das novas solicitações, mas o histórico fica. Do cadastro, o site lê só chapa, nome, função, seção, situação e sexo.
 
-## 11. Limitações do protótipo
+## 11. Como funciona hoje
 
-- Tudo fica no navegador de cada pessoa; recarregar apaga as solicitações (fica só o rascunho).
-- O site carrega 79 solicitações de exemplo; "Zerar meus testes" apaga, "Carregar exemplo" traz de volta.
-- Atualização de bases vale só no navegador de quem enviou.
-- Login guardado (desligado) até a versão com Supabase.
+- Login por usuário e senha; cada perfil vê só a sua equipe (o servidor filtra).
+- As solicitações e cada passo do fluxo ficam no banco; a tela se atualiza sozinha a cada minuto.
+- Cadastro, equipes e frota vêm do banco; a atualização é feita pela importação (`npm run db:importar`), não pelo navegador.
+- O Sr./Sra. confirmado pelo DP fica no cadastro do banco.
+- O texto formal com IA só funciona dentro do claude.ai; fora dele o sistema usa o modelo de texto.

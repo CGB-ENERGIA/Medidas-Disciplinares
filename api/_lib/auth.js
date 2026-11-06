@@ -29,6 +29,9 @@ export async function criarSessao(request, usuarioId) {
   return cookie(token, DURACAO_H * 3600);
 }
 
+// Hash do token desta sessão (ou null)
+export function tokenAtual(request) { const t = lerCookie(request, COOKIE); return t ? hashToken(t) : null; }
+
 export async function encerrarSessao(request) {
   const t = lerCookie(request, COOKIE);
   if (t) await consulta("delete from sessoes where token_hash = $1", [hashToken(t)]);

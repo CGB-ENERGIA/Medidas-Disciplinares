@@ -7,7 +7,9 @@
     "db:testar": "node --env-file=.env banco/rodar.mjs testar",
     "db:schema": "node --env-file=.env banco/rodar.mjs schema",
     "db:importar": "node --env-file=.env banco/rodar.mjs importar",
-    "usuario:criar": "node --env-file=.env --no-warnings banco/criar-usuario.mjs"
+    "usuario:criar": "node --env-file=.env --no-warnings banco/criar-usuario.mjs",
+    "usuario:redefinir": "node --env-file=.env --no-warnings banco/redefinir-senha.mjs",
+    "teste": "node testes/teste_api.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",

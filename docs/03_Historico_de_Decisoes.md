@@ -53,3 +53,11 @@ Registro do que foi pedido e decidido ao longo da construção do protótipo.
 ## Testes
 - Teste geral (27 verificações) e teste de uso com evidências (17 verificações), todos passando na versão de 05/11/2026.
 - Exemplo com 79 solicitações em todas as etapas, fotos e prints ilustrativos, documentos assinados e histórico de 6 meses.
+
+## Versão com banco e login (novembro de 2026)
+- Banco Neon (sa-east-1) e site na Vercel; dados pessoais só no banco, nunca no GitHub.
+- Login por usuário e senha (sem e-mail), com perfis supervisor, coordenador e DP; o DP cadastra e edita usuários.
+- Solicitações gravadas no banco; o perfil de quem abre define a etapa (supervisor → coordenador; coordenador e DP → direto ao DP).
+- Painel reorganizado: sua ação, acompanhamento e indicadores em grupos; reincidência numa base só.
+- Downloads (PDF, Excel, CSV, apresentação) pelo navegador comum.
+- Removidos o modo protótipo (troca de perfil, exemplos, envio de planilhas pelo navegador) e os scripts e testes antigos.

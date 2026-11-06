@@ -30,32 +30,31 @@ site (navegador) → API (pasta api/, na Vercel) → banco Neon
 3. Abra http://localhost:3000.
 
 Abrir o `site/index.html` direto (duplo clique) não funciona mais: sem a API, o site mostra "Não foi possível carregar os dados".
-Os testes da pasta `testes/` também precisam ser ajustados para usar o endereço do `npm run dev`.
+Com o servidor rodando, `npm run teste` confere a API (rotas protegidas, login e, com um usuário de teste, o acesso por perfil). Veja `testes/teste_api.mjs`.
 
 ## O que tem em cada pasta
 
 | Pasta | Conteúdo |
 |---|---|
-| `site/` | O site (`index.html`): telas, regras e modelos de documento, sem dados pessoais |
-| `api/` | Funções da API (Vercel) que leem do banco Neon |
+| `site/` | O site (`index.html`) e o modelo do documento Word (`modelo-docx.js`): telas, regras e modelos, sem dados pessoais |
+| `api/` | Funções da API (Vercel): login, carga inicial, solicitações (fluxo), arquivos, usuários e cadastro |
 | `banco/` | Estrutura do banco (`schema.sql`) e importação dos CSVs (ver `banco/LEIA-ME.md`) |
 | `dev/` | Servidor local para testar site + API (`npm run dev`) |
-| `docs/` | Toda a lógica do sistema, o plano para a versão real (Supabase) e o histórico das decisões |
+| `docs/` | Toda a lógica do sistema, a arquitetura (Neon + Vercel) e o histórico das decisões |
 | `dados/` | Bases usadas pelo site em CSV (separador `;`): colaboradores, gestores, Anexo I, frota ativa, municípios do MA, histórico importado das planilhas e modelos de texto do fato |
 | `modelos/` | Modelo oficial do documento (Word) e o modelo de ponto manual enviado pelo DP |
-| `testes/` | Testes automáticos (Python + Playwright) e a planilha com as 79 solicitações de exemplo |
-| `scripts/` | Scripts usados para cruzar as planilhas antigas e montar as bases |
+| `testes/` | Teste automático da API (`teste_api.mjs`) |
 
 ## Atenção: dados pessoais
 
 - `dados/colaboradores.csv`, `dados/gestores.csv` e `dados/historico_medidas_importado.csv` têm nomes reais e histórico disciplinar. Guardar só em local com acesso restrito. Eles estão no `.gitignore` e **não vão para o GitHub**.
 - O `.env` (senha do banco) também não vai para o GitHub.
 - O site não guarda CPF, RG, endereço nem telefone.
-- As solicitações de exemplo (79) são **inventadas** sobre colaboradores reais, só para teste.
-- O link publicado deve ficar **privado** (menu Compartilhar).
+- As solicitações ficam no banco Neon; no navegador fica só o rascunho de quem está preenchendo, apagado ao sair.
+- O acesso ao site é por usuário e senha; cada perfil recebe do servidor só a sua equipe.
 
 ## Documentos
 
 1. `docs/01_Logica_e_Regras.md`: fluxo, perfis, status, regras da política, documentos, painel e indicadores.
-2. `docs/02_Plano_Versao_Real_Supabase.md`: o que falta para usar de verdade e como montar.
+2. `docs/02_Arquitetura.md`: como o site, a API e o banco funcionam juntos, e o que o servidor confere.
 3. `docs/03_Historico_de_Decisoes.md`: tudo o que foi pedido e decidido no projeto.

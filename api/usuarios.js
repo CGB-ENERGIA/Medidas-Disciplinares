@@ -1,7 +1,7 @@
 // Cadastro de usuários (só o DP)
 //   GET   /api/usuarios → lista + chaves de supervisor/coordenador disponíveis na estrutura de equipes
 //   POST  /api/usuarios { usuario, nome, perfil, chave } → cria e devolve a senha temporária (mostrada uma única vez)
-//   PATCH /api/usuarios { id, nome?, perfil?, chave?, ativo?, redefinir_senha? }
+//   PATCH /api/usuarios { id, usuario?, nome?, perfil?, chave?, ativo?, redefinir_senha? }
 import { consulta, rota } from "./_lib/db.js";
 import { comLogin, lerJSON, ok, erro } from "./_lib/auth.js";
 import { hashSenha, senhaTemporaria, normalizarUsuario, usuarioValido } from "./_lib/senha.js";
@@ -55,10 +55,19 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
 
   const sets = [], p = [u.id];
   const set = (col, val) => { p.push(val); sets.push(`${col} = $${p.length}`); };
+  if (c.usuario !== undefined) {
+    const novo = normalizarUsuario(c.usuario);
+    if (!usuarioValido(novo)) return erro("Usuário deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
+    const [outro] = await consulta("select 1 from usuarios where usuario = $1 and id <> $2", [novo, u.id]);
+    if (outro) return erro(`O usuário "${novo}" já existe.`, 409);
+    set("usuario", novo);
+  }
   if (c.nome !== undefined) { const n = String(c.nome).trim(); if (n.length < 3) return erro("Informe o nome completo.", 400); set("nome", n); }
+  let mudouAcesso = false;
   if (c.perfil !== undefined || c.chave !== undefined) {
     const perfil = c.perfil ?? u.perfil; if (!PERFIS.includes(perfil)) return erro("Perfil inválido.", 400);
     const v = await validarChave(perfil, c.chave ?? u.chave_pessoa); if (v.problema) return erro(v.problema, 400);
+    mudouAcesso = perfil !== u.perfil || (v.chave || null) !== (u.chave_pessoa || null);
     set("perfil", perfil); set("chave_pessoa", v.chave);
   }
   if (c.ativo !== undefined) set("ativo", !!c.ativo);
@@ -69,7 +78,7 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
   }
   if (!sets.length) return erro("Nada para alterar.", 400);
   await consulta(`update usuarios set ${sets.join(", ")} where id = $1`, p);
-  // desativou ou redefiniu a senha: derruba as sessões abertas dessa pessoa
-  if (c.ativo === false || c.redefinir_senha || c.perfil !== undefined || c.chave !== undefined) await consulta("delete from sessoes where usuario_id = $1", [u.id]);
+  // desativou, redefiniu a senha ou mudou o que a pessoa pode ver: derruba as sessões abertas dela
+  if (c.ativo === false || c.redefinir_senha || mudouAcesso) await consulta("delete from sessoes where usuario_id = $1", [u.id]);
   return ok({ alterado: true, ...(temp ? { senha_temporaria: temp } : {}) });
 }, SO_DP));
