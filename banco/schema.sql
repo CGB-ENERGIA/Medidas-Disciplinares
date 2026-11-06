@@ -70,6 +70,8 @@ alter table usuarios add column if not exists trocar_senha boolean not null defa
 alter table usuarios add column if not exists tentativas_falhas integer not null default 0;
 alter table usuarios add column if not exists bloqueado_ate timestamptz;
 alter table usuarios add column if not exists ultimo_acesso timestamptz;
+-- usuário excluído que já participou de alguma medida: some da lista e o login fica livre; o histórico continua apontando para ele
+alter table usuarios add column if not exists excluido_em timestamptz;
 create unique index if not exists usuarios_usuario_idx on usuarios (usuario);
 
 -- ---------- Sessões de login (o navegador guarda só um código; aqui fica o hash dele)

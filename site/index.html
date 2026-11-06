@@ -1183,6 +1183,12 @@ body.tela-login::before { display: none; }
 .usu-editando .muted { font-size: 13px; }
 .usu-form.editando { padding: 14px; border: 1px dashed var(--line-accent); border-radius: var(--r-md); }
 .usu-tab tr.usu-linha-ed td { background: var(--accent-soft); }
+.usu-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.usu-grupo { margin-top: 18px; } .usu-grupo:first-of-type { margin-top: 10px; }
+.usu-grupo-tit { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 6px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); font-size: 14px; }
+.usu-grupo-tit b { min-width: 24px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 12px; text-align: center; }
+.usu-grupo-tit small { font-weight: 400; font-size: 12.5px; }
+.usu-tab tr.usu-inativo td { opacity: .6; }
 .usu-tab td .actions { flex-wrap: wrap; }
 .usu-tab td:last-child { min-width: 150px; }
 .usu-tab td:first-child { white-space: nowrap; }
@@ -1207,7 +1213,7 @@ body.tela-login::before { display: none; }
       </button>
       <button class="perfil-chip" id="perfil-btn" aria-haspopup="true" aria-expanded="false" aria-controls="perfil-pop">
         <span class="avatar" id="perfil-av">SU</span>
-        <span class="perfil-txt"><small id="perfil-role">Supervisor</small><b id="perfil-nome">Todos (demonstração)</b></span>
+        <span class="perfil-txt"><small id="perfil-role">Supervisor</small><b id="perfil-nome"></b></span>
         <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="perfil-pop" id="perfil-pop" hidden>
@@ -2589,16 +2595,14 @@ async function carregarUsuarios() {
 function viewUsuarios() {
   if (!state.usu) { carregarUsuarios(); return `<section class="panel"><h2>Usuários</h2><p class="muted" style="margin:0">Carregando…</p></section>`; }
   if (state.usu.erro) return `<section class="panel"><h2>Usuários</h2><p class="note warn" style="margin:0">${esc(state.usu.erro)}</p></section>`;
-  const { usuarios, chaves } = state.usu, ed = state.usuEdit, f = ed || state.usuForm || (state.usuForm = { perfil: "supervisor", usuario: "", nome: "", chave: "" });
+  const { usuarios } = state.usu, ed = state.usuEdit, f = ed || state.usuForm || (state.usuForm = { perfil: "supervisor", usuario: "", nome: "" });
   const euMesmo = ed && ed.id === state.user.uid;
-  const rotuloChave = (perfil, x) => `${perfil === "coordenador" ? (x.nome || nomeP(x.chave)) : nomeP(x.chave)} (${x.n} colaboradores)`;
-  const vinculo = u => u.perfil === "dp" ? "Todas as bases" : u.chave ? (u.perfil === "coordenador" ? nomeCoord(u.chave) : nomeP(u.chave)) : "—";
   const situacao = u => !u.ativo ? "Desativado" : u.bloqueado ? "Bloqueado (senhas erradas)" : u.trocar_senha ? "Aguardando trocar a senha" : "Ativo";
   const quando = d => d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nunca entrou";
   const s = state.usuSenha;
   return `<section class="panel">
     <h2>Usuários</h2>
-    <p class="muted" style="margin:0">Cada pessoa entra com usuário e senha. Supervisor vê só a própria equipe, coordenador só as equipes dele, DP vê tudo.
+    <p class="muted" style="margin:0">Cada pessoa entra com usuário e senha. Todos os perfis veem todas as bases e equipes; o perfil define o que cada um faz no fluxo (supervisor solicita, coordenador autoriza, DP elabora e arquiva).
       Ao criar ou redefinir, o sistema gera uma <b>senha temporária</b>: passe para a pessoa, que troca no primeiro acesso.</p>
     ${s ? `<div class="usu-senha" role="status"><strong>Senha temporária de ${esc(s.usuario)}</strong><code>${esc(s.senha)}</code>
       <span class="muted" style="font-size:13px">Ela aparece só agora. Passe para a pessoa por um canal seguro; no primeiro acesso ela cria a própria senha.</span>
@@ -2608,20 +2612,27 @@ function viewUsuarios() {
       <label for="nu-usuario">Usuário <small>ex.: joao.silva</small><input type="text" id="nu-usuario" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(f.usuario)}" required></label>
       <label for="nu-nome">Nome completo<input type="text" id="nu-nome" autocomplete="off" value="${esc(f.nome)}" required></label>
       <label for="nu-perfil">Perfil<select id="nu-perfil" ${euMesmo ? "disabled" : ""}>${["supervisor", "coordenador", "dp"].map(k => `<option value="${k}" ${f.perfil === k ? "selected" : ""}>${PERFIL_TXT[k]}</option>`).join("")}</select></label>
-      ${f.perfil === "dp" ? "" : `<label for="nu-chave">${f.perfil === "supervisor" ? "Qual supervisor" : "Qual coordenador"} <small>da estrutura de equipes</small><select id="nu-chave" required><option value="">Escolha…</option>${(chaves[f.perfil] || []).map(x => `<option value="${esc(x.chave)}" ${f.chave === x.chave ? "selected" : ""}>${esc(rotuloChave(f.perfil, x))}</option>`).join("")}</select></label>`}
       <div class="actions">${ed ? `<button class="btn primary" type="submit">Salvar alterações</button><button class="btn" type="button" data-act="usu-cancelar">Cancelar</button>` : `<button class="btn primary" type="submit">Criar usuário</button>`}</div>
     </form>
     <p class="note warn" id="form-erro" role="alert" hidden></p>
   </section>
   <section class="panel">
-    <h3>${usuarios.length} usuário${usuarios.length === 1 ? "" : "s"}</h3>
-    <div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Vê</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
-    ${usuarios.map(u => `<tr class="${ed && ed.id === u.id ? "usu-linha-ed" : ""}"><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${PERFIL_TXT[u.perfil]}</td><td>${esc(vinculo(u))}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
-      <td><div class="actions" style="gap:6px"><button class="btn" data-act="usu-editar" data-id="${u.id}">Editar</button>${u.id === state.user.uid ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
-        <button class="btn ${u.ativo ? "danger" : ""}" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>`}</div></td></tr>`).join("")}
-    </tbody></table></div>
+    <div class="usu-cab"><h3>${usuarios.length} usuário${usuarios.length === 1 ? "" : "s"}</h3>
+      <span class="muted" style="font-size:13px">${["dp", "coordenador", "supervisor"].map(k => { const n = usuarios.filter(u => u.perfil === k).length; return `${n} ${k === "dp" ? "DP" : n === 1 ? k : GRUPO_PERFIL[k].toLowerCase()}`; }).join(" · ")}</span></div>
+    ${["dp", "coordenador", "supervisor"].map(k => { const l = usuarios.filter(u => u.perfil === k);
+      return `<div class="usu-grupo">
+      <h4 class="usu-grupo-tit"><span>${GRUPO_PERFIL[k]}</span><b>${l.length}</b><small class="muted">${DESC_PERFIL[k]}</small></h4>
+      ${l.length ? `<div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
+      ${l.map(u => `<tr class="${ed && ed.id === u.id ? "usu-linha-ed" : ""} ${u.ativo ? "" : "usu-inativo"}"><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
+        <td><div class="actions" style="gap:6px"><button class="btn" data-act="usu-editar" data-id="${u.id}">Editar</button>${u.id === state.user.uid ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
+          <button class="btn" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>
+          <button class="btn danger" data-act="usu-excluir" data-id="${u.id}" data-u="${esc(u.usuario)}" data-n="${esc(u.nome)}">Excluir</button>`}</div></td></tr>`).join("")}
+      </tbody></table></div>` : `<p class="muted" style="margin:4px 0 0;font-size:13px">Nenhum usuário com este perfil.</p>`}
+    </div>`; }).join("")}
   </section>`;
 }
+const GRUPO_PERFIL = { dp: "DP", coordenador: "Coordenadores", supervisor: "Supervisores" };
+const DESC_PERFIL = { dp: "elaboram, arquivam e cuidam dos usuários", coordenador: "autorizam ou recusam as solicitações", supervisor: "solicitam e aplicam as medidas" };
 function erroForm(msg) { const b = document.getElementById("form-erro"); if (b) { b.textContent = msg; b.hidden = !msg; } }
 document.addEventListener("submit", async e => {
   const f = e.target; if (!["form-login", "form-senha", "form-usuario"].includes(f.id)) return;
@@ -2643,14 +2654,14 @@ document.addEventListener("submit", async e => {
       const u = state.usuEdit, ch = document.getElementById("nu-chave");
       u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.chave = ch ? ch.value : "";
       const corpo = { id: u.id, usuario: u.usuario, nome: u.nome };
-      if (u.id !== state.user.uid) { corpo.perfil = u.perfil; corpo.chave = u.chave; }
+      if (u.id !== state.user.uid) corpo.perfil = u.perfil;
       await api("/api/usuarios", "PATCH", corpo);
       if (u.id === state.user.uid) { location.reload(); return; } // mudou o próprio cadastro: recarrega o nome e o usuário no topo
       state.usuEdit = null; state.usu = null; render(); toast("Usuário atualizado."); return;
     }
     if (f.id === "form-usuario") {
       const u = state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; const ch = document.getElementById("nu-chave"); u.chave = ch ? ch.value : "";
-      const d = await api("/api/usuarios", "POST", { usuario: u.usuario, nome: u.nome, perfil: u.perfil, chave: u.chave });
+      const d = await api("/api/usuarios", "POST", { usuario: u.usuario, nome: u.nome, perfil: u.perfil });
       state.usuSenha = { usuario: d.usuario, senha: d.senha_temporaria }; state.usuForm = null; state.usu = null; render(); return;
     }
   } catch (err) { erroForm(err.message); }
@@ -2658,7 +2669,7 @@ document.addEventListener("submit", async e => {
 });
 document.addEventListener("change", e => {
   if (e.target.id !== "nu-perfil") return;
-  const u = state.usuEdit || state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.perfil = e.target.value; u.chave = ""; render();
+  const u = state.usuEdit || state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.perfil = e.target.value; render();
 });
 document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("button[data-act]"); if (!b) return;
@@ -2672,9 +2683,19 @@ document.addEventListener("click", async e => {
     render(); window.scrollTo({ top: 0, behavior: "smooth" }); const i = document.getElementById("nu-nome"); if (i) i.focus(); return;
   }
   if (act === "usu-cancelar") { state.usuEdit = null; render(); return; }
+  if (act === "usu-excluir") {
+    const nome = b.dataset.n || b.dataset.u;
+    if (!confirm(`Excluir o usuário ${b.dataset.u} (${nome})?\n\nA pessoa perde o acesso na hora e sai da lista. Se ela já participou de alguma medida, o histórico continua mostrando o nome dela, e o login ${b.dataset.u} fica livre para outra pessoa.`)) return;
+    try {
+      const d = await api("/api/usuarios", "DELETE", { id: b.dataset.id });
+      if (state.usuEdit && state.usuEdit.id === b.dataset.id) state.usuEdit = null;
+      state.usu = null; render(); toast(d.definitivo ? "Usuário excluído." : "Usuário excluído. O histórico das medidas dele foi mantido.");
+    } catch (err) { toast(err.message); }
+    return;
+  }
   if (act === "usu-reset" || act === "usu-ativo") {
     const nome = b.dataset.u, ativar = b.dataset.v === "1";
-    const pergunta = act === "usu-reset" ? `Gerar uma senha temporária nova para ${nome}? A senha atual deixa de valer e as sessões abertas são encerradas.` : ativar ? `Reativar o acesso de ${nome}?` : `Desativar o acesso de ${nome}? A pessoa não consegue mais entrar.`;
+    const pergunta = act === "usu-reset" ? `Gerar uma senha temporária nova para ${nome}? A senha atual deixa de valer e as sessões abertas são encerradas.` : ativar ? `Reativar o acesso de ${nome}?` : `Desativar o acesso de ${nome}? A pessoa não consegue mais entrar, mas continua na lista e pode ser reativada.`;
     if (!confirm(pergunta)) return;
     try {
       const d = await api("/api/usuarios", "PATCH", act === "usu-reset" ? { id: b.dataset.id, redefinir_senha: true } : { id: b.dataset.id, ativo: ativar });
@@ -2694,7 +2715,7 @@ function render() {
     document.getElementById("perfil-role").textContent = ROLE_NOME[u.role] + (vinc && vinc !== u.nome ? ` · ${vinc}` : "");
     document.getElementById("perfil-nome").textContent = u.nome;
     document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
-    document.getElementById("perfil-nota").textContent = u.role === "dp" ? "O DP vê todas as bases e equipes." : u.role === "coordenador" ? "Você vê só as equipes em que é coordenador." : "Você vê só a sua equipe."; }
+    document.getElementById("perfil-nota").textContent = u.role === "dp" ? "O DP vê todas as bases e equipes." : u.role === "coordenador" ? "Você vê todas as equipes e autoriza as solicitações." : "Você vê todas as equipes e abre as solicitações."; }
   if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
   if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
   ses.hidden = true; nav.hidden = false;
@@ -2827,7 +2848,7 @@ function viewPainelEquipe() {
   const tile = (n, rot, sub, cls = "") => `<div class="kpi kpi-static ${cls}"><span class="kpi-n">${n}</span><span class="kpi-rot">${rot}</span><span class="kpi-sub">${sub}</span></div>`;
   return `<section class="indicadores${indFechado() ? " fechado" : ""}">
     <div class="ind-head">
-      ${botaoInd()}<div><span class="eyebrow-ind">Visão da sua equipe</span><h2>Indicadores</h2><p class="muted">Período: <b>${rotuloPeriodo(p)}</b> · só colaboradores que você acompanha. Indicadores da empresa e por base são do DP.</p></div>
+      ${botaoInd()}<div><span class="eyebrow-ind">Visão das equipes</span><h2>Indicadores</h2><p class="muted">Período: <b>${rotuloPeriodo(p)}</b> · todas as bases e equipes.</p></div>
       <div class="ind-acoes">${filtroPeriodo(p)}</div>
     </div>
     <div class="kpis k5">
@@ -2888,7 +2909,7 @@ function viewPendAplic() {
       <tr class="tot">${mostraCoord ? "<td></td>" : ""}<td>Total</td><td class="n">${P.length}</td><td class="n">${P.length - atr.length - quase.length}</td><td class="n">${quase.length}</td><td class="n">${atr.length}</td><td></td></tr></tbody></table></div>`;
   }
   return `<section class="pend-apl" id="pend-apl">
-    <div class="pa-head"><div><span class="eyebrow-ind">Último passo do fluxo</span><h2>Medidas pendentes de aplicação</h2><p class="muted">${R === "dp" ? "Todas as bases" : esc((pessoasDoPerfil(R).find(p => state.pessoa && p.k === state.pessoa.k) || {}).nome || "Todas as equipes (demonstração)")} · prazo recomendado: ${PRAZO_APL} dias do ocorrido · atualizado em ${stamp}</p></div>
+    <div class="pa-head"><div><span class="eyebrow-ind">Último passo do fluxo</span><h2>Medidas pendentes de aplicação</h2><p class="muted">${R === "dp" ? "Todas as bases" : esc((pessoasDoPerfil(R).find(p => state.pessoa && p.k === state.pessoa.k) || {}).nome || "Todas as bases e equipes")} · prazo recomendado: ${PRAZO_APL} dias do ocorrido · atualizado em ${stamp}</p></div>
       <button type="button" class="btn" data-act="pend-print">${icone("imprimir")} Visão para print</button></div>
     <div class="pa-kpis">
       <div class="pa-k"><b>${P.length}</b><span>pendentes de aplicação</span></div>
@@ -2927,7 +2948,7 @@ function viewPainelSupervisor() {
   const pp = state.pessoa && pessoasDoPerfil("supervisor").find(x => x.k === state.pessoa.k);
   return `<section class="indicadores${indFechado() ? " fechado" : ""}">
     <div class="ind-head">
-      ${botaoInd()}<div><span class="eyebrow-ind">Indicadores do supervisor</span><h2>Minha equipe e minhas aplicações</h2><p class="muted">${pp ? esc(pp.nome) + " · " : ""}Período: <b>${rotuloPeriodo(p)}</b> · prazo, qualidade das solicitações e onde agir na equipe.</p></div>
+      ${botaoInd()}<div><span class="eyebrow-ind">Indicadores do supervisor</span><h2>Equipes e minhas aplicações</h2><p class="muted">${pp ? esc(pp.nome) + " · " : ""}Período: <b>${rotuloPeriodo(p)}</b> · prazo, qualidade das solicitações e onde agir na equipe.</p></div>
       <div class="ind-acoes">${filtroPeriodo(p)}</div>
     </div>
     <div class="kpis k5">
@@ -2940,7 +2961,7 @@ function viewPainelSupervisor() {
     <div class="ind-grid">
       <h3 class="ind-sec">Evolução e qualidade</h3>
       <section class="panel c8">
-        <div class="phd"><h3>Medidas da minha equipe</h3><span class="legenda"><span><i style="background:${COR_ADV}"></i>Advertências</span><span><i style="background:${COR_SUSP}"></i>Suspensões</span></span></div>
+        <div class="phd"><h3>Medidas das equipes</h3><span class="legenda"><span><i style="background:${COR_ADV}"></i>Advertências</span><span><i style="background:${COR_SUSP}"></i>Suspensões</span></span></div>
         <div class="chart-wrap">${colunasEmpilhadas(d.rotulos, d.adv, d.sus)}</div>
       </section>
       <section class="panel c4">
@@ -2955,7 +2976,7 @@ function viewPainelSupervisor() {
       </section>
       <h3 class="ind-sec">O que acontece e com quem</h3>
       <section class="panel c6">
-        <div class="phd"><h3>Desvios mais comuns na equipe</h3><span class="muted sm">tema para o próximo DDS</span></div>
+        <div class="phd"><h3>Desvios mais comuns</h3><span class="muted sm">tema para o próximo DDS</span></div>
         ${d.topItens.length ? barras(d.topItens.slice(0, 5).map(x => ({ rot: `<b>${x.n}</b> ${esc(x.t)}`, v: x.v, dica: `Item ${x.n}: ${x.t} (${x.v})` }))) : `<div class="empty">Sem dados no período.</div>`}
       </section>
       <section class="panel c6">
@@ -3023,7 +3044,7 @@ document.addEventListener("click", e => {
 });
 function viewPainel() {
   const pp = state.pessoa && pessoasDoPerfil(state.role).find(p => p.k === state.pessoa.k);
-  const escopo = state.role === "dp" ? "Todas as bases e equipes" : pp ? pp.desc : "Todas as equipes (demonstração)";
+  const escopo = state.role === "dp" ? "Todas as bases e equipes" : pp ? pp.desc : "Todas as bases e equipes";
   const ex = REG.some(r => r.exemplo);
   return `<div class="painel-cab"><div><h2>Painel</h2><p class="muted">${ROLE_NOME[state.role]} · ${esc(escopo)} · atualizado em ${fmt(HOJE)}</p></div></div>
     ${ex && !LOGIN_ATIVO ? `<div class="ex-aviso">${icone("alerta")}<span><b>Dados de exemplo para teste.</b> As solicitações em andamento foram geradas para demonstração e ficam só neste navegador. Para começar do zero, use <b>Zerar meus testes</b> no menu do perfil.</span></div>` : ""}
@@ -4404,7 +4425,7 @@ async function iniciar() {
     const eu = await re.json();
     state.user = { id: eu.usuario, uid: eu.id, k: eu.usuario, nome: eu.nome, role: eu.perfil, bases: "todas", chave: eu.chave, trocarSenha: eu.trocar_senha };
     state.role = eu.perfil;
-    state.pessoa = eu.perfil !== "dp" && eu.chave ? { role: eu.perfil, k: eu.chave } : null;
+    state.pessoa = null; // todos os perfis veem todas as bases e equipes
     if (eu.trocar_senha) { render(); return; }
     const [r, rr] = await Promise.all([fetch("/api/carga", { cache: "no-store" }), fetch("/api/referencias", { cache: "no-store" })]);
     if (!r.ok) throw new Error("HTTP " + r.status);

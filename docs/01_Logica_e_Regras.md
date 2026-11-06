@@ -129,7 +129,8 @@ Mensagens geradas pelo histórico de cada medida. O supervisor recebe só: Docum
 
 ## 11. Como funciona hoje
 
-- Login por usuário e senha; cada perfil vê só a sua equipe (o servidor filtra).
+- Login por usuário e senha; todos os perfis veem todas as bases e equipes. O perfil define o que cada um faz no fluxo.
+- O DP cria, edita, desativa e exclui usuários; a lista fica separada por perfil.
 - As solicitações e cada passo do fluxo ficam no banco; a tela se atualiza sozinha a cada minuto.
 - Cadastro, equipes e frota vêm do banco; a atualização é feita pela importação (`npm run db:importar`), não pelo navegador.
 - O Sr./Sra. confirmado pelo DP fica no cadastro do banco.

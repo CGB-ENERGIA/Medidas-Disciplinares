@@ -13,16 +13,16 @@ Teste local: `npm run dev` sobe o site e a API juntos (`dev/servidor-local.mjs`)
 | Rota | Quem | Para quê |
 |---|---|---|
 | `POST /api/login`, `POST /api/logout`, `POST /api/senha`, `GET /api/eu` | todos | Sessão (cookie HttpOnly, 10 h), troca de senha |
-| `GET /api/carga` | logado | Colaboradores, histórico e solicitações da equipe de quem está logado |
+| `GET /api/carga` | logado | Colaboradores, histórico e solicitações |
 | `GET /api/referencias` | logado | Bases, Anexo I, modelos de texto, municípios e frota |
 | `GET/POST/PATCH /api/solicitacoes` | logado | Lista, abre, cria e avança o fluxo |
 | `GET /api/arquivo?id=` | logado | Baixa o documento assinado |
-| `GET/POST/PATCH /api/usuarios` | DP | Cadastro e edição de usuários |
+| `GET/POST/PATCH/DELETE /api/usuarios` | DP | Cadastro, edição e exclusão de usuários |
 | `PATCH /api/colaboradores` | DP | Confirma o sexo (Sr./Sra.) |
 | `GET /api/saude` | público | Confere se a API está no ar |
 
 ## O que o servidor confere
-- **Equipe:** supervisor vê só a equipe dele, coordenador as equipes dele e o DP tudo (vale para leitura, criação, fluxo e arquivos).
+- **Equipe:** todos os perfis veem todas as bases e equipes (decisão de 06/11/2026). O filtro fica num lugar só (`escopoEquipe`, em `api/_lib/auth.js`), se um dia voltar a separar.
 - **Etapa inicial:** pelo perfil de quem abre (supervisor → coordenador; coordenador e DP → DP).
 - **Quem faz cada passo:** autorizar e recusar (coordenador); elaborar, arquivar e devolver (DP); aplicar (quem solicitou ou o DP); cancelar (regras da política).
 - **Conflito:** se a solicitação mudou desde que a tela leu, o passo é recusado e a tela pede para recarregar.

@@ -61,13 +61,11 @@ export const comLogin = (fn, opcoes = {}) => async (request, params) => {
   return fn(request, params, u);
 };
 
-// Filtro de equipe pelo perfil: devolve a condição SQL (sobre o apelido "e" de equipes) e acrescenta o parâmetro.
-//   DP → vê tudo · Coordenador → equipes em que é coordenador · Supervisor → equipes em que é supervisor
-export function escopoEquipe(u, params) {
-  if (u.perfil === "dp") return "true";
-  if (!u.chave_pessoa) return "false";
-  params.push(u.chave_pessoa);
-  return u.perfil === "supervisor" ? `e.supervisor = $${params.length}` : `e.coordenador = $${params.length}`;
+// Filtro de equipe: decidido em 06/11/2026 que supervisor, coordenador e DP veem todas as bases e equipes.
+// O perfil continua definindo o que cada um faz no fluxo (solicitar, autorizar, elaborar, arquivar).
+// As rotas continuam chamando esta função: para voltar a separar por equipe, basta mudar só aqui.
+export function escopoEquipe(_u, _params) {
+  return "true";
 }
 
 // Corpo JSON das requisições que alteram dados (exigir JSON também bloqueia envio de formulário de outro site)

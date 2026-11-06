@@ -51,7 +51,7 @@ Com o servidor rodando, `npm run teste` confere a API (rotas protegidas, login e
 - O `.env` (senha do banco) também não vai para o GitHub.
 - O site não guarda CPF, RG, endereço nem telefone.
 - As solicitações ficam no banco Neon; no navegador fica só o rascunho de quem está preenchendo, apagado ao sair.
-- O acesso ao site é por usuário e senha; cada perfil recebe do servidor só a sua equipe.
+- O acesso ao site é por usuário e senha; todos os perfis veem todas as equipes, e o perfil define o que cada um faz no fluxo.
 
 ## Documentos
 
