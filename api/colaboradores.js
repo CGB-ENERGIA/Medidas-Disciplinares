@@ -27,4 +27,4 @@ export const PATCH = rota(comLogin(async request => {
   const [r] = await consulta("update colaboradores set sexo = $2, sexo_origem = 'dp', atualizado_em = now() where chapa = $1 returning chapa", [String(c.chapa), c.sexo]);
   if (!r) return erro("Colaborador não encontrado.", 404);
   return ok({ salvo: true });
-}, { perfis: ["dp"] }));
+}, { perfis: ["dp"], nivel: ["gestor"] }));

@@ -45,18 +45,44 @@ export async function usuarioDaSessao(request) {
   const t = lerCookie(request, COOKIE);
   if (!t) return null;
   const [u] = await consulta(`
-    select u.id, u.usuario, u.nome, u.perfil, u.chave_pessoa, u.trocar_senha
+    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.chave_pessoa, u.trocar_senha
       from sessoes s join usuarios u on u.id = s.usuario_id
-     where s.token_hash = $1 and s.expira_em > now() and u.ativo`, [hashToken(t)]);
-  return u || null;
+     where s.token_hash = $1 and s.expira_em > now() and u.ativo and u.excluido_em is null`, [hashToken(t)]);
+  if (!u) return null;
+  u.modulos = modulosDe(u);
+  // No módulo Medidas Disciplinares o administrador age como DP; quem não tem acesso a ele fica sem perfil
+  u.perfil = u.modulos.medidas ? u.modulos.medidas.perfil : null;
+  return u;
 }
 
-// Envolve uma rota que exige login. opcoes.perfis limita quem pode usar (ex.: ["dp"]).
+// Acessos da pessoa, por módulo. nivel: "gestor" (gerencia o módulo), "usuario" (usuário fim) ou "leitura" (só consulta)
+//   Medidas Disciplinares → supervisor e coordenador são usuários; dp é gestor (perfil guarda o papel no fluxo)
+//   Contratações          → usuario = solicitante; gestor = Recrutamento; leitura = Gestão
+export function modulosDe(u) {
+  if (u.admin) return { medidas: { nivel: "gestor", perfil: "dp" }, contratacoes: { nivel: "gestor" } };
+  const m = {};
+  if (u.perfil) m.medidas = { nivel: u.perfil === "dp" ? "gestor" : "usuario", perfil: u.perfil };
+  if (u.contratacoes) m.contratacoes = { nivel: u.contratacoes };
+  return m;
+}
+
+// Envolve uma rota que exige login.
+//   opcoes.modulo   módulo que a rota usa (padrão "medidas"); a pessoa precisa ter acesso a ele. null = vale para qualquer logado.
+//   opcoes.nivel    níveis aceitos naquele módulo (ex.: ["gestor"])
+//   opcoes.perfis   perfis aceitos em Medidas Disciplinares (ex.: ["dp"]); o administrador conta como DP
+//   opcoes.admin    só o administrador
 // Enquanto a pessoa estiver com senha temporária, só pode trocar a senha (opcoes.liberaTrocaSenha).
 export const comLogin = (fn, opcoes = {}) => async (request, params) => {
   const u = await usuarioDaSessao(request);
   if (!u) return erro("Faça login para continuar.", 401);
   if (u.trocar_senha && !opcoes.liberaTrocaSenha) return erro("Troque a sua senha temporária para continuar.", 403);
+  if (opcoes.admin && !u.admin) return erro("Só o administrador tem acesso a isto.", 403);
+  const modulo = opcoes.modulo === undefined ? "medidas" : opcoes.modulo;
+  if (modulo) {
+    const m = u.modulos[modulo];
+    if (!m) return erro("Seu acesso não inclui este módulo.", 403);
+    if (opcoes.nivel && !opcoes.nivel.includes(m.nivel)) return erro("Seu nível de acesso não permite isto.", 403);
+  }
   if (opcoes.perfis && !opcoes.perfis.includes(u.perfil)) return erro("Seu perfil não tem acesso a isto.", 403);
   return fn(request, params, u);
 };

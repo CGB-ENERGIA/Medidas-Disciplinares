@@ -13,9 +13,9 @@ export const POST = rota(async request => {
   const usuario = normalizarUsuario(corpo.usuario), senha = String(corpo.senha || "");
   if (!usuario || !senha) return erro("Informe usuário e senha.", 400);
 
-  const [u] = await consulta(`select id, usuario, nome, perfil, chave_pessoa, senha_hash, trocar_senha, ativo,
+  const [u] = await consulta(`select id, usuario, nome, perfil, admin, contratacoes, chave_pessoa, senha_hash, trocar_senha, ativo,
                                      bloqueado_ate > now() as bloqueado
-                                from usuarios where usuario = $1`, [usuario]);
+                                from usuarios where usuario = $1 and excluido_em is null`, [usuario]);
   const certa = await conferirSenha(senha, u && u.senha_hash); // roda mesmo sem usuário, para não revelar quem existe
   // Bloqueado: senha errada recebe a mesma resposta de sempre (não revela que o usuário existe); só quem acertou fica sabendo do bloqueio
   if (u && u.bloqueado) return certa ? erro(`Muitas tentativas erradas. Tente de novo em ${BLOQUEIO_MIN} minutos ou peça ao DP para redefinir a senha.`, 429) : erro(INVALIDO, 401);
@@ -29,5 +29,5 @@ export const POST = rota(async request => {
 
   await consulta("update usuarios set tentativas_falhas = 0, bloqueado_ate = null, ultimo_acesso = now() where id = $1", [u.id]);
   const setCookie = await criarSessao(request, u.id);
-  return comCookie(ok({ usuario: u.usuario, nome: u.nome, perfil: u.perfil, chave: u.chave_pessoa, trocar_senha: u.trocar_senha }), setCookie);
+  return comCookie(ok({ usuario: u.usuario, nome: u.nome, admin: u.admin, trocar_senha: u.trocar_senha }), setCookie);
 });

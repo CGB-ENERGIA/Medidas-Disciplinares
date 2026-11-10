@@ -52,7 +52,7 @@ create table if not exists usuarios (
   usuario           text,          -- nome de login (minúsculo, ex.: joao.silva)
   email             text unique,   -- opcional, não é usado no login
   nome              text not null,
-  perfil            text not null check (perfil in ('supervisor', 'coordenador', 'dp')),
+  perfil            text check (perfil in ('supervisor', 'coordenador', 'dp')),   -- papel no módulo Medidas Disciplinares (vazio = sem acesso a ele)
   chave_pessoa      text,          -- chave em equipes.supervisor ou equipes.coordenador
   senha_hash        text,          -- scrypt, nunca a senha em texto
   trocar_senha      boolean not null default true,   -- obriga trocar a senha no próximo acesso
@@ -72,6 +72,16 @@ alter table usuarios add column if not exists bloqueado_ate timestamptz;
 alter table usuarios add column if not exists ultimo_acesso timestamptz;
 -- usuário excluído que já participou de alguma medida: some da lista e o login fica livre; o histórico continua apontando para ele
 alter table usuarios add column if not exists excluido_em timestamptz;
+-- Acessos por módulo (nov/2026): administrador tem controle total; cada módulo tem o seu nível
+--   Medidas Disciplinares: usuarios.perfil (supervisor/coordenador = usuário; dp = gestor)
+--   Contratações:          usuarios.contratacoes (usuario = solicitante; gestor = Recrutamento; leitura = Gestão)
+alter table usuarios add column if not exists admin boolean not null default false;
+alter table usuarios add column if not exists contratacoes text;
+alter table usuarios alter column perfil drop not null;
+alter table usuarios drop constraint if exists usuarios_perfil_check;
+alter table usuarios add constraint usuarios_perfil_check check (perfil is null or perfil in ('supervisor', 'coordenador', 'dp'));
+alter table usuarios drop constraint if exists usuarios_contratacoes_check;
+alter table usuarios add constraint usuarios_contratacoes_check check (contratacoes is null or contratacoes in ('usuario', 'gestor', 'leitura'));
 create unique index if not exists usuarios_usuario_idx on usuarios (usuario);
 
 -- ---------- Sessões de login (o navegador guarda só um código; aqui fica o hash dele)
@@ -218,3 +228,53 @@ create table if not exists medidas_arquivos (
   criado_em     timestamptz not null default now()
 );
 create index if not exists medidas_arquivos_medida_idx on medidas_arquivos (medida_id);
+
+-- ---------- Módulo Contratações (recrutamento e seleção) ----------
+-- Os documentos têm o mesmo formato do site de Contratações original (candidatos, vagas, rm, config, talentos, talentosEd),
+-- guardados como JSON. As regras de quem lê e escreve cada coisa ficam na API (api/ct-docs.js), por nível de acesso.
+create sequence if not exists ct_versao_seq;
+create table if not exists ct_docs (
+  colecao          text not null check (colecao in ('candidatos', 'vagas', 'rm', 'config', 'talentos', 'talentosEd')),
+  id               text not null,
+  dados            jsonb not null,
+  solicitante_norm text,                                   -- candidatos e vagas: nome do solicitante sem acento, em maiúsculas (filtro do usuário fim)
+  criado_por       uuid references usuarios (id),
+  atualizado_por   uuid references usuarios (id),
+  criado_em        timestamptz not null default now(),
+  atualizado_em    timestamptz not null default now(),
+  removido         boolean not null default false,          -- nada é apagado: "remover" só esconde
+  versao           bigint not null default nextval('ct_versao_seq'),   -- cresce a cada gravação: a tela busca só o que mudou
+  primary key (colecao, id)
+);
+create index if not exists ct_docs_versao_idx on ct_docs (colecao, versao);
+
+-- Arquivos do módulo: currículos, certificados, documentos e RPs assinadas
+create table if not exists ct_arquivos (
+  id          uuid primary key default gen_random_uuid(),
+  nome        text,
+  tipo        text not null,
+  tamanho     integer not null,
+  conteudo    bytea not null,
+  enviado_por uuid references usuarios (id),
+  criado_em   timestamptz not null default now()
+);
+-- id que o arquivo tinha no site antigo (importação): evita guardar o mesmo arquivo duas vezes
+alter table ct_arquivos add column if not exists origem_id text;
+create unique index if not exists ct_arquivos_origem_idx on ct_arquivos (origem_id) where origem_id is not null;
+
+-- Registro de quem gravou o quê (sem o conteúdo, só o rastro). Só aceita inserção.
+create table if not exists ct_log (
+  id           bigint generated always as identity primary key,
+  quando       timestamptz not null default now(),
+  usuario_id   uuid references usuarios (id),
+  usuario_nome text,
+  colecao      text not null,
+  doc_id       text not null,
+  acao         text not null
+);
+create index if not exists ct_log_doc_idx on ct_log (colecao, doc_id);
+create or replace function bloquear_alteracao_ct_log() returns trigger language plpgsql as $$
+begin raise exception 'O registro do módulo Contratações não pode ser alterado nem apagado.'; end $$;
+drop trigger if exists ct_log_somente_insercao on ct_log;
+create trigger ct_log_somente_insercao before update or delete on ct_log
+  for each row execute function bloquear_alteracao_ct_log();

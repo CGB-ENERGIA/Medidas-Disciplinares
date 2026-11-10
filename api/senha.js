@@ -15,4 +15,4 @@ export const POST = rota(comLogin(async (request, _q, u) => {
   // quem estiver logado com a senha antiga em outro computador sai
   await consulta("delete from sessoes where usuario_id = $1 and token_hash <> $2", [u.id, tokenAtual(request) || ""]);
   return ok({ trocada: true });
-}, { liberaTrocaSenha: true }));
+}, { liberaTrocaSenha: true, modulo: null }));

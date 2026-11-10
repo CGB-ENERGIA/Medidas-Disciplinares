@@ -130,7 +130,9 @@ Mensagens geradas pelo histórico de cada medida. O supervisor recebe só: Docum
 ## 11. Como funciona hoje
 
 - Login por usuário e senha; todos os perfis veem todas as bases e equipes. O perfil define o que cada um faz no fluxo.
-- O DP cria, edita, desativa e exclui usuários; a lista fica separada por perfil.
+- Só o administrador cria, edita, desativa e exclui usuários e escolhe a que módulos cada um tem acesso (Medidas Disciplinares e Contratações). A tela Usuários separa Administradores, Gestores e Usuários.
+- Quem tem mais de um módulo troca de ambiente pelo menu do nome do usuário (seção Ambiente).
+- O módulo Contratações (recrutamento e seleção) tem as mesmas regras do site de Contratações original: 4 fases e 13 etapas (Triagem, Avaliações, Admissão e Integração), vagas por CT 127, 169 e 170, banco de talentos e conferência com o RM.
 - As solicitações e cada passo do fluxo ficam no banco; a tela se atualiza sozinha a cada minuto.
 - Cadastro, equipes e frota vêm do banco; a atualização é feita pela importação (`npm run db:importar`), não pelo navegador.
 - O Sr./Sra. confirmado pelo DP fica no cadastro do banco.

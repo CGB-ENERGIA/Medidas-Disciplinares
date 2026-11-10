@@ -7,3 +7,8 @@ dados/colaboradores.csv
 dados/gestores.csv
 dados/historico_medidas_importado.csv
 testes/Solicitacoes_de_exemplo_Medidas_Disciplinares.xlsx
+# exportação do site de Contratações antigo (nomes e currículos de pessoas): nunca vai para o GitHub
+contratacoes-exportacao*/
+contratacoes-exportacao*.zip
+# guia antigo da junção (era para o ambiente Artifact; não faz parte do sistema)
+MODULO-CONTRATACOES-PARA-MEDIDAS-DISCIPLINARES_*.md

@@ -9,7 +9,8 @@
     "db:importar": "node --env-file=.env banco/rodar.mjs importar",
     "usuario:criar": "node --env-file=.env --no-warnings banco/criar-usuario.mjs",
     "usuario:redefinir": "node --env-file=.env --no-warnings banco/redefinir-senha.mjs",
-    "teste": "node testes/teste_api.mjs"
+    "teste": "node testes/teste_api.mjs",
+    "ct:importar": "node --env-file=.env --no-warnings banco/importar-contratacoes.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",

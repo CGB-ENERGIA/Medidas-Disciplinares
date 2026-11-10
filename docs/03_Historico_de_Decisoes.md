@@ -61,3 +61,12 @@ Registro do que foi pedido e decidido ao longo da construção do protótipo.
 - Painel reorganizado: sua ação, acompanhamento e indicadores em grupos; reincidência numa base só.
 - Downloads (PDF, Excel, CSV, apresentação) pelo navegador comum.
 - Removidos o modo protótipo (troca de perfil, exemplos, envio de planilhas pelo navegador) e os scripts e testes antigos.
+
+## Módulos e acessos (novembro de 2026)
+- O site passa a ter dois módulos: Medidas Disciplinares e Contratações (este em preparação, a partir do site de Contratações já existente).
+- Acessos: administrador (controle total e único que mexe em usuários), gestor de cada módulo (DP em Medidas, Recrutamento em Contratações), usuários fim (supervisor e coordenador em Medidas, solicitante em Contratações) e Gestão (só leitura em Contratações).
+- O usuário fim de Contratações vê só as solicitações que ele mesmo abriu; os gestores veem tudo.
+- Seletor de ambiente no topo para quem tem mais de um módulo.
+- O módulo Contratações entrou no site trazendo o código do site de Contratações original (Artifact) e trocando só a camada de dados para o nosso banco; as regras de negócio não mudaram.
+- Solicitante vê só o que ele mesmo abriu (sem a lista dos 19 solicitantes); Recrutamento e Gestão veem tudo.
+- Os dados antigos (candidatos, vagas, talentos, currículos) são migrados por exportação feita no site antigo e importação por script, e não passam pelo chat nem pelo GitHub.

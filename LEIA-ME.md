@@ -18,10 +18,10 @@ site (navegador) → API (pasta api/, na Vercel) → banco Neon
 
 - Cada pessoa entra com **usuário e senha** (sem e-mail). A sessão dura 10 horas.
 - **Supervisor** vê só a própria equipe; **coordenador**, só as equipes em que é coordenador; **DP** vê tudo. O filtro é feito no servidor (API), não só na tela.
-- O DP cria, redefine a senha e desativa usuários na aba **Usuários**. O sistema gera uma senha temporária, e a pessoa cria a própria senha no primeiro acesso.
+- Só o **administrador** cria, edita, redefine a senha, desativa e exclui usuários, na aba **Usuários**, e escolhe a que módulos (Medidas Disciplinares e Contratações) cada um tem acesso. O sistema gera uma senha temporária, e a pessoa cria a própria senha no primeiro acesso.
 - Senha: pelo menos 8 caracteres, com letras e números. Após 5 senhas erradas seguidas, o usuário fica bloqueado por 15 minutos.
 - **Primeiro usuário do DP** (só uma vez, no terminal, na pasta do projeto):
-  `npm run usuario:criar -- --usuario seu.usuario --nome "Seu Nome" --perfil dp`
+  `npm run usuario:criar -- --usuario seu.usuario --nome "Seu Nome" --admin`
 
 ## Como abrir no seu computador
 
@@ -36,8 +36,8 @@ Com o servidor rodando, `npm run teste` confere a API (rotas protegidas, login e
 
 | Pasta | Conteúdo |
 |---|---|
-| `site/` | O site (`index.html`) e o modelo do documento Word (`modelo-docx.js`): telas, regras e modelos, sem dados pessoais |
-| `api/` | Funções da API (Vercel): login, carga inicial, solicitações (fluxo), arquivos, usuários e cadastro |
+| `site/` | O site: `index.html` (Medidas Disciplinares e o menu), `contratacoes.html` + `ct-adaptador.js` (módulo Contratações) e `modelo-docx.js` (modelo do documento Word). Sem dados pessoais |
+| `api/` | Funções da API (Vercel): login, Medidas Disciplinares (carga, solicitações, arquivos, cadastro), Contratações (`ct-*`) e usuários |
 | `banco/` | Estrutura do banco (`schema.sql`) e importação dos CSVs (ver `banco/LEIA-ME.md`) |
 | `dev/` | Servidor local para testar site + API (`npm run dev`) |
 | `docs/` | Toda a lógica do sistema, a arquitetura (Neon + Vercel) e o histórico das decisões |

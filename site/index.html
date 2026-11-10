@@ -1257,6 +1257,26 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
 }
 @media (max-width: 760px) { .top { flex-wrap: nowrap; align-items: center; gap: 10px; } .top .marca-txt { display: none; } .top .logo-img { height: 28px; width: auto; } .top .perfil { flex: none; } }
 @media (prefers-reduced-motion: reduce) { .wrap, .side, .side .rail-tx { transition: none; } }
+/* ===== Seletor de ambiente (módulos), dentro do menu do perfil ===== */
+.pop-amb { display: grid; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.pop-amb[hidden] { display: none; }
+.mod-lista { display: grid; gap: 4px; }
+.mod-op { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; text-align: left; padding: 8px; border: 0; border-radius: 12px; background: transparent; color: inherit; cursor: pointer; }
+.mod-op:hover { background: var(--sunken); }
+.mod-op[aria-current="true"] { background: var(--accent-soft); }
+.mod-op .mi { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--sunken); color: var(--muted); }
+.mod-op[aria-current="true"] .mi { background: var(--accent); color: #fff; }
+.mod-op .mi .ico { width: 20px; height: 20px; stroke: currentColor; margin: 0; }
+.mod-op b { display: block; font-size: 14.5px; } .mod-op small { display: block; font-size: 12px; color: var(--muted); line-height: 1.3; }
+.mod-op[aria-current="true"] b { color: var(--accent); }
+.mod-op .mod-ok { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.4; }
+.ct-host { min-width: 0; }
+.ct-host iframe { display: block; width: 100%; height: calc(100vh - var(--top-h, 72px) - 56px); height: calc(100dvh - var(--top-h, 72px) - 56px); min-height: 420px; border: 0; background: transparent; border-radius: var(--r-md); }
+.usu-form .usu-adm { display: flex; align-items: center; gap: 8px; flex-direction: row; font-weight: 600; align-self: end; padding-bottom: 8px; }
+.usu-form .usu-adm input { width: auto; margin: 0; }
+.usu-form .usu-adm small { font-weight: 400; color: var(--muted); }
+.usu-niveis { display: grid; gap: 4px; margin: 6px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--sunken); font-size: 13px; color: var(--muted); }
+.usu-niveis b { color: var(--fg); }
 </style>
 
   <header class="top">
@@ -1264,9 +1284,9 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
     <div class="marca">
       <img class="logo-img" src="data:image/png;base64,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" alt="CGB" width="360" height="143">
       <div class="marca-txt">
-        <p class="eyebrow">Sistema de Medidas Disciplinares</p>
-        <h1>Fluxo de Medidas Disciplinares</h1>
-        <div class="marca-sub">Política de Consequências · PG.001.SGI 019 · versão 06 <span class="selo-teste" title="Versão em teste: cadastro, histórico e solicitações ficam no banco de dados da CGB.">Em teste</span></div>
+        <p class="eyebrow" id="marca-eyebrow">Sistema de Medidas Disciplinares</p>
+        <h1 id="marca-h1">Fluxo de Medidas Disciplinares</h1>
+        <div class="marca-sub"><span id="marca-sub-txt">Política de Consequências · PG.001.SGI 019 · versão 06</span> <span class="selo-teste" title="Versão em teste: cadastro, histórico e solicitações ficam no banco de dados da CGB.">Em teste</span></div>
       </div>
     </div>
     <div class="roles perfil" id="ver-como" hidden>
@@ -1280,6 +1300,10 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
         <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="perfil-pop" id="perfil-pop" hidden>
+        <div class="pop-amb" id="mod-sel" hidden>
+          <span class="pop-k">Ambiente</span>
+          <div class="mod-lista" id="mod-pop"></div>
+        </div>
         <span class="pop-k">Perfil de acesso</span>
         <div class="pop-nota" id="perfil-nota"></div>
         <div class="pop-conta" id="pop-conta" hidden><button type="button" class="btn" data-act="trocar-senha">Trocar minha senha</button><button type="button" class="btn sair" data-act="sair">Sair</button></div>
@@ -1294,6 +1318,7 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
     <div class="side-fundo" id="side-fundo" hidden></div>
     <nav class="side" id="tabs" aria-label="Menu" hidden></nav>
     <main id="view"></main>
+    <div class="ct-host" id="ct-host" hidden></div>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -1779,7 +1804,13 @@ const ICON = {
   senha: '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
   usuarios: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.6c2.6-.4 4.8 1 5.5 4.4"/>',
   regras: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 13h6M9 16h4"/>',
-  ajuda: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><path d="M12 16.8v.2"/>'
+  ajuda: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><path d="M12 16.8v.2"/>',
+  'mod-medidas': '<path d="M12 3v18M5 7h14"/><path d="M5 7l-2.5 6a3 3 0 0 0 5 0zM19 7l-2.5 6a3 3 0 0 0 5 0z"/><path d="M8 21h8"/>',
+  'mod-contratacoes': '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 13h18"/>',
+  'ct-vagas': '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M12 11.5v4M10 13.5h4"/>',
+  'ct-candidatos': '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><path d="m16 11.5 2 2 3.5-4"/>',
+  'ct-agenda': '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  'ct-banco': '<path d="M3.5 8h17v11.5h-17z"/><path d="M2.5 4.5h19V8h-19z"/><path d="M10 12.5h4"/>'
 };
 const icone = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ""}</svg>`;
 
@@ -2544,7 +2575,7 @@ window.addEventListener("beforeunload", e => { if (edPend) { salvarEdicao(); e.p
 // Ao sair (e ao entrar com outro usuário), apaga rascunhos com relato e fotos, planilhas e marcações antigas.
 // Tema e preferência de mostrar/ocultar indicadores ficam, porque não têm dado pessoal.
 function limparDadosLocais(manterRascunho) {
-  try { Object.keys(localStorage).filter(k => (k.startsWith("cgb-rascunho-") && k !== manterRascunho) || k === SEXO_KEY || k === BASE_KEY || k === "cgb-exemplo-v2")
+  try { Object.keys(localStorage).filter(k => (k.startsWith("cgb-rascunho-") && k !== manterRascunho) || k === SEXO_KEY || k === BASE_KEY || k === "cgb-exemplo-v2" || k.startsWith("cgb-ct-"))
     .forEach(k => localStorage.removeItem(k)); } catch {}
   try { sessionStorage.clear(); } catch {}
 }
@@ -2590,6 +2621,77 @@ async function atualizarSolicitacoes() {
     }
   } catch {} finally { atualizarSolicitacoes.rodando = false; }
 }
+
+
+// ---------- Módulos (ambientes) ----------
+// Cada pessoa vê só os módulos a que tem acesso (state.user.modulos, vindo de /api/eu). O administrador vê todos.
+const MODULOS = {
+  medidas: { nome: "Medidas Disciplinares", desc: "Fluxo das medidas disciplinares", eyebrow: "Sistema de Medidas Disciplinares", titulo: "Fluxo de Medidas Disciplinares", sub: "Política de Consequências · PG.001.SGI 019 · versão 06", ico: "mod-medidas", inicio: "inicio" },
+  contratacoes: { nome: "Contratações", desc: "Recrutamento e seleção de pessoal", eyebrow: "Sistema de Recrutamento e Seleção", titulo: "Contratações CGB", sub: "Contratos CT 127 · 169 · 170", ico: "mod-contratacoes", inicio: "ct:inicio" }
+};
+const NIVEL_CT = { usuario: "Solicitante", gestor: "Recrutamento", leitura: "Gestão" };
+const modulosDoUsuario = () => Object.keys((state.user && state.user.modulos) || {}).filter(k => MODULOS[k]);
+function moduloAtual() { const l = modulosDoUsuario(); return l.includes(state.modulo) ? state.modulo : l[0]; }
+// Como a pessoa é chamada em cada módulo (administrador em qualquer um)
+function acessoTxt(m) {
+  const u = state.user; if (!u) return "";
+  if (u.admin) return "Administrador";
+  const a = u.modulos[m]; if (!a) return "";
+  return m === "medidas" ? ROLE_NOME[a.perfil] : NIVEL_CT[a.nivel];
+}
+function trocarModulo(m) {
+  document.getElementById("perfil-pop").hidden = true; document.getElementById("perfil-btn").setAttribute("aria-expanded", "false");
+  if (!state.user || !state.user.modulos[m] || moduloAtual() === m) return;
+  state.modulo = m; try { localStorage.setItem("cgb-modulo-" + state.user.k, m); } catch {}
+  state.tab = MODULOS[m].inicio; state.sel = null; menuAbrir(false); render(); window.scrollTo(0, 0);
+}
+
+// Telas do módulo Contratações: [chave, nome, descrição, grupo, quem vê]. Ainda em preparação: o menu e os acessos já valem.
+//   quem vê: "todos" | "gestao" (gestor e leitura, não o solicitante) | "gestor" (só o Recrutamento)
+const CT_TELAS = [
+  ["ct:inicio", "Início", "O que fazer hoje, por ordem de prioridade", "Visão geral", "todos"],
+  ["ct:painel", "Painel", "Indicadores, gráficos e cobertura das vagas", "Visão geral", "todos"],
+  ["ct:vagas", "Vagas", "Abrir, acompanhar e fechar vagas", "Processo", "todos"],
+  ["ct:candidatos", "Candidatos", "Etapas de cada candidato em processo", "Processo", "todos"],
+  ["ct:agenda", "Agenda", "Etapas marcadas por dia e atrasadas", "Processo", "todos"],
+  ["ct:novo", "Cadastrar candidato", "Novo candidato com currículo e documentos", "Processo", "gestor"],
+  ["ct:historico", "Histórico", "Contratados e cancelados, por mês", "Registro", "todos"],
+  ["ct:banco", "Banco de talentos", "Processos guardados para retomar", "Registro", "todos"],
+  ["ct:rm", "Integração RM", "Conferência com o RM, padrões e planilha", "Registro", "gestao"]
+];
+const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao" };
+const ctVisivel = quem => { const n = state.user.modulos.contratacoes.nivel; return quem === "todos" || (quem === "gestao" && n !== "usuario") || (quem === "gestor" && n === "gestor"); };
+function menuContratacoes() {
+  const grupos = []; CT_TELAS.filter(t => ctVisivel(t[4])).forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
+  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Acessos de cada pessoa aos módulos"]]]);
+  return grupos;
+}
+// Tela do módulo → tela dentro da página do módulo (contratacoes.html)
+const CT_VIEW = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "vagas", "ct:candidatos": "candidatos", "ct:agenda": "agenda", "ct:novo": "novo", "ct:historico": "historico", "ct:banco": "banco", "ct:rm": "dados" };
+const CT_TAB = Object.fromEntries(Object.entries(CT_VIEW).map(([k, v]) => [v, k]));
+let ctVista = "";
+const ctFrame = () => document.getElementById("ct-frame");
+function ctEnviar(msg) { const f = ctFrame(); if (f && f.contentWindow) f.contentWindow.postMessage(msg, location.origin); }
+// Mostra a página do módulo (criada só na primeira vez que a pessoa entra em Contratações) e leva até a tela escolhida no menu
+function ctMostrar() {
+  const host = document.getElementById("ct-host"), view = CT_VIEW[state.tab] || "inicio";
+  let f = ctFrame();
+  if (!f) {
+    f = document.createElement("iframe"); f.id = "ct-frame"; f.title = "Contratações"; f.src = "contratacoes.html#" + view; ctVista = view;
+    host.appendChild(f);
+    f.addEventListener("load", () => { ctEnviar({ tipo: "tema", tema: document.documentElement.getAttribute("data-tema") }); });
+  } else if (view !== ctVista) { ctVista = view; ctEnviar({ tipo: "ir", view }); }
+  ctEnviar({ tipo: "visivel", v: true });
+}
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin) return;
+  const m = e.data || {};
+  if (m.tipo === "sessao") { location.reload(); return; }
+  if (m.tipo === "view" && m.view !== ctVista) {         // a pessoa navegou dentro do módulo (ex.: abriu um candidato): o menu acompanha
+    ctVista = m.view; const t = CT_TAB[m.view];
+    if (t && state.user && moduloAtual() === "contratacoes" && state.tab !== t && state.tab.startsWith("ct:")) { state.tab = t; render(); }
+  }
+});
 
 // ---------- Login (usuário e senha) ----------
 async function api(url, metodo = "GET", corpo) {
@@ -2653,52 +2755,63 @@ function viewTrocarSenha(obrigatoria) {
     </div>`;
   return obrigatoria ? telaDividida(form) : `<section class="panel" style="max-width:520px">${form}</section>`;
 }
-const PERFIL_TXT = { supervisor: "Supervisor", coordenador: "Coordenador", dp: "DP" };
 async function carregarUsuarios() {
   try { state.usu = await api("/api/usuarios"); } catch (e) { state.usu = { erro: e.message }; }
   if (state.tab === "usuarios") render();
 }
+const ACESSO_MEDIDAS = { supervisor: "Supervisor", coordenador: "Coordenador", dp: "DP (gestor)" };
+const ACESSO_CT = { usuario: "Solicitante", gestor: "Recrutamento (gestor)", leitura: "Gestão (leitura)" };
+const GRUPOS_USU = [
+  ["admin", "Administradores", "controle total dos dois módulos e das pessoas"],
+  ["gestor", "Gestores", "gerenciam um módulo: DP em Medidas e Recrutamento em Contratações"],
+  ["usuario", "Usuários", "usam os módulos: supervisores, coordenadores, solicitantes e Gestão"]
+];
+const grupoDoUsuario = u => u.admin ? "admin" : (u.medidas === "dp" || u.contratacoes === "gestor") ? "gestor" : "usuario";
 function viewUsuarios() {
   if (!state.usu) { carregarUsuarios(); return `<section class="panel"><h2>Usuários</h2><p class="muted" style="margin:0">Carregando…</p></section>`; }
   if (state.usu.erro) return `<section class="panel"><h2>Usuários</h2><p class="note warn" style="margin:0">${esc(state.usu.erro)}</p></section>`;
-  const { usuarios } = state.usu, ed = state.usuEdit, f = ed || state.usuForm || (state.usuForm = { perfil: "supervisor", usuario: "", nome: "" });
+  const { usuarios } = state.usu, ed = state.usuEdit, f = ed || state.usuForm || (state.usuForm = { usuario: "", nome: "", admin: false, medidas: "supervisor", contratacoes: "" });
   const euMesmo = ed && ed.id === state.user.uid;
   const situacao = u => !u.ativo ? "Desativado" : u.bloqueado ? "Bloqueado (senhas erradas)" : u.trocar_senha ? "Aguardando trocar a senha" : "Ativo";
   const quando = d => d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nunca entrou";
   const s = state.usuSenha;
+  const sel = (id, opcoes, atual, off) => `<select id="${id}" ${off ? "disabled" : ""}><option value="">Sem acesso</option>${Object.entries(opcoes).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>`;
+  const acesso = (u, m) => u.admin ? "Total" : (m === "medidas" ? ACESSO_MEDIDAS[u.medidas] : ACESSO_CT[u.contratacoes]) || "—";
   return `<section class="panel">
     <h2>Usuários</h2>
-    <p class="muted" style="margin:0">Cada pessoa entra com usuário e senha. Todos os perfis veem todas as bases e equipes; o perfil define o que cada um faz no fluxo (supervisor solicita, coordenador autoriza, DP elabora e arquiva).
-      Ao criar ou redefinir, o sistema gera uma <b>senha temporária</b>: passe para a pessoa, que troca no primeiro acesso.</p>
+    <p class="muted" style="margin:0">Só o administrador cria, edita e exclui usuários e escolhe a que módulos cada um tem acesso. Cada pessoa entra com usuário e senha; ao criar ou redefinir, o sistema gera uma <b>senha temporária</b> que ela troca no primeiro acesso.</p>
+    <div class="usu-niveis"><span><b>Administrador:</b> controle total dos dois módulos e das pessoas.</span>
+      <span><b>Medidas Disciplinares:</b> Supervisor e Coordenador usam o fluxo (solicitar e autorizar); o DP gerencia o módulo.</span>
+      <span><b>Contratações:</b> o Solicitante usa e vê só o que ele abriu; o Recrutamento gerencia; a Gestão só consulta. Todos veem todas as equipes.</span></div>
     ${s ? `<div class="usu-senha" role="status"><strong>Senha temporária de ${esc(s.usuario)}</strong><code>${esc(s.senha)}</code>
       <span class="muted" style="font-size:13px">Ela aparece só agora. Passe para a pessoa por um canal seguro; no primeiro acesso ela cria a própria senha.</span>
       <div class="actions"><button class="btn" data-act="usu-copiar">Copiar</button><button class="btn" data-act="usu-fechar-senha">Já passei, fechar</button></div></div>` : ""}
-    ${ed ? `<div class="usu-editando"><b>Editando: ${esc(ed.original)}</b><span class="muted">Altere o que precisar e clique em Salvar alterações.${euMesmo ? " Você não pode tirar o próprio perfil DP." : ""}</span></div>` : `<h3 style="margin-top:6px">Novo usuário</h3>`}
+    ${ed ? `<div class="usu-editando"><b>Editando: ${esc(ed.original)}</b><span class="muted">Altere o que precisar e clique em Salvar alterações.${euMesmo ? " Você não pode tirar o seu próprio acesso de administrador." : ""}</span></div>` : `<h3 style="margin-top:10px">Novo usuário</h3>`}
     <form id="form-usuario" class="usu-form${ed ? " editando" : ""}" style="margin-top:4px">
       <label for="nu-usuario">Usuário <small>ex.: joao.silva</small><input type="text" id="nu-usuario" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(f.usuario)}" required></label>
       <label for="nu-nome">Nome completo<input type="text" id="nu-nome" autocomplete="off" value="${esc(f.nome)}" required></label>
-      <label for="nu-perfil">Perfil<select id="nu-perfil" ${euMesmo ? "disabled" : ""}>${["supervisor", "coordenador", "dp"].map(k => `<option value="${k}" ${f.perfil === k ? "selected" : ""}>${PERFIL_TXT[k]}</option>`).join("")}</select></label>
+      <label class="usu-adm" for="nu-admin"><input type="checkbox" id="nu-admin" ${f.admin ? "checked" : ""} ${euMesmo ? "disabled" : ""}> Administrador <small>acesso total</small></label>
+      <label for="nu-medidas">Medidas Disciplinares${sel("nu-medidas", ACESSO_MEDIDAS, f.medidas, f.admin)}</label>
+      <label for="nu-contratacoes">Contratações${sel("nu-contratacoes", ACESSO_CT, f.contratacoes, f.admin)}</label>
       <div class="actions">${ed ? `<button class="btn primary" type="submit">Salvar alterações</button><button class="btn" type="button" data-act="usu-cancelar">Cancelar</button>` : `<button class="btn primary" type="submit">Criar usuário</button>`}</div>
     </form>
     <p class="note warn" id="form-erro" role="alert" hidden></p>
   </section>
   <section class="panel">
     <div class="usu-cab"><h3>${usuarios.length} usuário${usuarios.length === 1 ? "" : "s"}</h3>
-      <span class="muted" style="font-size:13px">${["dp", "coordenador", "supervisor"].map(k => { const n = usuarios.filter(u => u.perfil === k).length; return `${n} ${k === "dp" ? "DP" : n === 1 ? k : GRUPO_PERFIL[k].toLowerCase()}`; }).join(" · ")}</span></div>
-    ${["dp", "coordenador", "supervisor"].map(k => { const l = usuarios.filter(u => u.perfil === k);
+      <span class="muted" style="font-size:13px">${GRUPOS_USU.map(([k, t]) => `${usuarios.filter(u => grupoDoUsuario(u) === k).length} ${t.toLowerCase()}`).join(" · ")}</span></div>
+    ${GRUPOS_USU.map(([k, titulo, desc]) => { const l = usuarios.filter(u => grupoDoUsuario(u) === k);
       return `<div class="usu-grupo">
-      <h4 class="usu-grupo-tit"><span>${GRUPO_PERFIL[k]}</span><b>${l.length}</b><small class="muted">${DESC_PERFIL[k]}</small></h4>
-      ${l.length ? `<div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
-      ${l.map(u => `<tr class="${ed && ed.id === u.id ? "usu-linha-ed" : ""} ${u.ativo ? "" : "usu-inativo"}"><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
+      <h4 class="usu-grupo-tit"><span>${titulo}</span><b>${l.length}</b><small class="muted">${desc}</small></h4>
+      ${l.length ? `<div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Medidas</th><th>Contratações</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
+      ${l.map(u => `<tr class="${ed && ed.id === u.id ? "usu-linha-ed" : ""} ${u.ativo ? "" : "usu-inativo"}"><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${acesso(u, "medidas")}</td><td>${acesso(u, "contratacoes")}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
         <td><div class="actions" style="gap:6px"><button class="btn" data-act="usu-editar" data-id="${u.id}">Editar</button>${u.id === state.user.uid ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
           <button class="btn" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>
           <button class="btn danger" data-act="usu-excluir" data-id="${u.id}" data-u="${esc(u.usuario)}" data-n="${esc(u.nome)}">Excluir</button>`}</div></td></tr>`).join("")}
-      </tbody></table></div>` : `<p class="muted" style="margin:4px 0 0;font-size:13px">Nenhum usuário com este perfil.</p>`}
+      </tbody></table></div>` : `<p class="muted" style="margin:4px 0 0;font-size:13px">Nenhum usuário neste grupo.</p>`}
     </div>`; }).join("")}
   </section>`;
 }
-const GRUPO_PERFIL = { dp: "DP", coordenador: "Coordenadores", supervisor: "Supervisores" };
-const DESC_PERFIL = { dp: "elaboram, arquivam e cuidam dos usuários", coordenador: "autorizam ou recusam as solicitações", supervisor: "solicitam e aplicam as medidas" };
 function erroForm(msg) { const b = document.getElementById("form-erro"); if (b) { b.textContent = msg; b.hidden = !msg; } }
 document.addEventListener("submit", async e => {
   const f = e.target; if (!["form-login", "form-senha", "form-usuario"].includes(f.id)) return;
@@ -2716,26 +2829,26 @@ document.addEventListener("submit", async e => {
       if (state.user.trocarSenha) { location.reload(); return; }
       state.tab = "inicio"; render(); toast("Senha trocada."); return;
     }
-    if (f.id === "form-usuario" && state.usuEdit) {
-      const u = state.usuEdit, ch = document.getElementById("nu-chave");
-      u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.chave = ch ? ch.value : "";
-      const corpo = { id: u.id, usuario: u.usuario, nome: u.nome };
-      if (u.id !== state.user.uid) corpo.perfil = u.perfil;
-      await api("/api/usuarios", "PATCH", corpo);
-      if (u.id === state.user.uid) { location.reload(); return; } // mudou o próprio cadastro: recarrega o nome e o usuário no topo
-      state.usuEdit = null; state.usu = null; render(); toast("Usuário atualizado."); return;
-    }
     if (f.id === "form-usuario") {
-      const u = state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; const ch = document.getElementById("nu-chave"); u.chave = ch ? ch.value : "";
-      const d = await api("/api/usuarios", "POST", { usuario: u.usuario, nome: u.nome, perfil: u.perfil });
+      const edit = state.usuEdit, u = edit || state.usuForm, adm = document.getElementById("nu-admin");
+      u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value;
+      u.admin = adm.checked; u.medidas = document.getElementById("nu-medidas").value; u.contratacoes = document.getElementById("nu-contratacoes").value;
+      const corpo = { usuario: u.usuario, nome: u.nome, admin: u.admin, medidas: u.admin ? "" : u.medidas, contratacoes: u.admin ? "" : u.contratacoes };
+      if (edit) {
+        await api("/api/usuarios", "PATCH", { id: u.id, ...corpo });
+        if (u.id === state.user.uid) { location.reload(); return; } // mudou o próprio cadastro: recarrega o nome e os acessos
+        state.usuEdit = null; state.usu = null; render(); toast("Usuário atualizado."); return;
+      }
+      const d = await api("/api/usuarios", "POST", corpo);
       state.usuSenha = { usuario: d.usuario, senha: d.senha_temporaria }; state.usuForm = null; state.usu = null; render(); return;
     }
   } catch (err) { erroForm(err.message); }
   btn.disabled = false;
 });
 document.addEventListener("change", e => {
-  if (e.target.id !== "nu-perfil") return;
-  const u = state.usuEdit || state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value; u.perfil = e.target.value; render();
+  if (e.target.id !== "nu-admin") return;
+  const u = state.usuEdit || state.usuForm; u.usuario = document.getElementById("nu-usuario").value; u.nome = document.getElementById("nu-nome").value;
+  u.medidas = document.getElementById("nu-medidas").value; u.contratacoes = document.getElementById("nu-contratacoes").value; u.admin = e.target.checked; render();
 });
 document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("button[data-act]"); if (!b) return;
@@ -2745,7 +2858,7 @@ document.addEventListener("click", async e => {
   if (act === "usu-fechar-senha") { state.usuSenha = null; render(); return; }
   if (act === "usu-editar") {
     const u = state.usu.usuarios.find(x => x.id === b.dataset.id); if (!u) return;
-    state.usuEdit = { id: u.id, original: u.usuario, usuario: u.usuario, nome: u.nome, perfil: u.perfil, chave: u.chave || "" };
+    state.usuEdit = { id: u.id, original: u.usuario, usuario: u.usuario, nome: u.nome, admin: !!u.admin, medidas: u.medidas || "", contratacoes: u.contratacoes || "" };
     render(); window.scrollTo({ top: 0, behavior: "smooth" }); const i = document.getElementById("nu-nome"); if (i) i.focus(); return;
   }
   if (act === "usu-cancelar") { state.usuEdit = null; render(); return; }
@@ -2771,21 +2884,7 @@ document.addEventListener("click", async e => {
   }
 });
 
-function render() {
-  if (LOGIN_ATIVO && state.user) garantirCompleta();
-  document.body.classList.toggle("tela-login", LOGIN_ATIVO && (!state.user || !!state.user.trocarSenha));
-  const ses = document.getElementById("sessao"), nav = document.getElementById("tabs"), v0 = document.getElementById("view");
-  document.getElementById("ver-como").hidden = LOGIN_ATIVO && !state.user;
-  document.getElementById("pop-conta").hidden = !(LOGIN_ATIVO && state.user);
-  if (LOGIN_ATIVO && state.user) { const u = state.user, vinc = u.chave ? (u.role === "coordenador" ? nomeCoord(u.chave) : nomeP(u.chave)) : "";
-    document.getElementById("perfil-role").textContent = ROLE_NOME[u.role] + (vinc && vinc !== u.nome ? ` · ${vinc}` : "");
-    document.getElementById("perfil-nome").textContent = u.nome;
-    document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
-    document.getElementById("perfil-nota").textContent = u.role === "dp" ? "O DP vê todas as bases e equipes." : u.role === "coordenador" ? "Você vê todas as equipes e autoriza as solicitações." : "Você vê todas as equipes e abre as solicitações."; }
-  if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
-  if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
-  ses.hidden = true; nav.hidden = false;
-  if (LOGIN_ATIVO) ses.innerHTML = `<h3>Conectado como</h3><div class="sessao-box"><div><strong>${esc(state.user.nome)}</strong><span>${ROLE_NOME[state.role]} · ${nomeBases(state.user)}</span></div><button class="btn sair" data-act="sair">Sair</button></div>`;
+function menuMedidas() {
   const pend = REG.filter(r => !r.imp && veReg(r) && ehPendente(r, state.role)).length;
   const R0 = state.role;
   const descFila = R0 === "coordenador" ? "Autorizar, recusar e acompanhar" : R0 === "dp" ? "Elaborar, arquivar e acompanhar" : "Acompanhar e aplicar suas medidas";
@@ -2795,21 +2894,53 @@ function render() {
     ["Mensagens", [["entrada", "Caixa de entrada", "Avisos das etapas das medidas", naoLidas()], ["enviados", "Enviados", "O que você enviou e respondeu"]]],
     ["Consulta", [["painel", "Painel", "Alertas de prazo e indicadores"], ["historico", "Histórico do colaborador", "Medidas anteriores de cada pessoa"]]
       .concat(R0 === "dp" ? [["importacao", "Banco de dados", "Exportar e atualizar as bases"]] : [])
-      .concat(R0 === "dp" && LOGIN_ATIVO ? [["usuarios", "Usuários", "Contas de acesso e perfis"]] : [])],
+      ],
     ["Ajuda", [["regras", "Regras da política", "Política de Consequências e Anexo I"], ["ajuda", "Como usar e dúvidas", "Passo a passo de cada perfil"]]],
   ];
+  if (state.user.admin) MENU.push(["Administração", [["usuarios", "Usuários", "Acessos de cada pessoa aos módulos"]]]);
+  return MENU;
+}
+function render() {
+  if (LOGIN_ATIVO && state.user && state.user.modulos && state.user.modulos.medidas) garantirCompleta();
+  document.body.classList.toggle("tela-login", LOGIN_ATIVO && (!state.user || !!state.user.trocarSenha));
+  const ses = document.getElementById("sessao"), nav = document.getElementById("tabs"), v0 = document.getElementById("view");
+  document.getElementById("ver-como").hidden = LOGIN_ATIVO && !state.user;
+  document.getElementById("pop-conta").hidden = !(LOGIN_ATIVO && state.user);
+  if (LOGIN_ATIVO && state.user && state.user.modulos) { const u = state.user, MOD0 = moduloAtual(), M = MODULOS[MOD0];
+    document.getElementById("perfil-role").textContent = acessoTxt(MOD0);
+    document.getElementById("perfil-nome").textContent = u.nome;
+    document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
+    document.getElementById("perfil-nota").textContent = u.admin ? "Administrador: controle total dos dois módulos e dos usuários."
+      : MOD0 === "contratacoes" ? ({ usuario: "Você abre vagas e acompanha as suas solicitações.", gestor: "Você gerencia o módulo Contratações.", leitura: "Você consulta o módulo Contratações, sem alterar." })[u.modulos.contratacoes.nivel]
+      : u.role === "dp" ? "O DP vê todas as bases e equipes e gerencia o módulo." : u.role === "coordenador" ? "Você vê todas as equipes e autoriza as solicitações." : "Você vê todas as equipes e abre as solicitações.";
+    // topo: nome do módulo e seletor de ambiente (só aparece para quem tem mais de um)
+    document.getElementById("marca-eyebrow").textContent = M.eyebrow; document.getElementById("marca-h1").textContent = M.titulo; document.getElementById("marca-sub-txt").textContent = M.sub;
+    document.title = M.titulo;
+    const mods = modulosDoUsuario(), sel = document.getElementById("mod-sel");
+    sel.hidden = mods.length < 2 || !!u.trocarSenha;
+    document.getElementById("mod-pop").innerHTML = mods.map(k => `<button type="button" class="mod-op" data-act="modulo" data-m="${k}" aria-current="${k === MOD0}"><span class="mi">${icone(MODULOS[k].ico)}</span><span><b>${MODULOS[k].nome}</b><small>${MODULOS[k].desc} · ${esc(acessoTxt(k))}</small></span>${k === MOD0 ? '<svg class="mod-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>' : "<span></span>"}</button>`).join(""); }
+  if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
+  if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
+  ses.hidden = true; nav.hidden = false;
+  if (LOGIN_ATIVO) ses.innerHTML = `<h3>Conectado como</h3><div class="sessao-box"><div><strong>${esc(state.user.nome)}</strong><span>${ROLE_NOME[state.role]} · ${nomeBases(state.user)}</span></div><button class="btn sair" data-act="sair">Sair</button></div>`;
+  const MOD = moduloAtual();
+  const MENU = MOD === "contratacoes" ? menuContratacoes() : menuMedidas();
   const tabs = MENU.flatMap(([, its]) => its);
   // "Minha senha" fica só no menu do perfil (canto superior direito), não no menu lateral
-  if (!tabs.some(t => t[0] === state.tab) && !(LOGIN_ATIVO && state.tab === "senha")) state.tab = "inicio";
+  if (!tabs.some(t => t[0] === state.tab) && !(LOGIN_ATIVO && state.tab === "senha")) state.tab = MODULOS[MOD].inicio;
   const v = document.getElementById("view");
-  const corpo = state.tab === "entrada" || state.tab === "enviados" ? viewCaixa(state.tab) : null;
+  const corpo = MOD === "medidas" && (state.tab === "entrada" || state.tab === "enviados") ? viewCaixa(state.tab) : null;
   if (corpo !== null) tabs.forEach(t => { if (t[0] === "entrada") t[3] = naoLidas(); });
   const fixo = document.body.classList.contains("menu-fixo");
-  const item = ([k, n, d, c]) => `<button type="button" class="menu-it" data-tab="${k}" ${state.tab === k ? 'aria-current="page"' : ""} title="${n}: ${d}"><span class="mi">${icone(k)}${c ? `<span class="mi-n">${c > 99 ? "99+" : c}</span>` : ""}</span><span class="rail-tx"><b>${n}</b><small>${d}</small></span>${c ? `<span class="count">${c}</span>` : ""}</button>`;
+  const item = ([k, n, d, c]) => `<button type="button" class="menu-it" data-tab="${k}" ${state.tab === k ? 'aria-current="page"' : ""} title="${n}: ${d}"><span class="mi">${icone(CT_ICO[k] || k)}${c ? `<span class="mi-n">${c > 99 ? "99+" : c}</span>` : ""}</span><span class="rail-tx"><b>${n}</b><small>${d}</small></span>${c ? `<span class="count">${c}</span>` : ""}</button>`;
   document.getElementById("tabs").innerHTML = `<div class="rail-sc">${MENU.map(([g, its]) => `<div class="rail-g"><div class="rail-gt"><span>${g}</span></div>${its.map(item).join("")}</div>`).join("")}</div>` +
     `<div class="rail-pe"><button type="button" class="menu-it" data-act="menu-fixar" title="${fixo ? "Recolher o menu" : "Manter o menu aberto"}"><span class="mi"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${fixo ? '<path d="M15 6l-6 6 6 6"/><path d="M4 4v16"/>' : '<path d="M9 6l6 6-6 6"/><path d="M20 4v16"/>'}</svg></span><span class="rail-tx"><b>${fixo ? "Recolher menu" : "Manter menu aberto"}</b><small>${fixo ? "Mostra só os ícones" : "Deixa os nomes sempre visíveis"}</small></span></button></div>`;
+  const emCt = MOD === "contratacoes" && state.tab.startsWith("ct:");
+  v.hidden = emCt; document.getElementById("ct-host").hidden = !emCt;
+  if (emCt) { ctMostrar(); return; }
+  ctEnviar({ tipo: "visivel", v: false });
   v.innerHTML = corpo !== null ? corpo : state.tab === "inicio" ? viewInicio() : state.tab === "fila" ? viewFila() : state.tab === "nova" ? viewNova() : state.tab === "historico" ? viewHist() : state.tab === "painel" ? viewPainel() : state.tab === "usuarios" ? viewUsuarios() : state.tab === "senha" ? viewTrocarSenha(false) : state.tab === "importacao" ? viewImport() : state.tab === "padrao" ? viewPadrao() : state.tab === "ajuda" ? viewAjuda() : viewRegras();
-  if (state.tab === "nova") { atualizarSugestaoForm(); renderTexto(); agendarRascunho(); } else if (DITADO.on) pararDitado();
+  if (MOD === "medidas" && state.tab === "nova") { atualizarSugestaoForm(); renderTexto(); agendarRascunho(); } else if (DITADO.on) pararDitado();
 }
 
 /* ---------- Painel: faixa "Precisa da sua ação" (alertas por perfil) ---------- */
@@ -4190,7 +4321,7 @@ document.addEventListener("input", e => { if (e.target.id === "ajuda-busca") fil
 
 // ---------- Tema claro/escuro (lembrado neste navegador) ----------
 function aplicarTema(t) {
-  document.documentElement.setAttribute("data-tema", t);
+  document.documentElement.setAttribute("data-tema", t); ctEnviar({ tipo: "tema", tema: t });
   const b = document.getElementById("tema-btn");
   if (b) { const esc = t === "escuro"; b.setAttribute("aria-label", esc ? "Mudar para o tema claro" : "Mudar para o tema escuro"); b.title = esc ? "Tema claro" : "Tema escuro"; }
 }
@@ -4256,6 +4387,7 @@ document.addEventListener("click", e => {
   if (b.dataset.sel) { state.sel = +b.dataset.sel; render(); return; }
   if (b.dataset && b.dataset.modelo && state.form) { const f = state.form; f.modelo = b.dataset.modelo; renderModelos(); agendarRascunho(); if (f.texto) toast("Modelo trocado. Clique em Gerar texto formal para refazer o texto."); return; }
   const act = b.dataset.act; if (!act) return;
+  if (act === "modulo") { trocarModulo(b.dataset.m); return; }
   if (act === "pend-print") { const s = document.getElementById("pend-apl"); if (!s) return;
     const ov = document.createElement("div"); ov.className = "pa-overlay"; ov.innerHTML = `<div class="pa-sheet"><div class="pa-logo">${(document.querySelector(".logo-img") || {}).outerHTML || "CGB"}</div>${s.outerHTML.replace('id="pend-apl"', "")}<p class="pa-dica">Tire o print desta área e cole no e-mail. <button type="button" class="btn" data-act="pend-fechar">Fechar</button></p></div>`;
     ov.querySelectorAll('[data-act="pend-print"]').forEach(x => x.remove()); document.body.appendChild(ov); return; }
@@ -4513,10 +4645,13 @@ async function iniciar() {
     if (re.status === 401) { state.user = null; render(); return; }
     if (!re.ok) throw new Error("HTTP " + re.status);
     const eu = await re.json();
-    state.user = { id: eu.usuario, uid: eu.id, k: eu.usuario, nome: eu.nome, role: eu.perfil, bases: "todas", chave: eu.chave, trocarSenha: eu.trocar_senha };
+    state.user = { id: eu.usuario, uid: eu.id, k: eu.usuario, nome: eu.nome, role: eu.perfil, admin: !!eu.admin, modulos: eu.modulos || {}, bases: "todas", chave: eu.chave, trocarSenha: eu.trocar_senha };
     state.role = eu.perfil;
+    { let guardado = null; try { guardado = localStorage.getItem("cgb-modulo-" + eu.usuario); } catch {} state.modulo = modulosDoUsuario().includes(guardado) ? guardado : modulosDoUsuario()[0]; }
+    if (!modulosDoUsuario().length && !eu.trocar_senha) { v.innerHTML = `<section class="panel"><h2>Sem acesso</h2><p class="muted" style="margin:0">Seu usuário ainda não tem acesso a nenhum módulo. Peça ao administrador para liberar.</p><div class="actions" style="margin-top:12px"><button class="btn" data-act="sair">Sair</button></div></section>`; return; }
     state.pessoa = null; // todos os perfis veem todas as bases e equipes
     if (eu.trocar_senha) { render(); return; }
+    if (!eu.modulos || !eu.modulos.medidas) { limparDadosLocais(); render(); return; } // sem Medidas Disciplinares: não há o que carregar dele
     const [r, rr] = await Promise.all([fetch("/api/carga", { cache: "no-store" }), fetch("/api/referencias", { cache: "no-store" })]);
     if (!r.ok) throw new Error("HTTP " + r.status);
     const d = await r.json();
