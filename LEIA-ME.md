@@ -18,7 +18,8 @@ site (navegador) → API (pasta api/, na Vercel) → banco Neon
 
 - Cada pessoa entra com **usuário e senha** (sem e-mail). A sessão dura 10 horas.
 - **Supervisor** vê só a própria equipe; **coordenador**, só as equipes em que é coordenador; **DP** vê tudo. O filtro é feito no servidor (API), não só na tela.
-- Só o **administrador** cria, edita, redefine a senha, desativa e exclui usuários, na aba **Usuários**, e escolhe a que módulos (Gestão Administrativa e Contratações) cada um tem acesso. O sistema gera uma senha temporária, e a pessoa cria a própria senha no primeiro acesso.
+- **Primeiro acesso:** a própria pessoa pede o acesso na tela de login (nome completo, matrícula, setor, usuário, senha). O pedido fica pendente, e quem tenta entrar vê que está aguardando aprovação. Limite de 5 pedidos por hora por computador.
+- Só o **administrador** aprova os pedidos, cria, edita, redefine a senha, desativa e exclui usuários, na aba **Usuários**, e escolhe a que módulos (Gestão Administrativa e Contratações) cada um tem acesso. O sistema gera uma senha temporária, e a pessoa cria a própria senha no primeiro acesso.
 - Senha: pelo menos 8 caracteres, com letras e números. Após 5 senhas erradas seguidas, o usuário fica bloqueado por 15 minutos.
 - **Primeiro usuário do DP** (só uma vez, no terminal, na pasta do projeto):
   `npm run usuario:criar -- --usuario seu.usuario --nome "Seu Nome" --admin`

@@ -13,12 +13,14 @@ export const POST = rota(async request => {
   const usuario = normalizarUsuario(corpo.usuario), senha = String(corpo.senha || "");
   if (!usuario || !senha) return erro("Informe usuário e senha.", 400);
 
-  const [u] = await consulta(`select id, usuario, nome, perfil, admin, contratacoes, chave_pessoa, senha_hash, trocar_senha, ativo,
+  const [u] = await consulta(`select id, usuario, nome, perfil, admin, contratacoes, chave_pessoa, senha_hash, trocar_senha, ativo, pendente,
                                      bloqueado_ate > now() as bloqueado
                                 from usuarios where usuario = $1 and excluido_em is null`, [usuario]);
   const certa = await conferirSenha(senha, u && u.senha_hash); // roda mesmo sem usuário, para não revelar quem existe
   // Bloqueado: senha errada recebe a mesma resposta de sempre (não revela que o usuário existe); só quem acertou fica sabendo do bloqueio
   if (u && u.bloqueado) return certa ? erro(`Muitas tentativas erradas. Tente de novo em ${BLOQUEIO_MIN} minutos ou peça ao DP para redefinir a senha.`, 429) : erro(INVALIDO, 401);
+  // Pedido de acesso ainda não aprovado: quem acertou a senha fica sabendo; quem errou recebe a resposta de sempre
+  if (u && u.pendente && certa) return erro("Seu pedido de acesso está aguardando a aprovação do administrador. Você poderá entrar assim que ele for aprovado.", 403);
   if (!u || !u.ativo || !certa) {
     if (u) await consulta(`update usuarios set
         tentativas_falhas = case when tentativas_falhas + 1 >= $2 then 0 else tentativas_falhas + 1 end,

@@ -14,6 +14,9 @@ for (const r of ["/api/eu", "/api/carga", "/api/referencias", "/api/solicitacoes
 ok("sem login: excluir usuário pede login", (await req("/api/usuarios", { method: "DELETE", headers: { "content-type": "application/json" }, body: "{\"id\":\"x\"}" })).status === 401);
 ok("login errado é recusado", (await req("/api/login", { method: "POST", headers: json, body: JSON.stringify({ usuario: "ninguem.teste", senha: "errada123" }) })).status === 401);
 ok("formulário sem JSON é recusado", (await req("/api/login", { method: "POST", body: "usuario=x&senha=y" })).status === 400);
+ok("pedido de acesso recusa matrícula inválida (sem gravar nada)", (await req("/api/solicitar-acesso", { method: "POST", headers: json, body: JSON.stringify({ nome: "Teste Validação", matricula: "12ab", setor: "Medição", usuario: "teste.validacao", senha: "Senha1234x" }) })).status === 400);
+ok("pedido de acesso recusa usuário com sublinhado (sem gravar nada)", (await req("/api/solicitar-acesso", { method: "POST", headers: json, body: JSON.stringify({ nome: "Teste Validação", matricula: "123", setor: "Medição", usuario: "teste_validacao", senha: "Senha1234x" }) })).status === 400);
+ok("lista de usuários pede login", (await req("/api/usuarios")).status === 401);
 ok("página do módulo Contratações e adaptador existem", (await req("/contratacoes.html")).status === 200 && (await req("/ct-adaptador.js")).status === 200);
 ok("site carrega o modelo do documento", (await (await req("/")).text()).includes("modelo-docx.js") && (await req("/modelo-docx.js")).status === 200);
 

@@ -40,6 +40,8 @@ export function problemaSenha(senha) {
   return null;
 }
 
-// Nome de usuário: minúsculo, 3 a 30 caracteres, letras, números, ponto, hífen ou sublinhado
+// Nome de usuário: minúsculo, 3 a 40 caracteres, letras, números, ponto, hífen ou sublinhado
 export const normalizarUsuario = u => String(u || "").trim().toLowerCase();
-export const usuarioValido = u => /^[a-z0-9._-]{3,30}$/.test(u);
+export const usuarioValido = u => /^[a-z0-9._-]{3,40}$/.test(u);
+// Pedido de acesso feito pela própria pessoa: sem sublinhado (nome.sobrenome)
+export const usuarioPedidoValido = u => /^[a-z0-9.-]{3,40}$/.test(u);

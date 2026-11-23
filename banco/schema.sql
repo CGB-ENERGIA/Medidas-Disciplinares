@@ -461,3 +461,17 @@ create table if not exists he_banco_din (
   atualizado_em timestamptz not null default now(),
   primary key (referencia, chapa)
 );
+
+-- ---------- Pedidos de acesso (auto-cadastro, dez/2026)
+-- A própria pessoa pede o acesso (tela de login); fica pendente (ativo = false) até o administrador aprovar e definir o nível em cada ambiente.
+alter table usuarios add column if not exists matricula text;
+alter table usuarios add column if not exists setor text;
+alter table usuarios add column if not exists pendente boolean not null default false;
+alter table usuarios add column if not exists solicitado_em timestamptz;
+-- Só para limitar quantos pedidos saem do mesmo computador por hora (guarda o IP e a hora, nada mais)
+create table if not exists pedidos_acesso (
+  id        bigserial primary key,
+  ip        text not null,
+  criado_em timestamptz not null default now()
+);
+create index if not exists pedidos_acesso_ip_idx on pedidos_acesso (ip, criado_em);

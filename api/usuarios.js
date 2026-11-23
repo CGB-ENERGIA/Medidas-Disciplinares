@@ -1,7 +1,8 @@
 // Cadastro de usuários e de acessos por módulo (só o administrador)
 //   GET    /api/usuarios → lista (sem os excluídos)
 //   POST   /api/usuarios { usuario, nome, admin?, medidas?, contratacoes? } → cria e devolve a senha temporária (mostrada uma única vez)
-//   PATCH  /api/usuarios { id, usuario?, nome?, admin?, medidas?, contratacoes?, ativo?, redefinir_senha? }
+//   PATCH  /api/usuarios { id, usuario?, nome?, admin?, medidas?, contratacoes?, horas?, ativo?, redefinir_senha?, aprovar? }
+//          aprovar: true libera um pedido de acesso (pendente) com os níveis informados. Recusar um pedido = DELETE.
 //   DELETE /api/usuarios { id } → exclui. Sem nenhum registro em medidas: apaga de vez.
 //          Se já participou de alguma medida: some da lista, perde o acesso e o login fica livre (a auditoria continua).
 // Acessos:
@@ -30,9 +31,9 @@ const erroAcesso = (medidas, contratacoes, horas = null) => {
 const outrosAdmins = async id => (await consulta("select count(*)::int as n from usuarios where admin and ativo and excluido_em is null and id <> $1", [id]))[0].n;
 
 export const GET = rota(comLogin(async () => {
-  const usuarios = await consulta(`select id, usuario, nome, admin, perfil as medidas, contratacoes, horas_extras as horas, ativo, trocar_senha,
+  const usuarios = await consulta(`select id, usuario, nome, matricula, setor, pendente, solicitado_em, admin, perfil as medidas, contratacoes, horas_extras as horas, ativo, trocar_senha,
                                           bloqueado_ate > now() as bloqueado, ultimo_acesso, criado_em
-                                     from usuarios where excluido_em is null order by ativo desc, nome`);
+                                     from usuarios where excluido_em is null order by pendente desc, ativo desc, nome`);
   return ok({ usuarios });
 }, SO_ADMIN));
 
@@ -40,7 +41,7 @@ export const POST = rota(comLogin(async request => {
   const c = await lerJSON(request); if (!c) return erro("Dados inválidos.", 400);
   const usuario = normalizarUsuario(c.usuario), nome = String(c.nome || "").trim(), admin = c.admin === true;
   const medidas = vazioParaNulo(c.medidas), contratacoes = vazioParaNulo(c.contratacoes), horas = vazioParaNulo(c.horas);
-  if (!usuarioValido(usuario)) return erro("Usuário deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
+  if (!usuarioValido(usuario)) return erro("Usuário deve ter de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
   if (nome.length < 3) return erro("Informe o nome completo.", 400);
   const e = erroAcesso(medidas, contratacoes, horas); if (e) return erro(e, 400);
   if (!admin && !medidas && !contratacoes && !horas) return erro("Escolha pelo menos um acesso: administrador, Gestão Administrativa, Contratações ou Horas Extras.", 400);
@@ -55,8 +56,10 @@ export const POST = rota(comLogin(async request => {
 
 export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const c = await lerJSON(request); if (!c || !c.id) return erro("Dados inválidos.", 400);
-  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras from usuarios where id = $1 and excluido_em is null", [c.id]);
+  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras, pendente from usuarios where id = $1 and excluido_em is null", [c.id]);
   if (!u) return erro("Usuário não encontrado.", 404);
+  if (u.pendente && !c.aprovar && c.ativo === true) return erro("Este pedido de acesso ainda não foi aprovado. Aprove escolhendo o nível em cada ambiente.", 400);
+  if (c.aprovar && !u.pendente) return erro("Este pedido já foi tratado.", 409);
 
   const novoAdmin = c.admin === undefined ? u.admin : c.admin === true;
   const medidas = c.medidas === undefined ? u.perfil : vazioParaNulo(c.medidas);
@@ -64,14 +67,14 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const horas = c.horas === undefined ? u.horas_extras : vazioParaNulo(c.horas);
   const e = erroAcesso(medidas, contratacoes, horas); if (e) return erro(e, 400);
   if (u.id === eu.id && (c.ativo === false || novoAdmin === false)) return erro("Você não pode desativar nem tirar o próprio acesso de administrador.", 400);
-  if (!novoAdmin && !medidas && !contratacoes && !horas) return erro("O usuário precisa ter pelo menos um acesso. Para tirar tudo, desative ou exclua o usuário.", 400);
+  if (!novoAdmin && !medidas && !contratacoes && !horas) return erro(c.aprovar ? "Escolha o acesso em pelo menos um ambiente para aprovar. Para não liberar nada, recuse o pedido." : "O usuário precisa ter pelo menos um acesso. Para tirar tudo, desative ou exclua o usuário.", 400);
   if (u.admin && (!novoAdmin || c.ativo === false) && (await outrosAdmins(u.id)) === 0) return erro("É preciso manter pelo menos um administrador ativo.", 400);
 
   const sets = [], p = [u.id];
   const set = (col, val) => { p.push(val); sets.push(`${col} = $${p.length}`); };
   if (c.usuario !== undefined) {
     const novo = normalizarUsuario(c.usuario);
-    if (!usuarioValido(novo)) return erro("Usuário deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
+    if (!usuarioValido(novo)) return erro("Usuário deve ter de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
     const [outro] = await consulta("select 1 from usuarios where usuario = $1 and id <> $2", [novo, u.id]);
     if (outro) return erro(`O usuário "${novo}" já existe.`, 409);
     set("usuario", novo);
@@ -80,6 +83,7 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const mudouAcesso = novoAdmin !== u.admin || medidas !== u.perfil || contratacoes !== u.contratacoes || horas !== u.horas_extras;
   if (mudouAcesso) { set("horas_extras", horas); set("admin", novoAdmin); set("perfil", medidas); set("contratacoes", contratacoes); set("chave_pessoa", null); }
   if (c.ativo !== undefined) set("ativo", !!c.ativo);
+  if (c.aprovar) { set("pendente", false); set("ativo", true); set("trocar_senha", false); } // a pessoa já escolheu a própria senha ao pedir
   let temp = null;
   if (c.redefinir_senha) {
     temp = senhaTemporaria();

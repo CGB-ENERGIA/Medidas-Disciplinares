@@ -1269,6 +1269,44 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
 .mod-op .mi .ico { width: 20px; height: 20px; stroke: currentColor; margin: 0; }
 .mod-op b { display: block; font-size: 14.5px; } .mod-op small { display: block; font-size: 12px; color: var(--muted); line-height: 1.3; }
 .mod-op[aria-current="true"] b { color: var(--accent); }
+/* ---------- Pedidos de acesso e tela de usuários ---------- */
+.login-novo { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 4px; color: var(--muted); font-size: 13.5px; }
+.usu-novo { border: 1px solid var(--line); border-radius: var(--r-md); padding: 10px 14px; background: var(--surface); }
+.usu-novo > summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.usu-novo[open] > summary { margin-bottom: 4px; }
+.usu-lista { display: grid; gap: 12px; }
+.usu-pend-sec { border-color: var(--accent); }
+.usu-n { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; margin-left: 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; vertical-align: middle; }
+.usu-card { display: grid; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-lg, 14px); background: var(--surface); box-shadow: 0 1px 2px rgba(20,10,12,.05); }
+.usu-card[hidden] { display: none; }
+.usu-pend { border-left: 4px solid var(--accent); }
+.usu-topo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.usu-av { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #8a1a2f, #4a0b18); color: #fff; font-weight: 700; font-size: 14px; }
+.usu-id { display: grid; min-width: 0; flex: 1 1 200px; } .usu-id b { font-size: 15px; } .usu-id .muted { font-size: 12.5px; }
+.usu-sit { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--sunken); color: var(--muted); }
+.usu-sit.ok { background: color-mix(in srgb, #2f9e61 16%, transparent); color: #1f7a4a; }
+.usu-sit.warn { background: color-mix(in srgb, #d99a1d 18%, transparent); color: #8a5d00; }
+:root[data-tema="escuro"] .usu-sit.ok { color: #6fd39b; } :root[data-tema="escuro"] .usu-sit.warn { color: #f0c05a; }
+.usu-ambs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 10px; }
+.amb-lin { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); transition: border-color .2s, background .2s; }
+.amb-lin.on { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); }
+.amb-lin.pend { background: var(--surface); } .amb-lin.pend b { font-size: 14px; }
+.amb-nv { font-size: 13px; max-width: 100%; } select.amb-nv { padding: 6px 8px; }
+.sw, .sw-fixa { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+.sw input { position: absolute; opacity: 0; width: 0; height: 0; }
+.sw i, .sw-fixa i { position: relative; flex: none; width: 38px; height: 22px; border-radius: 999px; background: var(--line); transition: background .2s; }
+.sw i::after, .sw-fixa i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+.sw input:checked + i, .sw-fixa i { background: var(--accent); }
+.sw input:checked + i::after, .sw-fixa i::after { transform: translateX(16px); }
+.sw input:focus-visible + i { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+.sw input:disabled + i { opacity: .55; } .sw:has(input:disabled), .sw-fixa { cursor: default; }
+.sw-adm { margin-left: auto; }
+.usu-rod { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; }
+.hub-pend { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding: 10px 16px; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.hub-pend b { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 12.5px; }
+.hub-pend svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.hub-pend:hover { background: var(--accent); color: #fff; } .hub-pend:hover b { background: #fff; color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .sw i, .sw i::after, .sw-fixa i::after, .amb-lin { transition: none; } }
 /* ---------- Tela de ambientes (portal) ---------- */
 .hub { position: relative; isolation: isolate; max-width: 1040px; margin: 0 auto; padding: clamp(20px, 5vw, 56px) clamp(16px, 4vw, 32px) 48px; display: grid; gap: clamp(22px, 4vw, 36px); }
 body.em-hub { overflow-x: clip; }
@@ -2706,6 +2744,7 @@ function viewAmbientes() {
       ${mods.length > 6 ? `<label class="hub-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="hub-busca" type="search" placeholder="Buscar ambiente" aria-label="Buscar ambiente" autocomplete="off"></label>` : ""}
     </div>
     <div class="hub-grid" role="list">${mods.map(cartao).join("")}</div>
+    ${u.admin && state.pendentes ? `<button type="button" class="hub-pend" data-act="ver-pedidos"><b>${state.pendentes}</b> pedido${state.pendentes === 1 ? "" : "s"} de acesso aguardando a sua decisão<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>` : ""}
     <p class="hub-nota"><i></i>Você pode trocar de ambiente a qualquer momento pelo menu do seu nome.</p>
   </div>`;
 }
@@ -2733,7 +2772,7 @@ const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-v
 const ctVisivel = quem => state.user.modulos.contratacoes.nivel === "gestor" || quem === "todos";
 function menuContratacoes() {
   const grupos = []; CT_TELAS.filter(t => ctVisivel(t[4])).forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
-  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Acessos de cada pessoa aos módulos"]]]);
+  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Pedidos de acesso e níveis de cada pessoa", state.pendentes || 0]]]);
   return grupos;
 }
 // Tela do módulo → tela dentro da página do módulo (contratacoes.html)
@@ -2774,7 +2813,7 @@ const HE_VIEW = { "he:analise": "analise", "he:cadastro": "cadastro", "he:carga"
 function menuHoras() {
   const gestor = state.user.modulos.horas.nivel === "gestor", grupos = [];
   HE_TELAS.filter(t => gestor || t[4] === "todos").forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
-  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Acessos de cada pessoa aos módulos"]]]);
+  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Pedidos de acesso e níveis de cada pessoa", state.pendentes || 0]]]);
   return grupos;
 }
 let heVista = "";
@@ -2826,17 +2865,57 @@ function telaDividida(conteudo) {
   </div>`;
 }
 function viewLogin() {
+  const modo = state.loginModo || "entrar";
+  if (modo === "pedido") return telaDividida(viewPedido());
+  if (modo === "enviado") return telaDividida(`<div class="login-caixa">
+      <div><h2>Pedido enviado</h2><p class="sub">Recebemos o seu pedido de acesso. Um administrador vai analisar e definir a que ambientes você terá acesso e com qual nível.</p></div>
+      <div class="login-ajuda">${icoLogin("info")}<span>Quando for aprovado, entre com o usuário e a senha que você acabou de criar. Se tentar entrar antes, o sistema avisa que o pedido está aguardando aprovação.</span></div>
+      <div class="actions"><button type="button" class="btn primary" data-act="login-modo" data-m="entrar">Voltar para o login</button></div>
+    </div>`);
   return telaDividida(`<div class="login-caixa">
-      <div><h2>Entrar</h2><p class="sub">Use o usuário e a senha que o DP passou para você.</p></div>
+      <div><h2>Entrar</h2><p class="sub">Use o seu usuário e a sua senha.</p></div>
       <form id="form-login" class="login-form">
         <label for="login-usuario">Usuário<input type="text" id="login-usuario" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="ex.: joao.silva" required autofocus></label>
         <label for="login-senha">Senha<input type="password" id="login-senha" name="password" autocomplete="current-password" required></label>
         <p class="note crit" id="form-erro" role="alert" hidden></p>
         <div class="actions"><button class="btn primary" type="submit">Entrar</button></div>
       </form>
-      <div class="login-ajuda">${icoLogin("info")}<span>Esqueceu a senha ou foi bloqueado? Peça ao DP para redefinir. Após 5 tentativas erradas, o acesso fica bloqueado por 15 minutos.</span></div>
+      <div class="login-novo"><span>Ainda não tem acesso?</span><button type="button" class="btn" data-act="login-modo" data-m="pedido">Primeiro acesso: solicitar</button></div>
+      <div class="login-ajuda">${icoLogin("info")}<span>Esqueceu a senha ou foi bloqueado? Peça a um administrador para redefinir. Após 5 tentativas erradas, o acesso fica bloqueado por 15 minutos.</span></div>
     </div>`);
 }
+function viewPedido() {
+  return `<div class="login-caixa">
+      <div><h2>Primeiro acesso</h2><p class="sub">Preencha os dados. Um administrador vai aprovar o seu pedido e definir o seu nível de acesso em cada ambiente.</p></div>
+      <form id="form-pedido" class="login-form" autocomplete="off">
+        <label for="pd-nome">Nome completo<input type="text" id="pd-nome" autocomplete="name" maxlength="100" required autofocus></label>
+        <label for="pd-matricula">Matrícula <small>só números, até 10 dígitos</small><input type="text" id="pd-matricula" inputmode="numeric" maxlength="10" autocomplete="off" required></label>
+        <label for="pd-setor">Setor<input type="text" id="pd-setor" maxlength="80" autocomplete="organization-title" required></label>
+        <label for="pd-usuario">Usuário <small>sugerido pelo nome; letras minúsculas, números, ponto e hífen</small><input type="text" id="pd-usuario" maxlength="40" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nome.sobrenome" required></label>
+        <label for="pd-senha">Senha <small>mínimo de 8 caracteres, com letras e números</small><input type="password" id="pd-senha" autocomplete="new-password" minlength="8" required></label>
+        <label for="pd-senha2">Repetir a senha<input type="password" id="pd-senha2" autocomplete="new-password" minlength="8" required></label>
+        <p class="note crit" id="form-erro" role="alert" hidden></p>
+        <div class="actions"><button class="btn primary" type="submit">Enviar pedido</button><button type="button" class="btn" data-act="login-modo" data-m="entrar">Voltar</button></div>
+      </form>
+    </div>`;
+}
+// Sugestão de usuário a partir do nome: primeiro.último, sem acento
+function sugerirUsuario(nome) {
+  const p = String(nome || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z\s-]/g, " ").split(/\s+/).filter(Boolean).filter(w => !["de", "da", "do", "das", "dos", "e"].includes(w));
+  if (!p.length) return "";
+  return (p.length > 1 ? p[0] + "." + p[p.length - 1] : p[0]).replace(/[^a-z0-9.-]/g, "").slice(0, 40);
+}
+document.addEventListener("input", e => {
+  const t = e.target; if (!t || !t.id) return;
+  if (t.id === "pd-nome") { const u = document.getElementById("pd-usuario"); if (u && !u.dataset.manual) u.value = sugerirUsuario(t.value); }
+  else if (t.id === "pd-usuario") { t.dataset.manual = "1"; const v = t.value.toLowerCase().replace(/[^a-z0-9.-]/g, ""); if (v !== t.value) t.value = v; }
+  else if (t.id === "pd-matricula") { const v = t.value.replace(/\D/g, "").slice(0, 10); if (v !== t.value) t.value = v; }
+  else if (t.id === "usu-busca") {
+    state.usuBusca = t.value; const q = t.value.trim().toLowerCase(); let n = 0;
+    document.querySelectorAll(".usu-card[data-busca]").forEach(c => { const ok = !q || c.dataset.busca.includes(q); c.hidden = !ok; if (ok) n++; });
+    const v = document.getElementById("usu-vazio"); if (v) v.hidden = n > 0;
+  }
+});
 function viewTrocarSenha(obrigatoria) {
   const form = `<div class="login-caixa">
       <div><h2>${obrigatoria ? "Crie a sua senha" : "Trocar minha senha"}</h2>
@@ -2853,68 +2932,104 @@ function viewTrocarSenha(obrigatoria) {
   return obrigatoria ? telaDividida(form) : `<section class="panel" style="max-width:520px">${form}</section>`;
 }
 async function carregarUsuarios() {
-  try { state.usu = await api("/api/usuarios"); } catch (e) { state.usu = { erro: e.message }; }
+  try { state.usu = await api("/api/usuarios"); state.pendentes = state.usu.usuarios.filter(u => u.pendente).length; } catch (e) { state.usu = { erro: e.message }; }
   if (state.tab === "usuarios") render();
 }
 const ACESSO_MEDIDAS = { supervisor: "Supervisor", coordenador: "Coordenador", dp: "DP (gestor)" };
 const ACESSO_CT = { usuario: "Solicitante", gestor: "Recrutamento (gestor)" };
 const ACESSO_HE = { usuario: "Analista (só analisa)", gestor: "Gestor (analisa e carrega a base)" };
-const GRUPOS_USU = [
-  ["admin", "Administradores", "controle total dos dois módulos e das pessoas"],
-  ["gestor", "Gestores", "gerenciam um módulo: DP em Medidas e Recrutamento em Contratações"],
-  ["usuario", "Usuários", "usam os módulos: supervisores, coordenadores e solicitantes"]
+// Ambientes que o administrador libera. Ambiente novo = uma linha aqui (e o nível dele em /api/usuarios).
+//   padrao: nível que vale ao ligar a chave | total: o administrador já tem acesso total a este ambiente
+const AMB_ACESSO = [
+  { k: "medidas", nome: "Gestão Administrativa", niveis: ACESSO_MEDIDAS, padrao: "supervisor", total: true },
+  { k: "contratacoes", nome: "Contratações", niveis: ACESSO_CT, padrao: "usuario", total: true },
+  { k: "horas", nome: "Horas Extras", niveis: ACESSO_HE, padrao: "usuario", total: false }
 ];
-const grupoDoUsuario = u => u.admin ? "admin" : (u.medidas === "dp" || u.contratacoes === "gestor" || u.horas === "gestor") ? "gestor" : "usuario";
+const iniciaisDe = n => String(n || "").split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 function viewUsuarios() {
   if (!state.usu) { carregarUsuarios(); return `<section class="panel"><h2>Usuários</h2><p class="muted" style="margin:0">Carregando…</p></section>`; }
   if (state.usu.erro) return `<section class="panel"><h2>Usuários</h2><p class="note warn" style="margin:0">${esc(state.usu.erro)}</p></section>`;
   const { usuarios } = state.usu, ed = state.usuEdit, f = ed || state.usuForm || (state.usuForm = { usuario: "", nome: "", admin: false, medidas: "supervisor", contratacoes: "", horas: "" });
-  const euMesmo = ed && ed.id === state.user.uid;
-  const situacao = u => !u.ativo ? "Desativado" : u.bloqueado ? "Bloqueado (senhas erradas)" : u.trocar_senha ? "Aguardando trocar a senha" : "Ativo";
+  const euMesmo = ed && ed.id === state.user.uid, s = state.usuSenha;
+  const pend = usuarios.filter(u => u.pendente), lista = usuarios.filter(u => !u.pendente), q = (state.usuBusca || "").trim().toLowerCase();
   const quando = d => d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Nunca entrou";
-  const s = state.usuSenha;
+  const situacao = u => !u.ativo ? ["Desativado", "off"] : u.bloqueado ? ["Bloqueado (senhas erradas)", "warn"] : u.trocar_senha ? ["Aguardando trocar a senha", "warn"] : ["Ativo", "ok"];
+  const texto = u => [u.nome, u.usuario, u.matricula, u.setor].filter(Boolean).join(" ").toLowerCase();
   const sel = (id, opcoes, atual, off) => `<select id="${id}" ${off ? "disabled" : ""}><option value="">Sem acesso</option>${Object.entries(opcoes).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>`;
-  const acesso = (u, m) => u.admin ? "Total" : (m === "medidas" ? ACESSO_MEDIDAS[u.medidas] : m === "horas" ? ACESSO_HE[u.horas] : ACESSO_CT[u.contratacoes]) || "—";
+  const dados = u => `<span class="usu-av" aria-hidden="true">${esc(iniciaisDe(u.nome))}</span><div class="usu-id"><b>${esc(u.nome)}</b><span class="muted">@${esc(u.usuario)}${u.matricula ? ` · mat. ${esc(u.matricula)}` : ""}${u.setor ? ` · ${esc(u.setor)}` : ""}</span></div>`;
+  // Uma linha por ambiente: chave liga/desliga o acesso e, ligada, aparece o nível. Salva na hora.
+  const linhaAmb = (u, a) => {
+    if (u.admin && a.total) return `<div class="amb-lin on"><span class="sw-fixa"><i></i><b>${a.nome}</b></span><span class="muted amb-nv">Acesso total (administrador)</span></div>`;
+    const atual = u[a.k] || "";
+    return `<div class="amb-lin${atual ? " on" : ""}"><label class="sw"><input type="checkbox" data-sw="${a.k}" data-id="${u.id}" ${atual ? "checked" : ""}><i></i><b>${a.nome}</b></label>
+      ${atual ? `<select class="amb-nv" data-nv="${a.k}" data-id="${u.id}" aria-label="Nível em ${a.nome}">${Object.entries(a.niveis).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>` : `<span class="muted amb-nv">Sem acesso</span>`}</div>`;
+  };
+  const cartao = u => { const [sit, cls] = situacao(u), eu = u.id === state.user.uid; return `<article class="usu-card${u.ativo ? "" : " usu-inativo"}${ed && ed.id === u.id ? " usu-linha-ed" : ""}" data-busca="${esc(texto(u))}" ${q && !texto(u).includes(q) ? "hidden" : ""}>
+    <header class="usu-topo">${dados(u)}<span class="usu-sit ${cls}">${sit}</span>
+      <label class="sw sw-adm" title="Controle total dos ambientes e das pessoas"><input type="checkbox" data-adm="1" data-id="${u.id}" ${u.admin ? "checked" : ""} ${eu ? "disabled" : ""}><i></i><b>Administrador</b></label></header>
+    <div class="usu-ambs">${AMB_ACESSO.map(a => linhaAmb(u, a)).join("")}</div>
+    <footer class="usu-rod"><span class="muted">Último acesso: ${quando(u.ultimo_acesso)}</span>
+      <div class="actions" style="gap:6px"><button class="btn" data-act="usu-editar" data-id="${u.id}">Editar dados</button>${eu ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
+        <button class="btn" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>
+        <button class="btn danger" data-act="usu-excluir" data-id="${u.id}" data-u="${esc(u.usuario)}" data-n="${esc(u.nome)}">Excluir</button>`}</div></footer></article>`; };
+  // Pedido de acesso: o administrador escolhe o nível em cada ambiente e aprova (ou recusa)
+  const cartaoPend = u => `<article class="usu-card usu-pend" data-pid="${u.id}">
+    <header class="usu-topo">${dados(u)}<span class="usu-sit warn">Pedido em ${quando(u.solicitado_em)}</span></header>
+    <div class="usu-ambs">${AMB_ACESSO.map(a => `<label class="amb-lin pend"><b>${a.nome}</b><select class="amb-nv" data-pend-nv="${a.k}">${`<option value="">Sem acesso</option>` + Object.entries(a.niveis).map(([k, t]) => `<option value="${k}" ${a.k === "medidas" && k === a.padrao ? "selected" : ""}>${t}</option>`).join("")}</select></label>`).join("")}</div>
+    <footer class="usu-rod"><span class="muted">Escolha o nível em cada ambiente. Quem ficar sem acesso não vê aquele ambiente.</span>
+      <div class="actions"><button class="btn primary" data-act="usu-aprovar" data-id="${u.id}" data-u="${esc(u.usuario)}">Aprovar acesso</button><button class="btn danger" data-act="usu-recusar" data-id="${u.id}" data-u="${esc(u.usuario)}" data-n="${esc(u.nome)}">Recusar</button></div></footer></article>`;
   return `<section class="panel">
     <h2>Usuários</h2>
-    <p class="muted" style="margin:0">Só o administrador cria, edita e exclui usuários e escolhe a que módulos cada um tem acesso. Cada pessoa entra com usuário e senha; ao criar ou redefinir, o sistema gera uma <b>senha temporária</b> que ela troca no primeiro acesso.</p>
-    <div class="usu-niveis"><span><b>Administrador:</b> controle total dos dois módulos e das pessoas.</span>
-      <span><b>Gestão Administrativa:</b> Supervisor e Coordenador usam o fluxo (solicitar e autorizar); o DP gerencia o módulo.</span>
-      <span><b>Contratações:</b> o Solicitante usa e vê só o que ele abriu; o Recrutamento gerencia e vê tudo. Todos veem todas as equipes.</span>
-      <span><b>Horas Extras:</b> o Analista só analisa; o Gestor também carrega a base e edita o cadastro. O administrador não ganha este módulo sozinho: precisa ser liberado aqui.</span></div>
+    <p class="muted" style="margin:0">Cada pessoa pede o próprio acesso pela tela de login (<b>Primeiro acesso</b>). Aqui você aprova o pedido, liga os ambientes e escolhe o nível de cada um. As mudanças valem na hora.</p>
     ${s ? `<div class="usu-senha" role="status"><strong>Senha temporária de ${esc(s.usuario)}</strong><code>${esc(s.senha)}</code>
       <span class="muted" style="font-size:13px">Ela aparece só agora. Passe para a pessoa por um canal seguro; no primeiro acesso ela cria a própria senha.</span>
       <div class="actions"><button class="btn" data-act="usu-copiar">Copiar</button><button class="btn" data-act="usu-fechar-senha">Já passei, fechar</button></div></div>` : ""}
-    ${ed ? `<div class="usu-editando"><b>Editando: ${esc(ed.original)}</b><span class="muted">Altere o que precisar e clique em Salvar alterações.${euMesmo ? " Você não pode tirar o seu próprio acesso de administrador." : ""}</span></div>` : `<h3 style="margin-top:10px">Novo usuário</h3>`}
-    <form id="form-usuario" class="usu-form${ed ? " editando" : ""}" style="margin-top:4px">
-      <label for="nu-usuario">Usuário <small>ex.: joao.silva</small><input type="text" id="nu-usuario" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(f.usuario)}" required></label>
-      <label for="nu-nome">Nome completo<input type="text" id="nu-nome" autocomplete="off" value="${esc(f.nome)}" required></label>
-      <label class="usu-adm" for="nu-admin"><input type="checkbox" id="nu-admin" ${f.admin ? "checked" : ""} ${euMesmo ? "disabled" : ""}> Administrador <small>acesso total</small></label>
-      <label for="nu-medidas">Gestão Administrativa${sel("nu-medidas", ACESSO_MEDIDAS, f.medidas, f.admin)}</label>
-      <label for="nu-contratacoes">Contratações${sel("nu-contratacoes", ACESSO_CT, f.contratacoes, f.admin)}</label>
-      <label for="nu-horas">Horas Extras${sel("nu-horas", ACESSO_HE, f.horas, false)}</label>
-      <div class="actions">${ed ? `<button class="btn primary" type="submit">Salvar alterações</button><button class="btn" type="button" data-act="usu-cancelar">Cancelar</button>` : `<button class="btn primary" type="submit">Criar usuário</button>`}</div>
-    </form>
-    <p class="note warn" id="form-erro" role="alert" hidden></p>
+    <details class="usu-novo" ${ed || state.usuNovoAberto ? "open" : ""}><summary>${ed ? `Editando: ${esc(ed.original)}` : "Cadastrar uma pessoa manualmente"}</summary>
+      ${ed ? `<div class="usu-editando"><span class="muted">Altere o que precisar e clique em Salvar alterações.${euMesmo ? " Você não pode tirar o seu próprio acesso de administrador." : ""}</span></div>` : `<p class="muted" style="margin:6px 0 0;font-size:13px">Só quando a pessoa não puder pedir sozinha. O sistema gera uma senha temporária, que ela troca no primeiro acesso.</p>`}
+      <form id="form-usuario" class="usu-form${ed ? " editando" : ""}" style="margin-top:10px">
+        <label for="nu-usuario">Usuário <small>ex.: joao.silva</small><input type="text" id="nu-usuario" autocomplete="off" autocapitalize="none" spellcheck="false" value="${esc(f.usuario)}" required></label>
+        <label for="nu-nome">Nome completo<input type="text" id="nu-nome" autocomplete="off" value="${esc(f.nome)}" required></label>
+        <label class="usu-adm" for="nu-admin"><input type="checkbox" id="nu-admin" ${f.admin ? "checked" : ""} ${euMesmo ? "disabled" : ""}> Administrador <small>acesso total</small></label>
+        <label for="nu-medidas">Gestão Administrativa${sel("nu-medidas", ACESSO_MEDIDAS, f.medidas, f.admin)}</label>
+        <label for="nu-contratacoes">Contratações${sel("nu-contratacoes", ACESSO_CT, f.contratacoes, f.admin)}</label>
+        <label for="nu-horas">Horas Extras${sel("nu-horas", ACESSO_HE, f.horas, false)}</label>
+        <div class="actions">${ed ? `<button class="btn primary" type="submit">Salvar alterações</button><button class="btn" type="button" data-act="usu-cancelar">Cancelar</button>` : `<button class="btn primary" type="submit">Criar usuário</button>`}</div>
+      </form>
+      <p class="note warn" id="form-erro" role="alert" hidden></p>
+    </details>
   </section>
+  ${pend.length ? `<section class="panel usu-pend-sec"><div class="usu-cab"><h3>Pedidos de acesso <span class="usu-n">${pend.length}</span></h3><span class="muted" style="font-size:13px">Aguardando a sua decisão</span></div>${pend.map(cartaoPend).join("")}</section>` : ""}
   <section class="panel">
-    <div class="usu-cab"><h3>${usuarios.length} usuário${usuarios.length === 1 ? "" : "s"}</h3>
-      <span class="muted" style="font-size:13px">${GRUPOS_USU.map(([k, t]) => `${usuarios.filter(u => grupoDoUsuario(u) === k).length} ${t.toLowerCase()}`).join(" · ")}</span></div>
-    ${GRUPOS_USU.map(([k, titulo, desc]) => { const l = usuarios.filter(u => grupoDoUsuario(u) === k);
-      return `<div class="usu-grupo">
-      <h4 class="usu-grupo-tit"><span>${titulo}</span><b>${l.length}</b><small class="muted">${desc}</small></h4>
-      ${l.length ? `<div class="usu-scroll"><table class="usu-tab"><thead><tr><th>Usuário</th><th>Nome</th><th>Medidas</th><th>Contratações</th><th>Horas Extras</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead><tbody>
-      ${l.map(u => `<tr class="${ed && ed.id === u.id ? "usu-linha-ed" : ""} ${u.ativo ? "" : "usu-inativo"}"><td class="mono">${esc(u.usuario)}</td><td>${esc(u.nome)}</td><td>${acesso(u, "medidas")}</td><td>${acesso(u, "contratacoes")}</td><td>${u.horas ? ACESSO_HE[u.horas] : "—"}</td><td>${situacao(u)}</td><td>${quando(u.ultimo_acesso)}</td>
-        <td><div class="actions" style="gap:6px"><button class="btn" data-act="usu-editar" data-id="${u.id}">Editar</button>${u.id === state.user.uid ? `<span class="muted" style="font-size:12px">Você</span>` : `<button class="btn" data-act="usu-reset" data-id="${u.id}" data-u="${esc(u.usuario)}">Redefinir senha</button>
-          <button class="btn" data-act="usu-ativo" data-id="${u.id}" data-v="${u.ativo ? 0 : 1}" data-u="${esc(u.usuario)}">${u.ativo ? "Desativar" : "Reativar"}</button>
-          <button class="btn danger" data-act="usu-excluir" data-id="${u.id}" data-u="${esc(u.usuario)}" data-n="${esc(u.nome)}">Excluir</button>`}</div></td></tr>`).join("")}
-      </tbody></table></div>` : `<p class="muted" style="margin:4px 0 0;font-size:13px">Nenhum usuário neste grupo.</p>`}
-    </div>`; }).join("")}
+    <div class="usu-cab"><h3>${lista.length} usuário${lista.length === 1 ? "" : "s"}</h3>
+      <label class="hub-busca" style="max-width:320px"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="usu-busca" type="search" placeholder="Buscar por nome, usuário, matrícula ou setor" aria-label="Buscar usuário" autocomplete="off" value="${esc(state.usuBusca || "")}"></label></div>
+    <div class="usu-lista">${lista.map(cartao).join("")}</div>
+    <p class="muted" id="usu-vazio" hidden style="margin:4px 0 0;font-size:13px">Nenhum usuário encontrado.</p>
   </section>`;
 }
+// Salva o acesso de uma pessoa na hora (chave ligada/desligada, nível ou administrador)
+async function salvarAcesso(id, mud, aviso) {
+  const u = state.usu && state.usu.usuarios.find(x => x.id === id); if (!u) return;
+  const corpo = { id, admin: !!u.admin, medidas: u.medidas || "", contratacoes: u.contratacoes || "", horas: u.horas || "", ...mud };
+  try {
+    await api("/api/usuarios", "PATCH", corpo);
+    if (id === state.user.uid) { location.reload(); return; } // mudou o próprio acesso
+    Object.assign(u, { admin: corpo.admin, medidas: corpo.medidas || null, contratacoes: corpo.contratacoes || null, horas: corpo.horas || null });
+    render(); toast(aviso || "Acesso atualizado.");
+  } catch (err) { toast(err.message); render(); }
+}
+document.addEventListener("change", e => {
+  const t = e.target; if (!t || !t.dataset) return;
+  if (t.dataset.sw) { const a = AMB_ACESSO.find(x => x.k === t.dataset.sw); salvarAcesso(t.dataset.id, { [a.k]: t.checked ? a.padrao : "" }, t.checked ? `${a.nome}: acesso liberado como ${a.niveis[a.padrao]}.` : `${a.nome}: acesso removido.`); }
+  else if (t.dataset.nv) salvarAcesso(t.dataset.id, { [t.dataset.nv]: t.value });
+  else if (t.dataset.adm) {
+    const u = state.usu.usuarios.find(x => x.id === t.dataset.id); if (!u) return;
+    if (t.checked) { if (!confirm(`Tornar ${u.nome} administrador?\n\nA pessoa passa a ter controle total da Gestão Administrativa e de Contratações e pode criar, editar e excluir usuários.`)) { t.checked = false; return; } salvarAcesso(u.id, { admin: true, medidas: "", contratacoes: "" }, `${u.nome} agora é administrador.`); }
+    else { if (!confirm(`Remover o acesso de administrador de ${u.nome}?\n\nA pessoa fica só com a Gestão Administrativa como Supervisor (e Horas Extras, se tiver). Você pode ajustar em seguida.`)) { t.checked = true; return; } salvarAcesso(u.id, { admin: false, medidas: "supervisor" }, "Acesso de administrador removido."); }
+  }
+});
 function erroForm(msg) { const b = document.getElementById("form-erro"); if (b) { b.textContent = msg; b.hidden = !msg; } }
 document.addEventListener("submit", async e => {
-  const f = e.target; if (!["form-login", "form-senha", "form-usuario"].includes(f.id)) return;
+  const f = e.target; if (!["form-login", "form-senha", "form-usuario", "form-pedido"].includes(f.id)) return;
   e.preventDefault();
   const btn = f.querySelector("button[type=submit]"); if (btn.disabled) return; btn.disabled = true; erroForm("");
   try {
@@ -2922,6 +3037,12 @@ document.addEventListener("submit", async e => {
       await api("/api/login", "POST", { usuario: document.getElementById("login-usuario").value, senha: document.getElementById("login-senha").value });
       try { sessionStorage.setItem("cgb-hub", "1"); } catch {}   // depois do login, mostra a tela de ambientes
       location.reload(); return;
+    }
+    if (f.id === "form-pedido") {
+      const g = id => document.getElementById(id).value, senha = g("pd-senha");
+      if (senha !== g("pd-senha2")) throw new Error("A confirmação não é igual à senha.");
+      await api("/api/solicitar-acesso", "POST", { nome: g("pd-nome"), matricula: g("pd-matricula"), setor: g("pd-setor"), usuario: g("pd-usuario"), senha });
+      state.loginModo = "enviado"; render(); window.scrollTo(0, 0); return;
     }
     if (f.id === "form-senha") {
       const nova = document.getElementById("senha-nova").value;
@@ -2955,6 +3076,20 @@ document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("button[data-act]"); if (!b) return;
   const act = b.dataset.act;
   if (act === "trocar-senha") { document.getElementById("perfil-pop").hidden = true; state.tab = "senha"; render(); window.scrollTo(0, 0); return; }
+  if (act === "login-modo") { state.loginModo = b.dataset.m; render(); window.scrollTo(0, 0); return; }
+  if (act === "ver-pedidos") { state.hub = false; state.tab = "usuarios"; state.usu = null; render(); window.scrollTo(0, 0); return; }
+  if (act === "usu-aprovar") {
+    const card = b.closest(".usu-pend"), g = k => ((card && card.querySelector(`[data-pend-nv="${k}"]`)) || {}).value || "";
+    const corpo = { id: b.dataset.id, aprovar: true, admin: false, medidas: g("medidas"), contratacoes: g("contratacoes"), horas: g("horas") };
+    if (!corpo.medidas && !corpo.contratacoes && !corpo.horas) { toast("Escolha o nível em pelo menos um ambiente, ou recuse o pedido."); return; }
+    try { await api("/api/usuarios", "PATCH", corpo); state.usu = null; render(); toast(`Acesso de ${b.dataset.u} aprovado.`); } catch (err) { toast(err.message); }
+    return;
+  }
+  if (act === "usu-recusar") {
+    if (!confirm(`Recusar o pedido de ${b.dataset.n || b.dataset.u}?\n\nO cadastro é apagado e a pessoa não consegue entrar. Se precisar, ela pode pedir de novo.`)) return;
+    try { await api("/api/usuarios", "DELETE", { id: b.dataset.id }); state.usu = null; render(); toast("Pedido recusado."); } catch (err) { toast(err.message); }
+    return;
+  }
   if (act === "usu-copiar") { try { await navigator.clipboard.writeText(state.usuSenha.senha); toast("Senha copiada."); } catch { toast("Não deu para copiar: selecione a senha e copie."); } return; }
   if (act === "usu-fechar-senha") { state.usuSenha = null; render(); return; }
   if (act === "usu-editar") {
@@ -2998,7 +3133,7 @@ function menuMedidas() {
       ],
     ["Ajuda", [["regras", "Regras da política", "Política de Consequências e Anexo I"], ["ajuda", "Como usar e dúvidas", "Passo a passo de cada perfil"]]],
   ];
-  if (state.user.admin) MENU.push(["Administração", [["usuarios", "Usuários", "Acessos de cada pessoa aos módulos"]]]);
+  if (state.user.admin) MENU.push(["Administração", [["usuarios", "Usuários", "Pedidos de acesso e níveis de cada pessoa", state.pendentes || 0]]]);
   return MENU;
 }
 function render() {
@@ -4764,6 +4899,7 @@ async function iniciar() {
   // Bases atualizadas pelo DP (cadastro, equipes, frota) guardadas neste navegador
   carregarBasesSalvas(); aplicarSexosSalvos(); try { montarListaColab(); } catch {}
   render();
+  if (state.user.admin) api("/api/usuarios").then(d => { const n = d.usuarios.filter(u => u.pendente).length; if (n !== (state.pendentes || 0)) { state.pendentes = n; if (state.hub || state.tab !== "usuarios") render(); } }).catch(() => {});
 }
 iniciar();
 </script>

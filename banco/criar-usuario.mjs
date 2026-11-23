@@ -17,7 +17,7 @@ const { values: a } = parseArgs({ options: {
 const usuario = normalizarUsuario(a.usuario), nome = String(a.nome || "").trim(), admin = !!a.admin;
 const medidas = a.medidas || a.perfil || null, contratacoes = a.contratacoes || null; // --perfil continua valendo (nome antigo de --medidas)
 const falha = m => { console.error("Erro:", m); process.exit(1); };
-if (!usuarioValido(usuario)) falha("--usuario deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).");
+if (!usuarioValido(usuario)) falha("--usuario deve ter de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).");
 if (nome.length < 3) falha('Informe --nome "Nome completo".');
 if (medidas && !["supervisor", "coordenador", "dp"].includes(medidas)) falha("--medidas deve ser supervisor, coordenador ou dp.");
 if (contratacoes && !["usuario", "gestor"].includes(contratacoes)) falha("--contratacoes deve ser usuario ou gestor.");

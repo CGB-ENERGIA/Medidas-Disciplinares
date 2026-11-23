@@ -54,3 +54,9 @@ Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: s
   - Solicitante (usuário): lê só as vagas e candidatos dele (pelo nome do solicitante), as configurações e o resumo do RM; abre vagas só em seu nome; anexa a RP assinada nos candidatos das vagas dele. Não lê o banco de talentos nem a base do RM.
 - **Nada é apagado:** "remover" só esconde o documento.
 - **Tamanho:** arquivos até 4 MB (limite da Vercel).
+
+## Pedido de acesso (auto-cadastro)
+- `POST /api/solicitar-acesso` (público): cria um usuário **pendente** (`usuarios.pendente = true`, `ativo = false`) com nome, matrícula, setor, usuário e a senha escolhida (guardada só como hash). Limite de 5 pedidos por hora por IP (tabela `pedidos_acesso`, só IP e hora).
+- Login de pendente: quem acerta a senha recebe o aviso de que o pedido aguarda aprovação; quem erra recebe o erro de sempre.
+- `PATCH /api/usuarios { id, aprovar: true, medidas, contratacoes, horas }` aprova e define o nível em cada ambiente; recusar é `DELETE` (apaga o cadastro pendente).
+- Ambiente novo na tela Usuários: uma linha em `AMB_ACESSO` (`site/index.html`) e o nível em `api/usuarios.js`.
