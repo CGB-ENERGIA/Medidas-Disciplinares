@@ -34,7 +34,14 @@
       "html.emb header.top .modo{background:var(--sunken)!important;border:1px solid var(--line)!important;box-shadow:none!important}",
       "html.emb header.top .modo button{color:var(--muted)!important;background:transparent!important}",
       "html.emb header.top .modo button[aria-pressed=true]{background:var(--surface)!important;color:var(--accent)!important;box-shadow:0 1px 3px rgba(0,0,0,.08)!important}",
-      "html.emb header.top .atual span{color:var(--muted)!important}html.emb header.top .atual b{color:var(--fg)!important}"
+      "html.emb header.top .atual span{color:var(--muted)!important}html.emb header.top .atual b{color:var(--fg)!important}",
+      // mesmo layout das telas do site: sem caixa em volta, sem fundo próprio, encostado nas mesmas margens
+      "html.emb,html.emb:not(#_) body{background:transparent!important;background-color:transparent!important;background-image:none!important}",
+      "html.emb #fundoRede,html.emb body>canvas{display:none!important}",
+      "html.emb header.top,html.emb[data-tema=escuro] header.top{background:transparent!important;border:0!important;position:static!important}",
+      "html.emb header.top .top-in{padding:0 0 14px!important;max-width:none!important}",
+      "html.emb .wrap,html.emb body.rail-pin .wrap,html.emb body.rail-off .wrap{padding:0 0 40px!important;max-width:none!important;margin:0!important}",
+      "html.emb .tnav,html.emb .alertas,html.emb body.rail-pin .tnav,html.emb body.rail-pin .alertas{padding-left:0!important;padding-right:0!important}"
     ].join("\n");
     document.head.appendChild(st);
   }
