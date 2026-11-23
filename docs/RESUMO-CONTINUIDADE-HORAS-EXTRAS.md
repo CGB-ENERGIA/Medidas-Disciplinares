@@ -1,7 +1,7 @@
 # Resumo para continuar — módulo Horas Extras (Medidas Disciplinares)
 
 ## Onde está
-- Pasta do projeto: `C:\Users\Micro\OneDrive - CGB ENERGIA LTDA\SETOR DE MEDIÇÃO\Projetos\Medidas Disciplinares`
+- Pasta do projeto: `C:\Users\Micro\OneDrive - CGB ENERGIA LTDA\SETOR DE MEDIÇÃO\Projetos\Sistemas\Medidas Disciplinares`
 - GitHub: https://github.com/CGB-ENERGIA/Medidas-Disciplinares (branch `main`, último commit publicado `061eddb`; a Vercel faz o deploy sozinha)
 - Banco: Neon (o mesmo em desenvolvimento e produção). Credenciais só no `.env` (não vai para o GitHub).
 - Servidor local: `npm run dev` (porta 3000). Reiniciar depois de mudar a API.
