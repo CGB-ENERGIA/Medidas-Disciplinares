@@ -141,6 +141,19 @@ export const POST = rota(comLogin(async (request, _q, _u) => {
     return ok({ dias: l });
   }
 
+  if (c.acao === "impares") {
+    let chapas = null;
+    if (c.chapas != null) {
+      if (!Array.isArray(c.chapas) || c.chapas.length > 5000) return erro("Lista de colaboradores inválida.", 400);
+      chapas = c.chapas.map(x => String(x).trim().slice(0, 20)).filter(Boolean);
+    }
+    const l = await consulta(`select chapa, data::text as data, batidas from he_batidas
+      where jsonb_array_length(batidas) % 2 = 1 and ($1::date is null or data >= $1::date) and ($2::date is null or data <= $2::date)
+        and ($3::text[] is null or chapa = any($3::text[]))
+      order by data desc, chapa limit 3000`, [de, ate, chapas]);
+    return ok({ linhas: l });
+  }
+
   if (c.acao === "quando") {
     const tipo = c.tipo === "semana" ? "semana" : "dow", valor = String(c.valor ?? "");
     if (tipo === "semana" ? !ISO.test(valor) : !/^[0-6]$/.test(valor)) return erro("Valor inválido.", 400);

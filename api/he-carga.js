@@ -22,7 +22,7 @@ const ISO = /^\d{4}-\d{2}-\d{2}$/;
 function normalizarBatida(r) {
   if (!r || typeof r !== "object") return null;
   const chapa = txt(r.chapa, 20), data = typeof r.data === "string" && ISO.test(r.data) ? r.data : null;
-  if (!chapa || !data || Number.isNaN(Date.parse(data))) return null;
+  if (!chapa || !data) return null;
   if (!Array.isArray(r.p) || r.p.length > 10) return null;
   const p = r.p.map(v => inteiro(v, 0, 1439)); if (p.includes(null)) return null;
   const s = Array.isArray(r.s) && r.s.length === 4 ? r.s.map(v => inteiro(v, 0, 1439) ?? 0) : [0, 0, 0, 0];

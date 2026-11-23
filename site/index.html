@@ -1691,8 +1691,6 @@ function somaDias(d, n) { const x = new Date(d + "T12:00:00"); x.setDate(x.getDa
 function fmt(d) { if (!d) return ""; const [y, m, dd] = d.split("-"); return `${dd}/${m}/${y}`; }
 const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 function porExtensoData(d) { const [y, m, dd] = d.split("-"); return `${dd} de ${MESES[+m - 1]} de ${y}`; }
-const UNI = ["zero","um","dois","três","quatro","cinco","seis","sete","oito","nove","dez","onze","doze","treze","catorze","quinze","dezesseis","dezessete","dezoito","dezenove"];
-function extenso(n) { n = Math.max(0, Math.floor(+n || 0)); if (n < 20) return UNI[n] || String(n); if (n > 99) return String(n); const d = Math.floor(n / 10), u = n % 10, D = { 2: "vinte", 3: "trinta", 4: "quarenta", 5: "cinquenta", 6: "sessenta", 7: "setenta", 8: "oitenta", 9: "noventa" }[d]; return u ? `${D} e ${UNI[u]}` : D; }
 function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 const codigo = id => "MD-" + String(id).padStart(4, "0");
 const ehSusp = m => m.startsWith("Susp");
@@ -1825,21 +1823,6 @@ function barras(rows, opts = {}) {
     <span class="hbar-trilho"><span class="hbar-fill" style="width:${(r.v / max * 100).toFixed(1)}%"></span></span>
     <span class="hbar-v">${r.v.toLocaleString("pt-BR")}</span></${r.acao ? "button" : "div"}>`).join("")}</div>`;
 }
-function colunasMes(vals, rotulos) {
-  const W = 560, H = 190, pl = 34, pb = 26, pt = 14, pr = 6;
-  const max = Math.max(1, ...vals), passo = Math.pow(10, Math.floor(Math.log10(max))) * (max / Math.pow(10, Math.floor(Math.log10(max))) > 5 ? 2 : 1);
-  const top = Math.ceil(max / passo) * passo, ticks = [];
-  for (let t = 0; t <= top; t += passo) ticks.push(t);
-  const y = v => pt + (H - pt - pb) * (1 - v / top), bw = (W - pl - pr) / vals.length;
-  return `<svg class="cols" viewBox="0 0 ${W} ${H}" role="img" aria-label="Medidas por mês nos últimos 12 meses">
-    ${ticks.map(t => `<line x1="${pl}" x2="${W - pr}" y1="${y(t)}" y2="${y(t)}" class="grid"/><text x="${pl - 6}" y="${y(t) + 4}" class="ax" text-anchor="end">${t}</text>`).join("")}
-    ${vals.map((v, i) => { const x = pl + i * bw + bw * 0.18, w = bw * 0.64, yy = y(v), hh = Math.max(0, H - pb - yy);
-      return `<g class="col"><title>${rotulos[i]}: ${v} medida${v === 1 ? "" : "s"}</title><rect x="${pl + i * bw}" y="${pt}" width="${bw}" height="${H - pt - pb}" class="hit"/>
-        ${hh > 0 ? `<path d="M${x},${H - pb} V${yy + Math.min(4, hh)} q0,-4 4,-4 h${w - 8} q4,0 4,4 V${H - pb} Z" class="bar"/>` : ""}
-        <text x="${x + w / 2}" y="${H - 8}" class="ax" text-anchor="middle">${rotulos[i]}</text>
-        ${i === vals.length - 1 || v === max ? `<text x="${x + w / 2}" y="${yy - 5}" class="val" text-anchor="middle">${v}</text>` : ""}</g>`; }).join("")}
-  </svg>`;
-}
 function viewInicio() {
   const R = state.role, sis = REG.filter(r => !r.imp && veReg(r));
   const comigo = sis.filter(r => ehPendente(r, R));
@@ -1886,7 +1869,6 @@ function viewInicio() {
     <button type="button" class="cta-painel" data-tab="painel"><span class="cta-ic">${icone("painel")}</span><span><b>Painel com indicadores e alertas</b><small>${R === "dp" ? "Indicadores da empresa, alertas de prazo e visão por base." : "Alertas de prazo e indicadores da sua equipe."}</small></span><span class="cta-seta">→</span></button>
   </div>`;
 }
-function pendenteDe(s) { return { coord: "com o coordenador", dp: "com o DP", aplicacao: "com quem solicitou", conferencia: "com o DP" }[s]; }
 function situacaoTexto(r) { return STATUS[r.status].label; }
 
 
@@ -3049,16 +3031,6 @@ function emAtencao() {
   return Object.entries(m).filter(([, v]) => v.length >= 2).map(([k, v]) => { const [c, n] = k.split("|"); const ult = v.map(r => r.data).sort().pop(); return { c: colab(+c), n: +n, v: v.length, ult, zera: somaDias(ult, 365) }; })
     .sort((a, b) => b.v - a.v || b.ult.localeCompare(a.ult));
 }
-function painelAtencao() {
-  const l = emAtencao();
-  return `<section class="panel c6">
-    <div class="phd"><h3>Colaboradores em atenção</h3><span class="muted sm">2+ no mesmo item em 12 meses</span></div>
-    ${l.length ? `<div class="aten">${l.slice(0, 6).map(x => `<button class="aten-item" data-hist="${x.c.id}"><span class="aten-n ${x.v >= 3 ? "crit" : "warn"}">${x.v}×</span>
-      <span class="aten-nome"><b>${esc(x.c.nome)}</b><small>Item ${x.n} · ${esc(desvio(x.n).t)}</small></span>
-      <span class="aten-prox">${x.v >= 3 ? "Já agravada" : "Próxima agrava"}<small>zera em ${fmt(x.zera)}</small></span></button>`).join("")}</div>
-      <p class="nota">${l.length} colaborador${l.length > 1 ? "es" : ""}. Uma conversa ou reorientação agora pode evitar a próxima medida.</p>` : `<div class="empty">Ninguém com 2 ou mais ocorrências do mesmo item.</div>`}
-  </section>`;
-}
 // Reincidência no mesmo item: mesma base da taxa de reincidência dos indicadores (histórico + sistema, no período).
 // Pela política (5.3), só as medidas registradas no sistema agravam a próxima: isso aparece à direita de cada nome.
 function painelReincidencia(d) {
@@ -3826,15 +3798,6 @@ function atualizarDesvios(foco) {
   renderTextoBotoes(); atualizarSugestaoForm();
 }
 
-function listaDesvios(f, termo = "") {
-  const t = termo.trim().toLowerCase();
-  return NIVEIS.map((nv, i) => {
-    const itens = DESVIOS.filter(d => d.nivel === i && (!t || d.t.toLowerCase().includes(t) || String(d.n) === t));
-    if (!itens.length) return "";
-    return `<div class="grp lvl-${i}"><span class="lvl lvl-t">Desvio ${nv}</span></div>` + itens.map(d =>
-      `<label for="dv-${d.n}"><input type="checkbox" id="dv-${d.n}" data-dv="${d.n}" ${f.desvios.includes(d.n) ? "checked" : ""}><span class="n">${d.n}</span><span>${esc(d.t)}</span></label>`).join("");
-  }).join("") || `<div class="empty" style="border:0">Nenhum desvio com esse termo.</div>`;
-}
 
 function renderTexto() {
   const f = state.form, box = document.getElementById("texto-box");
@@ -3938,23 +3901,6 @@ function problemasEnvio(f) {
 function medidaProposta(f, s) {
   const h = medidaHist(padraoDe(catDe(f)), s.anteriores.length > 0);
   return { medida: s.medida, base: "política" }; // padrão histórico retirado da solicitação
-}
-function cardHist(f, s) {
-  const pd = padraoDe(catDe(f));
-  if (!pd) return `<p class="muted" style="margin:0;font-size:13px">Escolha o <strong>tipo de situação</strong> para ver também o padrão que a empresa já aplica nesses casos.</p>`;
-  const h = medidaHist(pd, s.anteriores.length > 0), g = h.g;
-  const div = h.medida && nivelMedida(h.medida) !== nivelMedida(s.medida);
-  const dist = `${g.n} ${h.base}: ${g.adv} advertência${g.adv === 1 ? "" : "s"} e ${g.susp} suspens${g.susp === 1 ? "ão" : "ões"}${g.susp ? ` (${Object.entries(g.dias).map(([d, n]) => `${n}× ${d} dia${d > 1 ? "s" : ""}`).join(", ")})` : ""}`;
-  return `<div class="hist-card">
-    <h3>Padrão aplicado pela empresa</h3>
-    ${h.medida ? `<div class="med2">${esc(h.medida)}</div><p class="muted" style="margin:0;font-size:13px">Em ${dist}. Usado em ${h.conf}% dos casos.</p>` : `<p style="margin:0">Poucos casos no histórico (${g.n}). Siga a política.</p>`}
-    <div class="bar" aria-hidden="true"><span style="width:${pctN(g.adv, g.n)}%"></span></div>
-    ${div ? `<div class="note warn">A prática da empresa diverge da política (${esc(s.medida.toLowerCase())}). O DP precisa decidir qual vale para este caso.</div>` : h.medida ? `<div class="note ok">A prática da empresa está alinhada com a política.</div>` : ""}
-    ${h.medida ? `<fieldset class="pick"><legend>Medida a propor</legend>
-      <label class="check" for="esc-hist"><input type="radio" name="escolha" id="esc-hist" value="hist" ${f.escolha !== "pol" ? "checked" : ""}> Padrão histórico: ${esc(h.medida)}</label>
-      <label class="check" for="esc-pol"><input type="radio" name="escolha" id="esc-pol" value="pol" ${f.escolha === "pol" ? "checked" : ""}> Política: ${esc(s.medida)}</label>
-    </fieldset>` : ""}
-  </div>`;
 }
 function atualizarSugestaoForm() {
   const f = state.form, box = document.getElementById("sug"); if (!f) return;

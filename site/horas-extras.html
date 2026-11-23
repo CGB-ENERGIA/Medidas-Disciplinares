@@ -344,39 +344,6 @@ function lerBatidas(wb){
   return {linhas:out,ignoradas};
 }
 
-/* ===== Regra do indicador =====
- * 4 batidas: EXTRA ENTRADA + EXTRA ALMOÇO + EXTRA SAIDA.   2 batidas: EXTRA ENTRADA2 + EXTRA SAIDA2.
- * Se |HTRAB − HBASE| <= tolerância, a jornada é normal e a HE do dia não é computada. Outras quantidades de batidas: fora. */
-function diaHE(r,tol){
-  const n=r.p.length,p=r.p,s=r.s||[0,0,0,0],x=r.x,o={ent:0,alm:0,sai:0,bruto:0,desc:0,ader:false,fora:false,neg:0};
-  if(n===4){o.ent=x.ent;o.alm=x.alm;o.sai=x.sai}
-  else if(n===2){o.ent=x.ent2;o.sai=x.sai2}
-  else o.fora=n>0;
-  /* Dia sem jornada prevista (HBASE 00:00: sábado sem escala, domingo, folga, feriado): a planilha mede a saída contra 00:00 e lança o horário do relógio como se fosse duração.
-     Aqui toda a jornada trabalhada é HE, então vale o HTRAB, lançado na saída. */
-  if((n===2||n===4)&&r.hb===0&&r.ht>0){o.ent=0;o.alm=0;o.sai=r.ht;o.semJ=true}
-  /* A planilha só traz o lado positivo (EXTRA ENTRADA/ALMOÇO/SAIDA). Os negativos que ela não traz entram com sinal contrário, medidos pelas batidas contra o horário previsto:
-     atraso na entrada, almoço mais longo que o previsto e saída antes do previsto. Assim as três partes fecham o saldo do dia. */
-  /* Jornada prevista parcial (ex.: sábado só de manhã, 08:00 às 12:00; as duas últimas posições do previsto vêm 00:00): a planilha mede a saída contra 00:00
-     e lança o horário do relógio como duração. Aqui a saída é medida contra a última saída prevista e a entrada contra a primeira, ambas com sinal. */
-  const ultima=[...s].reverse().find(v=>v>0)||0,parcial=r.hb>0&&s[0]>0&&s[3]===0&&ultima>s[0];
-  if((n===2||n===4)&&parcial){o.ent=s[0]-p[0];o.alm=0;o.sai=p[n-1]-ultima;o.parc=ultima}
-  else if((n===2||n===4)&&r.hb>0&&s[0]>0&&s[3]>0){
-    o.ent-=Math.max(p[0]-s[0],0);
-    o.sai-=Math.max(s[3]-p[n-1],0);
-    if(n===4&&s[1]>0&&s[2]>0)o.alm-=Math.max((p[2]-p[1])-(s[2]-s[1]),0);
-  }
-  o.sEnt=o.ent;o.sAlm=o.alm;o.sSai=o.sai;                       // partes com sinal, para o detalhe do dia
-  o.bruto=o.ent+o.alm+o.sai;
-  o.net=(r.ht!=null&&r.hb!=null)?r.ht-r.hb:null;
-  if(o.net!=null&&Math.abs(o.net)<=tol)o.ader=true;
-  if(o.ader&&o.bruto!==0){o.desc=Math.abs(o.bruto);o.ent=o.alm=o.sai=0}   // dentro da tolerância: jornada normal
-  /* Total líquido: dia abaixo da base fica negativo e abate a HE de quem tem saldo a compensar. */
-  o.neg=Math.max(-(o.ent+o.alm+o.sai),0);
-  o.cols=o.ent+o.alm+o.sai;
-  o.tot=o.cols;o.lim=0;
-  return o;
-}
 
 /* ===== Filtros de filiação ===== */
 const FIL=[['f_coord','coord'],['f_sup','sup'],['f_base','base'],['f_setor','setor'],['f_eq','eq'],['f_teq','teq'],['f_tf','tf']];
@@ -578,6 +545,19 @@ $('#jcards').addEventListener('click',e=>{
     L.map(x=>[x.c.chapa,esc(x.c.chapa),esc(x.c.nome),esc(x.c.ci.base),`<b>${hm(x.m)}</b>`,hm(x.c.jS),x.c.jN,`<span class="dot" style="background:var(${cor[s]})"></span>${s}`]),
     'Jornada média = horas somadas ÷ dias medidos (pelas batidas). Clique num colaborador para ver o dia a dia.');
 });
+/* Dias com número ímpar de batidas (fora da média): lista com as batidas para ajustar; segue o período e os filtros da tela. */
+$('#jcards').addEventListener('click',async e=>{
+  if(!e.target.closest('[data-imp]'))return;
+  $('#mt').textContent='Dias com batidas ímpares';$('#dt').innerHTML='<tbody><tr><td>Carregando…</td></tr></tbody>';$('#modal').style.display='flex';
+  try{
+    const ok=new Set(VIEW.colabs.map(c=>c.chapa));
+    const r=await api('/api/he-analise','POST',{acao:'impares',de:$('#d1').value||null,ate:$('#d2').value||null,chapas:[...ok]});
+    const nm=new Map(COLABS.map(c=>[c[0],c[1]]));
+    listaModal(`Dias com batidas ímpares · ${N(r.linhas.length)}${r.linhas.length>=3000?'+':''} dias`,['Chapa','Colaborador','Base','Data','Qtd.','Batidas'],
+      r.linhas.map(x=>[x.chapa,esc(x.chapa),esc(nm.get(x.chapa)||'—'),esc(info(x.chapa).base),dbr(x.data),x.batidas.length,x.batidas.map(fmt).join(' · ')]),
+      'Estes dias ficam fora da jornada média e da HE. Corrija a batida que falta no ponto. Clique num colaborador para ver o dia a dia.');
+  }catch(err){$('#dt').innerHTML=`<tbody><tr><td>Não foi possível carregar: ${esc(err.message)}</td></tr></tbody>`}
+});
 function alertasJornada(){
   const lx=(+$('#jx').value||8)*60,la=(+$('#ja').value||10)*60,ll=+$('#jl').value||0;
   const J=VIEW.colabs.filter(c=>c.jN).map(c=>({c,m:c.jS/c.jN})),st=m=>m>la?'Alarmante':m>lx?'Excessiva':'Normal';
@@ -585,7 +565,7 @@ function alertasJornada(){
   const imp=VIEW.colabs.reduce((a,c)=>a+(c.imp||0),0);
   const cor={Alarmante:'--bad',Excessiva:'--alm',Normal:'--sai'};
   JLIST={J,st,cor};
-  $('#jcards').innerHTML=['Alarmante','Excessiva','Normal'].map(s=>`<div class="kpi cl" data-j="${s}" title="Clique para ver os colaboradores" style="border-top:4px solid var(${cor[s]})"><div class="l"><b>Jornada ${s.toLowerCase()}</b></div><div class="v">${N(n[s])}</div><div class="l">${pc(n[s],J.length)} dos ${N(J.length)} colaboradores com jornada medida</div></div>`).join('')+kp('Dias com batidas ímpares',N(imp),'a ajustar, fora da média');
+  $('#jcards').innerHTML=['Alarmante','Excessiva','Normal'].map(s=>`<div class="kpi cl" data-j="${s}" title="Clique para ver os colaboradores" style="border-top:4px solid var(${cor[s]})"><div class="l"><b>Jornada ${s.toLowerCase()}</b></div><div class="v">${N(n[s])}</div><div class="l">${pc(n[s],J.length)} dos ${N(J.length)} colaboradores com jornada medida</div></div>`).join('')+kp('Dias com batidas ímpares',N(imp),'a ajustar, fora da média').replace('class="kpi"','class="kpi cl" data-imp="1" title="Clique para ver os dias"');
   const lin=(c,v,extra)=>`<tr data-ch="${esc(c.chapa)}"><td>${esc(c.nome)}<br><span class="sub">${esc(c.funcao)}</span></td><td>${esc(c.ci.base)}</td><td class="num"><b>${v}</b></td>${extra}</tr>`;
   $('#jlist').innerHTML='<table><thead><tr><th>Colaborador</th><th>Base</th><th class="num">Jornada média</th><th class="num">Dias</th><th>Status</th></tr></thead><tbody>'+
     J.filter(x=>x.m>lx).sort((a,b)=>b.m-a.m).slice(0,40).map(x=>lin(x.c,hm(x.m),`<td class="num">${x.c.jN}</td><td><span class="dot" style="background:var(${cor[st(x.m)]})"></span>${st(x.m)}</td>`)).join('')+'</tbody></table>';

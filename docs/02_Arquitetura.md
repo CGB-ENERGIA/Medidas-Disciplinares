@@ -54,4 +54,3 @@ Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: s
   - Solicitante (usuário): lê só as vagas e candidatos dele (pelo nome do solicitante), as configurações e o resumo do RM; abre vagas só em seu nome; anexa a RP assinada nos candidatos das vagas dele. Não lê o banco de talentos nem a base do RM.
 - **Nada é apagado:** "remover" só esconde o documento.
 - **Tamanho:** arquivos até 4 MB (limite da Vercel).
-- **Dados do site antigo:** `banco/contratacoes-exportar-antigo.js` (roda no site antigo) gera um .zip, e `npm run ct:importar` grava no banco. Veja `banco/LEIA-ME.md`.
