@@ -18,7 +18,7 @@ const DT={
 
 /* ---------- desenho padrão ---------- */
 DT.barras=function(it,fmt){if(!it.length)return '';const mx=Math.max(...it.map(x=>x.v))||1;
-  return '<div class="dt-ev">'+it.map(x=>'<div class="dt-evc" title="'+VX.esc(x.l+': '+fmt(x.v))+'"><span class="dt-evv">'+(x.v?fmt(x.v).replace('R$ ',''):'')+'</span><i style="height:'+Math.max(x.v?4:0,Math.round(70*x.v/mx))+'px"'+(x.c?' class="'+x.c+'"':'')+'></i><b>'+x.l+'</b></div>').join('')+'</div>'};
+  return '<div class="dt-ev">'+it.map(x=>'<div class="dt-evc" title="'+VX.esc(x.l+': '+fmt(x.v))+'"><span class="dt-evv">'+(x.v?fmt(x.v).replace('R$ ',''):'')+'</span><i style="height:'+Math.max(x.v?4:0,Math.round(96*x.v/mx))+'px"'+(x.c?' class="'+x.c+'"':'')+'></i><b>'+x.l+'</b></div>').join('')+'</div>'};
 DT.top=function(it,fmt,tot){if(!it.length)return '';const mx=it[0].v||1;tot=tot||DT.sum(it,x=>x.v)||1;
   return '<div class="dt-top">'+it.map(x=>'<div class="dt-tr"><span class="dt-tl" title="'+VX.esc(x.k)+'">'+VX.esc(x.k)+'</span><span class="dt-tb"><i style="width:'+Math.max(2,100*x.v/mx)+'%"></i></span><span class="dt-tv">'+fmt(x.v)+'<small>'+VX.pc(x.v/tot)+'</small></span></div>').join('')+'</div>'};
 DT.tab=function(cab,lin){if(!lin.length)return '';return '<div class="dt-tw"><table class="dt-tab"><thead><tr>'+cab.map(c=>'<th'+(c[1]?' class="n"':'')+'>'+c[0]+'</th>').join('')+'</tr></thead><tbody>'+lin.map(l=>'<tr>'+l.map((v,i)=>'<td'+(cab[i][1]?' class="n"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'};
@@ -26,7 +26,7 @@ DT.abrir=function(o){let el=document.getElementById('dt');if(!el){el=document.cr
   const k=(o.kpis||[]).map(x=>'<div class="dt-k'+(x[2]?' '+x[2]:'')+'"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
   const sec=(t,h)=>h?'<section class="dt-s"><h4>'+t+'</h4>'+h+'</section>':'';
   el.innerHTML='<div class="dt-ov" data-dtx></div><aside class="dt-p" role="dialog" aria-modal="true" aria-label="'+VX.esc(o.tit)+'"><header class="dt-hd"><div><span class="dt-tag">'+VX.esc(o.tag)+'</span><h3>'+VX.esc(o.tit)+'</h3>'+(o.sub?'<small>'+o.sub+'</small>':'')+'</div><button type="button" class="dt-x" data-dtx aria-label="Fechar">✕</button></header>'+
-    '<div class="dt-c">'+(o.frase?'<p class="dt-fr">'+o.frase+'</p>':'')+(k?'<div class="dt-ks">'+k+'</div>':'')+(o.ficha?sec('Ficha',o.ficha):'')+sec(o.evT||'Evolução mês a mês',o.ev)+sec(o.topT||'Onde se concentra',o.top)+sec(o.regT||'Registros',o.reg)+'</div>'+
+    '<div class="dt-c">'+(o.frase?'<p class="dt-fr">'+o.frase+'</p>':'')+(k?'<div class="dt-ks" style="--dtc:'+((n=>n<=5?n:n===6?3:4)((o.kpis||[]).length))+'">'+k+'</div>':'')+(o.ficha?sec('Ficha',o.ficha):'')+sec(o.evT||'Evolução mês a mês',o.ev)+sec(o.topT||'Onde se concentra',o.top)+sec(o.regT||'Registros',o.reg)+'</div>'+
     '<footer class="dt-f">'+(o.ir?'<a class="btn sm" href="#'+o.ir[0]+'" data-dtx>'+o.ir[1]+' →</a>':'')+'<button type="button" class="btn primary sm" data-dtcp>Copiar resumo</button></footer></aside>';
   el.classList.add('on');document.body.classList.add('dt-aberto');
   el.querySelectorAll('[data-dtx]').forEach(b=>b.addEventListener('click',DT.fechar));

@@ -150,29 +150,37 @@ html[data-tema="escuro"] .vx-tag{color:#ffc2cf;background:rgba(224,106,130,.16)}
 
 /* ===== gaveta de detalhe padrão ===== */
 #dt{position:fixed;inset:0;z-index:900;pointer-events:none}
-#dt .dt-ov{position:absolute;inset:0;background:rgba(20,4,8,.42);opacity:0;transition:opacity .2s;backdrop-filter:blur(2px)}
-#dt .dt-p{position:absolute;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--bg,#e7e5e6);box-shadow:-20px 0 50px rgba(0,0,0,.25);transform:translateX(102%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
-#dt.on{pointer-events:auto}#dt.on .dt-ov{opacity:1}#dt.on .dt-p{transform:none}
-.dt-hd{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:20px 22px 18px;color:#fff;background:radial-gradient(600px 200px at 90% -60%,#b0283f 0%,transparent 60%),linear-gradient(135deg,#3d0812 0%,#6a1222 55%,#8d1d31 100%)}
+/* janela centralizada (modal): nada cortado, rola só por dentro */
+#dt .dt-ov{position:absolute;inset:0;background:rgba(20,4,8,.46);opacity:0;transition:opacity .22s ease;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#dt .dt-p{position:absolute;top:50%;left:50%;width:min(940px,calc(100% - 40px));max-height:calc(100% - 40px);background:var(--bg,#efedee);border-radius:22px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(20,4,8,.35),0 8px 24px rgba(20,4,8,.18);border:1px solid rgba(255,255,255,.08);
+  transform:translate(-50%,-47%) scale(.97);opacity:0;transition:transform .26s cubic-bezier(.2,.8,.2,1),opacity .2s ease;display:flex;flex-direction:column}
+#dt.on{pointer-events:auto}#dt.on .dt-ov{opacity:1}#dt.on .dt-p{transform:translate(-50%,-50%) scale(1);opacity:1}
+@media (prefers-reduced-motion:reduce){#dt .dt-p,#dt .dt-ov{transition:none}}
+.dt-hd{flex:none;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:22px 26px 20px;color:#fff;background:radial-gradient(600px 200px at 90% -60%,#b0283f 0%,transparent 60%),linear-gradient(135deg,#3d0812 0%,#6a1222 55%,#8d1d31 100%)}
 html[data-tema="escuro"] .dt-hd{background:radial-gradient(600px 200px at 90% -60%,#7c1a2c 0%,transparent 60%),linear-gradient(135deg,#1c0408 0%,#3a0a14 50%,#5a0f1c 100%)}
 .dt-tag{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
-.dt-hd h3{margin:4px 0 2px;font-size:21px;line-height:1.2;color:#fff}
+.dt-hd h3{margin:6px 0 3px;font-size:23px;line-height:1.2;color:#fff;overflow-wrap:anywhere}
 .dt-hd small{opacity:.75;font-size:12px}
 .dt-x{flex:none;width:36px;height:36px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:15px;cursor:pointer}
 .dt-x:hover{background:rgba(255,255,255,.2)}
-.dt-c{flex:1;overflow-y:auto;padding:16px 18px 20px;display:grid;gap:14px;align-content:start}
-.dt-fr{margin:0;background:var(--surface);border:1px solid var(--line,#ece4e7);border-left:4px solid #8d1d31;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:var(--fg)}
-.dt-ks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.dt-k{background:var(--surface);border:1px solid var(--line,#ece4e7);border-radius:14px;padding:10px 12px}
+.dt-c{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px 26px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-content:start;overscroll-behavior:contain}
+.dt-c>*{min-width:0}
+.dt-c::-webkit-scrollbar{width:8px}.dt-c::-webkit-scrollbar-thumb{background:rgba(141,29,49,.25);border-radius:8px}
+.dt-fr{margin:0;overflow-wrap:anywhere;background:var(--surface);border:1px solid var(--line,#ece4e7);border-left:4px solid #8d1d31;border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:var(--fg)}
+.dt-ks{display:grid;grid-template-columns:repeat(var(--dtc,4),minmax(0,1fr));gap:12px}
+@media (max-width:860px){.dt-ks{grid-template-columns:repeat(min(var(--dtc,4),3),minmax(0,1fr))}}
+.dt-k{background:var(--surface);border:1px solid var(--line,#ece4e7);border-radius:14px;padding:12px 14px;min-width:0}
 .dt-k span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--vxm)}
-.dt-k b{display:block;font-size:19px;margin-top:3px;color:var(--fg)}
+.dt-k{display:flex;flex-direction:column;justify-content:space-between}
+.dt-k b{display:block;font-size:clamp(17px,2.1vw,22px);margin-top:6px;color:var(--fg);line-height:1.15;overflow-wrap:anywhere}
 .dt-k.ok b{color:var(--vxok)}.dt-k.bad b{color:var(--vxbad)}.dt-k.par b{color:var(--vxpar)}
-.dt-s{background:var(--surface);border:1px solid var(--line,#ece4e7);border-radius:16px;padding:12px 14px}
+.dt-s{background:var(--surface);border:1px solid var(--line,#ece4e7);border-radius:16px;padding:16px 18px;min-width:0}
 .dt-s h4{margin:0 0 10px;font-size:13px;color:var(--fg)}
-.dt-ev{display:flex;align-items:flex-end;gap:6px;height:118px;padding-top:4px}
+.dt-ev{display:flex;align-items:flex-end;gap:8px;height:140px;padding-top:6px}
 .dt-evc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
-.dt-evc i{display:block;width:100%;max-width:34px;border-radius:6px 6px 2px 2px;background:var(--vxw)}
-.dt-evc b{font-size:10px;color:var(--vxm);font-weight:700}.dt-evv{font-size:9.5px;color:var(--fg);font-weight:700;white-space:nowrap}
+.dt-evc i{display:block;width:100%;max-width:44px;border-radius:6px 6px 2px 2px;background:var(--vxw)}
+.dt-evc b{font-size:10px;color:var(--vxm);font-weight:700}.dt-evv{font-size:10px;color:var(--fg);font-weight:700;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:clip}
 .dt-top{display:grid;gap:7px}
 .dt-tr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12.5px}
 .dt-tl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fg);font-weight:600}
@@ -188,7 +196,7 @@ html[data-tema="escuro"] .dt-hd{background:radial-gradient(600px 200px at 90% -6
 .dt-dl{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;margin:0;font-size:12.5px}.dt-dl dt{color:var(--vxm);font-weight:700}.dt-dl dd{margin:0;color:var(--fg)}
 .dt-bad{color:var(--vxbad)}
 .dt-sm{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}.dt-sm span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--fg);text-align:center}.dt-sm span i{width:100%;height:16px;border-radius:5px}.dt-sm small{font-size:9.5px;color:var(--vxm);font-weight:600}
-.dt-f{display:flex;gap:10px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--vxl);background:var(--surface)}
+.dt-f{flex:none;display:flex;gap:10px;justify-content:flex-end;padding:14px 26px;border-top:1px solid var(--vxl);background:var(--surface)}
 body.dt-aberto{overflow:hidden}
 /* o que dá para clicar */
 body.dt-pode #main .dt-ok{cursor:pointer;transition:background .15s,box-shadow .15s}
@@ -199,6 +207,17 @@ html[data-tema="escuro"] body.dt-pode #main :is(.mb-r,.tirank-r,.msr,.timb,tr).d
 .vx g.vx-clk:hover>rect[fill="transparent"]{fill:rgba(141,29,49,.05)}
 .vx div.vx-clk:hover{box-shadow:0 0 0 2px rgba(141,29,49,.35)}
 @media print{#dt{display:none}}
+
+/* duas colunas em telas largas: concentração ao lado dos registros */
+@media (min-width:860px){.dt-c{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.dt-c>.dt-fr,.dt-c>.dt-ks,.dt-c>.dt-s:first-of-type{grid-column:1/-1}}
+/* celular: ocupa a tela, abre de baixo para cima */
+@media (max-width:640px){#dt .dt-p{top:auto;bottom:0;left:0;width:100%;max-height:92%;border-radius:22px 22px 0 0;transform:translateY(102%);opacity:1}
+  #dt.on .dt-p{transform:none}.dt-hd,.dt-c,.dt-f{padding-left:18px;padding-right:18px}.dt-ks{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (min-width:860px){.dt-c>.dt-s:nth-of-type(2):last-of-type{grid-column:1/-1}}
+
+.dt-f .btn{text-decoration:none!important}
+.dt-f a.btn{color:var(--fg)!important;background:var(--surface);border:1px solid var(--line,#ece4e7)}
+.dt-f a.btn:hover{background:var(--sunken,#f1eded)}
 
 /* ===== cartões de indicador modernos ===== */
 #main .icard:not([data-ind]){--icc:#8d1d31;position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(141,29,49,.10)!important;border-top:1px solid rgba(141,29,49,.10)!important;border-radius:22px!important;
@@ -3496,7 +3515,7 @@ const DT={
 
 /* ---------- desenho padrão ---------- */
 DT.barras=function(it,fmt){if(!it.length)return '';const mx=Math.max(...it.map(x=>x.v))||1;
-  return '<div class="dt-ev">'+it.map(x=>'<div class="dt-evc" title="'+VX.esc(x.l+': '+fmt(x.v))+'"><span class="dt-evv">'+(x.v?fmt(x.v).replace('R$ ',''):'')+'</span><i style="height:'+Math.max(x.v?4:0,Math.round(70*x.v/mx))+'px"'+(x.c?' class="'+x.c+'"':'')+'></i><b>'+x.l+'</b></div>').join('')+'</div>'};
+  return '<div class="dt-ev">'+it.map(x=>'<div class="dt-evc" title="'+VX.esc(x.l+': '+fmt(x.v))+'"><span class="dt-evv">'+(x.v?fmt(x.v).replace('R$ ',''):'')+'</span><i style="height:'+Math.max(x.v?4:0,Math.round(96*x.v/mx))+'px"'+(x.c?' class="'+x.c+'"':'')+'></i><b>'+x.l+'</b></div>').join('')+'</div>'};
 DT.top=function(it,fmt,tot){if(!it.length)return '';const mx=it[0].v||1;tot=tot||DT.sum(it,x=>x.v)||1;
   return '<div class="dt-top">'+it.map(x=>'<div class="dt-tr"><span class="dt-tl" title="'+VX.esc(x.k)+'">'+VX.esc(x.k)+'</span><span class="dt-tb"><i style="width:'+Math.max(2,100*x.v/mx)+'%"></i></span><span class="dt-tv">'+fmt(x.v)+'<small>'+VX.pc(x.v/tot)+'</small></span></div>').join('')+'</div>'};
 DT.tab=function(cab,lin){if(!lin.length)return '';return '<div class="dt-tw"><table class="dt-tab"><thead><tr>'+cab.map(c=>'<th'+(c[1]?' class="n"':'')+'>'+c[0]+'</th>').join('')+'</tr></thead><tbody>'+lin.map(l=>'<tr>'+l.map((v,i)=>'<td'+(cab[i][1]?' class="n"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'};
@@ -3504,7 +3523,7 @@ DT.abrir=function(o){let el=document.getElementById('dt');if(!el){el=document.cr
   const k=(o.kpis||[]).map(x=>'<div class="dt-k'+(x[2]?' '+x[2]:'')+'"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('');
   const sec=(t,h)=>h?'<section class="dt-s"><h4>'+t+'</h4>'+h+'</section>':'';
   el.innerHTML='<div class="dt-ov" data-dtx></div><aside class="dt-p" role="dialog" aria-modal="true" aria-label="'+VX.esc(o.tit)+'"><header class="dt-hd"><div><span class="dt-tag">'+VX.esc(o.tag)+'</span><h3>'+VX.esc(o.tit)+'</h3>'+(o.sub?'<small>'+o.sub+'</small>':'')+'</div><button type="button" class="dt-x" data-dtx aria-label="Fechar">✕</button></header>'+
-    '<div class="dt-c">'+(o.frase?'<p class="dt-fr">'+o.frase+'</p>':'')+(k?'<div class="dt-ks">'+k+'</div>':'')+(o.ficha?sec('Ficha',o.ficha):'')+sec(o.evT||'Evolução mês a mês',o.ev)+sec(o.topT||'Onde se concentra',o.top)+sec(o.regT||'Registros',o.reg)+'</div>'+
+    '<div class="dt-c">'+(o.frase?'<p class="dt-fr">'+o.frase+'</p>':'')+(k?'<div class="dt-ks" style="--dtc:'+((n=>n<=5?n:n===6?3:4)((o.kpis||[]).length))+'">'+k+'</div>':'')+(o.ficha?sec('Ficha',o.ficha):'')+sec(o.evT||'Evolução mês a mês',o.ev)+sec(o.topT||'Onde se concentra',o.top)+sec(o.regT||'Registros',o.reg)+'</div>'+
     '<footer class="dt-f">'+(o.ir?'<a class="btn sm" href="#'+o.ir[0]+'" data-dtx>'+o.ir[1]+' →</a>':'')+'<button type="button" class="btn primary sm" data-dtcp>Copiar resumo</button></footer></aside>';
   el.classList.add('on');document.body.classList.add('dt-aberto');
   el.querySelectorAll('[data-dtx]').forEach(b=>b.addEventListener('click',DT.fechar));
