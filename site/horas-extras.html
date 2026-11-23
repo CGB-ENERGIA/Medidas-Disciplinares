@@ -819,15 +819,18 @@ $('#prevtxt').addEventListener('input',e=>{if(e.target.classList.contains('perB'
 /* ----- planilha modelo (cabeçalho certo, uma linha de exemplo e a aba de instruções) ----- */
 function baixarModelo(tipo){
   const bat=tipo==='batidas',wb=XLSX.utils.book_new();
-  const cab=bat?['CHAPA','NOME','FUNCAO','DATABATIDA','1º_BATIDA','2º_BATIDA','3º_BATIDA','4º_BATIDA','5º_BATIDA','6º_BATIDA','7º_BATIDA','8º_BATIDA','9º_BATIDA','10º_BATIDA','HTRAB','HBASE','ENT1','SAI1','ENT2','SAI2','EXTRA ENTRADA','EXTRA ALMOCO','EXTRA SAIDA','EXTRA ENTRADA2','EXTRA SAIDA2']
+  const CAB_BAT='CODCOLIGADA|CODFILIAL|CHAPA|NOME|CODSECAO|FUNCAO|DATABATIDA|EQUIPE|1º_BATIDA|2º_BATIDA|3º_BATIDA|4º_BATIDA|5º_BATIDA|6º_BATIDA|7º_BATIDA|8º_BATIDA|9º_BATIDA|10º_BATIDA|TIPO OCORRÊNCIA|NUMERO DE HORAS|ATITUDE|HTRAB|HBASE|TIPO ABONO1|HABONO1|TIPO ABONO2|HABONO2|CODHORARIO|JORNADA|EXTRA ENTRADA|EXTRA ALMOÇO|EXTRA SAIDA|SIT 2ª BATIDA x SAI1|DIF 2ª BATIDA x SAI1|DIA_JORNADA_BUSCADA|DIA_REAL_DA_BATIDA|DIVERGE_DIA|ENT1|SAI1|ENT2|SAI2|SIT 1ª BATIDA x ENT1|DIF 1ª BATIDA x ENT1|SIT 3ª BATIDA x ENT2|DIF 3ª BATIDA x ENT2|SIT 4ª BATIDA x SAI2|DIF 4ª BATIDA x SAI2|EXTRA ENTRADA2|EXTRA SAIDA2'.split('|');
+  const EXB={CODCOLIGADA:'1',CODFILIAL:'1',CHAPA:'12345',NOME:'FULANO DE TAL',CODSECAO:'01.01',FUNCAO:'ELETRICISTA',DATABATIDA:'01/09/2026',EQUIPE:'EQUIPE 01','1º_BATIDA':'07:55','2º_BATIDA':'12:00','3º_BATIDA':'13:30','4º_BATIDA':'18:05',HTRAB:'08:40',HBASE:'08:30',CODHORARIO:'001',ENT1:'08:00',SAI1:'12:00',ENT2:'13:30',SAI2:'18:00','EXTRA ENTRADA':'00:05','EXTRA ALMOÇO':'00:00','EXTRA SAIDA':'00:05','EXTRA ENTRADA2':'00:00','EXTRA SAIDA2':'00:00'};
+  const cab=bat?CAB_BAT
     :['CHAPA','NOME','FUNCAO','ANT_REALIZADAS','ANT_ATRASOS','ANT_SALDO','ATUAL_REALIZADAS','ATUAL_ATRASOS','ATUAL_SALDO','POSITIVAS','NEGATIVAS'];
-  const ex=bat?['12345','FULANO DE TAL','ELETRICISTA','01/09/2026','07:55','12:00','13:30','18:05','','','','','','','08:40','08:30','08:00','12:00','13:30','18:00','00:05','00:00','00:05','00:00','00:00']
+  const ex=bat?CAB_BAT.map(c=>EXB[c]??'')
     :['12345','FULANO DE TAL','ELETRICISTA','00:00','00:00','00:00','24:49','01:04','23:45','23:45','00:00'];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([cab,ex]),bat?'Batidas':'Banco Dinâmica');
   const ins=bat?[
     ['Para que serve','Enviar as batidas de ponto para o banco de Horas Extras. Uma linha por colaborador (CHAPA) e dia (DATABATIDA).'],
     ['Linha de exemplo','A linha 2 é só um exemplo do formato: APAGUE antes de enviar, ou o FULANO DE TAL será cadastrado.'],
-    ['Obrigatórias','CHAPA, NOME, DATABATIDA, HTRAB, HBASE, EXTRA ENTRADA, EXTRA ALMOCO, EXTRA SAIDA, EXTRA ENTRADA2 e EXTRA SAIDA2.'],
+    ['Colunas','A planilha segue a ordem das colunas do banco (as mesmas da exportação do ponto). Só são lidas: CHAPA, NOME, FUNCAO, DATABATIDA, 1º a 10º_BATIDA, HTRAB, HBASE, ENT1, SAI1, ENT2, SAI2 e as colunas EXTRA. As demais podem ficar em branco.'],
+    ['Obrigatórias','CHAPA, NOME, DATABATIDA, HTRAB, HBASE, EXTRA ENTRADA, EXTRA ALMOÇO, EXTRA SAIDA, EXTRA ENTRADA2 e EXTRA SAIDA2.'],
     ['Datas e horários','DATABATIDA no formato dia/mês/ano (01/09/2026). Batidas e demais horários em hh:mm (07:55), entre 00:00 e 23:59, até 10 batidas por dia.'],
     ['Dia que já existe','Se a chapa e a data já estão no banco, o sistema compara: o que mudou é substituído (o antes e o depois ficam registrados) e o que não mudou fica como está.'],
     ['Linha que não vem','O que não vier no arquivo é mantido no banco.'],
