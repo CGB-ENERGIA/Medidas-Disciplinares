@@ -19,6 +19,12 @@ Quando o Claude entregar uma Central nova (dados novos), troque `central-adminis
 2. `npm run central:banco` → atualiza os dados no Neon.
 3. Publicar (commit + push).
 
+Como os dados de hospedagem e alimentação são tratados (pasta `fonte/extracao/`, rodar na pasta `fonte/`):
+1. `extrai_hosp.py <as 5 planilhas .xlsm>` e `extrai_alim_voucher.py <planilha de voucher>`: leem as planilhas.
+2. `tratar.py`: arruma grafias de nomes e hotéis e anos digitados errado; coloca o contrato (127/169/170) pelo histórico do colaborador em quem estava sem; remove duplicados (hospedagem: mesmo colaborador, mesma entrada e saída; alimentação: mesmo colaborador, dia e refeição).
+3. `relatorio_tratamento.py`: gera a planilha com tudo o que foi removido ou corrigido, para as bases conferirem.
+4. `python build.py` e depois `npm run central:site` e `npm run central:banco`.
+
 As planilhas enviadas pela tela **Banco de dados** e os lançamentos feitos no site já vão direto para o Neon: não precisa fazer nada.
 
 ---
