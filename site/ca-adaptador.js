@@ -14,7 +14,28 @@
   if (emb) {
     document.documentElement.classList.add("emb");
     // dentro do site principal: o logo e o nome já estão na barra de cima do site; aqui ficam só os botões
-    const st = document.createElement("style"); st.textContent = "html.emb header.top .marca{display:none!important}";
+    // Mesmo padrão de Contratações: o menu e a barra de cima são os do site principal.
+    // Aqui some o menu lateral vinho da Central, e a barra dela vira uma faixa clara só com as ferramentas.
+    const st = document.createElement("style");
+    st.textContent = [
+      "html.emb{--rail-c:0px!important;--rail-x:0px!important}",
+      "html.emb #rail,html.emb .rail-fundo,html.emb #hamb,html.emb header.top .marca,html.emb #b-tema,html.emb .topoCirc,html.emb header.top canvas{display:none!important}",
+      "html.emb .wrap,html.emb body.rail-pin .wrap,html.emb body.rail-off .wrap{padding-left:24px!important;padding-right:24px!important}",
+      "html.emb .tnav,html.emb .alertas,html.emb body.rail-pin .tnav,html.emb body.rail-pin .alertas{padding-left:24px!important}",
+      "html.emb header.top,html.emb[data-tema=escuro] header.top{background:var(--surface)!important;background-image:none!important;border-bottom:1px solid var(--line)!important;box-shadow:none!important;color:var(--fg)!important}",
+      "html.emb header.top::before,html.emb header.top::after{display:none!important}",
+      "html.emb header.top .top-in{min-height:0!important;padding:10px 24px!important}",
+      "html.emb header.top .top-dir{margin-left:auto}",
+      "html.emb header.top .tbtn,html.emb header.top .cmd-btn{background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--fg)!important;box-shadow:none!important;backdrop-filter:none!important}",
+      "html.emb header.top .tbtn:hover,html.emb header.top .cmd-btn:hover{background:var(--sunken)!important}",
+      "html.emb header.top .tbtn .ico,html.emb header.top .cmd-btn .ico,html.emb header.top .modo .ico{stroke:currentColor!important;color:inherit!important}",
+      "html.emb header.top .tbtn.solid{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}",
+      "html.emb header.top .cmd-btn kbd{background:var(--sunken)!important;color:var(--muted)!important;border-color:var(--line)!important}",
+      "html.emb header.top .modo{background:var(--sunken)!important;border:1px solid var(--line)!important;box-shadow:none!important}",
+      "html.emb header.top .modo button{color:var(--muted)!important;background:transparent!important}",
+      "html.emb header.top .modo button[aria-pressed=true]{background:var(--surface)!important;color:var(--accent)!important;box-shadow:0 1px 3px rgba(0,0,0,.08)!important}",
+      "html.emb header.top .atual span{color:var(--muted)!important}html.emb header.top .atual b{color:var(--fg)!important}"
+    ].join("\n");
     document.head.appendChild(st);
   }
   const aplicarTema = t => { if (t === "escuro") document.documentElement.setAttribute("data-tema", "escuro"); else document.documentElement.removeAttribute("data-tema"); };
@@ -116,9 +137,27 @@
   window.claude = { use: async nome => ({ db, user, downloads, assets, sample: null })[nome] || null };
 
   // ---------- conversa com o site principal ----------
+  // A Central manda a lista das telas da área (o site monta o menu dele com ela) e avisa a tela aberta.
+  const menuDaArea = () => {
+    try {
+      return PAGS().filter(p => !p.hide && (p.g !== "Equipe" || (typeof caAdm === "function" && caAdm())))
+        .map(p => [p.id, p.nm, p.sub || "", ico(p.ic), p.g === "Ajuda" ? "Ajuda" : p.g === "Equipe" ? "Equipe" : p.g]);
+    } catch { return []; }
+  };
+  let ultMenu = "";
+  const avisar = () => {
+    const itens = menuDaArea(), k = JSON.stringify(itens.map(i => i[0]));
+    if (k !== ultMenu && itens.length) { ultMenu = k; pai({ tipo: "ca-menu", area, itens }); }
+    let v = ""; try { const p = pag(); v = p.pai || p.id; } catch {}
+    pai({ tipo: "ca-view", area, view: v });
+  };
+  addEventListener("hashchange", () => setTimeout(avisar, 0));
+  addEventListener("click", () => setTimeout(avisar, 400));   // ex.: trocar "Ver como" no TI muda as telas do menu
+  addEventListener("load", () => { setTimeout(avisar, 300); setTimeout(avisar, 2500); setTimeout(avisar, 6000); });
   addEventListener("message", e => {
     if (e.origin !== location.origin) return;
     const m = e.data || {};
     if (m.tipo === "tema") aplicarTema(m.tema);
+    else if (m.tipo === "ir" && m.view && location.hash.slice(1) !== m.view) location.hash = m.view;
   });
 })();

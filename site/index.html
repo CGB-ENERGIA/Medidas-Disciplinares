@@ -1363,10 +1363,6 @@ body.em-hub { overflow-x: clip; }
 @media (max-width: 520px) { .hub-card { min-height: 0; padding: 18px; } .hub-grid { gap: 14px; } }
 .mod-op .mod-ok { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.4; }
 .ct-host { min-width: 0; }
-/* Central Administrativa: ocupa toda a área abaixo da barra do site (a Central tem o próprio menu) */
-body.ca-cheia #tabs, body.ca-cheia #side-fundo, body.ca-cheia #menu-btn { display: none !important; }
-body.ca-cheia .wrap { max-width: none !important; padding: 0 !important; margin: 0 !important; }
-body.ca-cheia #ca-host iframe { height: calc(100vh - var(--top-h, 72px)); height: calc(100dvh - var(--top-h, 72px)); border-radius: 0; }
 .ct-host iframe { display: block; width: 100%; height: calc(100vh - var(--top-h, 72px) - 56px); height: calc(100dvh - var(--top-h, 72px) - 56px); min-height: 420px; border: 0; background: transparent; border-radius: var(--r-md); }
 .usu-form .usu-adm { display: flex; align-items: center; gap: 8px; flex-direction: row; font-weight: 600; align-self: end; padding-bottom: 8px; }
 .usu-form .usu-adm input { width: auto; margin: 0; }
@@ -2717,10 +2713,10 @@ const MODULOS = {
   // Só aparece para quem foi liberado na aba Usuários (usuarios.horas_extras); o administrador não ganha sozinho
   horas: { nome: "Horas Extras", desc: "Análise e carga da base de batidas", eyebrow: "Controle de Horas Extras", titulo: "Horas Extras CGB", sub: "Análise de batidas e banco de horas", ico: "mod-horas", inicio: "he:analise" },
   // Central Administrativa: uma página só (central.html), aberta já filtrada na área (central.html?area=...)
-  financeiro: { nome: "Financeiro", desc: "Hospedagem, alimentação, locação e produtividade", eyebrow: "Central Administrativa", titulo: "Financeiro", sub: "Hospedagem · Alimentação · Locação", ico: "mod-financeiro", inicio: "ca:painel", ca: true },
-  patrimonio: { nome: "Patrimônio", desc: "Inventário, cronograma e bens", eyebrow: "Central Administrativa", titulo: "Patrimônio", sub: "Inventário 2026", ico: "mod-patrimonio", inicio: "ca:painel", ca: true },
-  atendimento: { nome: "Atendimento", desc: "Fale Conosco: atendimentos aos colaboradores", eyebrow: "Central Administrativa", titulo: "Atendimento", sub: "Fale Conosco", ico: "mod-atendimento", inicio: "ca:painel", ca: true },
-  ti: { nome: "Tecnologia (TI)", desc: "Custos, notas e aquisições do Setor de TI", eyebrow: "Central Administrativa", titulo: "Tecnologia (TI)", sub: "Controle de custos", ico: "mod-ti", inicio: "ca:painel", ca: true }
+  financeiro: { nome: "Financeiro", desc: "Hospedagem, alimentação, locação e produtividade", eyebrow: "Central Administrativa", titulo: "Financeiro", sub: "Hospedagem · Alimentação · Locação", ico: "mod-financeiro", inicio: "ca:", ca: true },
+  patrimonio: { nome: "Patrimônio", desc: "Inventário, cronograma e bens", eyebrow: "Central Administrativa", titulo: "Patrimônio", sub: "Inventário 2026", ico: "mod-patrimonio", inicio: "ca:", ca: true },
+  atendimento: { nome: "Atendimento", desc: "Fale Conosco: atendimentos aos colaboradores", eyebrow: "Central Administrativa", titulo: "Atendimento", sub: "Fale Conosco", ico: "mod-atendimento", inicio: "ca:", ca: true },
+  ti: { nome: "Tecnologia (TI)", desc: "Custos, notas e aquisições do Setor de TI", eyebrow: "Central Administrativa", titulo: "Tecnologia (TI)", sub: "Controle de custos", ico: "mod-ti", inicio: "ca:", ca: true }
 };
 const NIVEL_CA = { usuario: "Consulta", gestor: "Gestor" };
 const ehCentral = m => !!(MODULOS[m] && MODULOS[m].ca);
@@ -2788,7 +2784,7 @@ const CT_TELAS = [
   ["ct:banco", "Banco de talentos", "Processos guardados para retomar", "Registro", "todos"],
   ["ct:rm", "Integração RM", "Conferência com o RM, padrões e planilha", "Registro", "gestor"]
 ];
-const CT_ICO = { "ca:painel": "painel", "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
+const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
 const ctVisivel = quem => state.user.modulos.contratacoes.nivel === "gestor" || quem === "todos";
 function menuContratacoes() {
   const grupos = []; CT_TELAS.filter(t => ctVisivel(t[4])).forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
@@ -2851,12 +2847,20 @@ function heMostrar() {
 
 // Central Administrativa (Financeiro, Patrimônio, Atendimento e TI): a página central.html tem o próprio menu
 // com as telas da área; aqui fica só o item de entrada (e Usuários, para o administrador).
+const CA_MENU = {}, CA_SVG = {};    // telas de cada área (vêm da própria Central) e o ícone de cada uma
+const CA_GRUPO = { Equipe: "Produtividade", "Banco de dados": "Banco de dados", Ajuda: "Ajuda" };
 function menuCentral(m) {
-  const grupos = [["Central Administrativa", [["ca:painel", MODULOS[m].nome, "Indicadores e telas da área"]]]];
+  const grupos = [];
+  if (!CA_MENU[m]) grupos.push([MODULOS[m].nome, [["ca:", MODULOS[m].nome, "Carregando as telas…"]]]);
+  else CA_MENU[m].forEach(([id, nm, sub, svg, g]) => {
+    const k = "ca:" + id, nomeG = CA_GRUPO[g] || g; CA_SVG[k] = svg;
+    let x = grupos.find(y => y[0] === nomeG); if (!x) grupos.push(x = [nomeG, []]);
+    x[1].push([k, nm, sub]);
+  });
   if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Pedidos de acesso e níveis de cada pessoa", state.pendentes || 0]]]);
   return grupos;
 }
-let caArea = "";
+let caArea = "", caVista = "";
 const caFrame = () => document.getElementById("ca-frame");
 function caEnviar(msg) { const f = caFrame(); if (f && f.contentWindow) f.contentWindow.postMessage(msg, location.origin); }
 // Abre a Central na área do ambiente escolhido (a página é criada na primeira vez; trocar de área recarrega o quadro)
@@ -2868,8 +2872,21 @@ function caMostrar(m) {
     host.appendChild(f);
     f.addEventListener("load", () => { caEnviar({ tipo: "tema", tema: document.documentElement.getAttribute("data-tema") }); });
   }
-  if (caArea !== m) { caArea = m; f.src = "central.html?area=" + encodeURIComponent(m); }
+  const view = state.tab.slice(3);
+  if (caArea !== m) { caArea = m; caVista = view; f.src = "central.html?area=" + encodeURIComponent(m) + (view ? "#" + view : ""); }
+  else if (view && view !== caVista) { caVista = view; caEnviar({ tipo: "ir", view }); }
 }
+// A Central avisa as telas da área (para o menu) e a tela aberta (para destacar o item certo)
+window.addEventListener("message", e => {
+  if (e.origin !== location.origin || !caFrame() || e.source !== caFrame().contentWindow) return;
+  const m = e.data || {};
+  if (m.area !== caArea || !state.user) return;
+  if (m.tipo === "ca-menu" && Array.isArray(m.itens)) { CA_MENU[m.area] = m.itens; if (moduloAtual() === m.area) render(); }
+  else if (m.tipo === "ca-view" && m.view) {
+    caVista = m.view;
+    if (moduloAtual() === m.area && state.tab !== "ca:" + m.view && (state.tab.startsWith("ca:") || state.tab === "")) { state.tab = "ca:" + m.view; render(); }
+  }
+});
 
 // ---------- Login (usuário e senha) ----------
 async function api(url, metodo = "GET", corpo) {
@@ -3212,7 +3229,7 @@ function render() {
   if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
   if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
   if (state.hub && modulosDoUsuario().length > 1) { // tela de ambientes: sem menu lateral, só os cartões
-    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true; document.getElementById("ca-host").hidden = true; document.body.classList.remove("ca-cheia");
+    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true; document.getElementById("ca-host").hidden = true;
     ctEnviar({ tipo: "visivel", v: false }); v0.innerHTML = viewAmbientes(); return;
   }
   ses.hidden = true; nav.hidden = false;
@@ -3226,13 +3243,12 @@ function render() {
   const corpo = MOD === "medidas" && (state.tab === "entrada" || state.tab === "enviados") ? viewCaixa(state.tab) : null;
   if (corpo !== null) tabs.forEach(t => { if (t[0] === "entrada") t[3] = naoLidas(); });
   const fixo = document.body.classList.contains("menu-fixo");
-  const item = ([k, n, d, c]) => `<button type="button" class="menu-it" data-tab="${k}" ${state.tab === k ? 'aria-current="page"' : ""} title="${n}: ${d}"><span class="mi">${icone(CT_ICO[k] || k)}${c ? `<span class="mi-n">${c > 99 ? "99+" : c}</span>` : ""}</span><span class="rail-tx"><b>${n}</b><small>${d}</small></span>${c ? `<span class="count">${c}</span>` : ""}</button>`;
+  const item = ([k, n, d, c]) => `<button type="button" class="menu-it" data-tab="${k}" ${state.tab === k ? 'aria-current="page"' : ""} title="${n}: ${d}"><span class="mi">${CA_SVG[k] || icone(CT_ICO[k] || k)}${c ? `<span class="mi-n">${c > 99 ? "99+" : c}</span>` : ""}</span><span class="rail-tx"><b>${n}</b><small>${d}</small></span>${c ? `<span class="count">${c}</span>` : ""}</button>`;
   document.getElementById("tabs").innerHTML = `<div class="rail-sc">${MENU.map(([g, its]) => `<div class="rail-g"><div class="rail-gt"><span>${g}</span></div>${its.map(item).join("")}</div>`).join("")}</div>` +
     `<div class="rail-pe"><button type="button" class="menu-it" data-act="menu-fixar" title="${fixo ? "Recolher o menu" : "Manter o menu aberto"}"><span class="mi"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${fixo ? '<path d="M15 6l-6 6 6 6"/><path d="M4 4v16"/>' : '<path d="M9 6l6 6-6 6"/><path d="M20 4v16"/>'}</svg></span><span class="rail-tx"><b>${fixo ? "Recolher menu" : "Manter menu aberto"}</b><small>${fixo ? "Mostra só os ícones" : "Deixa os nomes sempre visíveis"}</small></span></button></div>`;
   const emCt = MOD === "contratacoes" && state.tab.startsWith("ct:");
   const emHe = MOD === "horas" && state.tab.startsWith("he:");
   const emCa = ehCentral(MOD) && state.tab.startsWith("ca:");
-  document.body.classList.toggle("ca-cheia", emCa);
   v.hidden = emCt || emHe || emCa; document.getElementById("ct-host").hidden = !emCt; document.getElementById("he-host").hidden = !emHe; document.getElementById("ca-host").hidden = !emCa;
   if (emCa) { ctEnviar({ tipo: "visivel", v: false }); caMostrar(MOD); return; }
   if (emHe) { ctEnviar({ tipo: "visivel", v: false }); heMostrar(); return; }
