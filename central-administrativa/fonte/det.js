@@ -67,18 +67,44 @@ DT.hosp={
 /* ---------- CONTROLE DE LOCAÇÃO ---------- */
 DT.loc={
   I:()=>VX.locI(),
-  achar(l){const t=DT.nrm(l);if(!t)return null;const I=DT.loc.I();
-    for(const b of [...new Set(I.map(i=>i.b))]){let nb=b;try{nb=bnome(b)}catch(e){}if(t===b||t===DT.nrm(nb))return {c:'b',v:b,nm:nb}}
+  achar(l,p){const t=DT.nrm(l);if(!t)return null;const I=DT.loc.I();
+    for(const b of [...new Set(I.map(i=>i.b))]){let nb=b;try{nb=typeof lbn==='function'?lbn(b):bnome(b)}catch(e){}if(t===b||t===DT.nrm(nb))return {c:'b',v:b,nm:nb}}
+    if(p&&p!=='b'){const x=I.find(x=>DT.nrm(x[p])===t||(p==='ct'&&DT.nrm('Contrato '+x.ct)===t));if(x)return {c:p,v:x[p],nm:p==='ct'?'Contrato '+x.ct:VX.cap(x[p])}}
     const ix=DT.idx('loc',{k:I.length,f:m=>{for(const c of ['im','loc','lo','ct','end'])for(const x of I){DT.put(m,x[c],{c,v:x[c],nm:c==='ct'?'Contrato '+x[c]:VX.cap(x[c])});if(c==='ct')DT.put(m,'CONTRATO '+x.ct,{c,v:x.ct,nm:'Contrato '+x.ct})}}});
     return ix.get(t)||null},
   NM:{b:'Base',loc:'Localidade',im:'Imóvel',lo:'Locador',ct:'Contrato',end:'Endereço',id:'Imóvel',tudo:'Visão geral'},
-  abrir(q,extra){const I=DT.loc.I(),S=q.c==='tudo'?I:I.filter(i=>i[q.c]===q.v);const hoje=Date.now(),d=new Date();
+  /* "Contrato 169/170" (filtro agrupado) */
+  modo(){let p='';try{p=pag().id}catch(e){}return p==='loc-agua'?'agua':p==='loc-energia'?'ener':(typeof LTIPO!=='undefined'&&p==='locacao'&&LTIPO!=='loc'?LTIPO:'loc')},
+  /* Água / Energia: os mesmos números das telas (planilha de locação = valor de cada imóvel; Contas a Pagar = pago por contrato) */
+  util(q,extra,ag){const ki=ag?0:1,kt=ag?2:1,nome=ag?'Água':'Energia',st=ag?'ag':'en';
+    let I=[];try{I=lFiltra(lCalc().I)}catch(e){I=DT.loc.I()}
+    const ref=lMesRef(),ms=L_MESES.filter(m=>m<='2026-11'),mf=ms.filter(m=>m<=ref);
+    const S=q.c==='tudo'?I:I.filter(i=>q.c==='ct'?String(i.ct)===String(q.v):String(i[q.c])===String(q.v));
+    const val=(i,m)=>+((i.cons[m]||[0,0])[ki])||0,soma=m=>S.reduce((a,i)=>a+val(i,m),0);
+    const ano=mf.reduce((a,m)=>a+soma(m),0),com=S.filter(i=>mf.some(m=>val(i,m)>0));
+    const mCom=mf.filter(m=>soma(m)>0),ultM=mCom[mCom.length-1],ult=ultM?soma(ultM):0,media=mCom.length?ano/mCom.length:0;
+    const cp=q.c==='ct'?ms.reduce((a,m)=>a+(+(((LOC.tot[q.v]||{})[m]||[0,0,0])[kt])||0),0):null;
+    const pend=S.filter(i=>i.st==='ATIVO'&&['NÃO SAIU','LANÇAR'].includes((i[st]||[])[2])).length;
+    const um=S.length===1?S[0]:null;
+    const ev=DT.barras(ms.map(m=>({l:VX.M3[+m.slice(5)-1],v:soma(m),c:m>ref?'vx-fut':''})),VX.brl);
+    const tops=com.map(i=>({k:VX.cap(i.im)+' · '+i.b,v:mf.reduce((a,m)=>a+val(i,m),0)})).sort((a,b)=>b.v-a.v);
+    const reg=um?'':DT.tab([['Imóvel'],['Base'],['Último valor',1],['Situação · '+VX.M3[10].toLowerCase()]],com.slice().sort((a,b)=>mf.reduce((s,m)=>s+val(b,m),0)-mf.reduce((s,m)=>s+val(a,m),0)).slice(0,10).map(i=>{const m=mf.slice().reverse().find(m=>val(i,m)>0);return [VX.esc(VX.cap(i.im)),i.b,m?VX.brl(val(i,m))+' <small>('+VX.M3[+m.slice(5)-1].toLowerCase()+')</small>':'–',VX.esc((i[st]||[])[2]||'–')]}));
+    let ficha='';if(um)ficha='<dl class="dt-dl"><dt>Imóvel</dt><dd>'+VX.esc(VX.cap(um.im))+' · '+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+(um.st!=='ATIVO'?' · distratado':'')+'</dd><dt>'+(ag?'UC água':'UC energia')+'</dt><dd>'+VX.esc((ag?um.ucag:(um.ucn||um.uca))||'–')+'</dd><dt>Titular</dt><dd>'+VX.esc(um.tit||'–')+'</dd><dt>Situação (set/out/nov)</dt><dd>'+VX.esc(((um[st]||[]).map(x=>x||'–')).join(' · '))+'</dd></dl>';
+    const nm=q.c==='tudo'?'No período':DT.rot(DT.loc.NM[q.c]||'Imóvel',q.nm);
+    const frase=nm+': <b>'+VX.brl(ano)+'</b> de '+nome.toLowerCase()+' nos meses fechados (planilha de locação)'+(cp!=null?'; na Contas a Pagar foram pagos <b>'+VX.brl(cp)+'</b> no ano':'')+'. '+
+      (um?'':'<b>'+com.length+'</b> imóve'+(com.length===1?'l':'is')+' com conta. ')+(ultM?'Último mês com conta: '+DT.MF[+ultM.slice(5)-1].toLowerCase()+', '+VX.brl(ult)+(media&&mCom.length>1?' ('+(ult>=media?'+':'')+VX.pc(ult/media-1)+' vs a média de '+VX.brl(media)+')':'')+'.':'Nenhuma conta lançada na planilha.')+(pend?' <b class="dt-bad">'+pend+'</b> conta'+(pend>1?'s':'')+' de novembro pendente'+(pend>1?'s':'')+'.':'');
+    const kpis=(cp!=null?[['Pago no ano (Contas a Pagar)',VX.brl(cp)]]:[]).concat([['No ano (planilha, meses fechados)',VX.brl(ano)],['Último mês com conta'+(ultM?' ('+VX.M3[+ultM.slice(5)-1].toLowerCase()+')':''),VX.brl(ult)],['Média por mês',VX.brl(media)]]).concat(um?[]:[['Imóveis com conta',DT.num(com.length)]]).concat([['Pendentes em nov',DT.num(pend),pend?'par':'ok']]);
+    DT.abrir({tag:'Controle de Locação · '+nome+' · '+(DT.loc.NM[q.c]||'Imóvel'),tit:extra&&extra.tit||q.nm,sub:um?VX.esc(VX.cap(um.loc)+' · '+um.b):S.length+' imóve'+(S.length===1?'l':'is')+' (ativos e distratados)',frase,kpis,ficha,
+      ev,evT:nome+' mês a mês (planilha de locação)',top:um?'':DT.top(tops.slice(0,6),VX.brl,ano),topT:'Onde se concentra · por imóvel',reg,regT:'Imóveis com conta (maior gasto primeiro)',ir:[ag?'loc-agua':'loc-energia','Ver '+nome]})},
+  abrir(q,extra){const md=DT.loc.modo();if(md==='agua'||md==='ener')return DT.loc.util(q,extra,md==='agua');
+    const I=DT.loc.I(),S=q.c==='tudo'?I:I.filter(i=>i[q.c]===q.v);const hoje=Date.now(),d=new Date();
     const M=[];for(let k=5;k>=0;k--){const x=new Date(d.getFullYear(),d.getMonth()-k,1);M.push(x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0'))}
-    const ant=M[4],alu=DT.sum(S,i=>i.v),v90=S.filter(i=>i.fim&&(Date.parse(i.fim)-hoje)/864e5<=90&&Date.parse(i.fim)>=hoje).length;
+    let ant=M[4];try{ant=lMesRef()}catch(e){}const alu=DT.sum(S,i=>i.v),v90=S.filter(i=>i.fim&&(Date.parse(i.fim)-hoje)/864e5<=90&&Date.parse(i.fim)>=hoje).length;
     const pend=S.filter(i=>/aber|parc/.test(i.sm&&i.sm[ant])).length,pagos=S.filter(i=>i.sm&&i.sm[ant]==='pago').length;
     const cons=k=>{const t={};S.forEach(i=>Object.entries(i.cons||{}).forEach(([m,v])=>{t[m]=(t[m]||0)+(+(v||[])[k]||0)}));return t};
-    const en=cons(1),ag=cons(0),mE=Object.keys(en).sort().slice(-8);
-    const ev=DT.barras(mE.map(m=>({l:VX.M3[+m.slice(5)-1],v:en[m]})),VX.brl);
+    const en=cons(1),ag=cons(0);
+    const mP=M.filter(m=>m<=ant),pagoM=m=>S.reduce((a,i)=>a+(+((i.pm||{})[m]||[0,0])[0]||0),0);
+    const ev=DT.barras(mP.map(m=>({l:VX.M3[+m.slice(5)-1],v:pagoM(m)})),VX.brl);
     const um=S.length===1?S[0]:null;
     let ficha='';if(um){const dd=um.fim?Math.round((Date.parse(um.fim)-hoje)/864e5):null;
       ficha='<dl class="dt-dl"><dt>Locador</dt><dd>'+VX.esc(VX.cap(um.lo)||'–')+'</dd><dt>Endereço</dt><dd>'+VX.esc(VX.cap(um.end)||'–')+'</dd><dt>Localidade</dt><dd>'+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+' · '+DT.dia(um.ini)+' a '+DT.dia(um.fim)+(dd!=null?' <b class="'+(dd<=90?'dt-bad':'')+'">('+(dd>=0?'faltam '+dd+' dias':'vencido')+')</b>':'')+'</dd><dt>UC energia</dt><dd>'+VX.esc(um.ucn||um.uca||'–')+'</dd><dt>UC água</dt><dd>'+VX.esc(um.ucag||'–')+'</dd></dl>'+
@@ -86,10 +112,10 @@ DT.loc={
     const gs=um?[]:DT.grp(S,i=>q.c==='b'?VX.cap(i.loc):(()=>{try{return bnome(i.b)}catch(e){return i.b}})()).map(g=>({k:VX.cap(g.k),v:DT.sum(g.rows,i=>i.v)})).sort((a,b)=>b.v-a.v);
     const reg=um?'':DT.tab([['Imóvel'],['Base'],['Vence em',1],['Aluguel',1],[VX.M3[+ant.slice(5)-1]]],S.slice().sort((a,b)=>(a.fim||'9')<(b.fim||'9')?-1:1).slice(0,10).map(i=>{const dd=i.fim?Math.round((Date.parse(i.fim)-hoje)/864e5):null,g=VX.GST[i.sm&&i.sm[ant]]||VX.GST.sem;return [VX.esc(VX.cap(i.im)),i.b,dd==null?'–':(dd<0?'vencido':dd+' dias'),VX.brl(i.v),'<span class="dt-st"><i class="'+g[0]+'"></i>'+g[1]+'</span>']}));
     const frase=(q.c==='tudo'?'Ao todo,':DT.rot(DT.loc.NM[q.c],q.nm)+':')+' <b>'+S.length+'</b> imóve'+(S.length===1?'l':'is')+' ativo'+(S.length===1?'':'s')+', <b>'+VX.brl(alu)+'</b> de aluguel por mês. Em '+DT.MF[+ant.slice(5)-1].toLowerCase()+': '+pagos+' pago'+(pagos===1?'':'s')+(pend?', <b class="dt-bad">'+pend+' com pendência</b>':', nenhuma pendência')+'.'+(v90?' <b>'+v90+'</b> contrato'+(v90>1?'s vencem':' vence')+' em até 90 dias.':'');
-    const uE=mE.length?en[mE[mE.length-1]]:0,uA=Object.keys(ag).sort().slice(-1).map(m=>ag[m])[0]||0;
+    const prev=S.filter(i=>i.sm&&i.sm[ant]&&i.sm[ant]!=='fora').reduce((a,i)=>a+(+i.v||0),0),pg=pagoM(ant);
     DT.abrir({tag:'Controle de Locação · '+(DT.loc.NM[q.c]||'Imóvel'),tit:extra&&extra.tit||q.nm,sub:um?VX.esc(VX.cap(um.loc)+' · '+um.b):S.length+' imóveis',frase,
-      kpis:[['Imóveis',DT.num(S.length)],['Aluguel por mês',VX.brl(alu)],['Vencem em 90 dias',DT.num(v90),v90?'bad':''],['Pendências ('+VX.M3[+ant.slice(5)-1]+')',DT.num(pend),pend?'bad':'ok'],['Energia (último mês)',VX.brl(uE)],['Água (último mês)',VX.brl(uA)]],
-      ficha,ev,evT:'Energia mês a mês',top:um?'':DT.top(gs.slice(0,6),VX.brl,alu),topT:'Aluguel por '+(q.c==='b'?'localidade':'base'),reg,regT:'Imóveis (vencimento mais próximo primeiro)',ir:['loc-busca','Consultar imóvel']})}
+      kpis:[['Imóveis ativos',DT.num(S.length)],['Aluguel por mês (contratos)',VX.brl(alu)],['Pago em '+VX.M3[+ant.slice(5)-1].toLowerCase(),VX.brl(pg)],['Previsto em '+VX.M3[+ant.slice(5)-1].toLowerCase(),VX.brl(prev)],['Pendências ('+VX.M3[+ant.slice(5)-1].toLowerCase()+')',DT.num(pend),pend?'bad':'ok'],['Vencem em 90 dias',DT.num(v90),v90?'bad':'']],
+      ficha,ev,evT:'Aluguel pago mês a mês (Contas a Pagar)',top:um?'':DT.top(gs.slice(0,6),VX.brl,alu),topT:'Aluguel por '+(q.c==='b'?'localidade':'base'),reg,regT:'Imóveis (vencimento mais próximo primeiro)',ir:['loc-busca','Consultar imóvel']})}
 };
 
 /* ---------- PATRIMÔNIO ---------- */
@@ -199,6 +225,7 @@ DT.clique=function(e){const pid=typeof pag==='function'?pag().id:'';if(DT.SEM.in
   if(el.matches('div.icard,.vgg-card')){const t=DT.textos(el);e.preventDefault();R.abrir({c:'tudo',v:null,nm:VX.cap(t[0]||'Resumo')},{tit:VX.cap(t[0]||'Resumo')});return}
   /* linha de um imóvel específico (tem o id): abre aquele imóvel, não o primeiro com o mesmo nome */
   if(dom==='ti'){const a=el.querySelector('a[href^="#ti-nota-"]');if(a){e.preventDefault();location.hash=a.getAttribute('href').slice(1);return}}
+  if(dom==='loc'){const li=el.querySelector('[data-lid]');if(li){const im=DT.loc.I().find(i=>i.id===li.dataset.lid);if(im){e.preventDefault();R.abrir({c:'id',v:im.id,nm:VX.cap(im.im)+(im.loc?' · '+VX.cap(im.loc):'')});return}}}
   if(dom==='loc'){const sl=el.querySelector('[data-lsel]');if(sl){const im=DT.loc.I().find(i=>i.id===sl.dataset.lsel);e.preventDefault();if(im)R.abrir({c:'id',v:im.id,nm:VX.cap(im.im)+(im.loc?' · '+VX.cap(im.loc):'')});else if(typeof toast==='function')toast('Contrato distratado: use Consultar imóvel para ver o histórico.');return}}
   const ps=DT.pistas(el,dom);const ts=DT.textos(el);const ord=[...ts.keys()].sort((a,b)=>(ps[b]?1:0)-(ps[a]?1:0));
   for(const i of ord){const q=R.achar(ts[i],ps[i]);if(q){e.preventDefault();R.abrir(q);return}}};

@@ -68,3 +68,5 @@ html[data-tema="escuro"] body.dt-pode #main :is(.mb-r,.tirank-r,.msr,.timb,tr).d
 .dt-f .btn{text-decoration:none!important}
 .dt-f a.btn{color:var(--fg)!important;background:var(--surface);border:1px solid var(--line,#ece4e7)}
 .dt-f a.btn:hover{background:var(--sunken,#f1eded)}
+
+.dt-evc i.vx-fut{opacity:.35}

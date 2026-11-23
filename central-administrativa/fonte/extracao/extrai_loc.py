@@ -31,6 +31,8 @@ for n,r in enumerate(R[1:]):
       'iptu':str(g(r,'IPTU') or '').strip(),'ens':{m:str(g(r,k) or '').strip() for m,k in [('2026-09','STTS-09/2026'),('2026-10','STTS-10/2026'),('2026-11','STTS-11/2026')] if str(g(r,k) or '').strip()},'ags':{m:str(g(r,k) or '').strip() for m,k in [('2026-09','STTS 09-2026'),('2026-10','STTS 10-2027'),('2026-11','STTS 11-2026')] if str(g(r,k) or '').strip()},'titf':str(g(r,'TITULARIDADE') or '').strip(),'en':[str(g(r,k) or '').strip() for k in ['STTS-09/2026','STTS-10/2026','STTS-11/2026']],
       'ag':[str(g(r,k) or '').strip() for k in ['STTS 09-2026','STTS 10-2027','STTS 11-2026']],'cp':str(g(r,'UCS CONSUMO PROPRIO CEMAR') or '').strip().upper(),
       'tit':'CGB' if 'CGB' in str(g(r,'TITULARIDADE') or '') else str(g(r,'TITULARIDADE') or '').strip().upper(),'cons':cons,'g':gid(g(r,'LOCADOR')),'lo':re.sub(r'\s+',' ',str(g(r,'LOCADOR') or '')).strip(),'end':re.sub(r'\s+',' ',str(g(r,'ENDEREÇO') or '')).strip(),'uca':uc(g(r,'UC ANTIGA')),'ucn':uc(g(r,'NOVA UC PADRAO')),'ucag':uc(g(r,'UC AGUA')),'ul':d8(g(r,'ULTIMA LEITURA')) or str(g(r,'ULTIMA LEITURA') or '').strip(),'uv':d8(g(r,'ULTIMO VENCIMENTO')) or str(g(r,'ULTIMO VENCIMENTO') or '').strip()}
+  n_id=sum(1 for x in imv if x['id'].split('-')[0]==it['id'])
+  if n_id:it['id']=it['id']+'-'+str(n_id+1)   # dois imóveis com o mesmo nome, localidade e início: id único
   imv.append(it);nomes[it['g']]=1
 # renovações
 ren=[]
