@@ -1363,6 +1363,10 @@ body.em-hub { overflow-x: clip; }
 @media (max-width: 520px) { .hub-card { min-height: 0; padding: 18px; } .hub-grid { gap: 14px; } }
 .mod-op .mod-ok { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.4; }
 .ct-host { min-width: 0; }
+/* Central Administrativa: ocupa toda a área abaixo da barra do site (a Central tem o próprio menu) */
+body.ca-cheia #tabs, body.ca-cheia #side-fundo, body.ca-cheia #menu-btn { display: none !important; }
+body.ca-cheia .wrap { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+body.ca-cheia #ca-host iframe { height: calc(100vh - var(--top-h, 72px)); height: calc(100dvh - var(--top-h, 72px)); border-radius: 0; }
 .ct-host iframe { display: block; width: 100%; height: calc(100vh - var(--top-h, 72px) - 56px); height: calc(100dvh - var(--top-h, 72px) - 56px); min-height: 420px; border: 0; background: transparent; border-radius: var(--r-md); }
 .usu-form .usu-adm { display: flex; align-items: center; gap: 8px; flex-direction: row; font-weight: 600; align-self: end; padding-bottom: 8px; }
 .usu-form .usu-adm input { width: auto; margin: 0; }
@@ -3208,7 +3212,7 @@ function render() {
   if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
   if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
   if (state.hub && modulosDoUsuario().length > 1) { // tela de ambientes: sem menu lateral, só os cartões
-    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true; document.getElementById("ca-host").hidden = true;
+    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true; document.getElementById("ca-host").hidden = true; document.body.classList.remove("ca-cheia");
     ctEnviar({ tipo: "visivel", v: false }); v0.innerHTML = viewAmbientes(); return;
   }
   ses.hidden = true; nav.hidden = false;
@@ -3228,6 +3232,7 @@ function render() {
   const emCt = MOD === "contratacoes" && state.tab.startsWith("ct:");
   const emHe = MOD === "horas" && state.tab.startsWith("he:");
   const emCa = ehCentral(MOD) && state.tab.startsWith("ca:");
+  document.body.classList.toggle("ca-cheia", emCa);
   v.hidden = emCt || emHe || emCa; document.getElementById("ct-host").hidden = !emCt; document.getElementById("he-host").hidden = !emHe; document.getElementById("ca-host").hidden = !emCa;
   if (emCa) { ctEnviar({ tipo: "visivel", v: false }); caMostrar(MOD); return; }
   if (emHe) { ctEnviar({ tipo: "visivel", v: false }); heMostrar(); return; }
