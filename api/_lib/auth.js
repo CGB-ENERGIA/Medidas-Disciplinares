@@ -45,7 +45,7 @@ export async function usuarioDaSessao(request) {
   const t = lerCookie(request, COOKIE);
   if (!t) return null;
   const [u] = await consulta(`
-    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.chave_pessoa, u.trocar_senha
+    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.horas_extras, u.chave_pessoa, u.trocar_senha
       from sessoes s join usuarios u on u.id = s.usuario_id
      where s.token_hash = $1 and s.expira_em > now() and u.ativo and u.excluido_em is null`, [hashToken(t)]);
   if (!u) return null;
@@ -55,14 +55,19 @@ export async function usuarioDaSessao(request) {
   return u;
 }
 
-// Acessos da pessoa, por módulo. nivel: "gestor" (gerencia o módulo), "usuario" (usuário fim) ou "leitura" (só consulta)
+// Acessos da pessoa, por módulo. nivel: "gestor" (gerencia o módulo) ou "usuario" (usuário fim)
 //   Medidas Disciplinares → supervisor e coordenador são usuários; dp é gestor (perfil guarda o papel no fluxo)
-//   Contratações          → usuario = solicitante; gestor = Recrutamento; leitura = Gestão
+//   Contratações          → usuario = solicitante; gestor = Recrutamento
+//   Horas Extras          → usuario = analisa; gestor = também carrega a base. Ambiente de testes: só quem tem a coluna
+//                           usuarios.horas_extras preenchida; o administrador NÃO ganha este módulo sozinho.
 export function modulosDe(u) {
-  if (u.admin) return { medidas: { nivel: "gestor", perfil: "dp" }, contratacoes: { nivel: "gestor" } };
   const m = {};
-  if (u.perfil) m.medidas = { nivel: u.perfil === "dp" ? "gestor" : "usuario", perfil: u.perfil };
-  if (u.contratacoes) m.contratacoes = { nivel: u.contratacoes };
+  if (u.admin) { m.medidas = { nivel: "gestor", perfil: "dp" }; m.contratacoes = { nivel: "gestor" }; }
+  else {
+    if (u.perfil) m.medidas = { nivel: u.perfil === "dp" ? "gestor" : "usuario", perfil: u.perfil };
+    if (u.contratacoes) m.contratacoes = { nivel: u.contratacoes };
+  }
+  if (u.horas_extras) m.horas = { nivel: u.horas_extras };
   return m;
 }
 

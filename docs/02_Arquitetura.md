@@ -42,9 +42,8 @@ Teste local: `npm run dev` sobe o site e a API juntos (`dev/servidor-local.mjs`)
 | **Administrador** | age como DP (gestor) | age como Recrutamento (gestor) |
 | **Gestor** | DP: elabora, arquiva, banco de dados | Recrutamento: conduz vagas e candidatos |
 | **Usuário** | Supervisor (solicita e aplica) e Coordenador (autoriza ou recusa) | Solicitante: vê só o que ele mesmo abriu |
-| **Somente leitura** | não existe | Gestão: consulta tudo, sem alterar |
 
-Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: supervisor, coordenador ou dp; vazio = sem acesso) e `contratacoes` (usuario, gestor ou leitura; vazio = sem acesso). `GET /api/eu` devolve `admin` e `modulos`, que a tela usa para montar o seletor de ambiente e o menu de cada módulo.
+Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: supervisor, coordenador ou dp; vazio = sem acesso) e `contratacoes` (usuario ou gestor; vazio = sem acesso). `GET /api/eu` devolve `admin` e `modulos`, que a tela usa para montar o seletor de ambiente e o menu de cada módulo.
 
 ## Módulo Contratações
 - **Como entra no site:** a página do módulo (`site/contratacoes.html`) roda dentro do site principal, num quadro (iframe) da mesma origem. O menu lateral, o menu do perfil, o tema claro/escuro e o login são os do site principal; o cabeçalho e o menu próprios da página ficam escondidos. Navegar no menu do site muda a tela do módulo, e navegar dentro do módulo (ex.: abrir um candidato) destaca o item certo no menu.
@@ -52,7 +51,6 @@ Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: s
 - **Dados:** `ct_docs` (documentos em JSON, no mesmo formato do site original), `ct_arquivos` (os arquivos) e `ct_log` (quem gravou o quê, só inserção). A tela busca a cada 15 segundos só o que mudou.
 - **Quem pode o quê (conferido no servidor):**
   - Recrutamento (gestor): lê e grava tudo.
-  - Gestão (leitura): lê tudo, não grava.
   - Solicitante (usuário): lê só as vagas e candidatos dele (pelo nome do solicitante), as configurações e o resumo do RM; abre vagas só em seu nome; anexa a RP assinada nos candidatos das vagas dele. Não lê o banco de talentos nem a base do RM.
 - **Nada é apagado:** "remover" só esconde o documento.
 - **Tamanho:** arquivos até 4 MB (limite da Vercel).

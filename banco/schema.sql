@@ -74,14 +74,14 @@ alter table usuarios add column if not exists ultimo_acesso timestamptz;
 alter table usuarios add column if not exists excluido_em timestamptz;
 -- Acessos por módulo (nov/2026): administrador tem controle total; cada módulo tem o seu nível
 --   Medidas Disciplinares: usuarios.perfil (supervisor/coordenador = usuário; dp = gestor)
---   Contratações:          usuarios.contratacoes (usuario = solicitante; gestor = Recrutamento; leitura = Gestão)
+--   Contratações:          usuarios.contratacoes (usuario = solicitante; gestor = Recrutamento)
 alter table usuarios add column if not exists admin boolean not null default false;
 alter table usuarios add column if not exists contratacoes text;
 alter table usuarios alter column perfil drop not null;
 alter table usuarios drop constraint if exists usuarios_perfil_check;
 alter table usuarios add constraint usuarios_perfil_check check (perfil is null or perfil in ('supervisor', 'coordenador', 'dp'));
 alter table usuarios drop constraint if exists usuarios_contratacoes_check;
-alter table usuarios add constraint usuarios_contratacoes_check check (contratacoes is null or contratacoes in ('usuario', 'gestor', 'leitura'));
+alter table usuarios add constraint usuarios_contratacoes_check check (contratacoes is null or contratacoes in ('usuario', 'gestor'));
 create unique index if not exists usuarios_usuario_idx on usuarios (usuario);
 
 -- ---------- Sessões de login (o navegador guarda só um código; aqui fica o hash dele)
@@ -278,3 +278,186 @@ begin raise exception 'O registro do módulo Contratações não pode ser altera
 drop trigger if exists ct_log_somente_insercao on ct_log;
 create trigger ct_log_somente_insercao before update or delete on ct_log
   for each row execute function bloquear_alteracao_ct_log();
+
+-- ---------- Módulo Horas Extras (nov/2026, ambiente de testes)
+-- Acesso: usuarios.horas_extras (usuario = só analisa; gestor = também carrega a base). O administrador NÃO ganha acesso sozinho.
+alter table usuarios add column if not exists horas_extras text;
+alter table usuarios drop constraint if exists usuarios_horas_extras_check;
+alter table usuarios add constraint usuarios_horas_extras_check check (horas_extras is null or horas_extras in ('usuario', 'gestor'));
+
+-- Cada arquivo enviado: quem enviou, quando e o que mudou no banco
+create table if not exists he_cargas (
+  id           bigserial primary key,
+  tipo         text not null check (tipo in ('batidas', 'cadastro')),
+  arquivo      text,
+  usuario_id   uuid references usuarios (id),
+  usuario_nome text,
+  iniciada_em  timestamptz not null default now(),
+  concluida_em timestamptz,
+  linhas       integer not null default 0,
+  novas        integer not null default 0,
+  alteradas    integer not null default 0,
+  iguais       integer not null default 0,
+  periodo_ini  date,
+  periodo_fim  date
+);
+
+-- Uma linha por colaborador e dia. Minutos desde 00:00 (batidas, previsto, HTRAB, HBASE e as colunas EXTRA).
+-- Linha que não vem num arquivo novo é mantida; linha que vem diferente é atualizada e o antes/depois vai para he_ajustes.
+create table if not exists he_batidas (
+  chapa         text not null,
+  data          date not null,
+  nome          text,
+  funcao        text,
+  batidas       jsonb not null default '[]',
+  previsto      jsonb not null default '[0,0,0,0]',
+  htrab         integer,
+  hbase         integer,
+  x_ent         integer not null default 0,   -- EXTRA ENTRADA   (4 batidas)
+  x_alm         integer not null default 0,   -- EXTRA ALMOÇO    (4 batidas)
+  x_sai         integer not null default 0,   -- EXTRA SAIDA     (4 batidas)
+  x_ent2        integer not null default 0,   -- EXTRA ENTRADA2  (2 batidas)
+  x_sai2        integer not null default 0,   -- EXTRA SAIDA2    (2 batidas)
+  hash          text not null,
+  carga_id      bigint references he_cargas (id),
+  criado_em     timestamptz not null default now(),
+  atualizado_em timestamptz not null default now(),
+  primary key (chapa, data)
+);
+create index if not exists he_batidas_data_idx on he_batidas (data);
+
+-- Histórico dos ajustes: o que era e o que passou a ser, por carga
+create table if not exists he_ajustes (
+  id       bigserial primary key,
+  carga_id bigint references he_cargas (id),
+  chapa    text not null,
+  data     date not null,
+  campos   text[] not null default '{}',
+  antes    jsonb not null,
+  depois   jsonb not null,
+  em       timestamptz not null default now()
+);
+create index if not exists he_ajustes_chave_idx on he_ajustes (chapa, data);
+create index if not exists he_ajustes_carga_idx on he_ajustes (carga_id);
+create or replace function bloquear_alteracao_he_ajustes() returns trigger language plpgsql as $$
+begin raise exception 'O histórico de ajustes de Horas Extras não pode ser alterado nem apagado.'; end $$;
+drop trigger if exists he_ajustes_somente_insercao on he_ajustes;
+create trigger he_ajustes_somente_insercao before update or delete on he_ajustes
+  for each row execute function bloquear_alteracao_he_ajustes();
+
+-- Filiação (supervisor, coordenador, base...) vinda da planilha de cadastro; chapa ausente numa carga nova é mantida
+create table if not exists he_cadastro (
+  chapa         text primary key,
+  grupo         text,
+  base          text,
+  setor         text,
+  coord         text,
+  sup           text,
+  eq            text,
+  teq           text,
+  tf            text,
+  carga_id      bigint references he_cargas (id),
+  atualizado_em timestamptz not null default now()
+);
+
+-- ============================================================
+-- Módulo Horas Extras: banco de horas (um fechamento por período) e premissas
+-- ============================================================
+-- A carga passa a aceitar também o banco de horas e as premissas
+alter table he_cargas drop constraint if exists he_cargas_tipo_check;
+alter table he_cargas add constraint he_cargas_tipo_check check (tipo in ('batidas', 'cadastro', 'banco', 'premissas'));
+
+-- Fechamento do banco de horas por chapa e centro de custo. periodo = data de fechamento. Tempos em minutos (o saldo pode ser negativo).
+create table if not exists he_banco (
+  periodo       date   not null,
+  chapa         text   not null,
+  codccusto     text   not null default '',
+  ccusto        text,
+  nome          text,
+  secao         text,
+  funcao        text,
+  perc_rat      numeric(6,2),
+  extra_ant     integer, falta_ant integer, atraso_ant integer, saldo_ant integer,
+  extra_atu     integer, falta_atu integer, atraso_atu integer, saldo integer,
+  hash          text   not null,
+  carga_id      bigint references he_cargas (id),
+  criado_em     timestamptz not null default now(),
+  atualizado_em timestamptz not null default now(),
+  primary key (periodo, chapa, codccusto)
+);
+create index if not exists he_banco_chapa_idx on he_banco (chapa);
+
+-- Premissas: centro de custo → processo, seção → base (mesmas da planilha de controle)
+create table if not exists he_premissas (
+  tipo          text not null check (tipo in ('processo', 'base')),
+  chave         text not null,
+  valor         text not null,
+  carga_id      bigint references he_cargas (id),
+  atualizado_em timestamptz not null default now(),
+  primary key (tipo, chave)
+);
+
+-- Parâmetros do módulo: horas extras aceitas por dia e dias úteis do período
+create table if not exists he_config (
+  chave text primary key,
+  valor text not null
+);
+insert into he_config (chave, valor) values ('he_dia_horas', '2'), ('dias_periodo', '5.5') on conflict (chave) do nothing;
+
+-- Histórico das correções do banco de horas: o que era e o que passou a ser (não aceita alteração nem exclusão)
+create table if not exists he_banco_ajustes (
+  id        bigserial primary key,
+  carga_id  bigint references he_cargas (id),
+  periodo   date not null,
+  chapa     text not null,
+  codccusto text not null default '',
+  campos    text[] not null default '{}',
+  antes     jsonb not null,
+  depois    jsonb not null,
+  em        timestamptz not null default now()
+);
+create index if not exists he_banco_ajustes_chapa_idx on he_banco_ajustes (chapa, periodo);
+drop trigger if exists he_banco_ajustes_somente_insercao on he_banco_ajustes;
+create trigger he_banco_ajustes_somente_insercao before update or delete on he_banco_ajustes
+  for each row execute function bloquear_alteracao_he_ajustes();
+
+-- Cadastro: vínculos editados à mão na tela ficam protegidos (a carga do base-resumo não os sobrescreve) e cada edição é registrada
+alter table he_cadastro add column if not exists manual boolean not null default false;
+alter table he_cadastro add column if not exists editado_em timestamptz;
+alter table he_cadastro add column if not exists editado_por text;
+create table if not exists he_cadastro_log (
+  id       bigserial primary key,
+  chapa    text not null,
+  usuario  text,
+  campos   text[] not null default '{}',
+  antes    jsonb not null,
+  depois   jsonb not null,
+  em       timestamptz not null default now()
+);
+drop trigger if exists he_cadastro_log_somente_insercao on he_cadastro_log;
+create trigger he_cadastro_log_somente_insercao before update or delete on he_cadastro_log
+  for each row execute function bloquear_alteracao_he_ajustes();
+
+-- Banco dinâmica: a posição do banco de horas por colaborador (estrutura da aba "Banco Dinâmica" da planilha de controle), uma por data de referência.
+-- Tempos em minutos. Reenviar a mesma data atualiza onde mudou (a correção fica em he_banco_ajustes, com codccusto 'DIN').
+alter table he_cargas drop constraint if exists he_cargas_tipo_check;
+alter table he_cargas add constraint he_cargas_tipo_check check (tipo in ('batidas', 'cadastro', 'banco', 'premissas', 'bancodin'));
+create table if not exists he_banco_din (
+  referencia    date not null,
+  chapa         text not null,
+  nome          text,
+  funcao        text,
+  ant_real      integer not null default 0,   -- período anterior: horas realizadas (extras)
+  ant_atr       integer not null default 0,   -- período anterior: atrasos (faltas + atrasos)
+  ant_saldo     integer not null default 0,
+  atu_real      integer not null default 0,   -- período atual
+  atu_atr       integer not null default 0,
+  atu_saldo     integer not null default 0,
+  positivas     integer not null default 0,   -- horas positivas (dois períodos)
+  negativas     integer not null default 0,   -- horas negativas (dois períodos)
+  hash          text not null,
+  carga_id      bigint references he_cargas (id),
+  criado_em     timestamptz not null default now(),
+  atualizado_em timestamptz not null default now(),
+  primary key (referencia, chapa)
+);

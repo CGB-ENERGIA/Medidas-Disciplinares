@@ -1,7 +1,7 @@
 // Arquivos do módulo Contratações (currículos, certificados, documentos e RPs assinadas).
 //   POST /api/ct-arquivos   corpo = o próprio arquivo; tipo em Content-Type e nome em X-Nome → { id, contentType, sizeBytes }
 //   GET  /api/ct-arquivos?id=…   baixa o arquivo (só para quem está logado e tem acesso ao módulo)
-// Gestor (Recrutamento) e usuário (Solicitante, para a RP assinada) enviam; a Gestão (leitura) só baixa.
+// Recrutamento (gestor) e Solicitante (usuário, para a RP assinada) enviam e baixam.
 import { consulta, rota } from "./_lib/db.js";
 import { comLogin, ok, erro } from "./_lib/auth.js";
 
@@ -11,7 +11,6 @@ const TIPOS = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]);
 
 export const POST = rota(comLogin(async (request, _q, u) => {
-  if (u.modulos.contratacoes.nivel === "leitura") return erro("Seu acesso a Contratações é só de leitura.", 403);
   const tipo = (request.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
   if (!TIPOS.has(tipo)) return erro("Tipo de arquivo não aceito. Use PDF, imagem (JPG, PNG), Word ou Excel.", 415);
   const buf = Buffer.from(await request.arrayBuffer());

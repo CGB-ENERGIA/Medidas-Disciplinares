@@ -9,6 +9,7 @@
     "db:importar": "node --env-file=.env banco/rodar.mjs importar",
     "usuario:criar": "node --env-file=.env --no-warnings banco/criar-usuario.mjs",
     "usuario:redefinir": "node --env-file=.env --no-warnings banco/redefinir-senha.mjs",
+    "horas:liberar": "node --env-file=.env --no-warnings banco/liberar-horas.mjs",
     "teste": "node testes/teste_api.mjs",
     "ct:importar": "node --env-file=.env --no-warnings banco/importar-contratacoes.mjs"
   },

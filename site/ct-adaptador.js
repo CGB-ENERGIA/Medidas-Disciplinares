@@ -22,7 +22,7 @@
   }
 
   // ---------- quem está usando (vem de /api/eu) ----------
-  const PAPEL = { gestor: "rh", usuario: "sol", leitura: "ges" };   // Recrutamento, Solicitante, Gestão
+  const PAPEL = { gestor: "rh", usuario: "sol" };   // Recrutamento e Solicitante
   let acessoP = null;
   const acesso = () => acessoP || (acessoP = (async () => {
     const r = await fetch("/api/eu", { cache: "no-store" });
@@ -104,7 +104,7 @@
   // ---------- user, downloads, assets ----------
   const user = {
     id: async () => (await acesso()).id,
-    can: async p => (p === "data.write" ? (await acesso()).nivel !== "leitura" : true),
+    can: async () => true,   // quem chega aqui tem acesso ao módulo; o servidor decide o que cada nível pode gravar
     canEdit: async () => (await acesso()).nivel === "gestor",
     profiles: async ids => api("/api/ct-nomes?ids=" + ids.join(","))
   };

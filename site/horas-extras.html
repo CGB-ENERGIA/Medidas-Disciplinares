@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horas Extras</title>
+<style>
+/* Módulo Horas Extras . Aberto dentro do index.html, como o módulo Contratações. */
+/* Identidade visual CGB Energia: bordô na moldura, miolo liso, neutros quentes, cor só com significado */
+@font-face{font-family:'Inter';src:url(fonts/inter-variable.woff2) format('woff2');font-weight:400 800;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url(fonts/barlow-semi-condensed-600.woff2) format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Barlow Semi Condensed';src:url(fonts/barlow-semi-condensed-700.woff2) format('woff2');font-weight:700;font-display:swap}
+:root{color-scheme:light;--bg:#f2eeef;--card:#ffffff;--soft:#faf7f8;--ink:#2d2527;--mut:#6d5f63;--line:rgba(113,20,36,.16);--linha-forte:rgba(113,20,36,.32);
+  --acc:#711424;--marca-clara:#8d2136;--marca-texto:#8d2136;--titulo:#4f1723;--grad:linear-gradient(100deg,#4e0b17 0%,#711424 45%,#a8304a 100%);--grad-th:linear-gradient(to top,#4e0b17 0%,#711424 45%,#a8304a 100%);
+  --ent:#2f6690;--alm:#ad6417;--sai:#3f6b48;--bad:#b3261e;--pos:#1b6b45;--raio:14px;
+  --sombra:0 1px 3px rgba(65,32,38,.10),0 6px 14px rgba(65,32,38,.08);--fonte-ui:'Barlow Semi Condensed','Segoe UI',sans-serif;--fonte-texto:'Inter','Segoe UI',sans-serif}
+:root[data-tema="escuro"]{color-scheme:dark;--bg:#171314;--card:#221c1e;--soft:#2b2325;--ink:#f1e9ea;--mut:#b7a6aa;--line:rgba(212,154,85,.20);--linha-forte:rgba(212,154,85,.38);
+  --acc:#7c1a2c;--marca-clara:#99283f;--marca-texto:#f0a3b3;--titulo:#f2dbe0;--grad:linear-gradient(100deg,#2a0a10 0%,#4a0d18 55%,#6a1729 100%);--grad-th:linear-gradient(to top,#2a0a10 0%,#4a0d18 55%,#6a1729 100%);
+  --ent:#86b6dd;--alm:#e0a259;--sai:#86c294;--bad:#f08a80;--pos:#6cc79a;--sombra:0 1px 3px rgba(0,0,0,.4),0 6px 14px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:transparent;color:var(--ink);font:14px/1.45 Arial,"Helvetica Neue",Helvetica,sans-serif}
+.wrap{padding:4px 2px 40px}
+body.solo{background:var(--bg)} body.solo .wrap{max-width:1200px;margin:auto;padding:16px}
+h2{font-size:15px;margin:0 0 8px}
+.sub,.note{color:var(--mut);font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin:0 0 14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+input,select,button{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+select{max-width:210px}
+button{cursor:pointer}button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}button:disabled{opacity:.5;cursor:default}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--mut)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.tbl{overflow:auto;max-height:520px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:left}
+th{position:sticky;top:0;background:var(--card);font-size:12px;color:var(--mut)}
+th[data-k]{cursor:pointer;user-select:none}
+th.num,td.num{text-align:right}
+tr[data-ch]:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);cursor:pointer}
+.zero{color:var(--mut);opacity:.55}
+.bar{display:flex;height:16px;border-radius:4px;overflow:hidden;background:var(--line)}
+.bar i{display:block;height:100%}
+.tag{font-size:11px;padding:1px 6px;border-radius:9px;background:var(--soft);color:var(--mut)}
+.tag.bad{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}
+.neg{color:color-mix(in srgb,var(--bad) 80%,var(--ink))}
+.lnk{color:var(--acc);text-decoration:underline;font-weight:700}.foco td{background:color-mix(in srgb,var(--alm) 28%,transparent)}
+.cl{cursor:pointer}.cl:hover{background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.tag.ok{background:color-mix(in srgb,var(--sai) 20%,transparent);color:var(--sai)}
+.frag{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.fi{border:1px solid var(--line);border-left:4px solid var(--alm);border-radius:8px;padding:10px 12px}
+.fi.alta{border-left-color:var(--bad)}.fi.info{border-left-color:var(--mut)}
+.fi b{display:block}.fi .d{font-size:12px;color:var(--mut);margin-top:3px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.two .card{margin:0}
+#top10,#origem{overflow-x:auto}
+#modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:9}
+.cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-items:start}
+.colp{display:flex;flex-direction:column;gap:5px}.bcard{padding:3px 9px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-radius:8px}.bcard .l{font-size:11.5px}.bcard .bh{font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}.bsoma{margin-top:2px}
+.chip{height:32px;padding:0 14px;border-radius:999px;border:0;color:#fff;background:var(--cc,var(--acc));font-weight:700}.chip:disabled{opacity:.55;cursor:default}.chip:not(:disabled):hover{filter:brightness(1.1);background:var(--cc,var(--acc))}
+.opc{cursor:pointer}.opc:hover{background:var(--line)}.opc.sel{outline:2px solid var(--acc);background:var(--line)}
+#modal .card{max-width:min(1500px,98vw);width:100%;margin:0}
+#dt{font-size:13px}
+#dt th,#dt td{padding:5px 7px}
+#dt td:nth-child(3),#dt td:nth-child(4),#dt td:last-child{white-space:normal;min-width:110px}
+/* ---- aplicação da identidade visual ---- */
+body{font-family:var(--fonte-texto);font-size:13.5px}
+h2{font-family:var(--fonte-ui);font-weight:700;font-size:17px;color:var(--titulo);letter-spacing:.01em;text-wrap:balance}
+.card{border-radius:var(--raio);box-shadow:var(--sombra)}
+.card .card,.two .card{box-shadow:none}
+input,select,button{border-radius:12px;font-family:var(--fonte-texto);background:var(--soft)}
+select,input:not([type=checkbox]):not([type=file]){height:36px;border-radius:999px;padding:0 14px;background:var(--soft)}
+select:focus,input:focus{outline:none;border-color:var(--marca-clara);box-shadow:0 0 0 3px rgba(113,20,36,.10)}
+button{font-weight:600;letter-spacing:.01em;height:36px;padding:0 16px}
+button:hover:not(:disabled){background:color-mix(in srgb,var(--acc) 7%,var(--card))}
+button.pri{background:var(--grad);border-color:transparent;color:#fff}button.pri:hover:not(:disabled){filter:brightness(1.08);background:var(--grad)}
+label{font-size:12px;font-weight:600}
+th{background:var(--grad-th);color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;border-bottom:0}
+tr:hover td{background:var(--soft)}
+tr[data-ch]:hover{background:var(--soft)}
+.tbl{border-radius:12px;border-color:var(--line)}
+.kpi{border-radius:12px;background:var(--card)}
+.kpi .v{font-family:var(--fonte-ui);font-weight:700}
+.opc:hover{background:var(--soft)}.opc.sel{outline:2px solid var(--marca-clara);background:color-mix(in srgb,var(--acc) 7%,var(--card))}
+.tag{border-radius:10px;font-weight:700;padding:2px 8px;background:color-mix(in srgb,var(--mut) 14%,var(--card));color:var(--mut)}
+.bar{border-radius:6px}
+.fi{border-radius:12px}
+.note a,.ok-txt{color:var(--pos)}.bad-txt{color:var(--bad)}
+#drop{border-radius:var(--raio)}
+#drop{border:2px dashed var(--line);cursor:pointer;text-align:center;color:var(--mut);padding:22px 16px}
+#drop.over{border-color:var(--acc);color:var(--acc)}
+#drop b{color:var(--ink);font-size:15px}
+.ok-txt{color:var(--sai)} .bad-txt{color:var(--bad)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row hidden" id="abas" style="margin-bottom:14px">
+    <button id="tabA" class="pri">Análise</button><button id="tabK">Cadastro</button><button id="tabC">Carga da base</button>
+  </div>
+  <div id="aviso" class="card hidden"></div>
+
+  <section id="vAnalise" class="hidden">
+    <div class="card">
+      <div class="row">
+        <label>De<input type="date" id="d1"></label>
+        <label>Até<input type="date" id="d2"></label>
+        <label>Buscar colaborador / chapa<input id="q" placeholder="nome ou chapa" size="18"></label>
+        <label>Tolerância HTRAB × HBASE (min)<input type="number" id="tol" value="10" min="0" max="120" style="width:80px"></label>
+        <button id="copiar" class="pri">Copiar ranking</button><span class="note" id="copymsg"></span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label>Coordenador<select id="f_coord"></select></label>
+        <label>Supervisor / responsável<select id="f_sup"></select></label>
+        <label>Base<select id="f_base"></select></label>
+        <label>Setor<select id="f_setor"></select></label>
+        <label>Equipe<select id="f_eq"></select></label>
+        <label>Tipo de equipe<select id="f_teq"></select></label>
+        <label>Direto / Indireto<select id="f_tf"></select></label>
+      </div>
+      <div class="note" id="regra" style="margin-top:8px"></div>
+      <div class="note" id="fonte"></div>
+    </div>
+    <div class="card"><h2>1. Resumo</h2><div class="kpis" id="kpis"></div></div>
+    <div class="card"><h2>2. Onde a HE é gerada</h2><div class="note" style="margin-bottom:8px">Cada período mostra, abaixo, as horas de cada base até completar o total do período. Clique num período, ou numa base dele, para ver só aquele recorte no ranking; clique de novo para voltar.</div><div id="origem"></div><div id="bases" style="margin-top:14px"></div></div>
+    <div class="card"><h2>3. Maiores ofensores <span class="note" id="selnome"></span></h2>
+      <div id="top10" style="margin-bottom:14px"></div>
+      <div class="row" style="margin-bottom:8px"><button id="expTbl" class="pri">Ver todos os colaboradores</button>
+        <label style="flex-direction:row;align-items:center;gap:6px" id="expSemWrap" class="hidden"><input type="checkbox" id="expSem"> incluir quem não teve HE</label></div>
+      <details id="tblWrap"><summary style="cursor:pointer;font-weight:600;margin:6px 0">Tabela detalhada, com filiação e dias com HE</summary>
+      <div class="tbl" style="max-height:640px"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+      <div class="note" id="tblnote"></div></details>
+    </div>
+    <div class="card"><h2>4. Pontos de fragilidade</h2><div class="frag" id="frag"></div></div>
+    <div class="card"><h2>5. Quando a HE é gerada</h2>
+      <div class="two">
+        <div><div class="note" style="margin-bottom:4px">Por semana</div><div class="tbl" style="max-height:none" id="semana"></div></div>
+        <div><div class="note" style="margin-bottom:4px">Por dia da semana</div><div class="tbl" style="max-height:none" id="dow"></div></div>
+      </div>
+    </div>
+    <div class="card"><h2>6. Alertas de jornada</h2>
+      <div class="note" style="margin-bottom:8px">Jornada média diária de cada colaborador, calculada pelas batidas (2 batidas: saída − entrada; 4 ou mais: soma dos turnos). Dias com número ímpar de batidas ficam de fora e são contados à parte.</div>
+      <div class="row">
+        <label>Jornada excessiva acima de (h)<input type="number" id="jx" value="8" min="1" max="24" step="0.5" style="width:90px"></label>
+        <label>Jornada alarmante acima de (h)<input type="number" id="ja" value="10" min="1" max="24" step="0.5" style="width:90px"></label>
+        <label>Almoço curto abaixo de (min)<input type="number" id="jl" value="60" min="0" max="240" style="width:90px"></label>
+      </div>
+      <div class="kpis" id="jcards" style="margin-top:10px"></div>
+      <div class="two" style="margin-top:12px">
+        <div><div class="note" style="margin-bottom:4px"><b>Jornadas excessivas e alarmantes</b> (maiores primeiro, até 40)</div><div class="tbl" style="max-height:420px" id="jlist"></div></div>
+        <div><div class="note" style="margin-bottom:4px"><b>Almoço curto</b> (menores médias primeiro, até 40)</div><div class="tbl" style="max-height:420px" id="alist"></div></div>
+      </div>
+    </div>
+    <div class="card"><h2>7. Alerta de banco de horas</h2>
+      <div id="bAviso" class="note"></div>
+      <div id="bCorpo" class="hidden">
+        <div class="note" style="margin-bottom:8px">Compara o saldo positivo do banco de horas do período com o do período anterior guardado no banco. Se o aumento passar das horas aceitas, é <b>ALERTA</b>; se aumentou menos, é <b>HORA EXTRA</b>; se não aumentou, <b>COMPENSOU</b>. Segue os filtros de filiação e a busca acima.</div>
+        <div class="row">
+          <label>Fechamento<select id="bPer"></select></label>
+          <label>HE aceitas por dia (h)<input type="number" id="bDia" min="0" step="0.5" style="width:90px"></label>
+          <label>Dias úteis do período<input type="number" id="bDu" min="0" step="0.5" style="width:90px"></label>
+          <label>Mostrar<select id="bSt"><option value="">Todos</option><option>ALERTA</option><option>HORA EXTRA</option><option>COMPENSOU</option></select></label>
+          <span class="note" id="bAceitas"></span>
+        </div>
+        <div class="kpis" id="bCards" style="margin-top:10px"></div>
+        <div class="tbl" style="max-height:480px;margin-top:10px" id="bLista"></div>
+      </div>
+    </div>
+    <div class="card"><h2>8. Horas geradas e compensadas</h2>
+      <div class="note" style="margin-bottom:8px">Pelo saldo de cada dia (HTRAB − HBASE) fora da tolerância. <b>Gerada</b>: dias com mais horas que a base. <b>Compensada</b>: dias com menos horas que a base. O saldo de cada colaborador é gerada − compensada: <b>banco positivo</b> soma quem ficou com saldo a favor; <b>banco negativo</b>, quem ficou devendo horas.</div>
+      <div class="kpis" id="ger"></div>
+    </div>
+    <div class="card"><h2>9. Banco de horas (RM) e validação</h2>
+      <div id="dAviso" class="note"></div>
+      <div id="dCorpo" class="hidden">
+        <div class="note" style="margin-bottom:8px">Mesma estrutura da planilha <b>Banco Dinâmica</b>: por colaborador, horas realizadas (extras) e atrasos (faltas + atrasos) do período anterior e do atual, somados entre os centros de custo. <b>Saldo</b> = realizadas − atrasos (zero se negativo); <b>positivas</b> e <b>negativas</b> somam os dois períodos. <b>Abertura</b> = positivas − negativas na data de referência (o saldo negativo fica negativo e é pendência de compensação). <b>Movimento</b> = HE líquida das batidas depois da referência; <b>saldo atual</b> = abertura + movimento, também em dias (8 h = 1). Se houver batidas até a referência, as colunas <b>Sistema</b> e <b>Diferença</b> conferem com o RM. Segue os filtros e a busca acima.</div>
+        <div class="row">
+          <label>Posição do banco (data de referência)<select id="dRef"></select></label>
+          <label>Mostrar<select id="dSt"><option value="">Todos</option><option value="pos">Com saldo a favor</option><option value="pend">Com pendência de compensação (saldo negativo)</option><option value="dif">Com diferença no sistema (acima de 1 h)</option></select></label>
+          <span class="note" id="dPer"></span>
+        </div>
+        <div class="kpis" id="dCards" style="margin-top:10px"></div>
+        <div class="tbl" style="max-height:520px;margin-top:10px" id="dLista"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vCadastro" class="hidden">
+    <div class="card"><h2>Colaboradores e vínculos</h2>
+      <div class="note" style="margin-bottom:8px">Todos os colaboradores do banco, com a filiação de cada um. <b>Editar</b> grava o vínculo no banco e o protege: a próxima carga do base-resumo não o sobrescreve. Cada edição fica registrada.</div>
+      <div class="row">
+        <label>Buscar<input id="cq" placeholder="nome ou chapa" size="18"></label>
+        <label>Grupo<select id="cg"></select></label>
+        <label>Base<select id="cb"></select></label>
+        <label>Situação<select id="cs"><option value="">Todos</option><option value="sem">Sem cadastro</option><option value="man">Editados à mão</option></select></label>
+        <span class="note" id="cn"></span>
+      </div>
+      <div class="tbl" style="max-height:560px;margin-top:10px" id="cadLista"></div>
+    </div>
+    <div class="card"><h2>Bases do cadastro</h2>
+      <div class="note" style="margin-bottom:8px">O <b>base-resumo</b> traz a mesma base escrita de formas diferentes (BCB e BACABAL, PDT e PEDREIRAS…). A análise usa o <b>nome padronizado</b> abaixo, o mesmo das Premissas da planilha de controle. Confira se cada sigla está ligada à base certa.</div>
+      <div class="tbl" style="max-height:none" id="cadBases"></div>
+    </div>
+    <div class="card"><h2>Colaboradores por grupo</h2><div class="tbl" style="max-height:none" id="cadGrupos"></div></div>
+  </section>
+
+  <section id="vCarga" class="hidden">
+    <div class="card" id="drop">
+      <b>Clique ou arraste as planilhas (.xlsx)</b><br>
+      Batidas (aba “Batidas”), Cadastro (abas “Pessoas alocadas”, “Indiretos”, “Colaboradores”) e/ou Banco de horas (aba “Banco Dinâmica”). Pode selecionar vários ao mesmo tempo.<br>
+      <span class="note">Planilha modelo, com as colunas certas, uma linha de exemplo e instruções:</span> <button data-modelo="batidas" type="button">Baixar modelo de batidas</button> <button data-modelo="bancodin" type="button">Baixar modelo do banco dinâmica</button>
+      <input type="file" id="file" accept=".xlsx,.xlsm,.xls" multiple class="hidden">
+    </div>
+    <div class="card" id="prev" hidden>
+      <h2>Arquivos lidos</h2><div id="prevtxt"></div>
+      <div class="row" style="margin-top:10px"><button id="analisar" class="pri">Analisar planilha</button><button id="enviar" disabled>Confirmar e aplicar</button><span class="note" id="envmsg"></span></div>
+      <div id="chips"></div>
+      <div class="note" style="margin-top:8px">Primeiro o sistema <b>analisa</b> sem gravar nada e mostra o que é novo, o que muda (de → para) e as linhas com erro. Só depois de analisar, e sem erros, dá para confirmar. Linha nova entra; linha que mudou é atualizada e o antes/depois fica registrado; linha igual não muda nada; linha que não vier no arquivo é mantida.</div>
+    </div>
+    <div class="card hidden" id="resul"></div>
+    <div class="card"><h2>O que o banco tem</h2><div id="resumo" class="note">Carregando…</div></div>
+    <div class="card"><h2>Últimas cargas</h2><div class="tbl" style="max-height:none" id="cargas"></div></div>
+    <div class="card"><h2>Correções do banco de horas</h2><div class="note" style="margin-bottom:6px">Fechamentos reenviados com valores diferentes: o novo substitui o antigo e o que era fica aqui. O histórico não pode ser alterado nem apagado.</div><div class="tbl" id="ajBanco"></div></div>
+    <div class="card"><h2>Últimos ajustes</h2><div class="note" style="margin-bottom:6px">Linhas que vieram diferentes do que já estava no banco. O histórico não pode ser alterado nem apagado.</div><div class="tbl" id="ajustes"></div></div>
+  </section>
+</div>
+
+<div id="modalPrev" style="position:fixed;inset:0;background:#0008;display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:10"><div class="card" style="max-width:min(1100px,98vw);width:100%;margin:0">
+  <div class="row" style="justify-content:space-between"><b id="pvT"></b><button id="pvX">Fechar</button></div>
+  <div class="tbl" style="margin-top:10px;max-height:70vh"><table id="pvC"></table></div>
+</div></div>
+<div id="modalEd" style="position:fixed;inset:0;background:#0008;display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:10"><div class="card" style="max-width:560px;width:100%;margin:0">
+  <div class="row" style="justify-content:space-between"><b id="edT"></b><button id="edX">Fechar</button></div>
+  <div id="edC" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"></div>
+  <div class="row" style="margin-top:12px"><button class="pri" id="edS">Salvar vínculo</button><span class="note" id="edM"></span></div>
+</div></div>
+<div id="modal"><div class="card"><div class="row" style="justify-content:space-between"><b id="mt"></b><button id="mc">Fechar</button></div><div class="tbl" style="margin-top:10px;max-height:70vh"><table id="dt"></table></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const LIM={tol:10,heDia:120,reinc:0.5,topShare:0.6};
+const $=s=>document.querySelector(s);
+const norm=s=>String(s??'').normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9_ ]/g,'').toUpperCase().trim();
+const pad=n=>String(n).padStart(2,'0');
+const fmt=m=>m<0?'−'+fmt(-m):m?`${pad(Math.floor(m/60))}:${pad(m%60)}`:'00:00';
+const N=x=>x.toLocaleString('pt-BR');
+const pc=(a,b)=>b?(a/b*100).toFixed(1).replace('.',',')+'%':'—';
+const toMin=v=>{
+  if(v==null||v==='')return null;
+  if(typeof v==='number')return Math.round(v*1440)%1440;
+  const m=/^(\d{1,2}):(\d{2})/.exec(String(v).trim());
+  return m?(+m[1])*60+(+m[2]):null;
+};
+const DIAS=['DOM','SEG','TER','QUA','QUI','SEX','SAB'];
+const parseData=v=>{
+  if(v instanceof Date)return v.toISOString().slice(0,10);
+  const m=/^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(v||''));
+  return m?`${m[3]}-${m[2]}-${m[1]}`:null;
+};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dbr=d=>d.split('-').reverse().join('/');
+const dtD=d=>new Date(d+'T12:00:00');
+const fmtv=m=>m<0?`<span class="neg">${fmt(m)}</span>`:fmt(m);   // HE negativa (saldo a compensar) em vermelho suave
+const kp=(l,v,s)=>`<div class="kpi"><div class="v">${v}</div><div class="l">${l}${s?`<br>${s}`:''}</div></div>`;
+const quando=t=>t?new Date(t).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):'—';
+
+/* ===== API ===== */
+async function api(url,metodo='GET',corpo){
+  const r=await fetch(url,{method:metodo,cache:'no-store',headers:corpo?{'content-type':'application/json'}:{},body:corpo?JSON.stringify(corpo):undefined});
+  let d={};try{d=await r.json()}catch{}
+  if(r.status===401){try{parent.postMessage({tipo:'sessao'},location.origin)}catch{}}
+  if(!r.ok)throw new Error(d.erro||('Erro '+r.status));
+  return d;
+}
+
+/* ===== Cadastro / filiação ===== */
+const SEM={grupo:'Sem cadastro',base:'(sem cadastro)',setor:'(sem cadastro)',coord:'(sem cadastro)',sup:'(sem cadastro)',eq:'(sem cadastro)',teq:'(sem cadastro)',tf:'(sem cadastro)'};
+let CAD=new Map(),COLABS=[];
+/* Nome padronizado da base (o mesmo das Premissas da planilha de controle). O base-resumo escreve a mesma base de formas diferentes. */
+const BASE_ALIAS={'BCB':'BACABAL','PDT':'PEDREIRAS','PDS':'PRESIDENTE DUTRA','PRES DUTRA':'PRESIDENTE DUTRA','STI':'SANTA INES','ITM':'ITAPECURU','BDC':'BARRA DO CORDA'};
+const baseOk=b=>BASE_ALIAS[norm(b)]||b;
+const info=ch=>CAD.get(ch)||SEM;
+const V=v=>{v=String(v??'').trim();return v||'—'};
+/* Nome de supervisor/coordenador na tela: os 2 primeiros nomes, pulando de, da, do, dos, das, e */
+const LIGA=new Set(['DE','DA','DO','DAS','DOS','E','DI','DU']);
+const nome2=s=>{s=String(s??'').trim();if(!s||/^[—(]/.test(s))return s||'—';const p=s.split(/\s+/).filter(t=>!LIGA.has(norm(t)));return (p.length?p:s.split(/\s+/)).slice(0,2).join(' ')};
+/* Prioridade: Pessoas alocadas > Indiretos > Pessoas não alocadas > Colaboradores. Indireto: o RESPONSÁVEL entra como supervisor. */
+function montarCadastro(S){
+  const M=new Map(),put=(ch,o)=>{if(ch&&!M.has(ch))M.set(ch,{chapa:ch,...o})};
+  for(const r of S.alocadas)put(r.CHAPA,{grupo:'Alocado',base:V(r.BASE),setor:V(r.SETOR),coord:V(r.COORDENADOR),sup:V(r.SUPERVISOR),eq:V(r.EQUIPE),teq:V(r['TIPO EQUIPE'])});
+  for(const r of S.indiretos)put(r.CHAPA,{grupo:'Indireto',base:V(r.BASE),setor:V(r.SETOR),coord:'—',sup:V(r.RESPONSAVEL),eq:'—',teq:'—'});
+  for(const r of S.naoAloc)put(r.CHAPA,{grupo:'Não alocado',base:V(r['BASE CADASTRO']),setor:'—',coord:'—',sup:'—',eq:'—',teq:'—'});
+  const tf=new Map();
+  for(const r of S.colab){tf.set(r.CHAPA,V(r.TIPO_FUNCAO));put(r.CHAPA,{grupo:'Só no cadastro geral',base:'—',setor:'—',coord:'—',sup:'—',eq:'—',teq:'—'})}
+  for(const [ch,o] of M)o.tf=tf.get(ch)||'—';
+  return M;
+}
+function objsDaAba(wb,nome){
+  const n=wb.SheetNames.find(x=>norm(x)===nome);if(!n)return [];
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null,blankrows:false});
+  const h=rows.findIndex(r=>r.some(c=>norm(c)==='CHAPA'));if(h<0)return [];
+  const hd=rows[h].map(norm),ic=hd.indexOf('CHAPA');
+  return rows.slice(h+1).filter(r=>r[ic]!=null&&r[ic]!=='').map(r=>{const o={};hd.forEach((k,i)=>{o[k]=r[i]});o.CHAPA=String(o.CHAPA).trim();return o});
+}
+const lerCadastro=wb=>montarCadastro({alocadas:objsDaAba(wb,'PESSOAS ALOCADAS'),indiretos:objsDaAba(wb,'INDIRETOS'),naoAloc:objsDaAba(wb,'PESSOAS NAO ALOCADAS'),colab:objsDaAba(wb,'COLABORADORES')});
+const ehCadastro=wb=>wb.SheetNames.some(n=>['PESSOAS ALOCADAS','COLABORADORES','INDIRETOS'].includes(norm(n)));
+
+/* ===== Planilha de batidas (colunas definidas) ===== */
+function lerBatidas(wb){
+  const nome=wb.SheetNames.find(n=>norm(n)==='BATIDAS')||wb.SheetNames[0];
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[nome],{header:1,raw:true,defval:null,blankrows:true}),off=XLSX.utils.decode_range(wb.Sheets[nome]['!ref']||'A1').s.r;
+  const h=rows.findIndex(r=>r.some(c=>norm(c)==='CHAPA'));
+  if(h<0)throw new Error('coluna CHAPA não encontrada na aba '+nome);
+  const hdr=rows[h].map(norm),ix=k=>hdr.indexOf(k),punch=[];
+  hdr.forEach((c,i)=>{const m=/^(\d+)[A-Z]?_BATIDA$/.exec(c);if(m)punch.push([+m[1],i])});
+  punch.sort((a,b)=>a[0]-b[0]);
+  const C={chapa:ix('CHAPA'),nome:ix('NOME'),funcao:ix('FUNCAO'),data:ix('DATABATIDA'),htrab:ix('HTRAB'),hbase:ix('HBASE'),
+    ent1:ix('ENT1'),sai1:ix('SAI1'),ent2:ix('ENT2'),sai2:ix('SAI2'),
+    xent:ix('EXTRA ENTRADA'),xalm:ix('EXTRA ALMOCO'),xsai:ix('EXTRA SAIDA'),xent2:ix('EXTRA ENTRADA2'),xsai2:ix('EXTRA SAIDA2')};
+  for(const k of ['chapa','nome','data','htrab','hbase','xent','xalm','xsai','xent2','xsai2'])
+    if(C[k]<0)throw new Error('coluna não encontrada na aba '+nome+': '+k.toUpperCase());
+  const out=[];let ignoradas=0;
+  for(let i=h+1;i<rows.length;i++){
+    const r=rows[i];
+    if(r[C.chapa]==null||r[C.chapa]==='')continue;
+    const d=parseData(r[C.data]);   // data inválida não é descartada em silêncio: vai para a prévia como erro da linha
+    out.push({n:off+i+1,chapa:String(r[C.chapa]).trim(),nome:r[C.nome],funcao:String(r[C.funcao]??'').trim(),data:d,
+      p:punch.map(([,c])=>toMin(r[c])).filter(x=>x!=null),
+      s:[C.ent1,C.sai1,C.ent2,C.sai2].map(c=>c>=0?toMin(r[c])||0:0),ht:toMin(r[C.htrab]),hb:toMin(r[C.hbase]),
+      x:{ent:toMin(r[C.xent])||0,alm:toMin(r[C.xalm])||0,sai:toMin(r[C.xsai])||0,ent2:toMin(r[C.xent2])||0,sai2:toMin(r[C.xsai2])||0}});
+  }
+  return {linhas:out,ignoradas};
+}
+
+/* ===== Regra do indicador =====
+ * 4 batidas: EXTRA ENTRADA + EXTRA ALMOÇO + EXTRA SAIDA.   2 batidas: EXTRA ENTRADA2 + EXTRA SAIDA2.
+ * Se |HTRAB − HBASE| <= tolerância, a jornada é normal e a HE do dia não é computada. Outras quantidades de batidas: fora. */
+function diaHE(r,tol){
+  const n=r.p.length,p=r.p,s=r.s||[0,0,0,0],x=r.x,o={ent:0,alm:0,sai:0,bruto:0,desc:0,ader:false,fora:false,neg:0};
+  if(n===4){o.ent=x.ent;o.alm=x.alm;o.sai=x.sai}
+  else if(n===2){o.ent=x.ent2;o.sai=x.sai2}
+  else o.fora=n>0;
+  /* Dia sem jornada prevista (HBASE 00:00: sábado sem escala, domingo, folga, feriado): a planilha mede a saída contra 00:00 e lança o horário do relógio como se fosse duração.
+     Aqui toda a jornada trabalhada é HE, então vale o HTRAB, lançado na saída. */
+  if((n===2||n===4)&&r.hb===0&&r.ht>0){o.ent=0;o.alm=0;o.sai=r.ht;o.semJ=true}
+  /* A planilha só traz o lado positivo (EXTRA ENTRADA/ALMOÇO/SAIDA). Os negativos que ela não traz entram com sinal contrário, medidos pelas batidas contra o horário previsto:
+     atraso na entrada, almoço mais longo que o previsto e saída antes do previsto. Assim as três partes fecham o saldo do dia. */
+  /* Jornada prevista parcial (ex.: sábado só de manhã, 08:00 às 12:00; as duas últimas posições do previsto vêm 00:00): a planilha mede a saída contra 00:00
+     e lança o horário do relógio como duração. Aqui a saída é medida contra a última saída prevista e a entrada contra a primeira, ambas com sinal. */
+  const ultima=[...s].reverse().find(v=>v>0)||0,parcial=r.hb>0&&s[0]>0&&s[3]===0&&ultima>s[0];
+  if((n===2||n===4)&&parcial){o.ent=s[0]-p[0];o.alm=0;o.sai=p[n-1]-ultima;o.parc=ultima}
+  else if((n===2||n===4)&&r.hb>0&&s[0]>0&&s[3]>0){
+    o.ent-=Math.max(p[0]-s[0],0);
+    o.sai-=Math.max(s[3]-p[n-1],0);
+    if(n===4&&s[1]>0&&s[2]>0)o.alm-=Math.max((p[2]-p[1])-(s[2]-s[1]),0);
+  }
+  o.sEnt=o.ent;o.sAlm=o.alm;o.sSai=o.sai;                       // partes com sinal, para o detalhe do dia
+  o.bruto=o.ent+o.alm+o.sai;
+  o.net=(r.ht!=null&&r.hb!=null)?r.ht-r.hb:null;
+  if(o.net!=null&&Math.abs(o.net)<=tol)o.ader=true;
+  if(o.ader&&o.bruto!==0){o.desc=Math.abs(o.bruto);o.ent=o.alm=o.sai=0}   // dentro da tolerância: jornada normal
+  /* Total líquido: dia abaixo da base fica negativo e abate a HE de quem tem saldo a compensar. */
+  o.neg=Math.max(-(o.ent+o.alm+o.sai),0);
+  o.cols=o.ent+o.alm+o.sai;
+  o.tot=o.cols;o.lim=0;
+  return o;
+}
+
+/* ===== Filtros de filiação ===== */
+const FIL=[['f_coord','coord'],['f_sup','sup'],['f_base','base'],['f_setor','setor'],['f_eq','eq'],['f_teq','teq'],['f_tf','tf']];
+function popularFiltros(){
+  const chapas=COLABS.map(c=>c[0]);
+  for(const [id,campo] of FIL){
+    const vals=[...new Set(chapas.map(c=>info(c)[campo]))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    $('#'+id).innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option>${esc(v)}</option>`).join('');
+  }
+}
+
+/* ===== Agregação ===== */
+let VIEW=null;
+const segunda=d=>{const x=dtD(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return x.toISOString().slice(0,10)};
+/* O cálculo roda no servidor (api/he-analise.js, em SQL): aqui só se pedem os totais prontos e se monta a visão. */
+let BUSCA=0,TMR=null;
+async function buscar(){
+  const qs=$('#q').value.trim(),q=norm(qs),d1=$('#d1').value,d2=$('#d2').value;
+  LIM.tol=Math.max(0,+$('#tol').value||0);
+  const fsel=FIL.map(([id,campo])=>[campo,$('#'+id).value]).filter(x=>x[1]);
+  let chapas=null;   // filiação e busca por nome são resolvidas aqui (o cadastro é pequeno); o servidor recebe só a lista de chapas
+  if(q||fsel.length)chapas=COLABS.filter(c=>(!q||norm(c[1]).includes(q)||c[0].includes(qs))&&!fsel.some(([campo,v])=>info(c[0])[campo]!==v)).map(c=>c[0]);
+  const id=++BUSCA;
+  const r=await api('/api/he-analise','POST',{acao:'resumo',de:d1||null,ate:d2||null,tol:LIM.tol,chapas});
+  if(id!==BUSCA)return false;   // chegou uma busca mais nova
+  const nomes=new Map(COLABS.map(c=>[c[0],c]));
+  const T={ent:0,alm:0,sai:0,cols:0,lim:0,ger:0,comp:0,total:0,desc:0,diasHE:0,heSemJornada:0,diasSemJornada:0},bases=new Map();
+  const colabs=r.colabs.map(x=>{
+    const c0=nomes.get(x.chapa)||[x.chapa,'',''],ci=info(x.chapa);
+    const c={chapa:x.chapa,nome:c0[1],funcao:c0[2],ci,ent:x.ent,alm:x.alm,sai:x.sai,total:x.tot,diasHE:x.dias_he,diasTrab:x.dias_trab,gt2:x.gt2,imp:x.imp,jS:x.js,jN:x.jn,aS:x.as_,aN:x.an,ger:x.ger,comp:x.comp};
+    T.ent+=c.ent;T.alm+=c.alm;T.sai+=c.sai;T.total+=c.total;T.desc+=x.desc_;T.diasHE+=c.diasHE;T.heSemJornada+=x.he_sem_j;T.diasSemJornada+=x.dias_sem_j;T.ger+=c.ger;T.comp+=c.comp;
+    let B=bases.get(ci.base);if(!B){B={ent:0,alm:0,sai:0,pess:{size:0}};bases.set(ci.base,B)}
+    B.ent+=c.ent;B.alm+=c.alm;B.sai+=c.sai;if(c.diasHE>0)B.pess.size++;
+    return c;
+  });
+  T.cols=T.ent+T.alm+T.sai;
+  const sem=new Map(r.sem.map(w=>[w.w,{ent:w.ent,alm:w.alm,sai:w.sai,tot:w.tot,pess:{size:w.pess}}]));
+  const dow=Array.from({length:7},()=>({ent:0,alm:0,sai:0,tot:0,pess:{size:0}}));
+  for(const w of r.dow)dow[w.w]={ent:w.ent,alm:w.alm,sai:w.sai,tot:w.tot,pess:{size:w.pess}};
+  VIEW={colabs,sem,dow,T,bases};
+  return true;
+}
+async function atualizar(){
+  clearTimeout(TMR);document.body.style.cursor='progress';
+  try{if(await buscar())render();$('#aviso').classList.add('hidden')}
+  catch(e){$('#aviso').classList.remove('hidden');$('#aviso').textContent='Não foi possível atualizar a análise: '+e.message}
+  finally{document.body.style.cursor=''}
+}
+const atualizarAtraso=()=>{clearTimeout(TMR);TMR=setTimeout(atualizar,250)};
+
+/* ===== Render da análise ===== */
+let sortK='total',sortDir=-1,SEL=null,SELB=null,EXP=false;
+/* dias a folgar (HE líquida positiva) ou a compensar (negativa), com 8 h = 1 dia */
+const diasTxt=m=>{if(!m)return '<span class="zero">—</span>';const t=(Math.round(Math.abs(m)/480*10)/10).toFixed(1).replace('.',',');return m>0?`<span class="tag ok">${t} d de folga</span>`:`<span class="tag bad">${t} d a compensar</span>`};
+$('#expTbl').onclick=()=>{EXP=!EXP;$('#expSemWrap').classList.toggle('hidden',!EXP);$('#expTbl').textContent=EXP?'Voltar ao Top 10':'Ver todos os colaboradores';render()};
+$('#expSem').addEventListener('input',()=>EXP&&render());
+const NOMES={ent:'Entrada',alm:'Almoço',sai:'Saída'};
+$('#origem').addEventListener('click',e=>{
+  const b=e.target.closest('[data-selb]');
+  if(b){const k=b.dataset.sel,nb=b.dataset.selb;if(SEL===k&&SELB===nb){SEL=null;SELB=null}else{SEL=k;SELB=nb}}   // card de base: período + base no ranking
+  else{const k=e.target.closest('[data-sel]');if(!k)return;SEL=(SEL===k.dataset.sel&&!SELB)?null:k.dataset.sel;SELB=null}   // card de período
+  sortK=SEL||'total';sortDir=-1;render()});
+const COLS=[['_rank','#'],['chapa','Chapa'],['nome','Colaborador'],['funcao','Função'],['_base','Base'],['_setor','Setor'],['_sup','Supervisor / responsável'],['_coord','Coordenador'],['_eq','Equipe'],
+  ['ent','Entrada','num'],['alm','Almoço','num'],['sai','Saída','num'],['total','Total HE','num'],['_dias','Dias (8 h = 1)','num'],['_orig','Origem principal'],['diasHE','Dias c/ HE','num']];
+const origPrinc=c=>{const m=Math.max(c.ent,c.alm,c.sai);return !m?'—':m===c.sai?'Saída':m===c.ent?'Entrada':'Almoço'};
+const origCor=o=>({Saída:'--sai',Entrada:'--ent',Almoço:'--alm'})[o];
+const stack=(c,w)=>{const e=Math.max(0,c.ent),a=Math.max(0,c.alm),i=Math.max(0,c.sai),s=(e+a+i)||1;return `<div class="bar" style="width:${w}%"><i style="width:${e/s*100}%;background:var(--ent)"></i><i style="width:${a/s*100}%;background:var(--alm)"></i><i style="width:${i/s*100}%;background:var(--sai)"></i></div>`};
+
+function render(){
+  const {colabs,T}=VIEW,comHE=colabs.filter(c=>c.total>0);
+  $('#regra').innerHTML=`Regra: 4 batidas usam EXTRA ENTRADA + EXTRA ALMOÇO + EXTRA SAIDA; 2 batidas usam EXTRA ENTRADA2 + EXTRA SAIDA2. Se |HTRAB − HBASE| ≤ ${LIM.tol} min, a jornada do dia é normal e a HE do dia não é computada (${fmt(T.desc)} descartadas no recorte atual). Dias com outras quantidades de batidas ficam fora. Indiretos: o responsável do cadastro aparece como supervisor.`;
+  $('#kpis').innerHTML=
+    kp('HE considerada (líquida)',fmtv(T.total),'soma dos dias, com os negativos abatidos')+
+    kp('Colaboradores com HE',`${comHE.length} de ${colabs.length}`,pc(comHE.length,colabs.length)+' do efetivo')+
+    kp('Com saldo a compensar',N(colabs.filter(c=>c.total<0).length),'HE líquida negativa: '+fmt(colabs.filter(c=>c.total<0).reduce((a,c)=>a+c.total,0)))+
+    kp('Média por colaborador com HE',fmt(comHE.length?Math.round(comHE.reduce((a,c)=>a+c.total,0)/comHE.length):0))+
+    kp('Dias com HE',N(T.diasHE));
+  /* Um card por período (Entrada, Almoço, Saída) e, embaixo de cada um, um card por base; as bases somam o total do período. */
+  const orig=[['ent','Entrada',T.ent,'--ent'],['alm','Almoço',T.alm,'--alm'],['sai','Saída',T.sai,'--sai']];
+  $('#origem').innerHTML='<div class="cols3">'+orig.map(([k,l,v,c])=>{
+    const bl=[...VIEW.bases.entries()].filter(([,x])=>x[k]!==0).sort((a,b)=>b[1][k]-a[1][k]),soma=bl.reduce((a,[,x])=>a+x[k],0);
+    return `<div class="colp"><div class="kpi opc${SEL===k?' sel':''}" data-sel="${k}" style="border-top:4px solid var(${c})"><div class="l" style="font-size:13px"><span class="dot" style="background:var(${c})"></span><b>${l}</b>${SEL===k?' · selecionado (clique de novo para limpar)':''}</div><div class="v">${fmt(v)}</div><div class="l">${pc(v,T.cols)} da HE considerada</div><div class="bar" style="margin-top:8px;height:8px"><i style="width:${T.cols>0?Math.max(0,v/T.cols*100):0}%;background:var(${c})"></i></div></div>`+
+      (bl.length?bl.map(([b,x])=>`<div class="kpi bcard opc${SEL===k&&SELB===b?' sel':''}" data-sel="${k}" data-selb="${esc(b)}" style="border-left:4px solid var(${c})"><div class="l" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${esc(b)}</b> · ${pc(x[k],v)}</div><div class="bh">${fmt(x[k])}</div></div>`).join('')+`<div class="note bsoma">Soma das bases: <b>${fmt(soma)}</b>${soma===v?' (confere com o total)':' — diferença de '+fmt(Math.abs(v-soma))}</div>`:'<div class="note">Sem HE neste período no recorte atual.</div>')+'</div>'}).join('')+'</div>';
+  $('#bases').innerHTML='';
+  const th=a=>'<table><thead><tr>'+a.map((x,i)=>`<th class="${i?'num':''}">${x}</th>`).join('')+'</tr></thead><tbody>';
+  const tr=a=>'<tr>'+a.map((x,i)=>`<td class="num" ${i?'':'style="text-align:left"'}>${x}</td>`).join('')+'</tr>';
+  $('#semana').innerHTML=th(['Semana de','Entrada','Almoço','Saída','Total','Colab.'])+
+    [...VIEW.sem.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([k,w])=>tr([dbr(k).slice(0,5),fmtv(w.ent),fmtv(w.alm),fmtv(w.sai),`<b>${fmtv(w.tot)}</b>`,w.pess.size]).replace('<tr>',`<tr class="cl" data-q="${k}">`)).join('')+'</tbody></table>';
+  const DN=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  $('#dow').innerHTML=th(['Dia','Entrada','Almoço','Saída','Total','Colab.'])+
+    [1,2,3,4,5,6,0].map(w=>{const x=VIEW.dow[w];return tr([DN[w],fmtv(x.ent),fmtv(x.alm),fmtv(x.sai),`<b>${fmtv(x.tot)}</b>`,x.pess.size]).replace('<tr>',`<tr class="cl" data-q="${w}">`)}).join('')+'</tbody></table>';
+  const vs=c=>SEL?c[SEL]:c.total,dabase=c=>!SELB||c.ci.base===SELB,rk=colabs.filter(c=>vs(c)!==0&&dabase(c));
+  $('#selnome').textContent=(SEL?`· só ${NOMES[SEL]}`:'· geral')+(SELB?` · base ${SELB}`:'')+(EXP?' · todos':' · top 10');
+  const lista=(EXP&&$('#expSem').checked?colabs.filter(dabase):rk);
+  const top=[...lista].sort((a,b)=>vs(b)-vs(a)).slice(0,EXP?3000:10),mx=Math.max(1,...top.map(c=>Math.abs(vs(c))));
+  $('#top10').style.maxHeight=EXP?'640px':'';$('#top10').style.overflowY=EXP?'auto':'';
+  $('#top10').innerHTML=(top.length?'<table>'+top.map((c,i)=>`<tr data-ch="${esc(c.chapa)}"><td style="width:30px">${i+1}</td><td>${esc(c.nome)}<br><span class="sub">${esc(c.funcao)} · ${esc(c.ci.sup)}</span></td><td class="num" style="width:80px"><b>${fmtv(vs(c))}</b></td><td class="num" style="width:130px">${diasTxt(vs(c))}</td><td style="width:45%">${vs(c)<0?`<div class="bar" style="width:${-vs(c)/mx*100}%"><i style="width:100%;background:var(--bad)"></i></div>`:SEL?`<div class="bar" style="width:${vs(c)/mx*100}%"><i style="width:100%;background:var(--${SEL})"></i></div>`:stack(c,c.total/mx*100)}</td></tr>`).join('')+'</table>':'<div class="note">Ninguém com HE neste período no recorte atual.</div>')+'<div class="note" style="margin-top:4px"><span class="dot" style="background:var(--ent)"></span>Entrada &nbsp; <span class="dot" style="background:var(--alm)"></span>Almoço &nbsp; <span class="dot" style="background:var(--sai)"></span>Saída</div>';
+  const val=c=>({_rank:-c.total,_dias:c.total,_orig:origPrinc(c),_base:c.ci.base,_setor:c.ci.setor,_sup:c.ci.sup,_coord:c.ci.coord,_eq:c.ci.eq}[sortK]??c[sortK]);
+  const L=lista.slice().sort((a,b)=>{const x=val(a),y=val(b);return (typeof x==='string'?String(x).localeCompare(y,'pt-BR'):x-y)*sortDir});
+  $('#tbl thead').innerHTML='<tr>'+COLS.map(([k,n,c])=>`<th data-k="${k}" class="${c||''}">${n}${k===sortK?(sortDir<0?' ▼':' ▲'):''}</th>`).join('')+'</tr>';
+  $('#tbl tbody').innerHTML=L.slice(0,3000).map((c,i)=>{
+    const cell=v=>`<td class="num ${v?'':'zero'}">${fmtv(v)}</td>`,o=origPrinc(c),ci=c.ci;
+    return `<tr data-ch="${esc(c.chapa)}"><td>${i+1}</td><td>${esc(c.chapa)}</td><td>${esc(c.nome)}</td><td>${esc(c.funcao)}</td><td>${esc(ci.base)}</td><td>${esc(ci.setor)}</td><td>${esc(ci.sup)}</td><td>${esc(ci.coord)}</td><td>${esc(ci.eq)}</td>${cell(c.ent)}${cell(c.alm)}${cell(c.sai)}<td class="num"><b>${fmtv(c.total)}</b></td><td class="num">${diasTxt(c.total)}</td><td><span class="dot" style="background:var(${origCor(o)})"></span>${o}</td><td class="num">${c.diasHE}</td></tr>`}).join('');
+  $('#tblnote').textContent=`${L.length} colaboradores${EXP&&$('#expSem').checked?'':' com HE ou saldo a compensar'}${SEL?' em '+NOMES[SEL].toLowerCase():''}. Clique no cabeçalho para ordenar e na linha para ver o detalhe dia a dia.`;
+  {const sd=colabs.map(c=>(c.ger||0)-(c.comp||0)),pos=sd.filter(v=>v>0),neg=sd.filter(v=>v<0);
+   $('#ger').innerHTML=kp('Hora gerada',fmt(T.ger),'dias acima da base')+kp('Hora compensada',fmt(T.comp),'dias abaixo da base')+
+     kp('Banco positivo',fmt(pos.reduce((a,v)=>a+v,0)),`${N(pos.length)} colaboradores com saldo a favor`)+kp('Banco negativo',fmt(-neg.reduce((a,v)=>a+v,0)),`${N(neg.length)} colaboradores devendo horas`)+
+     kp('Saldo líquido',(T.ger-T.comp<0?'−':'')+fmt(Math.abs(T.ger-T.comp)),'gerada − compensada, todos juntos')}
+  alertasJornada();alertaBanco();desenharDin();
+  $('#frag').innerHTML=fragilidades().map(f=>`<div class="fi ${f.sev}"><b>${esc(f.t)}</b><div class="d">${esc(f.d)}</div></div>`).join('');
+}
+
+/* ===== Alerta de banco de horas (dados do banco online: um fechamento por período) ===== */
+let BANCO=null,BANCOS=[];
+/* O alerta usa a posição do banco dinâmica (todos os colaboradores da planilha de controle), não a planilha do RM, que vem incompleta (cerca de 530 pessoas). */
+async function carregarBanco(per){
+  try{const r=await api('/api/he-analise','POST',{acao:'banco',ref:per,tol:LIM.tol});
+    BANCO={anterior:null,linhas:r.linhas.map(([chapa,nome,funcao,ea,aa,ee,ae])=>[chapa,nome,funcao,'',null,Math.max(ee-ae,0),Math.max(ea-aa,0)])};
+    if(!$('#bDia').value)$('#bDia').value=2;if(!$('#bDu').value)$('#bDu').value=5.5;
+    alertaBanco()}
+  catch(e){$('#bAviso').textContent='Não foi possível carregar o banco de horas: '+e.message}
+}
+function iniciarBanco(bancos){
+  BANCOS=bancos||[];BANCO=null;
+  if(!BANCOS.length){$('#bCorpo').classList.add('hidden');$('#bAviso').innerHTML='Ainda não há banco de horas no sistema. '+(NIVEL==='gestor'?'Use a aba <b>Carga da base</b> e envie a planilha com as abas do banco de horas, informando a data de fechamento de cada período.':'Peça a quem alimenta a base para enviar o banco de horas.');return}
+  $('#bAviso').textContent='';$('#bCorpo').classList.remove('hidden');
+  $('#bPer').innerHTML=BANCOS.map(b=>`<option value="${b.periodo}">${dbr(b.periodo)} · ${N(b.colaboradores)} colaboradores</option>`).join('');
+  carregarBanco(BANCOS[0].periodo);
+}
+function alertaBanco(){
+  if(!BANCO||!ANALISE_PRONTA)return;
+  const dia=+$('#bDia').value||0,du=+$('#bDu').value||0,lim=dia*du*60;
+  $('#bAceitas').textContent=`HE aceitas no período: ${fmt(lim)} · saldo positivo do período atual contra o do período anterior da mesma posição do banco`;
+  const qs=$('#q').value.trim(),q=norm(qs),fsel=FIL.map(([id,campo])=>[campo,$('#'+id).value]).filter(x=>x[1]);
+  const L=BANCO.linhas.map(([chapa,nome,funcao,proc,base,at,an])=>{const ci=info(chapa),d=at-an;return {chapa,nome,funcao,proc:proc||'—',base:base||ci.base,ci,at,an,d,st:d>lim?'ALERTA':d>0?'HORA EXTRA':'COMPENSOU'}})
+    .filter(x=>(!q||norm(x.nome).includes(q)||x.chapa.includes(qs))&&!fsel.some(([c,v])=>x.ci[c]!==v));
+  const n={ALERTA:0,'HORA EXTRA':0,COMPENSOU:0};L.forEach(x=>n[x.st]++);
+  const cor={ALERTA:'--bad','HORA EXTRA':'--alm',COMPENSOU:'--sai'};
+  $('#bCards').innerHTML=['ALERTA','HORA EXTRA','COMPENSOU'].map(s=>`<div class="kpi" style="border-top:4px solid var(${cor[s]})"><div class="l"><b>${s}</b></div><div class="v">${N(n[s])}</div><div class="l">${pc(n[s],L.length)} dos ${N(L.length)} colaboradores</div></div>`).join('')+
+    kp('Banco positivo atual',fmt(L.reduce((a,x)=>a+x.at,0)),'período anterior: '+fmt(L.reduce((a,x)=>a+x.an,0)));
+  const f=$('#bSt').value,V=L.filter(x=>!f||x.st===f).sort((a,b)=>b.d-a.d);
+  $('#bLista').innerHTML='<table><thead><tr><th>Colaborador</th><th>Função</th><th>Processo</th><th>Base</th><th class="num">Atual</th><th class="num">Anterior</th><th class="num">Variação</th><th>Status</th></tr></thead><tbody>'+
+    V.slice(0,300).map(x=>`<tr data-ch="${esc(x.chapa)}"><td>${esc(x.nome)}</td><td>${esc(x.funcao)}</td><td>${esc(x.proc)}</td><td>${esc(x.base)}</td><td class="num">${fmt(x.at)}</td><td class="num">${fmt(x.an)}</td><td class="num"><b>${x.d<0?'−'+fmt(-x.d):fmt(x.d)}</b></td><td><span class="dot" style="background:var(${cor[x.st]})"></span>${x.st}</td></tr>`).join('')+'</tbody></table>'+(V.length>300?`<div class="note" style="padding:6px">Mostrando 300 de ${N(V.length)}. Use os filtros para restringir.</div>`:'');
+}
+/* ----- Banco dinâmica: posição do banco (RM) por colaborador, com a conferência pelas batidas ----- */
+let DIN=null;
+async function carregarDin(ref){
+  try{DIN=await api('/api/he-analise','POST',{acao:'banco',ref,tol:LIM.tol});$('#dPer').textContent=DIN.ate?`Batidas no sistema até ${dbr(DIN.ate)}. O movimento soma só os dias depois de ${dbr(DIN.ref)}.`:`Ainda não há batidas depois de ${dbr(DIN.ref)}.`;desenharDin()}
+  catch(e){$('#dAviso').textContent='Não foi possível carregar o banco dinâmica: '+e.message}
+}
+function iniciarDin(bancos){
+  if(!bancos||!bancos.length){$('#dCorpo').classList.add('hidden');$('#dAviso').textContent='Ainda não há banco de horas no sistema. Envie a planilha pela aba Carga da base.';return}
+  $('#dAviso').textContent='';$('#dCorpo').classList.remove('hidden');
+  $('#dRef').innerHTML=bancos.map(b=>`<option value="${b.periodo}">${dbr(b.periodo)} · ${N(b.colaboradores)} colaboradores</option>`).join('');
+  carregarDin(bancos[0].periodo);
+}
+let DFOCO=null;
+function irParaBanco(ch){
+  $('#modal').style.display='none';DFOCO=ch;
+  if($('#dSt').value&&DIN){const l=DIN.linhas.find(r=>r[0]===ch);if(l)$('#dSt').value=''}   // sem filtro de situação, para a linha aparecer
+  desenharDin();
+  const el=$('#dfoco');(el||$('#dLista')).scrollIntoView({behavior:'smooth',block:'center'});
+  if(!el)$('#dAviso').textContent='Esse colaborador não está na posição do banco dinâmica selecionada, ou o filtro da página o esconde.';
+}
+function desenharDin(){
+  if(!DIN||!ANALISE_PRONTA)return;
+  const qs=$('#q').value.trim(),q=norm(qs),fsel=FIL.map(([id,campo])=>[campo,$('#'+id).value]).filter(x=>x[1]);
+  const L=DIN.linhas.map(([chapa,nome,funcao,ea,aa,ee,ae,heAte,heApos])=>{
+    const ci=info(chapa),sA=Math.max(ea-aa,0),sT=Math.max(ee-ae,0),abertura=ea-aa+ee-ae,mov=heApos||0,saldo=abertura+mov,dif=heAte==null?null:heAte-(ee-ae);
+    return {chapa,nome,funcao,ci,ea,aa,sA,ee,ae,sT,pos:Math.max(abertura,0),neg:Math.max(-abertura,0),abertura,mov,saldo,heAte,dif}})
+    .filter(x=>(!q||norm(x.nome).includes(q)||x.chapa.includes(qs))&&!fsel.some(([c,v])=>x.ci[c]!==v));
+  const f=$('#dSt').value,V=L.filter(x=>!f||(f==='pos'&&x.saldo>0)||(f==='pend'&&x.saldo<0)||(f==='dif'&&x.dif!=null&&Math.abs(x.dif)>60)).sort((a,b)=>b.saldo-a.saldo);
+  if(DFOCO){const i=V.findIndex(x=>x.chapa===DFOCO);if(i>=400){const [x]=V.splice(i,1);V.unshift(x)}}   // linha pedida fora das 400 primeiras sobe para o topo
+  const sum=k=>L.reduce((a,x)=>a+x[k],0),pend=L.filter(x=>x.saldo<0),folga=L.filter(x=>x.saldo>0),comDif=L.filter(x=>x.dif!=null&&Math.abs(x.dif)>60).length,temVal=L.some(x=>x.heAte!=null);
+  $('#dCards').innerHTML=kp('Colaboradores',N(L.length))+
+    kp('Saldo de abertura',fmt(sum('abertura')),`posição de ${dbr(DIN.ref)}: ${fmt(sum('pos'))} positivas, ${fmt(sum('neg'))} negativas`)+
+    kp('Movimento desde '+dbr(DIN.ref),fmt(sum('mov')),'HE líquida pelas batidas após a referência')+
+    kp('Saldo atual',fmt(sum('saldo')),'abertura + movimento')+
+    kp('Pendência de compensação',fmt(-pend.reduce((a,x)=>a+x.saldo,0)),`${N(pend.length)} colaboradores · ${(Math.round(-pend.reduce((a,x)=>a+x.saldo,0)/480*10)/10).toFixed(1).replace('.',',')} dias (8 h = 1)`)+
+    kp('Com saldo a favor',fmt(folga.reduce((a,x)=>a+x.saldo,0)),`${N(folga.length)} colaboradores`)+(temVal?kp('Com diferença acima de 1 h',N(comDif),'batidas até a referência × RM'):'');
+  const c=v=>`<td class="num ${v?'':'zero'}">${fmt(v)}</td>`;
+  $('#dLista').innerHTML='<table><thead><tr><th>Colaborador</th><th>Base</th><th class="num">Ant. realizadas</th><th class="num">Ant. atrasos</th><th class="num">Ant. saldo</th><th class="num">Atual realizadas</th><th class="num">Atual atrasos</th><th class="num">Atual saldo</th><th class="num">Positivas</th><th class="num">Negativas</th><th class="num">Abertura</th><th class="num">Movimento</th><th class="num">Saldo atual</th><th>Dias (8 h = 1)</th>'+(temVal?'<th class="num">Sistema até a ref.</th><th class="num">Diferença</th>':'')+'</tr></thead><tbody>'+
+    V.slice(0,400).map(x=>`<tr data-ch="${esc(x.chapa)}"${x.chapa===DFOCO?' class="foco" id="dfoco"':''}><td>${esc(x.nome)}<br><span class="sub">${esc(x.funcao)}</span></td><td>${esc(x.ci.base)}</td>${c(x.ea)}${c(x.aa)}${c(x.sA)}${c(x.ee)}${c(x.ae)}${c(x.sT)}${c(x.pos)}${c(x.neg)}${c(x.abertura)}${c(x.mov)}<td class="num"><b style="${x.saldo<0?'color:var(--bad)':''}">${fmt(x.saldo)}</b></td><td>${diasTxt(x.saldo)}</td>`+(temVal?`<td class="num">${x.heAte==null?'—':fmt(x.heAte)}</td><td class="num ${x.dif!=null&&Math.abs(x.dif)>60?'':'zero'}">${x.dif==null?'—':fmt(x.dif)}</td>`:'')+'</tr>').join('')+'</tbody></table>'+(V.length>400?`<div class="note" style="padding:6px">Mostrando 400 de ${N(V.length)}. Use os filtros para restringir.</div>`:'');
+}
+$('#dRef').addEventListener('change',e=>carregarDin(e.target.value));
+$('#dSt').addEventListener('input',desenharDin);
+$('#dLista').addEventListener('click',e=>{const t=e.target.closest('tr[data-ch]');if(t)detalhe(t.dataset.ch)});
+$('#bPer').addEventListener('change',e=>carregarBanco(e.target.value));
+['bDia','bDu','bSt'].forEach(id=>$('#'+id).addEventListener('input',()=>alertaBanco()));
+$('#bLista').addEventListener('click',e=>{const t=e.target.closest('tr[data-ch]');if(t)detalhe(t.dataset.ch)});
+
+/* ===== Alertas de jornada ===== */
+const hm=m=>`${pad(Math.floor(m/60))}:${pad(Math.round(m%60))}`;
+let JLIST=null;
+$('#jcards').addEventListener('click',e=>{
+  const k=e.target.closest('[data-j]');if(!k||!JLIST)return;
+  const s=k.dataset.j,{J,st,cor}=JLIST,L=J.filter(x=>st(x.m)===s).sort((a,b)=>b.m-a.m);
+  listaModal(`Jornada ${s.toLowerCase()} · ${N(L.length)} colaboradores`,['Chapa','Colaborador','Base','Jornada média','Horas somadas','Dias medidos','Status'],
+    L.map(x=>[x.c.chapa,esc(x.c.chapa),esc(x.c.nome),esc(x.c.ci.base),`<b>${hm(x.m)}</b>`,hm(x.c.jS),x.c.jN,`<span class="dot" style="background:var(${cor[s]})"></span>${s}`]),
+    'Jornada média = horas somadas ÷ dias medidos (pelas batidas). Clique num colaborador para ver o dia a dia.');
+});
+function alertasJornada(){
+  const lx=(+$('#jx').value||8)*60,la=(+$('#ja').value||10)*60,ll=+$('#jl').value||0;
+  const J=VIEW.colabs.filter(c=>c.jN).map(c=>({c,m:c.jS/c.jN})),st=m=>m>la?'Alarmante':m>lx?'Excessiva':'Normal';
+  const n={Alarmante:0,Excessiva:0,Normal:0};J.forEach(x=>n[st(x.m)]++);
+  const imp=VIEW.colabs.reduce((a,c)=>a+(c.imp||0),0);
+  const cor={Alarmante:'--bad',Excessiva:'--alm',Normal:'--sai'};
+  JLIST={J,st,cor};
+  $('#jcards').innerHTML=['Alarmante','Excessiva','Normal'].map(s=>`<div class="kpi cl" data-j="${s}" title="Clique para ver os colaboradores" style="border-top:4px solid var(${cor[s]})"><div class="l"><b>Jornada ${s.toLowerCase()}</b></div><div class="v">${N(n[s])}</div><div class="l">${pc(n[s],J.length)} dos ${N(J.length)} colaboradores com jornada medida</div></div>`).join('')+kp('Dias com batidas ímpares',N(imp),'a ajustar, fora da média');
+  const lin=(c,v,extra)=>`<tr data-ch="${esc(c.chapa)}"><td>${esc(c.nome)}<br><span class="sub">${esc(c.funcao)}</span></td><td>${esc(c.ci.base)}</td><td class="num"><b>${v}</b></td>${extra}</tr>`;
+  $('#jlist').innerHTML='<table><thead><tr><th>Colaborador</th><th>Base</th><th class="num">Jornada média</th><th class="num">Dias</th><th>Status</th></tr></thead><tbody>'+
+    J.filter(x=>x.m>lx).sort((a,b)=>b.m-a.m).slice(0,40).map(x=>lin(x.c,hm(x.m),`<td class="num">${x.c.jN}</td><td><span class="dot" style="background:var(${cor[st(x.m)]})"></span>${st(x.m)}</td>`)).join('')+'</tbody></table>';
+  const A=VIEW.colabs.filter(c=>c.aN&&c.aS/c.aN<ll).map(c=>({c,m:c.aS/c.aN})).sort((a,b)=>a.m-b.m);
+  $('#alist').innerHTML=A.length?'<table><thead><tr><th>Colaborador</th><th>Base</th><th class="num">Almoço médio</th><th class="num">Dias</th></tr></thead><tbody>'+A.slice(0,40).map(x=>lin(x.c,hm(x.m),`<td class="num">${x.c.aN}</td>`)).join('')+'</tbody></table>':'<div class="note" style="padding:8px">Ninguém abaixo do limite no recorte atual.</div>';
+}
+['jx','ja','jl'].forEach(id=>$('#'+id).addEventListener('input',()=>ANALISE_PRONTA&&alertasJornada()));
+$('#jlist').addEventListener('click',e=>{const t=e.target.closest('tr[data-ch]');if(t)detalhe(t.dataset.ch)});
+$('#alist').addEventListener('click',e=>{const t=e.target.closest('tr[data-ch]');if(t)detalhe(t.dataset.ch)});
+
+function fragilidades(){
+  const {colabs,T}=VIEW,F=[],comHE=colabs.filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
+  if(!comHE.length)return [{sev:'info',t:'Sem HE no recorte atual',d:'Ajuste os filtros ou a tolerância.'}];
+  const posT=comHE.reduce((a,c)=>a+c.total,0);
+  const o=[['entrada',T.ent],['almoço',T.alm],['saída',T.sai]].sort((a,b)=>b[1]-a[1])[0];
+  F.push({sev:o[1]/(T.cols||1)>=0.5?'alta':'info',t:`Origem dominante: ${o[0]} (${pc(o[1],T.cols)} das colunas de HE)`,d:`${fmt(o[1])} de ${fmt(T.cols)} são geradas na ${o[0]}, pelas colunas da planilha.`});
+  const t10=comHE.slice(0,10).reduce((a,c)=>a+c.total,0);
+  F.push({sev:t10/posT>=LIM.topShare?'alta':'info',t:`Concentração: os 10 maiores geram ${pc(t10,posT)} da HE`,d:`${fmt(t10)} de ${fmt(posT)} (soma de quem tem HE líquida positiva). ${comHE.length} colaboradores tiveram HE.`});
+  const reinc=comHE.filter(c=>c.diasTrab>=10&&c.diasHE/c.diasTrab>=LIM.reinc).length;
+  F.push({sev:reinc>comHE.length*0.1?'alta':'info',t:`Reincidência: ${N(reinc)} colaboradores com HE em 50% ou mais dos dias trabalhados`,d:`${pc(reinc,comHE.length)} de quem teve HE. Considera dias de 2 ou 4 batidas, em colaboradores com 10 ou mais dias.`});
+  const g2=colabs.reduce((a,c)=>a+c.gt2,0);
+  F.push({sev:g2?'alta':'info',t:`${N(g2)} dias com mais de 2 h de HE`,d:`${N(colabs.filter(c=>c.gt2).length)} colaboradores. Referência: limite de 2 h extras por dia (CLT art. 59).`});
+  F.push({sev:T.heSemJornada?'alta':'info',t:`${fmt(T.heSemJornada)} de HE em ${N(T.diasSemJornada)} dias com HBASE = 00:00`,d:'Dias sem jornada prevista (folga, domingo, feriado) com HE lançada na planilha.'});
+  return F;
+}
+
+/* batidas previstas do dia (ENT1 · SAI1 · ENT2 · SAI2); sábado costuma ter só as duas primeiras */
+const prev=s=>{const a=[...(s||[])];while(a.length&&!a[a.length-1])a.pop();return a.length?a.map(fmt).join(' · '):'—'};
+async function detalhe(ch){
+  const c=VIEW.colabs.find(x=>x.chapa===ch)||(()=>{const x=COLABS.find(y=>y[0]===ch);return x?{chapa:ch,nome:x[1],ci:info(ch),total:0,ent:0,alm:0,sai:0}:null})();
+  if(!c)return;
+  const ci=c.ci;
+  $('#mt').innerHTML=`${esc(c.chapa)} — <a href="#" class="lnk" data-banco="${esc(c.chapa)}" title="Ver no banco de horas">${esc(c.nome)}</a>  ·  HE ${fmt(c.total)}  ·  entrada ${fmt(c.ent)} · almoço ${fmt(c.alm)} · saída ${fmt(c.sai)}  ·  ${esc(ci.base)} · ${esc(ci.setor)} · sup. ${esc(ci.sup)} · coord. ${esc(ci.coord)} · equipe ${esc(ci.eq)}`;
+  $('#dt').innerHTML='<tbody><tr><td>Carregando o detalhe…</td></tr></tbody>';$('#modal').style.display='flex';
+  let dias;
+  try{dias=(await api('/api/he-analise','POST',{acao:'dias',chapa:ch,de:$('#d1').value||null,ate:$('#d2').value||null,tol:LIM.tol})).dias}
+  catch(e){$('#dt').innerHTML=`<tbody><tr><td>Não foi possível carregar: ${esc(e.message)}</td></tr></tbody>`;return}
+  const z=v=>`<td class="num ${v?'':'zero'}">${fmtv(v)}</td>`;
+  $('#dt').innerHTML='<thead><tr><th>Data</th><th>Dia</th><th>Previstas</th><th>Batidas</th><th class="num">HTRAB</th><th class="num">HBASE</th><th class="num">Entrada</th><th class="num">Almoço</th><th class="num">Saída</th><th class="num">HE considerada</th><th>Situação</th></tr></thead><tbody>'+
+  dias.map(r=>{
+    const d={data:r.data,p:r.p,s:r.s,ht:r.ht,hb:r.hb,tot:r.tot,desc:r.desc_,neg:r.neg,ader:r.ader,fora:r.fora,semJ:r.sem_j,parc:r.parc},n=d.p.length;
+    const st=d.fora?`<span class="tag bad">${n} batidas: fora do indicador</span>`:d.ader&&d.desc>0?`<span class="tag">jornada normal: ${fmt(d.desc)} descartadas</span>`:d.neg>0?`<span class="tag bad">abaixo da base: ${fmt(d.neg)} a compensar</span>`:d.semJ?`<span class="tag">sem jornada prevista: HE = HTRAB (${fmt(d.ht)})</span>`:d.parc?`<span class="tag">jornada prevista parcial: saída medida contra ${fmt(d.parc)}</span>`:'';
+    return `<tr><td>${dbr(d.data)}</td><td>${DIAS[dtD(d.data).getDay()]}</td><td class="zero">${prev(d.s)}</td><td>${d.p.map(fmt).join(' · ')||'—'}</td><td class="num">${d.ht==null?'—':fmt(d.ht)}</td><td class="num">${d.hb==null?'—':fmt(d.hb)}</td>${z(r.s_ent||0)}${z(r.s_alm||0)}${z(r.s_sai||0)}<td class="num"><b>${fmtv(d.tot)}</b></td><td>${st}</td></tr>`}).join('')+'</tbody>';
+}
+/* Lista em janela (mesma do detalhe): cab = cabeçalhos, linhas = [chapa, células html...]; clicar na linha abre o dia a dia do colaborador. */
+function listaModal(titulo,cab,linhas,nota){
+  $('#mt').textContent=titulo;
+  $('#dt').innerHTML='<thead><tr>'+cab.map((h,i)=>`<th class="${i>2&&i<8?'num':''}">${h}</th>`).join('')+'</tr></thead><tbody>'+
+    (linhas.length?linhas.map(l=>`<tr class="cl" data-ch="${esc(l[0])}">${l.slice(1).map((x,i)=>`<td class="${i>2&&i<8?'num':''}">${x}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="9">Nada neste recorte.</td></tr>')+'</tbody>'+(nota?`<tfoot><tr><td colspan="9" class="note">${nota}</td></tr></tfoot>`:'');
+  $('#modal').style.display='flex';
+}
+/* Indicador 5: quem compõe a semana ou o dia da semana clicado (horas por colaborador e em quais dias) */
+async function abrirQuando(tipo,valor){
+  const DN=['domingos','segundas','terças','quartas','quintas','sextas','sábados'];
+  const tit=tipo==='semana'?`Semana de ${dbr(valor).slice(0,5)}`:`Todos os ${DN[+valor]} do recorte`;
+  $('#mt').textContent=tit;$('#dt').innerHTML='<tbody><tr><td>Carregando…</td></tr></tbody>';$('#modal').style.display='flex';
+  try{
+    const qs=$('#q').value.trim(),q=norm(qs),fsel=FIL.map(([id,campo])=>[campo,$('#'+id).value]).filter(x=>x[1]);
+    const chapas=(q||fsel.length)?COLABS.filter(c=>(!q||norm(c[1]).includes(q)||c[0].includes(qs))&&!fsel.some(([campo,v])=>info(c[0])[campo]!==v)).map(c=>c[0]):null;
+    const r=await api('/api/he-analise','POST',{acao:'quando',tipo,valor:String(valor),de:$('#d1').value||null,ate:$('#d2').value||null,tol:LIM.tol,chapas});
+    const nm=new Map(COLABS.map(c=>[c[0],c[1]])),tot=r.linhas.reduce((a,x)=>a+x.tot,0);
+    listaModal(`${tit} · ${N(r.linhas.length)} colaboradores · HE líquida ${fmt(tot)}`,['Chapa','Colaborador','Base','Entrada','Almoço','Saída','Total','Dias','Dias e horas'],
+      r.linhas.map(x=>[x.chapa,esc(x.chapa),esc(nm.get(x.chapa)||'—'),esc(info(x.chapa).base),fmtv(x.ent),fmtv(x.alm),fmtv(x.sai),`<b>${fmtv(x.tot)}</b>`,x.dias,`<span class="sub">${esc(x.datas||'')}</span>`]),
+      'Clique num colaborador para ver o dia a dia. Horas negativas (em vermelho) são saldo a compensar.');
+  }catch(e){$('#dt').innerHTML=`<tbody><tr><td>Não foi possível carregar: ${esc(e.message)}</td></tr></tbody>`}
+}
+$('#semana').addEventListener('click',e=>{const t=e.target.closest('tr[data-q]');if(t)abrirQuando('semana',t.dataset.q)});
+$('#dow').addEventListener('click',e=>{const t=e.target.closest('tr[data-q]');if(t)abrirQuando('dow',t.dataset.q)});
+$('#mt').addEventListener('click',e=>{const a=e.target.closest('a[data-banco]');if(a){e.preventDefault();irParaBanco(a.dataset.banco)}});
+$('#modal').addEventListener('click',e=>{const t=e.target.closest('tr[data-ch]');if(t&&t.classList.contains('cl'))detalhe(t.dataset.ch)});
+$('#mc').onclick=()=>$('#modal').style.display='none';
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')$('#modal').style.display='none'});
+const abrir=e=>{const t=e.target.closest('tr[data-ch]');if(t)detalhe(t.dataset.ch)};
+$('#top10').addEventListener('click',abrir);
+$('#tbl').addEventListener('click',e=>{
+  const h=e.target.closest('th[data-k]');
+  if(h){const k=h.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=['_rank','nome','chapa','funcao','_orig','_base','_setor','_sup','_coord','_eq'].includes(k)?1:-1}render();return}
+  abrir(e);
+});
+$('#copiar').onclick=()=>{
+  const l=[['Posição','Chapa','Colaborador','Função','Base','Setor','Supervisor / responsável','Coordenador','Equipe','Tipo de equipe','Direto / Indireto','HE Entrada','HE Almoço','HE Saída','Total HE','Origem principal','Dias com HE'],
+    ...VIEW.colabs.filter(c=>c.total>0).sort((a,b)=>b.total-a.total).map((c,i)=>[i+1,c.chapa,c.nome,c.funcao,c.ci.base,c.ci.setor,c.ci.sup,c.ci.coord,c.ci.eq,c.ci.teq,c.ci.tf,fmt(c.ent),fmt(c.alm),fmt(c.sai),fmt(c.total),origPrinc(c),c.diasHE])];
+  const tsv=l.map(r=>r.join(String.fromCharCode(9))).join(String.fromCharCode(10)),m=$('#copymsg');
+  const falha=()=>{m.textContent='Cópia bloqueada pelo navegador. Selecione o texto abaixo e copie (Ctrl+C).';let t=$('#copyfb');if(!t){t=document.createElement('textarea');t.id='copyfb';t.style.cssText='width:100%;height:120px;margin-top:8px';$('#regra').after(t)}t.value=tsv;t.focus();t.select()};
+  try{navigator.clipboard.writeText(tsv).then(()=>{m.textContent=`Copiado: ${l.length-1} colaboradores. Cole no Excel.`;const t=$('#copyfb');if(t)t.remove()},falha)}catch(e){falha()}
+};
+
+/* ===== Carregar a análise do banco ===== */
+let ANALISE_PRONTA=false,CARREGANDO=false;
+async function carregarAnalise(){
+  if(CARREGANDO)return;CARREGANDO=true;
+  const av=$('#aviso');av.classList.remove('hidden');av.textContent='Calculando a análise no servidor…';
+  try{
+    const res=await api('/api/he-dados?tipo=resumo');
+    if(!res.linhas){av.innerHTML='O banco ainda não tem batidas. '+(NIVEL==='gestor'?'Use a aba <b>Carga da base</b> para enviar a primeira planilha.':'Peça a quem alimenta a base para enviar a primeira planilha.');$('#vAnalise').classList.add('hidden');return}
+    const [cb,cd]=await Promise.all([api('/api/he-dados?tipo=colabs'),api('/api/he-dados?tipo=cadastro')]);
+    CAD=new Map(cd.cadastro.map(r=>[r.chapa,{grupo:r.grupo||'—',baseOrig:V(r.base),base:baseOk(V(r.base)),setor:V(r.setor),coord:nome2(V(r.coord)),sup:nome2(V(r.sup)),eq:V(r.eq),teq:V(r.teq),tf:V(r.tf)}]));
+    COLABS=cb.colabs;
+    popularFiltros();
+    $('#d1').value=res.de;$('#d2').value=res.ate;
+    $('#fonte').textContent=`Banco: ${N(res.linhas)} registros de ${N(res.colaboradores)} colaboradores, de ${dbr(res.de)} a ${dbr(res.ate)}. Cadastro: ${N(res.cadastro)} chapas.`;
+    av.classList.add('hidden');$('#vAnalise').classList.remove('hidden');
+    ANALISE_PRONTA=true;await atualizar();iniciarBanco(res.dins);iniciarDin(res.dins);
+  }catch(e){av.textContent='Não foi possível carregar: '+e.message}
+  finally{CARREGANDO=false}
+}
+['q','d1','d2','tol',...FIL.map(f=>f[0])].forEach(id=>$('#'+id).addEventListener('input',()=>ANALISE_PRONTA&&atualizarAtraso()));
+
+/* ===== Carga da base ===== */
+const UP={batidas:null,cadastro:null,banco:null,premissas:null};
+/* Banco de horas (exportação do RM) e Premissas: tempos "hh:mm" (ou fração de dia), saldo pode vir negativo */
+const hmS=v=>{if(v==null||v==='')return 0;if(typeof v==='number')return Math.round(v*1440);const m=/^(-?)\s*(\d+):(\d{2})/.exec(String(v).trim());return m?(m[1]?-1:1)*((+m[2])*60+(+m[3])):0};
+function lerBancoAba(ws){
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null,blankrows:true}),off=XLSX.utils.decode_range(ws['!ref']||'A1').s.r;
+  const h=rows.findIndex(r=>r.some(c=>norm(c)==='CHAPA')&&r.some(c=>norm(c)==='SALDO')&&r.some(c=>norm(c)==='PERC_RAT'));
+  if(h<0)return null;
+  const hd=rows[h].map(norm),ix=k=>hd.indexOf(k),C={chapa:ix('CHAPA'),cod:ix('CODCCUSTO'),cc:ix('CCUSTO'),nome:ix('NOME'),sec:ix('SECAO'),fun:ix('FUNCAO'),perc:ix('PERC_RAT'),
+    ea:ix('EXTRA_ANT'),fa:ix('FALTA_ANT'),aa:ix('ATRASO_ANT'),sa:ix('SALDOANT'),ee:ix('EXTRA_ATU'),fe:ix('FALTA_ATU'),ae:ix('ATRASO_ATU'),s:ix('SALDO')};
+  const g=(r,k)=>C[k]>=0?r[C[k]]:null,out=[];
+  for(let i=h+1;i<rows.length;i++){const r=rows[i];
+    const ch=g(r,'chapa');if(ch==null||ch==='')continue;
+    out.push({n:off+i+1,chapa:String(ch).trim(),codccusto:String(g(r,'cod')??'').trim(),ccusto:String(g(r,'cc')??'').trim(),nome:String(g(r,'nome')??'').trim(),secao:String(g(r,'sec')??'').trim(),funcao:String(g(r,'fun')??'').trim(),
+      perc:Number(g(r,'perc')),ea:hmS(g(r,'ea')),fa:hmS(g(r,'fa')),aa:hmS(g(r,'aa')),sa:hmS(g(r,'sa')),ee:hmS(g(r,'ee')),fe:hmS(g(r,'fe')),ae:hmS(g(r,'ae')),s:hmS(g(r,'s'))});
+  }
+  return out;
+}
+/* Aba "Banco Dinâmica": por colaborador, anterior (realizadas, atrasos, saldo), atual (realizadas, atrasos, saldo), positivas e negativas */
+const hmP=v=>Math.max(0,hmS(v));
+function lerDinAba(ws){
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null,blankrows:true}),off=XLSX.utils.decode_range(ws['!ref']||'A1').s.r;
+  const h=rows.findIndex(r=>r.some(c=>norm(c)==='CHAPA')&&r.some(c=>norm(c)==='NOME'));
+  if(h<0)return null;
+  const ic=rows[h].findIndex(c=>norm(c)==='CHAPA'),out=[];
+  for(let i=h+1;i<rows.length;i++){const r=rows[i];const ch=r[ic];if(ch==null||ch==='')continue;
+    out.push({n:off+i+1,chapa:String(ch).trim(),nome:String(r[ic+1]??'').trim(),funcao:String(r[ic+2]??'').trim(),ar:hmP(r[ic+3]),aa:hmP(r[ic+4]),as:hmP(r[ic+5]),tr:hmP(r[ic+6]),ta:hmP(r[ic+7]),ts:hmP(r[ic+8]),pos:hmP(r[ic+9]),neg:hmP(r[ic+10])})}
+  return out;
+}
+function lerPremissas(wb){
+  const n=wb.SheetNames.find(x=>norm(x)==='PREMISSAS');if(!n)return null;
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null,blankrows:false});
+  const h=rows.findIndex(r=>r.some(c=>norm(c)==='CCUSTO'));if(h<0)return null;
+  const ic=rows[h].findIndex(c=>norm(c)==='CCUSTO'),is=rows[h].findIndex(c=>norm(c)==='SECAO'),out=[];
+  for(const r of rows.slice(h+1)){
+    if(r[ic]&&r[ic+1])out.push({tipo:'processo',chave:String(r[ic]),valor:String(r[ic+1])});
+    if(is>=0&&r[is]&&r[is+1])out.push({tipo:'base',chave:String(r[is]),valor:String(r[is+1])});
+  }
+  return out;
+}
+const lerArq=f=>new Promise((ok,err)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=()=>err(fr.error);fr.readAsArrayBuffer(f)});
+async function lerArquivos(files){
+  $('#prev').hidden=false;$('#prevtxt').textContent='Lendo os arquivos… (planilhas grandes levam alguns segundos)';$('#envmsg').textContent='';$('#resul').classList.add('hidden');
+  const msgs=[];
+  for(const f of files){
+    try{
+      const wb=XLSX.read(new Uint8Array(await lerArq(f)),{type:'array'});
+      if(ehCadastro(wb)){const m=lerCadastro(wb);UP.cadastro={arquivo:f.name,linhas:[...m.values()]};
+        const g={};for(const c of UP.cadastro.linhas)g[c.grupo]=(g[c.grupo]||0)+1;
+        msgs.push(`<b>Cadastro</b> · ${esc(f.name)} · ${N(m.size)} chapas (${Object.entries(g).map(([k,v])=>`${esc(k)}: ${N(v)}`).join(', ')})`)}
+      else if(wb.SheetNames.some(n=>/BANCO|PREMISSAS/.test(norm(n)))&&!wb.SheetNames.every(n=>norm(n)==='BATIDAS')){
+        const abas=[];
+        for(const sn of wb.SheetNames){if(norm(sn)==='PREMISSAS')continue;const din=/DINAMICA/.test(norm(sn)),l=din?lerDinAba(wb.Sheets[sn]):lerBancoAba(wb.Sheets[sn]);if(l&&l.length)abas.push({aba:sn.trim(),linhas:l,tipo:din?'bancodin':'banco'})}
+        const pr=lerPremissas(wb);
+        if(abas.length)UP.banco={arquivo:f.name,abas};
+        if(pr&&pr.length)UP.premissas={arquivo:f.name,linhas:pr};
+        msgs.push(`<b>Banco de horas / premissas</b> · ${esc(f.name)}`+(abas.length?'<div class="note">Informe a <b>data de referência</b> de cada aba que deseja enviar (a data até a qual o banco foi atualizado, por exemplo 01/11, ou o dia 15 de um fechamento). Deixe em branco a que não quer enviar.</div>'+abas.map((a,i)=>`<div style="margin:4px 0">${esc(a.aba)} · ${a.tipo==='bancodin'?'banco dinâmica':'exportação do RM'} · ${N(a.linhas.length)} linhas · referência <input type="date" class="perB" data-i="${i}"></div>`).join(''):'')+(pr&&pr.length?`<div>Premissas: ${N(pr.filter(x=>x.tipo==='processo').length)} centros de custo e ${N(pr.filter(x=>x.tipo==='base').length)} seções</div>`:''))}
+      else{const {linhas,ignoradas}=lerBatidas(wb);UP.batidas={arquivo:f.name,linhas};
+        const ds=linhas.map(r=>r.data).filter(Boolean).sort(),ch=new Set(linhas.map(r=>r.chapa));
+        msgs.push(`<b>Batidas</b> · ${esc(f.name)} · ${N(linhas.length)} registros de ${N(ch.size)} colaboradores · ${dbr(ds[0])} a ${dbr(ds[ds.length-1])}${ignoradas?` · <span class="bad-txt">${N(ignoradas)} linhas sem data foram ignoradas</span>`:''}`)}
+    }catch(e){msgs.push(`<span class="bad-txt">${esc(f.name)}: ${esc(e.message)}</span>`)}
+  }
+  $('#prevtxt').innerHTML=msgs.join('<br>');
+  $('#analisar').disabled=!(UP.batidas||UP.cadastro||UP.banco||UP.premissas);limparPrevia();   // a prévia vale para estes arquivos; ao trocar, analisa de novo
+}
+/* ===== Prévia (mesmo padrão do Gerenciador de Equipes): analisar → erros por linha → confirmar e aplicar ===== */
+let RES=null;
+function tarefas(){
+  const t=[];
+  if(UP.cadastro)t.push({tipo:'cadastro',rot:'Cadastro',linhas:UP.cadastro.linhas});
+  if(UP.premissas)t.push({tipo:'premissas',rot:'Premissas',linhas:UP.premissas.linhas});
+  if(UP.banco){
+    const pers=[...document.querySelectorAll('.perB')].map(i=>[+i.dataset.i,i.value]).filter(x=>x[1]);
+    for(const [i,per] of pers){const a=UP.banco.abas[i];t.push({tipo:a.tipo||'banco',rot:`${a.tipo==='bancodin'?'Banco dinâmica':'Banco de horas (RM)'} ${dbr(per)}`,linhas:a.linhas,periodo:per})}
+  }
+  if(UP.batidas)t.push({tipo:'batidas',rot:'Batidas',linhas:UP.batidas.linhas});
+  return t;
+}
+function limparPrevia(){RES=null;$('#chips').innerHTML='';$('#enviar').disabled=true}
+async function analisar(){
+  const m=$('#envmsg'),b=$('#analisar');limparPrevia();b.disabled=true;
+  try{
+    if(UP.banco&&![...document.querySelectorAll('.perB')].some(i=>i.value))throw new Error('informe a data de referência de pelo menos uma aba do banco de horas');
+    const R={novas:0,alteradas:0,iguais:0,protegidas:0,duplicadas:0,totalErros:0,erros:[],criados:[],atualizados:[]};
+    for(const tk of tarefas()){
+      for(let i=0;i<tk.linhas.length;i+=1000){
+        const r=await api('/api/he-carga','POST',{acao:'previa',tipo:tk.tipo,periodo:tk.periodo,linhas:tk.linhas.slice(i,i+1000)});
+        R.novas+=r.novas;R.alteradas+=r.alteradas;R.iguais+=r.iguais;R.protegidas+=r.protegidas;R.duplicadas+=r.duplicadas;R.totalErros+=r.totalErros;
+        for(const e of r.erros)if(R.erros.length<500)R.erros.push({...e,tipo:tk.rot});
+        for(const c of r.criados)if(R.criados.length<500)R.criados.push({...c,tipo:tk.rot});
+        for(const a of r.atualizados)if(R.atualizados.length<1000)R.atualizados.push({...a,tipo:tk.rot});
+        m.textContent=`Analisando ${tk.rot}… ${N(Math.min(i+1000,tk.linhas.length))} de ${N(tk.linhas.length)}`;
+      }
+    }
+    RES=R;m.textContent='';desenharChips();
+    $('#enviar').disabled=R.totalErros>0;
+  }catch(e){m.textContent='Não foi possível analisar: '+e.message}
+  finally{b.disabled=false}
+}
+function desenharChips(){
+  const R=RES,ch=[['criados','--pos','novo(s)',R.novas],['atualizados','--acc','atualizado(s)',R.alteradas],['iguais','--mut','igual(is): nada muda',R.iguais]];
+  if(R.protegidas)ch.push(['protegidos','--alm','protegido(s): editados à mão, não mudam',R.protegidas]);
+  ch.push(['erros',R.totalErros?'--bad':'--mut','com erro',R.totalErros]);
+  $('#chips').innerHTML='<div class="note" style="margin:8px 0 4px">Prévia: nada foi gravado ainda. Clique num resumo para ver os detalhes.</div><div class="row" style="gap:8px">'+
+    ch.map(([d,c,r,n])=>`<button class="chip" data-d="${d}" style="--cc:var(${c})" ${n&&['criados','atualizados','erros'].includes(d)?'':'disabled'}>${N(n)} ${r}</button>`).join('')+'</div>'+
+    (R.duplicadas?`<div class="note" style="margin-top:6px">${N(R.duplicadas)} linha(s) repetida(s) na planilha (mesma chave): vale a última.</div>`:'')+
+    (R.totalErros?`<div class="fi alta" style="margin-top:8px"><b>${N(R.totalErros)} linha(s) com erro impedem a aplicação.</b><div class="d">Clique no resumo vermelho para ver quais. Corrija a planilha e analise de novo.</div></div>`:
+      `<div class="fi info" style="margin-top:8px;border-left-color:var(--pos)"><b>Sem erros. Pronto para aplicar.</b><div class="d">Clique em “Confirmar e aplicar” para gravar. Linha que não vier na planilha é mantida.</div></div>`);
+}
+const TIT_PREV={criados:'Registros novos',atualizados:'Registros atualizados (de → para)',erros:'Linhas com erro'};
+function abrirPrev(d){
+  const R=RES;if(!R)return;
+  let cab,corpo,total,lista;
+  if(d==='criados'){lista=R.criados;total=R.novas;cab='<th>Origem</th><th>Chapa / chave</th><th>Nome</th><th>Referência</th>';
+    corpo=lista.map(x=>`<tr><td>${esc(x.tipo)}</td><td>${esc(x.chapa)}</td><td>${esc(x.nome||'—')}</td><td>${x.data?(/^\d{4}-/.test(x.data)?dbr(x.data):esc(x.data)):'—'}</td></tr>`).join('')}
+  else if(d==='atualizados'){lista=R.atualizados;total=R.alteradas;cab='<th>Origem</th><th>Chapa / chave</th><th>Nome</th><th>Referência</th><th>Campo</th><th>De</th><th>Para</th>';
+    corpo=lista.map(x=>x.mudancas.map((m,i)=>`<tr${i===0?' style="border-top:2px solid var(--linha-forte)"':''}><td>${i?'':esc(x.tipo)}</td><td>${i?'':esc(x.chapa)}</td><td>${i?'':esc(x.nome||'—')}</td><td>${i?'':(x.data?(/^\d{4}-/.test(x.data)?dbr(x.data):esc(x.data)):'—')}</td><td><b>${esc(m.campo)}</b></td><td class="zero">${esc(m.de)}</td><td><b style="color:var(--pos)">${esc(m.para)}</b></td></tr>`).join('')).join('')}
+  else{lista=R.erros;total=R.totalErros;cab='<th>Origem</th><th>Linha</th><th>Chapa / chave</th><th>Nome</th><th>Erro</th>';
+    corpo=lista.map(x=>`<tr><td>${esc(x.tipo)}</td><td>${x.linha==null?'—':x.linha}</td><td>${esc(x.chapa||'—')}</td><td>${esc(x.nome||'—')}</td><td style="color:var(--bad)">${esc(x.erro)}</td></tr>`).join('')}
+  $('#pvT').textContent=TIT_PREV[d];
+  $('#pvC').innerHTML=`<thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody>`+(total>lista.length?`<tfoot><tr><td colspan="7" class="note">Mostrando os primeiros ${N(lista.length)} de ${N(total)}.</td></tr></tfoot>`:'');
+  $('#modalPrev').style.display='flex';
+}
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('button[data-d]');if(b&&!b.disabled)abrirPrev(b.dataset.d)});
+$('#pvX').onclick=()=>$('#modalPrev').style.display='none';
+$('#modalPrev').addEventListener('click',e=>{if(e.target.id==='modalPrev')$('#modalPrev').style.display='none'});
+$('#analisar').onclick=analisar;
+$('#prevtxt').addEventListener('input',e=>{if(e.target.classList.contains('perB'))limparPrevia()});   // mudou a data: a análise antiga não vale mais
+
+/* ----- planilha modelo (cabeçalho certo, uma linha de exemplo e a aba de instruções) ----- */
+function baixarModelo(tipo){
+  const bat=tipo==='batidas',wb=XLSX.utils.book_new();
+  const cab=bat?['CHAPA','NOME','FUNCAO','DATABATIDA','1º_BATIDA','2º_BATIDA','3º_BATIDA','4º_BATIDA','5º_BATIDA','6º_BATIDA','7º_BATIDA','8º_BATIDA','9º_BATIDA','10º_BATIDA','HTRAB','HBASE','ENT1','SAI1','ENT2','SAI2','EXTRA ENTRADA','EXTRA ALMOCO','EXTRA SAIDA','EXTRA ENTRADA2','EXTRA SAIDA2']
+    :['CHAPA','NOME','FUNCAO','ANT_REALIZADAS','ANT_ATRASOS','ANT_SALDO','ATUAL_REALIZADAS','ATUAL_ATRASOS','ATUAL_SALDO','POSITIVAS','NEGATIVAS'];
+  const ex=bat?['12345','FULANO DE TAL','ELETRICISTA','01/09/2026','07:55','12:00','13:30','18:05','','','','','','','08:40','08:30','08:00','12:00','13:30','18:00','00:05','00:00','00:05','00:00','00:00']
+    :['12345','FULANO DE TAL','ELETRICISTA','00:00','00:00','00:00','24:49','01:04','23:45','23:45','00:00'];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([cab,ex]),bat?'Batidas':'Banco Dinâmica');
+  const ins=bat?[
+    ['Para que serve','Enviar as batidas de ponto para o banco de Horas Extras. Uma linha por colaborador (CHAPA) e dia (DATABATIDA).'],
+    ['Linha de exemplo','A linha 2 é só um exemplo do formato: APAGUE antes de enviar, ou o FULANO DE TAL será cadastrado.'],
+    ['Obrigatórias','CHAPA, NOME, DATABATIDA, HTRAB, HBASE, EXTRA ENTRADA, EXTRA ALMOCO, EXTRA SAIDA, EXTRA ENTRADA2 e EXTRA SAIDA2.'],
+    ['Datas e horários','DATABATIDA no formato dia/mês/ano (01/09/2026). Batidas e demais horários em hh:mm (07:55), entre 00:00 e 23:59, até 10 batidas por dia.'],
+    ['Dia que já existe','Se a chapa e a data já estão no banco, o sistema compara: o que mudou é substituído (o antes e o depois ficam registrados) e o que não mudou fica como está.'],
+    ['Linha que não vem','O que não vier no arquivo é mantido no banco.'],
+    ['Antes de aplicar','Envie o arquivo na aba Carga da base: o sistema mostra uma prévia (novos, atualizados de → para e linhas com erro) e só grava quando você confirmar.']
+  ]:[
+    ['Para que serve','Enviar a posição do banco de horas por colaborador (estrutura da aba Banco Dinâmica da planilha de controle). Uma linha por CHAPA.'],
+    ['Linha de exemplo','A linha 2 é só um exemplo do formato: APAGUE antes de enviar.'],
+    ['Colunas','Realizadas, atrasos e saldo do período anterior e do atual, mais horas positivas e negativas, nessa ordem, depois de CHAPA, NOME e FUNCAO. Tempos em hh:mm.'],
+    ['Data de referência','Ao enviar, informe a data até a qual o banco foi atualizado (por exemplo 01/11). Cada data guarda uma posição do banco.'],
+    ['Conferência','Saldo, positivas e negativas seguem as fórmulas (realizadas − atrasos). Se um valor da planilha estiver fora da fórmula por mais de 1 minuto, vale a fórmula e a correção fica registrada.'],
+    ['Antes de aplicar','Envie o arquivo na aba Carga da base: o sistema mostra uma prévia e só grava quando você confirmar.']
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Instruções'],...ins]),'Instruções');
+  XLSX.writeFile(wb,bat?'modelo-batidas.xlsx':'modelo-banco-dinamica.xlsx');
+}
+document.querySelectorAll('[data-modelo]').forEach(b=>b.onclick=()=>baixarModelo(b.dataset.modelo));
+
+async function enviarTipo(tipo,arquivo,linhas,lote,prog,periodo){
+  const {carga}=await api('/api/he-carga','POST',{acao:'iniciar',tipo,arquivo,periodo});
+  for(let i=0;i<linhas.length;i+=lote){
+    await api('/api/he-carga','POST',{acao:'lote',carga,linhas:linhas.slice(i,i+lote)});
+    prog(Math.min(i+lote,linhas.length),linhas.length);
+  }
+  return api('/api/he-carga','POST',{acao:'concluir',carga});
+}
+$('#enviar').onclick=async()=>{
+  const b=$('#enviar'),m=$('#envmsg'),out=[];b.disabled=true;
+  try{
+    // cadastro primeiro: as batidas já entram filiadas
+    if(UP.cadastro){const r=await enviarTipo('cadastro',UP.cadastro.arquivo,UP.cadastro.linhas,1000,(a,t)=>m.textContent=`Enviando o cadastro… ${N(a)} de ${N(t)}`);out.push(['Cadastro',r])}
+    if(UP.premissas){const r=await enviarTipo('premissas',UP.premissas.arquivo,UP.premissas.linhas,1000,(a,t)=>m.textContent=`Enviando as premissas… ${N(a)} de ${N(t)}`);out.push(['Premissas',r])}
+    if(UP.banco){
+      const pers=[...document.querySelectorAll('.perB')].map(i=>[+i.dataset.i,i.value]).filter(x=>x[1]);
+      if(!pers.length&&!UP.batidas&&!UP.cadastro&&!UP.premissas)throw new Error('informe a data de fechamento de pelo menos uma aba do banco de horas');
+      for(const [i,per] of pers){const a=UP.banco.abas[i];const r=await enviarTipo(a.tipo||'banco',UP.banco.arquivo+' · '+a.aba,a.linhas,1000,(x,t)=>m.textContent=`Enviando o banco de horas (${a.aba}, fechamento ${dbr(per)})… ${N(x)} de ${N(t)}`,per);out.push([`Banco de horas ${dbr(per)}`,r])}
+    }
+    if(UP.batidas){const r=await enviarTipo('batidas',UP.batidas.arquivo,UP.batidas.linhas,1000,(a,t)=>m.textContent=`Enviando as batidas… ${N(a)} de ${N(t)}`);out.push(['Batidas',r])}
+    m.textContent='';
+    $('#resul').classList.remove('hidden');
+    $('#resul').innerHTML='<h2 class="ok-txt">Carga concluída</h2>'+out.map(([n,r])=>`<div><b>${n}</b> · ${esc(r.arquivo)}: ${N(r.linhas)} linhas · <b>${N(r.novas)} novas</b> · <b>${N(r.alteradas)} alteradas</b> · ${N(r.iguais)} iguais${r.periodo_ini?` · período ${dbr(r.periodo_ini)} a ${dbr(r.periodo_fim)}`:''}</div>`).join('');
+    UP.batidas=UP.cadastro=UP.banco=UP.premissas=null;$('#prev').hidden=true;limparPrevia();ANALISE_PRONTA=false;
+    await carregarCarga();
+  }catch(e){m.textContent='Falha no envio: '+e.message+'. O que já foi enviado fica gravado; pode enviar o arquivo de novo (linhas iguais não mudam nada).';b.disabled=false}
+};
+const CAMPO_AJ={batidas:'p',previsto:'s',HTRAB:'ht',HBASE:'hb','EXTRA ENTRADA':'xe','EXTRA ALMOÇO':'xa','EXTRA SAIDA':'xs','EXTRA ENTRADA2':'xe2','EXTRA SAIDA2':'xs2'};
+const vAj=(c,o)=>{const v=o[CAMPO_AJ[c]];return Array.isArray(v)?(v.map(fmt).join(' · ')||'—'):v==null?'—':fmt(v)};
+async function carregarCarga(){
+  try{
+    const [res,aj]=await Promise.all([api('/api/he-dados?tipo=resumo'),api('/api/he-dados?tipo=ajustes')]);
+    $('#resumo').innerHTML=res.linhas?`${N(res.linhas)} registros de batidas de ${N(res.colaboradores)} colaboradores, de ${dbr(res.de)} a ${dbr(res.ate)}. Cadastro: ${N(res.cadastro)} chapas.`:'O banco ainda está vazio.';
+    $('#cargas').innerHTML='<table><thead><tr><th>Quando</th><th>Tipo</th><th>Arquivo</th><th>Enviado por</th><th class="num">Linhas</th><th class="num">Novas</th><th class="num">Alteradas</th><th class="num">Iguais</th><th>Período</th></tr></thead><tbody>'+
+      (res.cargas.map(c=>`<tr><td>${quando(c.iniciada_em)}</td><td>${esc(c.tipo)}</td><td>${esc(c.arquivo)}</td><td>${esc(c.usuario_nome)}</td><td class="num">${N(c.linhas)}</td><td class="num">${N(c.novas)}</td><td class="num">${N(c.alteradas)}</td><td class="num">${N(c.iguais)}</td><td>${c.periodo_ini?dbr(c.periodo_ini)+' a '+dbr(c.periodo_fim):'—'}${c.concluida_em?'':' <span class="tag bad">incompleta</span>'}</td></tr>`).join('')||'<tr><td colspan="9">Nenhuma carga ainda.</td></tr>')+'</tbody></table>';
+    $('#ajustes').innerHTML='<table><thead><tr><th>Quando</th><th>Chapa</th><th>Colaborador</th><th>Dia</th><th>O que mudou (antes → depois)</th></tr></thead><tbody>'+
+      (aj.ajustes.map(a=>`<tr><td>${quando(a.em)}</td><td>${esc(a.chapa)}</td><td>${esc(a.nome)}</td><td>${dbr(a.data)}</td><td>${a.campos.map(c=>`${esc(c)}: ${esc(vAj(c,a.antes))} → <b>${esc(vAj(c,a.depois))}</b>`).join(' · ')}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum ajuste registrado.</td></tr>')+'</tbody></table>';
+  }catch(e){$('#resumo').textContent='Não foi possível carregar: '+e.message}
+}
+$('#drop').onclick=()=>$('#file').click();
+$('#file').onchange=e=>e.target.files.length&&lerArquivos([...e.target.files]);
+['dragover','dragenter'].forEach(t=>$('#drop').addEventListener(t,e=>{e.preventDefault();$('#drop').classList.add('over')}));
+['dragleave','drop'].forEach(t=>$('#drop').addEventListener(t,e=>{e.preventDefault();$('#drop').classList.remove('over')}));
+$('#drop').addEventListener('drop',e=>e.dataTransfer.files.length&&lerArquivos([...e.dataTransfer.files]));
+
+/* ===== Telas e integração com o index.html ===== */
+let NIVEL=null,VISTA='';
+/* ----- lista de colaboradores e edição de vínculos ----- */
+let CADL=[];const CF=['grupo','base','setor','coord','sup','eq','teq','tf'],CFN={grupo:'Grupo',base:'Base',setor:'Setor',coord:'Coordenador',sup:'Supervisor / responsável',eq:'Equipe',teq:'Tipo de equipe',tf:'Direto / Indireto'};
+function montarLista(colabs,cad){
+  const m=new Map(cad.map(r=>[r.chapa,r])),vistos=new Set(),L=[];
+  const linha=(chapa,nome,funcao)=>{const r=m.get(chapa);vistos.add(chapa);
+    L.push({chapa,nome,funcao,tem:!!r,manual:!!(r&&r.manual),...Object.fromEntries(CF.map(k=>[k,r?(k==='base'?baseOk(V(r.base)):V(r[k])):'—']))})};
+  for(const [chapa,nome,funcao] of colabs)linha(chapa,nome,funcao);
+  for(const r of cad)if(!vistos.has(r.chapa))linha(r.chapa,'(sem batidas no banco)','');
+  return L.sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR'));
+}
+function desenharLista(){
+  const q=norm($('#cq').value),qs=$('#cq').value.trim(),g=$('#cg').value,b=$('#cb').value,s=$('#cs').value;
+  const L=CADL.filter(x=>(!q||norm(x.nome).includes(q)||x.chapa.includes(qs))&&(!g||x.grupo===g)&&(!b||x.base===b)&&(s!=='sem'||!x.tem)&&(s!=='man'||x.manual));
+  $('#cn').textContent=`${N(L.length)} de ${N(CADL.length)} colaboradores`+(L.length>500?' · mostrando os 500 primeiros; use a busca e os filtros':'');
+  const ed=NIVEL==='gestor';
+  $('#cadLista').innerHTML='<table><thead><tr><th>Chapa</th><th>Colaborador</th><th>Função</th>'+CF.map(k=>`<th>${CFN[k]}</th>`).join('')+(ed?'<th></th>':'')+'</tr></thead><tbody>'+
+    L.slice(0,500).map(x=>`<tr><td>${esc(x.chapa)}</td><td>${esc(x.nome)}${x.manual?' <span class="tag">editado</span>':''}${x.tem?'':' <span class="tag bad">sem cadastro</span>'}</td><td>${esc(x.funcao)}</td>${CF.map(k=>`<td>${esc(k==='sup'||k==='coord'?nome2(x[k]):x[k])}</td>`).join('')}${ed?`<td><button data-ed="${esc(x.chapa)}">Editar</button></td>`:''}</tr>`).join('')+'</tbody></table>';
+}
+function abrirEdicao(chapa){
+  const x=CADL.find(c=>c.chapa===chapa);if(!x)return;
+  $('#edT').textContent=`${x.chapa} — ${x.nome}`;$('#edM').textContent='';
+  $('#edC').innerHTML=CF.map(k=>{const vals=[...new Set(CADL.map(c=>c[k]).filter(v=>v&&v!=='—'))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    return `<label>${CFN[k]}<input data-k="${k}" list="dl_${k}" value="${esc(x[k]==='—'?'':x[k])}"><datalist id="dl_${k}">${vals.map(v=>`<option value="${esc(v)}">`).join('')}</datalist></label>`}).join('');
+  $('#edS').dataset.ch=chapa;$('#modalEd').style.display='flex';
+}
+$('#cadLista').addEventListener('click',e=>{const b=e.target.closest('button[data-ed]');if(b)abrirEdicao(b.dataset.ed)});
+$('#edX').onclick=()=>$('#modalEd').style.display='none';
+$('#edS').onclick=async()=>{
+  const chapa=$('#edS').dataset.ch,corpo={chapa};
+  document.querySelectorAll('#edC input').forEach(i=>{corpo[i.dataset.k]=i.value.trim()});
+  corpo.base=baseOk(corpo.base);
+  $('#edS').disabled=true;$('#edM').textContent='Salvando…';
+  try{
+    const r=await api('/api/he-cadastro','POST',corpo);
+    const x=CADL.find(c=>c.chapa===chapa);for(const k of CF)x[k]=corpo[k]||'—';x.tem=true;if(r.campos.length)x.manual=true;
+    ANALISE_PRONTA=false;   // a análise precisa reler o cadastro
+    $('#modalEd').style.display='none';desenharLista();
+  }catch(e){$('#edM').textContent='Não foi possível salvar: '+e.message}
+  finally{$('#edS').disabled=false}
+};
+['cq','cg','cb','cs'].forEach(id=>$('#'+id).addEventListener('input',desenharLista));
+async function carregarCadastro(){
+  try{
+    const [d,cb]=await Promise.all([api('/api/he-dados?tipo=cadastro'),api('/api/he-dados?tipo=colabs')]);
+    const L=d.cadastro;
+    CADL=montarLista(cb.colabs,L);
+    const opt=(arr,rot)=>`<option value="">${rot}</option>`+arr.map(v=>`<option>${esc(v)}</option>`).join('');
+    $('#cg').innerHTML=opt([...new Set(CADL.map(x=>x.grupo))].sort(),'Todos');$('#cb').innerHTML=opt([...new Set(CADL.map(x=>x.base))].sort((a,b)=>a.localeCompare(b,'pt-BR')),'Todas');
+    desenharLista();
+    const por=new Map(),gr=new Map();
+    for(const r of L){const o=V(r.base),k=o+'|'+baseOk(o);por.set(k,(por.get(k)||0)+1);const g=r.grupo||'—';gr.set(g,(gr.get(g)||0)+1)}
+    const ls=[...por.entries()].map(([k,n])=>{const [o,p]=k.split('|');return {o,p,n}}).sort((a,b)=>a.p.localeCompare(b.p,'pt-BR')||b.n-a.n);
+    $('#cadBases').innerHTML='<table><thead><tr><th>Nome no base-resumo</th><th>Nome padronizado</th><th class="num">Colaboradores</th><th></th></tr></thead><tbody>'+
+      ls.map(x=>`<tr><td>${esc(x.o)}</td><td><b>${esc(x.p)}</b></td><td class="num">${N(x.n)}</td><td>${x.o!==x.p?'<span class="tag">sigla ou grafia unificada</span>':''}</td></tr>`).join('')+'</tbody></table>';
+    $('#cadGrupos').innerHTML='<table><thead><tr><th>Grupo</th><th class="num">Colaboradores</th></tr></thead><tbody>'+[...gr.entries()].sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<tr><td>${esc(g)}</td><td class="num">${N(n)}</td></tr>`).join('')+'</tbody></table>';
+  }catch(e){$('#cadBases').textContent='Não foi possível carregar: '+e.message}
+}
+function ir(v){
+  if(v==='carga'&&NIVEL!=='gestor')v='analise';
+  VISTA=v;
+  $('#vAnalise').classList.toggle('hidden',v!=='analise'||!ANALISE_PRONTA);
+  $('#vCarga').classList.toggle('hidden',v!=='carga');
+  $('#vCadastro').classList.toggle('hidden',v!=='cadastro');
+  $('#tabA').classList.toggle('pri',v==='analise');$('#tabC').classList.toggle('pri',v==='carga');$('#tabK').classList.toggle('pri',v==='cadastro');
+  if(v==='analise'){if(!ANALISE_PRONTA)carregarAnalise();else $('#aviso').classList.add('hidden')}
+  else if(v==='cadastro'){$('#aviso').classList.add('hidden');carregarCadastro()}
+  else{$('#aviso').classList.add('hidden');carregarCarga();carregarAjBanco()}
+}
+async function carregarAjBanco(){
+  try{
+    const {ajustes}=await api('/api/he-dados?tipo=ajustes_banco');
+    const rot={EXTRA_ANT:'ea',FALTA_ANT:'fa',ATRASO_ANT:'aa',SALDOANT:'sa',EXTRA_ATU:'ee',FALTA_ATU:'fe',ATRASO_ATU:'ae',SALDO:'s',CCUSTO:'ccusto',SECAO:'secao',PERC_RAT:'perc',ANT_REALIZADAS:'ea',ANT_ATRASOS:'aa',ANT_SALDO:'sa',ATUAL_REALIZADAS:'ee',ATUAL_ATRASOS:'ae',ATUAL_SALDO:'s',POSITIVAS:'pos',NEGATIVAS:'neg'};
+    const v=(c,o)=>{const x=o[rot[c]];return typeof x==='number'&&c!=='PERC_RAT'?(x<0?'−'+fmt(-x):fmt(x)):(x==null?'—':esc(x))};
+    $('#ajBanco').innerHTML=ajustes.length?'<table><thead><tr><th>Quando</th><th>Fechamento</th><th>Colaborador</th><th>O que mudou</th></tr></thead><tbody>'+ajustes.map(a=>`<tr><td>${quando(a.em)}</td><td>${dbr(a.periodo)}</td><td>${esc(a.chapa)} · ${esc(a.nome||'')}</td><td>${a.campos.map(c=>`${esc(c)}: ${v(c,a.antes)} → <b>${v(c,a.depois)}</b>`).join('<br>')}</td></tr>`).join('')+'</tbody></table>':'<div class="note" style="padding:8px">Nenhuma correção até agora.</div>';
+  }catch(e){$('#ajBanco').textContent='Não foi possível carregar: '+e.message}
+}
+$('#tabA').onclick=()=>ir('analise');$('#tabC').onclick=()=>ir('carga');$('#tabK').onclick=()=>ir('cadastro');
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin)return;const m=e.data||{};
+  if(m.tipo==='tema')document.documentElement.setAttribute('data-tema',m.tema==='escuro'?'escuro':'claro');
+  if(m.tipo==='ir')ir(m.view);
+});
+(async()=>{
+  if(window.parent===window){document.body.classList.add('solo');$('#abas').classList.remove('hidden')}
+  try{
+    const eu=await api('/api/eu');
+    NIVEL=eu.modulos&&eu.modulos.horas?eu.modulos.horas.nivel:null;
+  }catch{
+    $('#aviso').classList.remove('hidden');$('#aviso').textContent='Faça login para continuar.';return;
+  }
+  if(!NIVEL){$('#aviso').classList.remove('hidden');$('#aviso').textContent='Seu acesso não inclui o módulo Horas Extras.';return}
+  if(NIVEL!=='gestor')$('#tabC').classList.add('hidden');
+  ir((location.hash||'').replace('#','')==='carga'?'carga':'analise');
+})();
+</script>
+</body>
+</html>

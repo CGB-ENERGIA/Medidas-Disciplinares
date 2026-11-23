@@ -5,7 +5,7 @@
 //   npm run usuario:criar -- --usuario ana.souza --nome "Ana Souza" --medidas coordenador --contratacoes usuario
 //     --admin          controle total dos dois módulos
 //     --medidas        supervisor | coordenador | dp
-//     --contratacoes   usuario | gestor | leitura
+//     --contratacoes   usuario (solicitante) | gestor (recrutamento)
 // Mostra uma senha temporária na tela: no primeiro acesso a pessoa troca por uma senha só dela.
 import pg from "pg";
 import { parseArgs } from "node:util";
@@ -20,7 +20,7 @@ const falha = m => { console.error("Erro:", m); process.exit(1); };
 if (!usuarioValido(usuario)) falha("--usuario deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).");
 if (nome.length < 3) falha('Informe --nome "Nome completo".');
 if (medidas && !["supervisor", "coordenador", "dp"].includes(medidas)) falha("--medidas deve ser supervisor, coordenador ou dp.");
-if (contratacoes && !["usuario", "gestor", "leitura"].includes(contratacoes)) falha("--contratacoes deve ser usuario, gestor ou leitura.");
+if (contratacoes && !["usuario", "gestor"].includes(contratacoes)) falha("--contratacoes deve ser usuario ou gestor.");
 if (!admin && !medidas && !contratacoes) falha("Informe pelo menos um acesso: --admin, --medidas ou --contratacoes.");
 if (!process.env.DATABASE_URL) falha("Falta a DATABASE_URL no arquivo .env.");
 

@@ -6,7 +6,6 @@
 //   POST /api/ct-docs { ops: [ ...as duas formas acima... ] }   → várias de uma vez
 // Quem pode o quê (nível do usuário em Contratações):
 //   gestor  (Recrutamento) lê e grava tudo
-//   leitura (Gestão)       lê tudo, não grava
 //   usuario (Solicitante)  lê só as vagas e candidatos dele, as configurações e o resumo do RM;
 //                          abre vagas em nome dele e anexa a RP assinada nos candidatos das vagas dele
 import { consulta, rota } from "./_lib/db.js";
@@ -83,7 +82,6 @@ async function gravarOp(u, op) {
   const { col, id } = op || {};
   if (!COLECOES.includes(col) || !id || typeof id !== "string" || id.length > 200) return "Coleção ou id inválido.";
   const nivel = nivelDe(u);
-  if (nivel === "leitura") return "Seu acesso a Contratações é só de leitura.";
   const [atual] = await consulta("select dados, removido, solicitante_norm, criado_por::text as criado_por from ct_docs where colecao = $1 and id = $2", [col, id]);
   if (nivel === "usuario") { const e = erroUsuario(u, op, atual); if (e) return e; }
   if (op.remover) {
