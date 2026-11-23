@@ -50,13 +50,13 @@ export async function usuarioDaSessao(request) {
      where s.token_hash = $1 and s.expira_em > now() and u.ativo and u.excluido_em is null`, [hashToken(t)]);
   if (!u) return null;
   u.modulos = modulosDe(u);
-  // No módulo Medidas Disciplinares o administrador age como DP; quem não tem acesso a ele fica sem perfil
+  // No módulo Gestão Administrativa o administrador age como DP; quem não tem acesso a ele fica sem perfil
   u.perfil = u.modulos.medidas ? u.modulos.medidas.perfil : null;
   return u;
 }
 
 // Acessos da pessoa, por módulo. nivel: "gestor" (gerencia o módulo) ou "usuario" (usuário fim)
-//   Medidas Disciplinares → supervisor e coordenador são usuários; dp é gestor (perfil guarda o papel no fluxo)
+//   Gestão Administrativa → supervisor e coordenador são usuários; dp é gestor (perfil guarda o papel no fluxo)
 //   Contratações          → usuario = solicitante; gestor = Recrutamento
 //   Horas Extras          → usuario = analisa; gestor = também carrega a base. Ambiente de testes: só quem tem a coluna
 //                           usuarios.horas_extras preenchida; o administrador NÃO ganha este módulo sozinho.
@@ -74,7 +74,7 @@ export function modulosDe(u) {
 // Envolve uma rota que exige login.
 //   opcoes.modulo   módulo que a rota usa (padrão "medidas"); a pessoa precisa ter acesso a ele. null = vale para qualquer logado.
 //   opcoes.nivel    níveis aceitos naquele módulo (ex.: ["gestor"])
-//   opcoes.perfis   perfis aceitos em Medidas Disciplinares (ex.: ["dp"]); o administrador conta como DP
+//   opcoes.perfis   perfis aceitos em Gestão Administrativa (ex.: ["dp"]); o administrador conta como DP
 //   opcoes.admin    só o administrador
 // Enquanto a pessoa estiver com senha temporária, só pode trocar a senha (opcoes.liberaTrocaSenha).
 export const comLogin = (fn, opcoes = {}) => async (request, params) => {

@@ -1,5 +1,5 @@
 -- =====================================================================
--- Sistema de Medidas Disciplinares · CGB
+-- Sistema de Gestão Administrativa · CGB
 -- Estrutura do banco (PostgreSQL / Neon)
 --
 -- Pode rodar quantas vezes quiser: só cria o que ainda não existe.
@@ -52,7 +52,7 @@ create table if not exists usuarios (
   usuario           text,          -- nome de login (minúsculo, ex.: joao.silva)
   email             text unique,   -- opcional, não é usado no login
   nome              text not null,
-  perfil            text check (perfil in ('supervisor', 'coordenador', 'dp')),   -- papel no módulo Medidas Disciplinares (vazio = sem acesso a ele)
+  perfil            text check (perfil in ('supervisor', 'coordenador', 'dp')),   -- papel no módulo Gestão Administrativa (vazio = sem acesso a ele)
   chave_pessoa      text,          -- chave em equipes.supervisor ou equipes.coordenador
   senha_hash        text,          -- scrypt, nunca a senha em texto
   trocar_senha      boolean not null default true,   -- obriga trocar a senha no próximo acesso
@@ -73,7 +73,7 @@ alter table usuarios add column if not exists ultimo_acesso timestamptz;
 -- usuário excluído que já participou de alguma medida: some da lista e o login fica livre; o histórico continua apontando para ele
 alter table usuarios add column if not exists excluido_em timestamptz;
 -- Acessos por módulo (nov/2026): administrador tem controle total; cada módulo tem o seu nível
---   Medidas Disciplinares: usuarios.perfil (supervisor/coordenador = usuário; dp = gestor)
+--   Gestão Administrativa: usuarios.perfil (supervisor/coordenador = usuário; dp = gestor)
 --   Contratações:          usuarios.contratacoes (usuario = solicitante; gestor = Recrutamento)
 alter table usuarios add column if not exists admin boolean not null default false;
 alter table usuarios add column if not exists contratacoes text;

@@ -1,6 +1,6 @@
 # Arquitetura
 
-O site reúne **módulos** (ambientes): **Medidas Disciplinares** e **Contratações**. A pessoa troca de ambiente pelo seletor no topo, que só mostra os módulos a que ela tem acesso.
+O site reúne **módulos** (ambientes): **Gestão Administrativa** e **Contratações**. A pessoa troca de ambiente pelo seletor no topo, que só mostra os módulos a que ela tem acesso.
 
 ## Peças
 | Peça | Onde | O que faz |
@@ -37,7 +37,7 @@ Teste local: `npm run dev` sobe o site e a API juntos (`dev/servidor-local.mjs`)
 - **Login:** senha com scrypt, bloqueio de 15 minutos após 5 erros, troca obrigatória da senha temporária; trocar a senha encerra as outras sessões.
 
 ## Acessos por módulo
-| | Medidas Disciplinares | Contratações |
+| | Gestão Administrativa | Contratações |
 |---|---|---|
 | **Administrador** | age como DP (gestor) | age como Recrutamento (gestor) |
 | **Gestor** | DP: elabora, arquiva, banco de dados | Recrutamento: conduz vagas e candidatos |

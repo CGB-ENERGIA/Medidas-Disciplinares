@@ -33,7 +33,7 @@ try {
   await db.query("insert into usuarios (usuario, nome, perfil, contratacoes, admin, senha_hash, trocar_senha) values ($1, $2, $3, $4, $5, $6, true)",
     [usuario, nome, medidas, contratacoes, admin, await hashSenha(temp)]);
   console.log(`\nUsuário criado: ${usuario}${admin ? " (administrador)" : ""}`);
-  if (medidas) console.log(`  Medidas Disciplinares: ${medidas}`);
+  if (medidas) console.log(`  Gestão Administrativa: ${medidas}`);
   if (contratacoes) console.log(`  Contratações: ${contratacoes}`);
   console.log(`Senha temporária: ${temp}`);
   console.log("No primeiro acesso o sistema pede para trocar por uma senha nova.\n");

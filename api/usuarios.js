@@ -22,7 +22,7 @@ const SO_ADMIN = { admin: true, modulo: null };
 const vazioParaNulo = v => (v === undefined || v === null || v === "" ? null : v);
 const erroAcesso = (medidas, contratacoes, horas = null) => {
   if (horas !== null && !HORAS.includes(horas)) return "Nível de Horas Extras inválido.";
-  if (medidas !== null && !MEDIDAS.includes(medidas)) return "Perfil de Medidas Disciplinares inválido.";
+  if (medidas !== null && !MEDIDAS.includes(medidas)) return "Perfil de Gestão Administrativa inválido.";
   if (contratacoes !== null && !CONTRATACOES.includes(contratacoes)) return "Nível de Contratações inválido.";
   return null;
 };
@@ -43,7 +43,7 @@ export const POST = rota(comLogin(async request => {
   if (!usuarioValido(usuario)) return erro("Usuário deve ter de 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
   if (nome.length < 3) return erro("Informe o nome completo.", 400);
   const e = erroAcesso(medidas, contratacoes, horas); if (e) return erro(e, 400);
-  if (!admin && !medidas && !contratacoes && !horas) return erro("Escolha pelo menos um acesso: administrador, Medidas Disciplinares, Contratações ou Horas Extras.", 400);
+  if (!admin && !medidas && !contratacoes && !horas) return erro("Escolha pelo menos um acesso: administrador, Gestão Administrativa, Contratações ou Horas Extras.", 400);
   const [existe] = await consulta("select 1 from usuarios where usuario = $1", [usuario]);
   if (existe) return erro(`O usuário "${usuario}" já existe.`, 409);
   const temp = senhaTemporaria();
