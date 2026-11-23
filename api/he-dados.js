@@ -21,7 +21,8 @@ export const GET = rota(comLogin(async (_req, q) => {
     const [c] = await consulta("select count(*)::int as chapas from he_cadastro");
     const bancos = await consulta("select periodo::text as periodo, count(*)::int as linhas, count(distinct chapa)::int as colaboradores from he_banco group by periodo order by periodo desc");
     const dins = await consulta("select referencia::text as periodo, count(*)::int as colaboradores from he_banco_din group by referencia order by referencia desc");
-    return ok({ ...r, cadastro: c.chapas, cargas, bancos, dins });
+    const meses = await consulta("select to_char(data, 'YYYY-MM') as mes, count(*)::int as linhas, count(distinct chapa)::int as colaboradores, count(distinct data)::int as dias, min(data)::text as de, max(data)::text as ate from he_batidas group by 1 order by 1");
+    return ok({ ...r, cadastro: c.chapas, cargas, bancos, dins, meses });
   }
 
   // Alerta de banco de horas: saldo positivo do período x saldo positivo do período anterior (o que existir no banco antes dele), por colaborador
