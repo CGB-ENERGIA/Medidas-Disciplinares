@@ -1,6 +1,6 @@
 # Arquitetura
 
-O site reúne **módulos** (ambientes): **Gestão Administrativa** e **Contratações**. A pessoa troca de ambiente pelo seletor no topo, que só mostra os módulos a que ela tem acesso.
+O site reúne **módulos** (ambientes): **Gestão Administrativa**, **Contratações**, **Horas Extras** e as 4 áreas da **Central Administrativa** (**Financeiro**, **Patrimônio**, **Atendimento** e **Tecnologia (TI)**). A pessoa troca de ambiente pelo seletor no topo, que só mostra os módulos a que ela tem acesso.
 
 ## Peças
 | Peça | Onde | O que faz |
@@ -24,6 +24,9 @@ Teste local: `npm run dev` sobe o site e a API juntos (`dev/servidor-local.mjs`)
 | `GET/POST /api/ct-docs` | acesso a Contratações | Documentos do módulo (candidatos, vagas, rm, config, talentos), com as regras por nível |
 | `GET/POST /api/ct-arquivos` | acesso a Contratações | Envia e baixa currículos, certificados, documentos e RPs assinadas |
 | `GET /api/ct-nomes` | acesso a Contratações | Nome de quem fez cada alteração (histórico dos candidatos) |
+| `GET /api/ca-carga?area=` | acesso à área da Central | Dados da área (JSON comprimido), com os dados pessoais das outras áreas em branco |
+| `GET/POST /api/ca-docs` | acesso à Central | Lançamentos da Central (por coleção), sugestões e nomes de quem enviou |
+| `GET/POST /api/ca-arquivos` | Central (enviar: gestor de TI) | PDF/XML das notas do Setor de TI |
 | `GET /api/saude` | público | Confere se a API está no ar |
 
 ## O que o servidor confere
@@ -60,3 +63,12 @@ Onde fica guardado (tabela `usuarios`): `admin` (sim/não), `perfil` (Medidas: s
 - Login de pendente: quem acerta a senha recebe o aviso de que o pedido aguarda aprovação; quem erra recebe o erro de sempre.
 - `PATCH /api/usuarios { id, aprovar: true, medidas, contratacoes, horas }` aprova e define o nível em cada ambiente; recusar é `DELETE` (apaga o cadastro pendente).
 - Ambiente novo na tela Usuários: uma linha em `AMB_ACESSO` (`site/index.html`) e o nível em `api/usuarios.js`.
+
+## Central Administrativa (Financeiro, Patrimônio, Atendimento e TI)
+- **Uma página só para as 4 áreas:** `site/central.html` (a Central que rodava no Artifact). Cada cartão abre a página num quadro (iframe) com `?area=financeiro|patrimonio|atendimento|ti`, e o menu próprio da Central mostra só as telas da área, mais **Como usar** e **Sugestões e dúvidas**.
+- **Sem dados pessoais no site:** o `site/central.html` vai para o GitHub sem os dados. Os dados ficam no Neon (`ca_carga`, um JSON comprimido por área) e chegam por `/api/ca-carga` só depois do login e só da área liberada. Na carga de uma área, nomes, matrículas, endereços e perguntas das outras áreas vão em branco (os indicadores gerais continuam calculando).
+- **Adaptador:** `site/ca-adaptador.js` implementa por cima da nossa API o que a Central usava do Artifact (banco de documentos, arquivos, download, usuário), como o `ct-adaptador.js` faz em Contratações.
+- **Lançamentos:** `ca_docs` (coleção + id + JSON, o mesmo formato do Artifact) e `ca_arquivos`. Regras em `api/_lib/ca.js`: cada coleção pertence a uma área; **consulta** lê, **gestor** lê e grava; **Sugestões**: cada um lê e grava só a sua, o administrador lê e responde todas; **Produtividade da equipe**: só o administrador.
+- **Acessos:** colunas `usuarios.ca_financeiro`, `ca_patrimonio`, `ca_atendimento` e `ca_ti` (`usuario` = consulta, `gestor` = lança e atualiza). O administrador é gestor nas quatro. Na tela Usuários, uma linha por área.
+- **Atualizar os dados:** a versão completa fica em `central-administrativa/site/central.html` (só no computador, fora do GitHub). Depois de trocar esse arquivo: `npm run central:site` (gera o `site/central.html` sem dados) e `npm run central:banco` (manda os dados de cada área para o Neon).
+

@@ -475,3 +475,45 @@ create table if not exists pedidos_acesso (
   criado_em timestamptz not null default now()
 );
 create index if not exists pedidos_acesso_ip_idx on pedidos_acesso (ip, criado_em);
+
+-- ---------- Central Administrativa (nov/2026): 4 ambientes ----------
+-- Financeiro (hospedagem, alimentação, locação, produtividade), Patrimônio, Atendimento (Fale Conosco) e Tecnologia (TI).
+-- Acesso por área: usuario = consulta; gestor = lança e atualiza. O administrador é gestor nas quatro.
+alter table usuarios add column if not exists ca_financeiro text;
+alter table usuarios add column if not exists ca_patrimonio text;
+alter table usuarios add column if not exists ca_atendimento text;
+alter table usuarios add column if not exists ca_ti text;
+alter table usuarios drop constraint if exists usuarios_ca_check;
+alter table usuarios add constraint usuarios_ca_check check (
+  (ca_financeiro is null or ca_financeiro in ('usuario', 'gestor')) and (ca_patrimonio is null or ca_patrimonio in ('usuario', 'gestor')) and
+  (ca_atendimento is null or ca_atendimento in ('usuario', 'gestor')) and (ca_ti is null or ca_ti in ('usuario', 'gestor')));
+
+-- Dados de cada área (o que antes ficava dentro do arquivo da Central), em JSON comprimido (gzip).
+-- Gravado por "npm run central:banco". O site busca por /api/ca-carga, só a área liberada para a pessoa.
+create table if not exists ca_carga (
+  area          text primary key check (area in ('financeiro', 'patrimonio', 'atendimento', 'ti', 'admin')),
+  conteudo      bytea not null,
+  gerado        text,
+  atualizado_em timestamptz not null default now()
+);
+
+-- Lançamentos feitos no site (mesmo formato do Artifact: coleção + id + JSON). Regras de acesso em api/_lib/ca.js.
+create table if not exists ca_docs (
+  colecao        text not null,
+  id             text not null,
+  dados          jsonb not null,
+  atualizado_por uuid references usuarios (id),
+  atualizado_em  timestamptz not null default now(),
+  primary key (colecao, id)
+);
+
+-- Arquivos anexados (PDF/XML das notas do Setor de TI)
+create table if not exists ca_arquivos (
+  id          uuid primary key default gen_random_uuid(),
+  nome        text,
+  tipo        text not null,
+  tamanho     integer not null,
+  conteudo    bytea not null,
+  enviado_por uuid references usuarios (id),
+  criado_em   timestamptz not null default now()
+);

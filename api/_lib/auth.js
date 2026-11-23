@@ -45,7 +45,7 @@ export async function usuarioDaSessao(request) {
   const t = lerCookie(request, COOKIE);
   if (!t) return null;
   const [u] = await consulta(`
-    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.horas_extras, u.chave_pessoa, u.trocar_senha
+    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.horas_extras, u.ca_financeiro, u.ca_patrimonio, u.ca_atendimento, u.ca_ti, u.chave_pessoa, u.trocar_senha
       from sessoes s join usuarios u on u.id = s.usuario_id
      where s.token_hash = $1 and s.expira_em > now() and u.ativo and u.excluido_em is null`, [hashToken(t)]);
   if (!u) return null;
@@ -58,6 +58,7 @@ export async function usuarioDaSessao(request) {
 // Acessos da pessoa, por módulo. nivel: "gestor" (gerencia o módulo) ou "usuario" (usuário fim)
 //   Gestão Administrativa → supervisor e coordenador são usuários; dp é gestor (perfil guarda o papel no fluxo)
 //   Contratações          → usuario = solicitante; gestor = Recrutamento
+//   Central Administrativa → financeiro, patrimonio, atendimento, ti: usuario = consulta; gestor = lança e atualiza (colunas usuarios.ca_*)
 //   Horas Extras          → usuario = analisa; gestor = também carrega a base. Ambiente de testes: só quem tem a coluna
 //                           usuarios.horas_extras preenchida; o administrador NÃO ganha este módulo sozinho.
 export function modulosDe(u) {
@@ -68,6 +69,10 @@ export function modulosDe(u) {
     if (u.contratacoes) m.contratacoes = { nivel: u.contratacoes };
   }
   if (u.horas_extras) m.horas = { nivel: u.horas_extras };
+  // Central Administrativa: 4 áreas (Financeiro, Patrimônio, Atendimento, Tecnologia). O administrador é gestor em todas.
+  for (const a of ["financeiro", "patrimonio", "atendimento", "ti"]) {
+    if (u.admin) m[a] = { nivel: "gestor" }; else if (u["ca_" + a]) m[a] = { nivel: u["ca_" + a] };
+  }
   return m;
 }
 

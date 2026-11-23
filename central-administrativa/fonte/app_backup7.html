@@ -1,0 +1,1124 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Central de Hospedagem · CGB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,700..800&display=swap">
+<script>try{if(localStorage.getItem('farol.tema')==='escuro')document.documentElement.setAttribute('data-tema','escuro')}catch(e){}</script>
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0}img{max-width:100%}</style>
+<style>%%CSS%%</style>
+<style>
+/* ===== Central de Hospedagem: complementos ===== */
+.k6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:1100px){.k6{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:640px){.k6{grid-template-columns:minmax(0,1fr)}}
+.ic-v.sm{font-size:38px}
+.colc{position:relative}.colc svg{display:block;width:100%;height:auto;overflow:visible}
+.cc-bar{fill:#711424}.cc-bar.fut{fill:#e8cdd3}.cc-bar:hover{fill:#4a0b16}.cc-meta{stroke:var(--fg);stroke-width:2.5;stroke-dasharray:6 4}
+.cc-ax{font-size:11px;font-weight:800;fill:var(--fg)}.cc-y{font-size:10.5px;fill:var(--soft)}.cc-v{font-size:10.5px;font-weight:800;fill:var(--fg)}.cc-g{stroke:var(--line)}.cc-base{stroke:var(--line)}
+.cc-leg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.cc-leg i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}.cc-leg i.m{height:0;border-top:2.5px dashed var(--fg);border-radius:0;vertical-align:3px}
+.mb{display:grid;grid-template-columns:minmax(120px,max-content) minmax(0,1fr) max-content;gap:10px 14px;align-items:center}
+.mb-k{font-size:12.5px;font-weight:800;line-height:1.2}.mb-k small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.mb-t{position:relative;height:18px;background:var(--sunken);border-radius:999px}
+.mb-t i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:#711424;min-width:3px}
+.mb-t i.ate{background:#3C9E18}.mb-t i.par{background:#d98a00}.mb-t i.nao{background:#C00000}
+.mb-t em{position:absolute;top:-5px;bottom:-5px;width:3px;margin-left:-1.5px;background:var(--fg);border-radius:2px}
+.mb-v{display:grid;justify-items:end;line-height:1.15}.mb-v b{font-size:13px;font-variant-numeric:tabular-nums}.mb-v small{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mb-r{display:contents;cursor:pointer}.mb-r:hover .mb-k{color:var(--accent)}
+.flt-at{display:flex;flex-wrap:wrap;gap:6px}
+.tipz{position:fixed;z-index:200;pointer-events:none;background:#2b1418;color:#fff;border-radius:10px;padding:9px 12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:12px;max-width:300px;line-height:1.45}
+.tipz b{color:#fff}.tipz small{color:#d9c3c8}
+.qcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.qc{all:unset;cursor:pointer;display:grid;gap:4px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:var(--r-md);padding:12px 14px;box-shadow:var(--sh-1)}
+.qc:hover{background:var(--sunken)}.qc.on{outline:2px solid var(--accent);background:var(--accent-soft)}
+.qc span{font-size:12px;font-weight:800;color:var(--muted)}.qc b{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}.qc small{font-size:11.5px;color:var(--muted)}
+.mt-in{width:150px;text-align:right;font:inherit;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);font-variant-numeric:tabular-nums}
+.mt-in:focus{outline:2px solid var(--accent);border-color:transparent}
+.tw.alto{max-height:560px;overflow:auto}
+.sit{display:inline-flex;align-items:center;gap:6px}
+.vgdest .vgl b{font-variant-numeric:tabular-nums}
+.ub-sub{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.ub-sub span{font-size:11px;font-weight:800;letter-spacing:.04em;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:2px 9px;color:#fff}
+.mais{justify-self:center}
+.bl{display:grid;gap:4px}
+.sml{font-size:11.5px;color:var(--muted)}
+/* ===== Tema escuro ===== */
+html[data-tema="escuro"]{color-scheme:dark;
+  --bg:#151517;--surface:#1f1f22;--sunken:#2a2a2e;--line:#37373c;
+  --fg:#d9d9dd;--muted:#9d9da3;--soft:#76767c;
+  --accent:#dcdce0;--accent-2:#b4b4ba;--accent-bg:#3a3a3f;--accent-bg-2:#1b1b1e;--accent-soft:#2a2a2e;--line-accent:#444449;
+  --sup:#86c96a;--sup-soft:#1f2e1a;--ate:#74c056;--ate-soft:#1c2819;
+  --par:#e0ae5c;--par-soft:#352b17;--nao:#e88282;--nao-soft:#372123;--nd:#9d9da2;--nd-soft:#2b2b2e;
+  --info:#7aa7e0;--info-soft:#1c2a3b;
+  --sh-1:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35)}
+html[data-tema="escuro"] body{background:var(--bg);color:var(--fg)}
+html[data-tema="escuro"] .top{background:linear-gradient(135deg,#2b2b2f 0%,#0b0b0c 100%);box-shadow:0 4px 16px rgba(0,0,0,.5)}
+html[data-tema="escuro"] body::before{background:#0b0b0c}
+html[data-tema="escuro"] input,html[data-tema="escuro"] select,html[data-tema="escuro"] textarea{background:var(--sunken);color:var(--fg);border-color:var(--line)}
+html[data-tema="escuro"] ::placeholder{color:var(--soft)}
+html[data-tema="escuro"] .panel,html[data-tema="escuro"] .modal,html[data-tema="escuro"] .modal-bd{background:var(--surface);color:var(--fg)}
+html[data-tema="escuro"] table td,html[data-tema="escuro"] table th{border-color:var(--line)}
+/* cores escritas direto no estilo de elementos gerados */
+html[data-tema="escuro"] [style*="color:#6b6a6a"],html[data-tema="escuro"] [style*="color: #6b6a6a"]{color:var(--muted)!important}
+html[data-tema="escuro"] [style*="color:#711424"]{color:#e4e4e8!important}
+html[data-tema="escuro"] [style*="background:#fff;"],html[data-tema="escuro"] [style*="background:#fff\""],html[data-tema="escuro"] [style*="background:#ffffff"]{background:var(--surface)!important}
+/* gráficos SVG */
+html[data-tema="escuro"] svg text{fill:var(--muted)}
+html[data-tema="escuro"] svg text[style*="fill:#2b2a2a"],html[data-tema="escuro"] svg text[style*="fill: #2b2a2a"]{fill:var(--fg)!important}
+html[data-tema="escuro"] svg text[style*="fill:#6b6a6a"]{fill:var(--muted)!important}
+html[data-tema="escuro"] svg [fill="#2b2a2a"],html[data-tema="escuro"] svg [fill="#333"],html[data-tema="escuro"] svg [fill="#000"]{fill:var(--fg)}
+html[data-tema="escuro"] svg [fill="#6b6a6a"]{fill:var(--muted)}
+html[data-tema="escuro"] svg [fill="#711424"]{fill:#cfcfd5}
+html[data-tema="escuro"] svg [fill="#fff"],html[data-tema="escuro"] svg [fill="#ffffff"]{fill:var(--surface)}
+html[data-tema="escuro"] svg [stroke="#fff"],html[data-tema="escuro"] svg [stroke="#ffffff"]{stroke:var(--surface)}
+html[data-tema="escuro"] svg [stroke="#711424"]{stroke:#cfcfd5}
+html[data-tema="escuro"] svg [stroke="#dedadb"],html[data-tema="escuro"] svg [stroke="#eaeaea"],html[data-tema="escuro"] svg [stroke="#e5e5e5"],html[data-tema="escuro"] svg [stroke="#eeeaeb"]{stroke:var(--line)}
+html[data-tema="escuro"] body::after{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 398 596'%3E%3Cg fill='%23000'%3E%3Cpolygon points='198,3 293,98 198,193 103,98'/%3E%3Cpolygon points='98,103 193,198 98,293 3,198'/%3E%3Cpolygon points='298,103 393,198 298,293 203,198'/%3E%3Cpolygon points='0,203 93,297 0,391'/%3E%3Cpolygon points='397,203 304,297 397,391'/%3E%3Cpolygon points='98,301 193,396 98,491 3,396'/%3E%3Cpolygon points='298,301 393,396 298,491 203,396'/%3E%3Cpolygon points='198,401 293,496 198,591 103,496'/%3E%3C/g%3E%3C/svg%3E") no-repeat right bottom / contain;opacity:1;filter:none;width:min(50vw,760px);height:min(94vh,1140px);right:-20px;bottom:-40px}
+html[data-tema="escuro"] body{background-color:#161617}
+html[data-tema="escuro"] .utgl span:first-child,html[data-tema="escuro"] .utgl[aria-pressed="true"] span:last-child{color:#e4e4e8}
+html[data-tema="escuro"] .ubases .bk.geral{background:linear-gradient(160deg,#4a4346,#151414)!important}
+html[data-tema="escuro"] .stk-b i{color:#2b2a2a}
+html[data-tema="escuro"] .icard .ic-v,html[data-tema="escuro"] .pz-big,html[data-tema="escuro"] .gauge-n{filter:brightness(1.45) saturate(1.05)}
+html[data-tema="escuro"] .tbtn.solid,html[data-tema="escuro"] .uprint,html[data-tema="escuro"] .tbtn .badge{color:#1b1b1e!important}
+html[data-tema="escuro"] .pu-g{background:rgba(110,190,90,.17)!important;color:#a8d99a}
+html[data-tema="escuro"] .pu-r{background:rgba(226,120,120,.17)!important;color:#eaa0a0}
+html[data-tema="escuro"] .pu-f.a{background:rgba(224,174,92,.2);color:#e8c27e}
+html[data-tema="escuro"] .pu-f.d{background:rgba(110,190,90,.2);color:#a8d99a}
+/* descanso de vista: cores vivas dos elementos gerados ficam mais suaves */
+html[data-tema="escuro"] [style*="background:#"],html[data-tema="escuro"] [style*="background: #"]{filter:saturate(.8) brightness(.9)}
+html[data-tema="escuro"] svg rect[fill^="#"],html[data-tema="escuro"] svg circle[fill^="#"],html[data-tema="escuro"] svg path[fill^="#"]{filter:saturate(.8) brightness(.9)}
+html[data-tema="escuro"] svg path[stroke^="#"][stroke-width]{filter:saturate(.85) brightness(.92)}
+/* botão de tema */
+.tbtn.tema{width:42px;height:42px;padding:0;display:grid;place-items:center}
+.tbtn.tema .i-lua{display:none}
+html[data-tema="escuro"] .tbtn.tema .i-sol{display:none}
+html[data-tema="escuro"] .tbtn.tema .i-lua{display:block}
+
+/* fundos claros fixos */
+html[data-tema="escuro"] .cl-A{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cl-B{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cl-C{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cl-D{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pct.cl-p-A{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pct.cl-p-B{background:var(--par-soft)!important}
+html[data-tema="escuro"] .pct.cl-p-C{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pct.cl-p-D{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .cd-verde{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cd-amarelo{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cd-laranja{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cd-vermelho{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pu-g{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pu-r{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pu-f.a{background:var(--par-soft)!important}
+html[data-tema="escuro"] .pu-f.d{background:var(--sup-soft)!important}
+html[data-tema="escuro"] section[data-pag="contingencia"] .ubar{background:linear-gradient(135deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] section[data-pag="prazos"] .ubar{background:linear-gradient(135deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] .ct-res.ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .ct-res.erro{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pz-b.v{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pz-b.h{background:var(--par-soft)!important}
+html[data-tema="escuro"] .pz-b.a{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pz-b.c{background:var(--info-soft)!important}
+html[data-tema="escuro"] .lt-t tr.lt-err td{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pm-st.ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pm-st.av{background:var(--par-soft)!important}
+html[data-tema="escuro"] .heat td.c.par{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .chipf button:hover{background:var(--surface)!important}
+html[data-tema="escuro"] .akpi span{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .acap{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .utab tr.sel td{background:var(--sunken)!important}
+html[data-tema="escuro"] .agr td.a-ok{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .agr td.a-fora{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .agr td.a-aus{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .agr td.a-livre{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .imapa{background:var(--surface)!important}
+html[data-tema="escuro"] .imapa .im-hd{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .agr td.i-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .idot.i-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .agr td.i-y{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .idot.i-y{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .ipill.i-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .ipill.i-y{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .podio .p1{background:linear-gradient(160deg,#c9a227,#5d5d60)!important}
+html[data-tema="escuro"] .podio .p3{background:linear-gradient(160deg,#67676a,#4a4a4d)!important}
+html[data-tema="escuro"] .tg-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .tg-r{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .utab tr.top10 td{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .utab tr.pior10 td{background:var(--accent-soft)!important}
+html[data-tema="escuro"] /* ---- menu lateral no estilo do gerenciador-equipes-2: vinho{background:linear-gradient(180deg,#303033 0%,#363639 55%,#3f3f42 100%)!important}
+html[data-tema="escuro"] recolhe para só ícones pelo ☰ ou por "Recolher menu" ---- */
+.rail{background:linear-gradient(180deg,#303033 0%,#363639 55%,#3f3f42 100%)!important}
+html[data-tema="escuro"] .vgc-ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .vgc-at{background:var(--par-soft)!important}
+html[data-tema="escuro"] .vgc-mal{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .vgn-ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .vgn-at{background:var(--par-soft)!important}
+html[data-tema="escuro"] .vgn-mal{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .vgl-ok .vgl-i{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .vgl-mal .vgl-i{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .vgl-at .vgl-i{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .vgl-info .vgl-i{background:#363639!important}
+html[data-tema="escuro"] .vgfil button[aria-pressed="true"]{background:#363639!important}
+html[data-tema="escuro"] .phd h3{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .ubar{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .ufn{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .utgl i{background:#363639!important}
+html[data-tema="escuro"] .qd-leg{background:var(--surface)!important}
+html[data-tema="escuro"] .qd-ctl select{background:var(--surface)!important}
+html[data-tema="escuro"] .umes tr.tot td.mc-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .umes tr.tot td.mc-b{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .umes tr.tot td.mc-o{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .umes tr.tot td.mc-r{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .mc-g{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .mc-b{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .mc-o{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .mc-r{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .ubases .bk{background:linear-gradient(160deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .utab th{background:#363639!important}
+html[data-tema="escuro"] .utab tr.sub td{background:var(--sunken)!important}
+html[data-tema="escuro"] .sol-A{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .sol-B{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .sol-C{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .sol-D{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .drop.over{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .dkc::before{background:linear-gradient(90deg,#363639,#545457)!important}
+html[data-tema="escuro"] .dkc.dest{background:linear-gradient(160deg,var(--surface) 55%,var(--sunken))!important}
+html[data-tema="escuro"] .dkc-d.ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .dkc-d.mal{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .dch-i{background:#363639!important}
+html[data-tema="escuro"] .hb-t i{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 78%,var(--surface)),var(--c))!important}
+html[data-tema="escuro"] .dcol-s i.b{background:linear-gradient(180deg,#3c3c3f,#363639)!important}
+html[data-tema="escuro"] .dmz{background:var(--sunken)!important}
+html[data-tema="escuro"] .dpri.P1{background:#2c2c2f!important}
+html[data-tema="escuro"] .dpri.P2{background:#363639!important}
+html[data-tema="escuro"] .dpri.P3{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .dtat{background:var(--info-soft)!important}
+html[data-tema="escuro"] /* ---- Produção do dia ---- */
+.pz{background:radial-gradient(120% 140% at 100% 0%,#313134 0%,#28282b 55%,#1c070c 100%)!important}
+html[data-tema="escuro"] .pz-live i{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pz-live.on i{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pz-fill.mal{background:linear-gradient(90deg,#38383b,#ff6b7d)!important}
+html[data-tema="escuro"] .ph.ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .ph.par{background:var(--par-soft)!important}
+html[data-tema="escuro"] .ph.mal{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .bu-g{background:var(--sunken)!important}
+html[data-tema="escuro"] .bu-g .q1{background:var(--sunken)!important}
+html[data-tema="escuro"] .bu-g .q2{background:var(--sunken)!important}
+html[data-tema="escuro"] .bu-g .q3{background:var(--sunken)!important}
+html[data-tema="escuro"] .mu{background:color-mix(in srgb,var(--c) calc(var(--a)*100%),var(--surface))!important}
+html[data-tema="escuro"] .ptab2 thead th{background:#28282b!important}
+html[data-tema="escuro"] .pt-tot td{background:var(--sunken)!important}
+html[data-tema="escuro"] #pTab tr.pt-hl td{background:var(--par-soft)!important}
+html[data-tema="escuro"] .pv-seg button.on{background:#28282b!important}
+html[data-tema="escuro"] .pv-print{background:linear-gradient(135deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .pv-bases button.on{background:#363639!important}
+html[data-tema="escuro"] #pvCorpo{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-sheet{background:var(--surface)!important}
+html[data-tema="escuro"] .pv-hd{background:linear-gradient(120deg,#363639,#2a2a2d)!important}
+html[data-tema="escuro"] .pv-big{background:var(--surface)!important}
+html[data-tema="escuro"] .pv-tab th{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-tab tr:nth-child(even) td{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-pos span{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-ok .pv-pos span{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pv-st.ok{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-st.par{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-st.mal{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-pc>b.ok{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .pv-pc>b.par{background:var(--par-soft)!important}
+html[data-tema="escuro"] .pv-pc>b.mal{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .pv-bar{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-bar i.ok{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-bar i.par{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-bar i.mal{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-ft{background:var(--sunken)!important}
+html[data-tema="escuro"] .pv-ft i.ok{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-ft i.par{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-ft i.mal{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .pv-tab tr.pt-hl td{background:var(--par-soft)!important!important}
+html[data-tema="escuro"] /* Disponibilidade: régua de turno */
+section[data-pag="painel"] .ubar{background:linear-gradient(135deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] section[data-pag="prefixos"] .ubar{background:linear-gradient(135deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] section[data-pag="cobranca"] .ubar{background:linear-gradient(135deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] /* UPS: faixa das classes A·B·C·D */
+section[data-pag^="ups-"] .ubar{background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 12px),linear-gradient(135deg,#353538,#29292c)!important}
+html[data-tema="escuro"] /* Aderência à escala: grade de calendário */
+section[data-pag^="ader-"] .ubar{background:radial-gradient(rgba(255,255,255,.16) 1.2px,transparent 1.6px) 0 0/18px 18px,linear-gradient(135deg,#353538,#28282b)!important}
+html[data-tema="escuro"] /* Início das atividades: amanhecer */
+section[data-pag^="ini-"] .ubar{background:radial-gradient(90% 180% at 92% 135%,rgba(255,176,72,.55),rgba(255,120,60,.18) 38%,transparent 62%),linear-gradient(135deg,#343437,#27272a)!important}
+html[data-tema="escuro"] /* Atualização de defeitos: prancha técnica */
+section[data-pag^="def-"] .ubar{background:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px) 0 0/22px 22px,linear-gradient(135deg,#323235,#252528)!important}
+html[data-tema="escuro"] section[data-pag^="tm-"] .ubar{background:repeating-conic-gradient(from 0deg at 88% 50%,rgba(255,255,255,.05) 0 2deg,transparent 2deg 15deg),linear-gradient(135deg,#323235,#262629)!important}
+html[data-tema="escuro"] .icard[data-ind="tm"]::before{background:linear-gradient(90deg,#323235 0 55%,#c9a227 55% 75%,#323235 75%)!important}
+html[data-tema="escuro"] .tqp-c.cur{background:var(--sunken)!important}
+html[data-tema="escuro"] .tqp-b i.e{background:#363639!important}
+html[data-tema="escuro"] .tqp-b i.d{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .tqa-t i.e{background:#363639!important}
+html[data-tema="escuro"] .tqa-t i.d{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .tqt th.cur{background:#2c2c2f!important}
+html[data-tema="escuro"] .tqt td.tq-r{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .tqt td.tq-g{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .tqt tr.tgr td{background:var(--sunken)!important}
+html[data-tema="escuro"] .tqc.cur{background:#363639!important}
+html[data-tema="escuro"] section[data-pag^="mix-"] .ubar{background:linear-gradient(135deg,#313134,#27272a)!important}
+html[data-tema="escuro"] section[data-pag^="mix-"] .ubar::before{background:linear-gradient(#c9a227 0 33%,#545457 33% 66%,#2f6f8f 66%)!important}
+html[data-tema="escuro"] .icard[data-ind="mix"]::before{background:linear-gradient(90deg,#2c2c2f 0 40%,#545457 40% 65%,#c9a227 65% 82%,#2f6f8f 82%)!important}
+html[data-tema="escuro"] .mxc-c.cur{background:var(--sunken)!important}
+html[data-tema="escuro"] section[data-pag^="trf-"] .ubar{background:repeating-linear-gradient(60deg,rgba(255,255,255,.04) 0 1px,transparent 1px 16px),repeating-linear-gradient(-60deg,rgba(255,255,255,.04) 0 1px,transparent 1px 16px),linear-gradient(135deg,#333336,#262629)!important}
+html[data-tema="escuro"] .icard[data-ind="trf"]::before{background:linear-gradient(90deg,#333336,#262629 70%,#ffb43c 70% 74%,#262629 74%)!important}
+html[data-tema="escuro"] .ttab tr.tgr td{background:var(--sunken)!important}
+html[data-tema="escuro"] .tef.R{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .tef.A{background:var(--par-soft)!important}
+html[data-tema="escuro"] .tef.N{background:var(--sup-soft)!important}
+html[data-tema="escuro"] .tre{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .tmc{background:linear-gradient(180deg,var(--surface),var(--sunken))!important}
+html[data-tema="escuro"] .tc i{background:linear-gradient(180deg,#545457,#363639)!important}
+html[data-tema="escuro"] /* ---- Visão geral: central de comando ---- */
+.vgh{background:radial-gradient(70% 140% at 100% 0%,rgba(255,255,255,.07),transparent 60%),linear-gradient(135deg,#313134 0%,#28282b 60%,#1a060b 100%)!important}
+html[data-tema="escuro"] .vgh::after{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .icard[data-ind]::before{background:linear-gradient(90deg,#363639,#2c2c2f)!important}
+html[data-tema="escuro"] .icard[data-ind="disp"]::before{background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 1px,transparent 1px 18px),linear-gradient(90deg,#38383b,#2a2a2d)!important}
+html[data-tema="escuro"] .icard[data-ind="ader"]::before{background:radial-gradient(rgba(255,255,255,.6) 1px,transparent 1.4px) 0 0/8px 7px,linear-gradient(90deg,#353538,#28282b)!important}
+html[data-tema="escuro"] .icard[data-ind="ini"]::before{background:linear-gradient(90deg,#343437,#535356 60%,#ffb048)!important}
+html[data-tema="escuro"] .icard[data-ind="prd"]::before{background:linear-gradient(90deg,#28282b,#313134 70%,#44d27a 70% 72%,#313134 72%)!important}
+html[data-tema="escuro"] .icard[data-ind="def"]::before{background:linear-gradient(90deg,rgba(255,255,255,.2) 1px,transparent 1px) 0 0/8px 100%,linear-gradient(90deg,#323235,#252528 80%,#1f86e0)!important}
+html[data-tema="escuro"] .sc-semregra{background:var(--accent-soft)!important}
+html[data-tema="escuro"] .sc-foradp{background:var(--par-soft)!important}
+html[data-tema="escuro"] .sc-semclass{background:var(--info-soft)!important}
+html[data-tema="escuro"] .rg-tag.a{background:var(--par-soft)!important}
+html[data-tema="escuro"] .rg-tag.n{background:var(--sup-soft)!important}
+
+/* ---- complementos da Central Administrativa no mesmo tema escuro ---- */
+.tbtn.tema{width:42px;height:42px;padding:0;display:grid;place-items:center}
+.tbtn.tema .i-lua{display:none}
+html[data-tema="escuro"] .cc-bar{fill:#cfcfd5}html[data-tema="escuro"] .cc-bar:hover{fill:#fff}html[data-tema="escuro"] .cc-bar.fut{fill:#3a3a3f}html[data-tema="escuro"] .cc-vi{fill:#1b1b1e}
+html[data-tema="escuro"] .mb-t i:not(.ate):not(.par):not(.nao){background:#cfcfd5}
+html[data-tema="escuro"] .mb-t i.ate,html[data-tema="escuro"] .mb-t i.par,html[data-tema="escuro"] .mb-t i.nao,html[data-tema="escuro"] .stk i,html[data-tema="escuro"] .crono div{filter:saturate(.78) brightness(.86)}
+html[data-tema="escuro"] .cc-leg i[style*="711424"],html[data-tema="escuro"] .dleg i[style*="711424"]{background:#cfcfd5!important}
+html[data-tema="escuro"] .dleg i[style*="1d1d1d"]{background:var(--fg)!important}
+html[data-tema="escuro"] [style*="--g:#711424"]{--g:#cfcfd5!important}
+html[data-tema="escuro"] .modo button[aria-pressed="true"]{color:#1b1b1e}
+html[data-tema="escuro"] .ubar-ic{background:rgba(255,255,255,.08)}
+html[data-tema="escuro"] .stk,html[data-tema="escuro"] .mb-t{background:var(--sunken)}
+html[data-tema="escuro"] .s-ss{background:#55555a}
+body.pat .modo,body.pat #b-periodo,body.pat #b-filtros{display:none}
+.stk{display:flex;gap:2px;height:12px;border-radius:5px;overflow:hidden;background:var(--sunken);min-width:80px}
+.stk i{display:block;height:100%}
+.s-c{background:#3C9E18}.s-nc{background:#d98a00}.s-ne{background:#C00000}.s-ss{background:#b9b1b3}
+.pst{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.pst::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pst.c{background:var(--ate-soft);color:var(--sup)}.pst.nc{background:var(--par-soft);color:var(--par)}.pst.ne{background:var(--nao-soft);color:var(--nao)}.pst.ss{background:var(--nd-soft);color:var(--nd)}
+.pfbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:10px 14px;box-shadow:var(--sh-1)}
+.pfbar label{display:grid;gap:3px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pfbar select{min-height:36px;border:1px solid var(--line);border-radius:9px;padding:4px 10px;background:var(--surface);font-weight:700;font-size:13px;color:var(--fg);min-width:170px}
+.pfbar select.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.pfbar .seg{display:inline-flex;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px;gap:3px}
+.pfbar .seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-weight:700;font-size:12.5px;color:var(--muted)}
+.pfbar .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.msr{display:grid;grid-template-columns:90px minmax(0,1fr) 150px;gap:10px;align-items:center;padding:7px 6px;border-radius:8px;cursor:pointer}
+.msr:hover{background:var(--sunken)}.msr.on{background:var(--accent-soft)}
+.msr b{font-size:13px}.msr span{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.crono{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+.crono div{border-radius:10px;padding:8px 6px;text-align:center;border:1px solid var(--line);background:var(--surface);display:grid;gap:2px}
+.crono b{font-size:12px;letter-spacing:.06em}.crono small{font-size:10.5px;color:var(--muted);line-height:1.2}
+.crono .c-ok{border-color:#3C9E18;background:var(--ate-soft)}.crono .c-and{border-color:#d98a00;background:var(--par-soft)}.crono .c-atr{border-color:#C00000;background:var(--nao-soft)}.crono .c-hoje{outline:2px solid var(--accent);outline-offset:1px}
+@media (max-width:900px){.crono{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.tagi{display:inline-block;font-size:11px;font-weight:700;background:var(--sunken);border-radius:6px;padding:1px 7px;margin:1px 2px 1px 0}
+.modo{display:inline-flex;gap:3px;padding:3px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28)}
+.modo button{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:800;padding:7px 13px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.modo button:hover{background:rgba(255,255,255,.14)}.modo button[aria-pressed="true"]{background:#fff;color:#711424;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.modo .ico{width:17px;height:17px}
+@media (max-width:820px){.modo button span{display:none}.modo button{padding:7px 10px}}
+.utab td.wr{white-space:normal;min-width:150px;max-width:340px}
+@media (min-width:1300px){.vgger{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.cc-vi{font-size:10.5px;font-weight:800;fill:#fff}
+#pmImg img{display:block;width:100%;height:auto;border-radius:10px}
+section[data-pag] .ubar{background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 2px,transparent 2px 12px),linear-gradient(135deg,#6e1325,#3a0811)}
+section[data-pag] .ubar::after{right:90px;top:50%;width:64px;height:40px;margin-top:-20px;background:linear-gradient(#ffffff26,#ffffff26) 0 18px/64px 22px no-repeat,linear-gradient(#ffffff1a,#ffffff1a) 6px 4px/18px 14px no-repeat,linear-gradient(#ffffff1a,#ffffff1a) 40px 4px/18px 14px no-repeat;border-radius:4px}
+@media (max-width:700px){section[data-pag] .ubar::after{display:none}}
+
+/* ===== busca rápida, alertas e tendência (no visual vinho) ===== */
+.cmd-btn{display:inline-flex;align-items:center;gap:10px;height:42px;padding:0 10px 0 12px;border:1px solid rgba(255,255,255,.28);border-radius:10px;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer;min-width:210px}
+.cmd-btn:hover{background:rgba(255,255,255,.22)}.cmd-btn .ico{width:17px;height:17px}
+.cmd-btn kbd{margin-left:auto;font:700 10.5px var(--body);border:1px solid rgba(255,255,255,.35);border-radius:5px;padding:1px 6px;color:#fff}
+@media (max-width:1100px){.cmd-btn{min-width:0}.cmd-btn span,.cmd-btn kbd{display:none}}
+.alertas{display:flex;align-items:center;gap:8px;overflow-x:auto;white-space:nowrap;padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--line);font-size:12.5px;scrollbar-width:none}
+.alertas::-webkit-scrollbar{display:none}
+.al-t{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--nao);padding-right:8px;border-right:1px solid var(--line);margin-right:2px;text-transform:uppercase;font-size:11px;letter-spacing:.06em}
+.al-t.ok{color:var(--sup)}
+.al-t i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.al{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px}
+.al:hover{border-color:var(--accent);color:var(--accent)}.al b{font-weight:800}.al small{color:var(--muted)}
+.al::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c,var(--nao))}
+.spk{display:block;width:84px;height:22px}.spk polyline{fill:none;stroke:var(--muted);stroke-width:1.6}.spk circle{fill:var(--accent)}
+.spk.up polyline{stroke:var(--nao)}.spk.dn polyline{stroke:var(--sup)}
+.cmdk-fundo{position:fixed;inset:0;z-index:150;background:rgba(20,6,10,.45);display:grid;place-items:start center;padding-top:12vh}
+.cmdk{width:min(640px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.35);overflow:hidden}
+.cmdk input{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-size:15px;padding:16px 18px;outline:0}
+.cmdk ul{list-style:none;margin:0;padding:6px;max-height:52vh;overflow:auto}
+.cmdk li.g{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 10px 4px}
+.cmdk li.o{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;color:var(--fg);font-size:13.5px;font-weight:600}
+.cmdk li.o small{color:var(--muted);margin-left:auto;font-size:11.5px;font-weight:400}
+.cmdk li.o .ico{width:16px;height:16px;color:var(--muted)}
+.cmdk li.o.on{background:var(--accent-soft)}.cmdk li.o.on .ico{color:var(--accent)}
+.cmdk-ft{display:flex;gap:14px;padding:8px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+</style></head><body>
+<header class="top"><div class="top-in">
+  <button class="hamb" id="hamb" type="button" aria-label="Abrir ou fechar o menu"><svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <div class="marca"><img class="logo-img" alt="CGB" src="%%LOGO%%"><div class="marca-txt"><p class="eyebrow">Administrativo · CGB</p><h1 id="tituloTop">Central de Hospedagem</h1></div></div>
+  <div class="top-dir"><button type="button" class="cmd-btn" id="b-cmd" aria-label="Busca rápida"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><span>Buscar ou ir para…</span><kbd>Ctrl K</kbd></button><div class="modo" role="group" aria-label="Tipo de custo"><button type="button" data-modo="hosp" aria-pressed="true"><svg class="ico" viewBox="0 0 24 24"><path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg><span>Hospedagem</span></button><button type="button" data-modo="alim" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 1.5-3 4-3 7h3v11"/></svg><span>Alimentação</span></button></div>
+    <div class="atual"><span>Dados até</span><b id="topAte">–</b></div>
+    <button class="tbtn" id="b-periodo" type="button"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="txt" id="periodoTxt">Acumulado 2026</span></button>
+    <button class="tbtn" id="b-filtros" type="button"><svg class="ico" viewBox="0 0 24 24"><path d="M4 5h16l-6 8v5l-4 2v-7z"/></svg><span class="txt">Filtros</span><span class="badge" id="filtrosN" hidden>0</span></button>
+    <button class="tbtn tema" id="b-tema" type="button" title="Alternar entre tema claro e escuro" aria-label="Alternar tema claro/escuro"><svg class="ico i-sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.3M12 19.2v2.3M2.5 12h2.3M19.2 12h2.3M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg><svg class="ico i-lua" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg></button>
+    <button class="tbtn solid" id="b-copiar" type="button" title="Gerar imagem do painel para enviar"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/></svg><span class="txt">Print / Enviar</span></button>
+  </div>
+</div></header>
+<div class="alertas" id="alertas" aria-label="Alertas"></div>
+<nav class="rail" id="rail" aria-label="Páginas"></nav>
+<div class="rail-fundo" id="railFundo" hidden></div>
+<div class="gaveta-fundo" id="gavFundo" hidden></div>
+<aside class="gaveta" id="gaveta" hidden aria-label="Filtros">
+  <div class="gaveta-hd"><h3>Filtros</h3><button class="fecha" id="b-fechag" type="button" aria-label="Fechar"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="gaveta-bd">
+    <div class="grp">Período</div>
+    <div class="fld"><label for="f-mes">Mês</label><select id="f-mes"></select></div>
+    <div class="grp">Onde e quem</div>
+    <div class="fld"><label for="f-base">Base</label><select id="f-base"></select></div>
+    <div class="fld"><label for="f-ger">Gerência</label><select id="f-ger"></select></div>
+    <div class="fld"><label for="f-area">Centro de custo</label><select id="f-area"></select></div>
+    <p class="sml" style="margin:0">As metas são definidas por centro de custo. Ao filtrar uma base, os painéis mostram só o realizado.</p>
+  </div>
+  <div class="gaveta-ft"><button class="btn" id="b-limpar" type="button">Limpar</button><button class="btn primary" id="b-verg" type="button">Ver resultado</button></div>
+</aside>
+<div class="wrap"><main id="main" style="display:grid;gap:16px;min-width:0"></main></div>
+<div class="modal" id="modalPrint" hidden><div class="modal-c pmod"><div class="modal-hd"><h3>Imagem do painel</h3><button class="fecha" id="pmFecha" type="button" aria-label="Fechar"><svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="modal-bd pm-bd" id="pmImg"></div><div class="modal-ft pm-ft"><button class="btn" id="pmCopiar" type="button">Copiar imagem</button><button class="btn primary" id="pmBaixar" type="button">Baixar PNG</button></div></div></div>
+<div id="toast" class="toast" hidden></div>
+<div class="cmdk-fundo" id="cmdk" hidden><div class="cmdk" role="dialog" aria-label="Busca rápida"><input id="cmdkIn" placeholder="Digite uma página, colaborador, hotel, placa…" autocomplete="off"><ul id="cmdkList"></ul><div class="cmdk-ft"><span>↑↓ navegar</span><span>Enter abrir</span><span>Esc fechar</span></div></div></div>
+<div id="tip" class="tipz" hidden></div>
+<script id="dados" type="application/json">%%DATA%%</script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf0=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}),nf2=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}),nf1=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const R=v=>(v<0?'-':'')+'R$ '+nf2.format(Math.abs(v||0));
+const Rk=v=>{const a=Math.abs(v||0);return (v<0?'-':'')+(a>=1e6?'R$ '+nf2.format(a/1e6)+' mi':a>=1e3?'R$ '+nf1.format(a/1e3)+' mil':'R$ '+nf0.format(a))};
+const N=v=>nf0.format(v||0);const P=v=>v==null||!isFinite(v)?'–':nf1.format(v*100)+'%';
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MES3=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+const mesNome=k=>{const m=/^(\d{4})-(\d{2})$/.exec(k);return m?MESES[+m[2]-1]+'/'+m[1]:k};
+const dt=d=>{if(d==null)return '–';const x=new Date(d*864e5);return String(x.getUTCDate()).padStart(2,'0')+'/'+String(x.getUTCMonth()+1).padStart(2,'0')+'/'+x.getUTCFullYear()};
+const BASES={BCB:'Bacabal',ITM:'Itapecuru',PDS:'Pedreiras',PDT:'Presidente Dutra',STI:'Santa Inês'};
+const bnome=b=>BASES[b]||b;
+const FLAGS_H=[
+ {b:1,nm:'Status VERIFICAR',d:'Lançamento ainda não conferido (STATUS_HOSP diferente de OK).',c:'#C00000'},
+ {b:2,nm:'Sem nota fiscal',d:'Coluna NOTA FISCAL vazia.',c:'#d98a00'},
+ {b:4,nm:'Total diferente do cálculo',d:'TOTAL difere de DIÁRIAS × DIÁRIA (R$) em mais de R$ 1.',c:'#a35a00'},
+ {b:32,nm:'Total zerado',d:'Lançamento sem valor.',c:'#8a7f82'},
+ {b:64,nm:'Possível duplicidade',d:'Mesmo colaborador, hotel e data de entrada lançados mais de uma vez.',c:'#711424'},
+ {b:16,nm:'Sem centro de custo',d:'Código gerencial ausente ou fora da tabela CCUSTO.',c:'#1e5fa6'},
+ {b:8,nm:'Data inválida',d:'Mês fora de 2026 ou saída antes da entrada.',c:'#4a0b16'}];
+/* metas iniciais (do dashboard anterior) — editáveis na página Metas */
+const FLAGS_A=[
+ {b:64,nm:'Possível duplicidade',d:'Mesmo colaborador, mesmo dia e mesmo tipo de refeição lançado mais de uma vez.',c:'#711424'},
+ {b:4,nm:'Valor acima de R$ 60',d:'Refeição individual acima de R$ 60 — confira se não é de mais de uma pessoa.',c:'#d98a00'},
+ {b:16,nm:'Sem centro de custo',d:'Código gerencial fora da tabela CCUSTO (ex.: 2.166.01, 2.172.01).',c:'#1e5fa6'},
+ {b:32,nm:'Valor zerado',d:'Refeição lançada sem valor.',c:'#8a7f82'},
+ {b:8,nm:'Tipo não informado',d:'Coluna SERVIÇO vazia.',c:'#4a0b16'}];
+let FLAGS=FLAGS_H,PMASK=1|4|64|16|8,MODO='hosp';
+/* metas mensais de hospedagem por código de C. custo (planilha de metas 2026) — substituíveis na página Metas */
+
+const AREA_GER={};let METAS={};let METAS_M={};let QF=1;let METAS_FONTE='planilha de metas 2026 (enviada no chat)';
+const GERS=['GSTC','GERE','GOMAN','ADMINISTRATIVO'];
+const GCOR={GSTC:'#711424',GERE:'#1e5fa6',GOMAN:'#2b7a0f',ADMINISTRATIVO:'#a35a00'};
+
+/* ===== dados ===== */
+const RAW=JSON.parse($('dados').textContent);
+const CCT=RAW.cct;
+let ROWS=[];let CUT=Date.parse(RAW.gerado+'T12:00:00Z');let FONTE={};
+function decode(raw){const D=raw.d;return raw.r.map(r=>({b:D.base[r[0]],cid:D.cid[r[1]],est:D.est[r[2]],col:D.col[r[3]],sol:D.sol[r[4]],aut:D.aut[r[5]],cod:D.cod[r[6]],cc:D.cc[r[7]],ger:D.ger[r[8]],area:D.area[r[9]],mot:D.mot[r[10]],ent:r[11],sai:r[12],mes:D.mes[r[13]],dia:r[14],pr:r[15],tot:r[16],q:r[17],nf:D.nf[r[18]],st:D.st[r[19]],conf:D.conf[r[20]],fl:r[21]}))}
+ROWS=decode(RAW);for(const b of new Set(ROWS.map(r=>r.b)))FONTE[b]={at:RAW.gerado,origem:'planilha enviada'};
+function RAWM(){return RAW.metas}
+for(const c of Object.values(CCT))AREA_GER[c[2]]=c[1];
+function aplicarMetas(m){METAS_M=m;METAS={};for(const a of new Set(Object.values(CCT).map(c=>c[2])))METAS[a]=0;for(const mes of Object.keys(m))for(const [cod,v] of Object.entries(m[mes])){const a=(CCT[cod]||[0,0,cod])[2];METAS[a]=(METAS[a]||0)+(+v||0)}}
+function decodeAlim(raw){const D=raw.d;return raw.r.map(r=>{const cod=D.cod[r[6]],c=CCT[cod];const d=r[11];const x=new Date(d*864e5);
+  return {b:D.base[r[0]],cid:D.cid[r[1]],est:D.est[r[2]],col:D.col[r[3]],sol:D.sol[r[4]],aut:D.aut[r[5]],cod,cc:c?c[0]:(D.cc[r[8]]||'SEM CENTRO DE CUSTO'),ger:c?c[1]:(D.ger[r[7]]||'SEM GERÊNCIA'),area:c?c[2]:(D.cc[r[8]]||'SEM CENTRO DE CUSTO'),mot:D.mot[r[9]],tipo:D.tipo[r[10]],ent:d,sai:d,hr:r[12],mes:x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0'),dia:1,pr:r[13],tot:r[13],q:1,nf:D.nf[r[14]],st:'',conf:'',fl:r[15]}})}
+const GER0=Date.parse(RAW.gerado+'T12:00:00Z');
+const DS={hosp:{rows:ROWS,fonte:FONTE,cut:CUT,mm:RAW.metas,mf:'planilha de metas 2026 (coluna HOSPEDAGEM)'},
+          alim:{rows:decodeAlim(RAW.alim),fonte:{},cut:GER0,mm:RAW.metasRef,mf:'planilha de metas 2026 (coluna REFEIÇÃO)'}};
+for(const b of new Set(DS.alim.rows.map(r=>r.b)))DS.alim.fonte[b]={at:RAW.gerado,origem:'planilha de alimentação (APP)'};
+function usar(m){DS[MODO].rows=ROWS;DS[MODO].fonte=FONTE;DS[MODO].cut=CUT;MODO=m;const d=DS[m];ROWS=d.rows;FONTE=d.fonte;CUT=d.cut;aplicarMetas(d.mm);METAS_FONTE=d.mf;FLAGS=m==='alim'?FLAGS_A:FLAGS_H;PMASK=m==='alim'?(4|64|16|8|32):(1|4|64|16|8);if(!FLAGS.some(f=>f.b===QF))QF=FLAGS[0].b}
+aplicarMetas(RAW.metas);
+function metaMes(areas,mes){const st=new Set(areas);let t=0;for(const [cod,v] of Object.entries(METAS_M[mes]||{})){const a=(CCT[cod]||[0,0,cod])[2];if(st.has(a))t+=+v||0}return t}
+
+/* ===== filtros ===== */
+const F={mes:'',base:'',ger:'',area:''};
+const temFiltro=()=>!!(F.base||F.ger||F.area);
+const passa=(r,ign)=>(ign==='mes'||!F.mes||r.mes===F.mes)&&(ign==='base'||!F.base||r.b===F.base)&&(!F.ger||r.ger===F.ger)&&(!F.area||r.area===F.area);
+const filt=ign=>ROWS.filter(r=>passa(r,ign));
+const sum=(a,f)=>a.reduce((s,r)=>s+(f(r)||0),0);
+function grp(a,kf){const m=new Map();for(const r of a){const k=kf(r);let g=m.get(k);if(!g)m.set(k,g={k,tot:0,dia:0,n:0,rows:[]});g.tot+=r.tot;g.dia+=r.dia;g.n++;g.rows.push(r)}return [...m.values()]}
+const MESES_DADOS=()=>[...new Set(ROWS.map(r=>r.mes))].filter(m=>/^2026-/.test(m)).sort();
+const cutD=()=>new Date(CUT);
+function fracMes(k){const m=/^(\d{4})-(\d{2})$/.exec(k);if(!m)return 0;const y=+m[1],mo=+m[2],c=cutD(),cy=c.getUTCFullYear(),cm=c.getUTCMonth()+1;if(y<cy||(y===cy&&mo<cm))return 1;if(y===cy&&mo===cm){const dm=new Date(Date.UTC(y,mo,0)).getUTCDate();return c.getUTCDate()/dm}return 0}
+function mesesPeriodo(){if(F.mes)return [F.mes];const c=cutD(),out=[];for(let i=1;i<=c.getUTCMonth()+1;i++)out.push(c.getUTCFullYear()+'-'+String(i).padStart(2,'0'));return out}
+function areasFiltro(){return Object.keys(METAS).filter(a=>(!F.area||a===F.area)&&(!F.ger||AREA_GER[a]===F.ger))}
+function metaAnual(areas){return (areas||areasFiltro()).reduce((s,a)=>s+(+METAS[a]||0),0)}
+function metaPer(areas,meses){const ar=areas||areasFiltro();return (meses||mesesPeriodo()).reduce((s,m)=>s+metaMes(ar,m)*fracMes(m),0)}
+function sit(p){if(p==null||!isFinite(p))return {c:'nd',t:'Sem meta'};if(p<=.9)return {c:'ate',t:'Dentro da meta'};if(p<=1)return {c:'par',t:'Atenção'};return {c:'nao',t:'Acima da meta'}}
+const pill=p=>{const s=sit(p);return '<span class="pill '+s.c+'">'+s.t+'</span>'};
+const pctTag=p=>{const s=sit(p);return '<span class="pct '+s.c+'">'+P(p)+'</span>'};
+const periodoTxt=()=>F.mes?mesNome(F.mes):'Acumulado 2026';
+const ctxTxt=()=>[periodoTxt(),F.base&&bnome(F.base),F.ger,F.area].filter(Boolean).join(' · ');
+
+const TXT_A=[[/R\$\/diária/g,'R$/refeição'],[/\bdiárias\b/g,'refeições'],[/\bDiárias\b/g,'Refeições'],[/\bdiária\b/g,'refeição'],[/\bDiária\b/g,'Refeição'],[/\bhospedagens\b/g,'refeições'],[/\bHospedagens\b/g,'Refeições'],[/\bhospedados\b/g,'atendidos'],[/Quem mais se hospeda/g,'Quem mais consome'],[/\bHotéis\b/g,'Restaurantes'],[/\bhotéis\b/g,'restaurantes'],[/\bHotel\b/g,'Restaurante'],[/\bhotel\b/g,'restaurante'],[/\bHospedagem\b/g,'Alimentação'],[/\bhospedagem\b/g,'alimentação']];
+const tx=h=>MODO==='alim'?TXT_A.reduce((a,[r,t])=>a.replace(r,t),h):h;
+const isA=()=>MODO==='alim';
+/* ===== componentes ===== */
+function ubar(tit,sub,icn){return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico(icn)+'</span><div class="ubar-t"><span class="ubar-tag">Central de Hospedagem</span><h2>'+tit+'</h2><span>'+sub+'</span></div></div><div class="ubar-r"><button type="button" class="ufunil" data-gav aria-label="Abrir filtros" title="Filtros">'+'<svg class="ico" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>'+(nFiltros()?'<span class="ufn">'+nFiltros()+'</span>':'')+'</button></div></div>'+chips()}
+const nFiltros=()=>['mes','base','ger','area'].filter(k=>F[k]).length;
+function chips(){const L={mes:'Mês',base:'Base',ger:'Gerência',area:'C. custo'};const h=Object.keys(L).filter(k=>F[k]).map(k=>'<span class="chipf"><small>'+L[k]+'</small>'+esc(k==='mes'?mesNome(F[k]):k==='base'?bnome(F[k]):F[k])+'<button type="button" data-rmf="'+k+'" aria-label="Remover filtro">×</button></span>').join('');return '<div class="ativos">'+h+'</div>'}
+function panel(t,small,body,extra){return '<div class="panel"'+(extra||'')+'><div class="phd"><h3>'+t+'</h3>'+(small?'<small>'+small+'</small>':'')+'</div>'+body+'</div>'}
+/* gráfico de colunas: itens {k,l,v,meta,sub} */
+function colChart(items,o={}){
+  const W=760,H=o.h||260,pl=56,pr=10,pt=24,pb=34,iw=W-pl-pr,ih=H-pt-pb;
+  const mx=Math.max(1,...items.map(i=>Math.max(i.v||0,i.meta||0)))*1.1;
+  const step=niceStep(mx/4);let g='';
+  for(let y=0;y<=mx;y+=step){const yy=pt+ih-ih*y/mx;g+='<line class="cc-g" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+yy+'" y2="'+yy+'"/><text class="cc-y" x="'+(pl-8)+'" y="'+(yy+4)+'" text-anchor="end">'+(o.cnt?N(y):Rk(y).replace('R$ ',''))+'</text>'}
+  const bw=iw/items.length,w=Math.min(46,bw*.62);let b='';
+  items.forEach((it,i)=>{const cx=pl+bw*i+bw/2,h=ih*(it.v||0)/mx,y=pt+ih-h;
+    const tip='<b>'+esc(it.t||it.l)+'</b><br>'+(o.cnt?'Quantidade: <b>'+N(it.v):'Realizado: <b>'+R(it.v))+'</b>'+(it.meta!=null?'<br>Meta: '+R(it.meta)+'<br>Consumo: '+P(it.meta?it.v/it.meta:null):'')+(it.sub?'<br><small>'+it.sub+'</small>':'');
+    b+='<g data-tip="'+esc(tip)+'"'+(it.k?' data-mes="'+it.k+'" style="cursor:pointer"':'')+'><rect x="'+(cx-bw/2)+'" y="'+pt+'" width="'+bw+'" height="'+ih+'" fill="transparent"/>'+(h>0?'<path class="cc-bar'+(it.fut?' fut':'')+'" d="M'+(cx-w/2)+','+(pt+ih)+'V'+(y+4)+'q0,-4 4,-4h'+(w-8)+'q4,0 4,4V'+(pt+ih)+'z"/>':'')+
+    (it.meta?'<line class="cc-meta" x1="'+(cx-w/2-6)+'" x2="'+(cx+w/2+6)+'" y1="'+(pt+ih-ih*it.meta/mx)+'" y2="'+(pt+ih-ih*it.meta/mx)+'"/>':'')+
+    (o.rot!==false?(h>34&&!it.fut?'<text class="cc-vi" x="'+cx+'" y="'+(y+16)+'" text-anchor="middle">'+(o.cnt?N(it.v):Rk(it.v).replace('R$ ','').replace(' mil',''))+'</text>':'<text class="cc-v" x="'+cx+'" y="'+(y-6)+'" text-anchor="middle">'+(o.cnt?N(it.v):Rk(it.v).replace('R$ ',''))+'</text>'):'')+
+    '<text class="cc-ax" x="'+cx+'" y="'+(H-12)+'" text-anchor="middle">'+esc(it.l)+'</text></g>'});
+  return '<div class="colc"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(o.aria||'Gráfico de colunas')+'">'+g+'<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+(pt+ih)+'" y2="'+(pt+ih)+'" class="cc-base" stroke-width="1.5"/>'+b+'</svg></div>'+
+  '<div class="cc-leg"><span><i style="background:#711424"></i>'+(o.leg||'Realizado')+'</span>'+(items.some(i=>i.meta)?'<span><i class="m"></i>Meta do período</span>':'')+'</div>'}
+function niceStep(x){const p=Math.pow(10,Math.floor(Math.log10(x||1))),n=x/p;return (n<=1?1:n<=2?2:n<=5?5:10)*p}
+/* barras com marcador de meta: itens {k,sub,v,meta,attr} */
+function metaBars(items,o={}){
+  const mx=Math.max(1,...items.map(i=>Math.max(i.v||0,i.meta||0)));
+  return '<div class="mb">'+items.map(it=>{const p=it.meta?it.v/it.meta:null,s=sit(p);
+    return '<div class="mb-r"'+(it.attr||'')+' data-tip="'+esc('<b>'+esc(it.k)+'</b><br>'+(o.fmt?'Quantidade: <b>'+o.fmt(it.v):'Realizado: <b>'+R(it.v))+'</b>'+(it.meta!=null?'<br>Meta: '+R(it.meta)+'<br>Consumo: '+P(p)+' · '+s.t:'')+(it.tip?'<br><small>'+it.tip+'</small>':''))+'"><div class="mb-k">'+esc(it.k)+(it.sub?'<small>'+esc(it.sub)+'</small>':'')+'</div><div class="mb-t"><i class="'+(it.meta?s.c:'')+'" style="width:'+(100*(it.v||0)/mx)+'%"></i>'+(it.meta?'<em style="left:'+(100*it.meta/mx)+'%"></em>':'')+'</div><div class="mb-v"><b>'+(o.fmt?o.fmt(it.v):R(it.v))+'</b><small>'+(it.meta?P(p)+' da meta':(it.rt||''))+'</small></div></div>'}).join('')+'</div>'+
+  (items.some(i=>i.meta)&&!o.noleg?'<div class="dleg" style="margin-top:4px"><span><i style="background:#3C9E18"></i>Dentro (até 90%)</span><span><i style="background:#d98a00"></i>Atenção (90–100%)</span><span><i style="background:#C00000"></i>Acima da meta</span><span><i style="background:#1d1d1d;width:3px"></i>Meta</span></div>':'')}
+function tabela(cols,rows,o={}){
+  if(MODO==='alim'&&cols.some(c=>c.h==='Hospedagens'||c.h==='Lançamentos'))cols=cols.filter(c=>c.h!=='Diárias');
+  return '<div class="tw'+(o.alto?' alto':'')+'"><table class="utab"><thead><tr>'+cols.map(c=>'<th'+(c.n?' class="n"':'')+'>'+c.h+'</th>').join('')+'</tr></thead><tbody>'+
+  (rows.length?rows.map(r=>'<tr'+(r._tr||'')+'>'+cols.map(c=>'<td'+(c.n?' class="n"':c.w?' class="wr"':'')+'>'+c.f(r)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+cols.length+'"><div class="empty">Nenhum lançamento para os filtros escolhidos.</div></td></tr>')+
+  (o.tot?'<tr class="tot">'+cols.map(c=>'<td'+(c.n?' class="n"':'')+'>'+(c.t?c.t():'')+'</td>').join('')+'</tr>':'')+'</tbody></table></div>'}
+
+/* ===== ícones e menu (do modelo) ===== */
+const ICON={home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',mix:'<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/>',pin:'<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',cama:'<path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',alerta:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',lista:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',moeda:'<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1.2-1.7-1.8-3-1.8-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.3-3 2.3-1.4 0-2.6-.7-3.1-1.9M12 6v1.7M12 16.8v1.7"/>',upload:'<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',painel:'<path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4-4"/><path d="M3 19h18"/>',cad:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>' ,chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',caixa:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>'};
+const ico=n=>'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+(ICON[n]||ICON.painel)+'</svg>';
+const PAGINAS=[
+ {id:'inicio',nm:'Visão geral',sub:'Resumo dos custos de hospedagem',ic:'home',g:'Hospedagem / Alimentação'},
+ {id:'mensal',nm:'Evolução mensal',sub:'Mês a mês contra a meta',ic:'cal',g:'Hospedagem / Alimentação'},
+ {id:'gerencia',nm:'Gerência e centro de custo',sub:'Realizado × meta',ic:'moeda',g:'Hospedagem / Alimentação'},
+ {id:'bases',nm:'Bases e cidades',sub:'Onde se gasta',ic:'pin',g:'Hospedagem / Alimentação'},
+ {id:'hoteis',nm:'Hotéis',sub:'Gasto, diárias e preço',ic:'cama',g:'Hospedagem / Alimentação'},
+ {id:'tipos',nm:'Tipos de refeição',sub:'Café, almoço, jantar e horário',ic:'mix',g:'Hospedagem / Alimentação',m:'alim'},
+ {id:'colab',nm:'Colaboradores',sub:'Quem mais se hospeda',ic:'user',g:'Hospedagem / Alimentação'},
+ {id:'qualidade',nm:'Pendências da base',sub:'O que precisa de correção',ic:'alerta',g:'Hospedagem / Alimentação'},
+ {id:'banco',nm:'Banco de dados',sub:'Lançamentos e atualização',ic:'lista',g:'Hospedagem / Alimentação'},
+ {id:'pat-painel',nm:'Painel do inventário',sub:'Conformidade mês a mês',ic:'caixa',g:'Patrimônio'},
+ {id:'pat-crono',nm:'Cronograma 2026',sub:'O que foi feito e o que falta',ic:'cal',g:'Patrimônio'},
+ {id:'pat-nc',nm:'Não conformidades',sub:'Não conformes e não encontrados',ic:'alerta',g:'Patrimônio'},
+ {id:'pat-bens',nm:'Bens e responsáveis',sub:'Cadastro, locais e movimentações',ic:'user',g:'Patrimônio'},
+ {id:'pat-banco',nm:'Banco do patrimônio',sub:'Inventário e cadastro completos',ic:'lista',g:'Patrimônio'},
+ {id:'fc-painel',nm:'Painel do Fale Conosco',sub:'Atendimentos, assuntos e alcance',ic:'chat',g:'Fale Conosco'},
+ {id:'fc-lista',nm:'Atendimentos',sub:'Pergunta, resolução e status',ic:'lista',g:'Fale Conosco'},
+ {id:'metas',nm:'Metas',sub:'Meta anual por centro de custo',ic:'cad',g:'Hospedagem / Alimentação'}];
+const GRUPO_ICO={'Hospedagem / Alimentação':'cama','Patrimônio':'caixa','Fale Conosco':'chat'},GRUPO_SUB={'Hospedagem / Alimentação':'Custos, metas e pendências','Patrimônio':'Inventário 2026','Fale Conosco':'Atendimentos aos colaboradores'};
+const PAGS=()=>PAGINAS.filter(p=>!p.m||p.m===MODO);
+const pag=()=>{const h=location.hash.slice(1);return PAGS().find(p=>p.id===h)||PAGINAS[0]};
+let railAberto=null;
+function renderRail(){
+  const atual=pag();if(railAberto===null)railAberto=atual.g;
+  const item=p=>'<a href="#'+p.id+'" title="'+p.nm+'"'+(atual.id===p.id?' aria-current="page"':'')+'><span class="mi">'+ico(p.ic)+'</span><span class="rt"><b>'+p.nm+'</b><small>'+p.sub+'</small></span>'+(p.id==='qualidade'&&nPend()?'<span class="count">'+nPend()+'</span>':'')+'</a>';
+  const grupos=[];for(const p of PAGS()){let g=grupos.find(x=>x.g===p.g);if(!g)grupos.push(g={g:p.g,ps:[]});g.ps.push(p)}
+  let h='<div class="rail-lista">';
+  for(const g of grupos){
+    const ab=railAberto===g.g,temAtual=g.ps.some(p=>p.id===atual.id);
+    h+='<div class="mg'+(ab?' aberto':'')+(temAtual?' cur':'')+'"><button type="button" class="mg-hd" data-mg="'+g.g+'" aria-expanded="'+ab+'" title="'+g.g+'"><span class="mi">'+ico(GRUPO_ICO[g.g])+'</span><span class="rt"><b>'+g.g+'</b><small>'+(GRUPO_SUB[g.g]||'')+'</small></span><svg class="mg-sv" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="mg-it"'+(ab?'':' hidden')+'>'+(g.g!=='Hospedagem / Alimentação'?g.ps.map(item).join(''):tx(g.ps.map(item).join('')))+'</div></div>';
+  }
+  const pin=document.body.classList.contains('rail-pin');
+  h+='<div class="rail-foot"><small>Fontes</small><div class="fontes">'+Object.keys(BASES).map(b=>'<span class="fonte'+(FONTE[b]?'':' off')+'" title="'+(FONTE[b]?bnome(b)+' · '+FONTE[b].origem+' em '+FONTE[b].at:'sem dados')+'">'+b+'</span>').join('')+'</div></div></div><button type="button" class="rail-pinb" id="b-railpin" aria-pressed="'+pin+'"><span class="mi"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="'+(pin?'M17 6l-6 6 6 6M7 5v14':'M7 6l6 6-6 6M17 5v14')+'"/></svg></span><span class="rt"><b>'+(pin?'Recolher menu':'Manter menu aberto')+'</b><small>'+(pin?'Mostra só os ícones':'Deixa os nomes sempre visíveis')+'</small></span></button>';
+  $('rail').innerHTML=h;
+  $('rail').querySelectorAll('[data-mg]').forEach(b=>b.onclick=()=>{const g=b.dataset.mg;const comp=railCompacto();railAberto=comp?g:(railAberto===g?'':g);if(comp)document.body.classList.add('rail-peek');renderRail()});
+  $('b-railpin').onclick=()=>{const on=document.body.classList.toggle('rail-pin');document.body.classList.remove('rail-peek');try{localStorage.setItem('rail.pin',on?'1':'0')}catch(e){}renderRail()};
+  $('rail').querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('rail-peek')));
+}
+const railDesk=()=>!matchMedia('(max-width:1000px)').matches;
+const railCompacto=()=>railDesk()&&!document.body.classList.contains('rail-pin')&&!document.body.classList.contains('rail-peek');
+(function(){try{if(localStorage.getItem('rail.pin')==='1')document.body.classList.add('rail-pin')}catch(e){}
+  const r=$('rail');let t=null;
+  r.addEventListener('mouseenter',()=>{if(!railDesk()||document.body.classList.contains('rail-pin'))return;clearTimeout(t);t=setTimeout(()=>document.body.classList.add('rail-peek'),120)});
+  r.addEventListener('mouseleave',()=>{clearTimeout(t);if(!railDesk())return;t=setTimeout(()=>{document.body.classList.remove('rail-peek');railAberto=pag().g;renderRail()},250)});})();
+const nPend=()=>ROWS.filter(r=>r.fl&PMASK).length;
+
+/* ===== páginas ===== */
+const PG={};
+PG.inicio=()=>{
+  const a=filt(),tot=sum(a,r=>r.tot),dia=sum(a,r=>r.dia),cols=new Set(a.map(r=>r.col)).size;
+  const mp=temFiltro()&&F.base?null:metaPer(),ma=F.base?null:metaAnual(),pc=mp?tot/mp:null,s=sit(pc);
+  const pend=a.filter(r=>r.fl&PMASK).length;
+  const porBase=Object.keys(BASES).map(b=>({b,v:sum(ROWS.filter(r=>passa(r,'base')&&r.b===b),r=>r.tot)}));
+  const ms=MESES_DADOS(),am=filt('mes');
+  const itens=ms.map(m=>{const v=sum(am.filter(r=>r.mes===m),r=>r.tot);return {k:m,l:MES3[+m.slice(5)-1],t:mesNome(m),v,meta:F.base?null:metaPer(null,[m]),fut:fracMes(m)<1,sub:fracMes(m)<1?'mês em andamento':''}});
+  const mesAt=F.mes||ms[ms.length-1],mesAnt=ms[ms.indexOf(mesAt)-1];
+  // destaques automáticos
+  const dest=[];
+  const aMesC=itens.filter(i=>!i.fut);if(aMesC.length){const top=aMesC.reduce((x,y)=>y.v>x.v?y:x);dest.push({c:'info',i:'i',h:'Mês de maior gasto: <b>'+mesNome(top.k)+'</b> com <b>'+R(top.v)+'</b>.'})}
+  if(!F.base){const ars=areasFiltro().map(ar=>{const v=sum(a.filter(r=>r.area===ar),r=>r.tot),m=metaPer([ar]);return {ar,v,m,p:m?v/m:null}}).filter(x=>x.m>0);
+    const est=ars.filter(x=>x.p>1).sort((x,y)=>y.p-x.p);
+    if(est.length)dest.push({c:'mal',i:'!',h:'<b>'+est.length+'</b> centro(s) de custo acima da meta no período. O maior desvio é <a href="#gerencia">'+esc(est[0].ar)+'</a> ('+P(est[0].p)+' da meta, '+R(est[0].v-est[0].m)+' acima).'});
+    else if(ars.length)dest.push({c:'ok',i:'✓',h:'Todos os centros de custo com meta estão dentro do previsto no período.'});
+    const ok=ars.filter(x=>x.p<=.9).length;if(ok)dest.push({c:'ok',i:'✓',h:'<b>'+ok+'</b> centro(s) de custo abaixo de 90% da meta.'})}
+  const hs=grp(a,r=>r.est).sort((x,y)=>y.tot-x.tot);if(hs[0])dest.push({c:'info',i:'i',h:'Hotel com maior gasto: <a href="#hoteis">'+esc(hs[0].k)+'</a> ('+R(hs[0].tot)+', '+P(hs[0].tot/(tot||1))+' do total).'});
+  const cs=grp(a,r=>r.col).sort((x,y)=>y.dia-x.dia);if(cs[0])dest.push({c:'at',i:'↑',h:'Colaborador com mais diárias: <a href="#colab">'+esc(cs[0].k)+'</a> ('+N(cs[0].dia)+' diárias, '+R(cs[0].tot)+').'});
+  if(mesAnt&&!F.mes){const fc=mesAt,an=mesAnt;const v1=sum(am.filter(r=>r.mes===an),r=>r.tot);const MD=MESES_DADOS(),m2=MD.slice(-2)[0],m3=MD.slice(-3)[0];const vb=Object.keys(BASES).map(b=>{const x=sum(am.filter(r=>r.mes===m2&&r.b===b),r=>r.tot),y=sum(am.filter(r=>r.mes===m3&&r.b===b),r=>r.tot);return {b,x,y,d:x-y}}).sort((p,q)=>q.d-p.d);
+    if(vb[0]&&vb[0].d>0)dest.push({c:'at',i:'↑',h:'Maior alta entre os dois últimos meses fechados: <b>'+bnome(vb[0].b)+'</b> (+'+R(vb[0].d)+').'})}
+  if(pend)dest.push({c:'mal',i:'!',h:'<a href="#qualidade">'+N(pend)+' lançamentos</a> com pendência ('+FLAGS.filter(f=>f.b&PMASK).map(f=>f.nm.charAt(0).toLowerCase()+f.nm.slice(1)).join(', ')+').'});
+  return '<div class="vgh"><div class="vgh-top"><div class="ubar-l"><span class="ubar-ic">'+ico('home')+'</span><div><span class="ubar-tag">Central de Hospedagem · Administrativo CGB</span><h2>Visão geral</h2><span class="vgh-ate">'+esc(ctxTxt())+' · dados até <b>'+dt(Math.floor(CUT/864e5))+'</b></span></div></div><div class="vgh-hora"><b>'+R(tot)+'</b><small>Gasto no período</small></div></div>'+
+   '<div class="vgh-pulso">'+porBase.map(x=>'<a class="vgp" href="#bases" data-setbase="'+x.b+'" style="--pc:'+(F.base===x.b?'#ffd27a':'#c9b3b8')+'"><i></i><span><small>'+bnome(x.b)+'</small><b>'+Rk(x.v)+'</b></span></a>').join('')+
+   '<a class="vgp" href="#gerencia" style="--pc:'+({ate:'#44d27a',par:'#ffb648',nao:'#ff5a6e',nd:'#c9b3b8'}[s.c])+'"><i></i><span><small>Consumo da meta</small><b>'+P(pc)+'</b></span></a></div></div>'+chips()+
+   '<div class="k6">'+
+   icard('Gasto no período',periodoTxt(),Rk(tot),mp!=null?pill(pc):'<span class="pill nd">Sem meta com filtro de base</span>',[['Meta do período',mp!=null?R(mp):'–'],['Meta anual',ma!=null?R(ma):'–']],'gerencia',s.c)+
+   icard('Consumo da meta',periodoTxt(),P(pc),mp!=null?(pc>1?'<span class="pill nao">'+R(tot-mp)+' acima</span>':'<span class="pill ate">Saldo de '+R(mp-tot)+'</span>'):'<span class="pill nd">–</span>',[['Realizado',R(tot)],['Saldo da meta anual',ma!=null?R(ma-sum(filt('mes'),r=>r.tot)):'–']],'gerencia',s.c)+
+   icard('Diárias',periodoTxt(),N(dia),'<span class="pill nd">'+N(a.length)+' lançamentos</span>',[isA()?['Ticket médio por refeição',R(dia?tot/dia:0)]:['Média por lançamento',nf1.format(dia/(a.length||1))+' diárias'],['Colaboradores hospedados',N(cols)]],'colab')+
+   icard('Custo médio por diária',periodoTxt(),R(dia?tot/dia:0),'<span class="pill nd">'+N(new Set(a.map(r=>r.est)).size)+' hotéis usados</span>',[['Diária mais alta',R(Math.max(0,...a.map(r=>r.pr)))],['Cidades',N(new Set(a.map(r=>r.cid)).size)]],'hoteis')+
+   icard('Custo por colaborador',periodoTxt(),R(cols?tot/cols:0),'<span class="pill nd">'+N(cols)+' pessoas</span>',[['Diárias por colaborador',nf1.format(dia/(cols||1))],['Maior gasto individual',cs[0]?R(grp(a,r=>r.col).sort((x,y)=>y.tot-x.tot)[0].tot):'–']],'colab')+
+   icard('Pendências na base',periodoTxt(),N(pend),pend?'<span class="pill nao">corrigir</span>':'<span class="pill ate">tudo certo</span>',[isA()?['Possível duplicidade',N(a.filter(r=>r.fl&64).length)]:['Sem nota fiscal',N(a.filter(r=>r.fl&2).length)],['Valor em pendência',R(sum(a.filter(r=>r.fl&PMASK),r=>r.tot))]],'qualidade',pend?'nao':'ate')+
+   '</div><div class="vg2">'+panel('Gasto mês a mês',F.base?'realizado':'realizado × meta mensal',colChart(itens,{aria:'Gasto mensal com meta'})+'<p class="tnota">Clique num mês para filtrar todos os painéis.</p>')+
+   panel('Destaques do período','gerados automaticamente','<ul class="vgdest">'+dest.map(d=>'<li class="vgl vgl-'+d.c+'"><span class="vgl-i">'+d.i+'</span><span>'+d.h+'</span></li>').join('')+'</ul>')+'</div>'+
+   (F.base?'':panel('Gerências','realizado × meta do período','<div class="vgger">'+GERS.filter(g=>!F.ger||g===F.ger).map(g=>{const ar=Object.keys(METAS).filter(x=>AREA_GER[x]===g&&(!F.area||x===F.area));const v=sum(a.filter(r=>r.ger===g),r=>r.tot),m=metaPer(ar),p=m?v/m:null;
+     return '<div class="vgg-card" style="--g:'+GCOR[g]+'"><header><span class="vgg-s">'+g+'</span>'+pctTag(p)+'</header><div class="vgg-n">Realizado <b>'+R(v)+'</b> de '+R(m)+'</div>'+metaBars(ar.map(x=>({k:x,v:sum(a.filter(r=>r.area===x),r=>r.tot),meta:metaPer([x]),attr:' data-setarea="'+esc(x)+'"'})).filter(i=>i.v||i.meta),{noleg:true})+'<footer><span>'+N(sum(a.filter(r=>r.ger===g),r=>r.dia))+' diárias</span><a class="vgg-ver" href="#gerencia" data-setger="'+g+'">Ver detalhes →</a></footer></div>'}).join('')+'</div>'))};
+function icard(k,m,v,pl,linhas,href,c){return '<a class="icard" href="#'+href+'"><div class="ic-hd"><span class="ic-k">'+k+'</span><span class="ic-m">'+m+'</span></div><div class="ic-v sm '+(c||'')+'">'+v+'</div><div>'+pl+'</div>'+linhas.map(l=>'<div class="ic-l"><span>'+l[0]+'</span><b>'+l[1]+'</b></div>').join('')+'<span class="ic-go">Abrir painel →</span></a>'}
+
+PG.mensal=()=>{
+  const ms=MESES_DADOS(),am=filt('mes');let acR=0,acM=0;
+  const linhas=ms.map((m,i)=>{const x=am.filter(r=>r.mes===m),v=sum(x,r=>r.tot),mt=F.base?null:metaPer(null,[m]);acR+=v;acM+=mt||0;const ant=i?sum(am.filter(r=>r.mes===ms[i-1]),r=>r.tot):null;
+    return {m,v,mt,acR,acM,ant,dia:sum(x,r=>r.dia),n:x.length,b:Object.fromEntries(Object.keys(BASES).map(b=>[b,sum(x.filter(r=>r.b===b),r=>r.tot)])),_tr:F.mes===m?' class="sel"':''}});
+  const itens=linhas.map(l=>({k:l.m,l:MES3[+l.m.slice(5)-1],t:mesNome(l.m),v:l.v,meta:l.mt,fut:fracMes(l.m)<1}));
+  const acu=linhas.map(l=>({k:l.m,l:MES3[+l.m.slice(5)-1],t:mesNome(l.m)+' (acumulado)',v:l.acR,meta:F.base?null:l.acM}));
+  const cols=[{h:'Mês',f:r=>'<b>'+mesNome(r.m)+'</b>'+(fracMes(r.m)<1?' <span class="sml">em andamento</span>':''),t:()=>'Total'},
+   ...Object.keys(BASES).filter(b=>!F.base||b===F.base).map(b=>({h:b,n:1,f:r=>R(r.b[b]),t:()=>R(sum(linhas,l=>l.b[b]))})),
+   {h:'Realizado',n:1,f:r=>'<b>'+R(r.v)+'</b>',t:()=>R(sum(linhas,l=>l.v))},
+   {h:'vs mês anterior',n:1,f:r=>r.ant==null||!r.ant?'–':'<span class="delta '+(r.v>r.ant?'down':'up')+'">'+(r.v>r.ant?'▲ ':'▼ ')+P(Math.abs(r.v/r.ant-1))+'</span>'},
+   {h:'Meta',n:1,f:r=>r.mt==null?'–':R(r.mt),t:()=>F.base?'–':R(sum(linhas,l=>l.mt||0))},
+   {h:'% meta',n:1,f:r=>r.mt?pctTag(r.v/r.mt):'–'},
+   {h:'Diárias',n:1,f:r=>N(r.dia),t:()=>N(sum(linhas,l=>l.dia))},
+   {h:'R$/diária',n:1,f:r=>R(r.dia?r.v/r.dia:0)}];
+  return ubar('Evolução mensal',esc(ctxTxt()),'cal')+
+   '<div class="xg2">'+panel('Realizado por mês',F.base?'':'linha tracejada = meta do mês',colChart(itens))+panel('Acumulado no ano',F.base?'':'realizado acumulado × meta acumulada',colChart(acu,{rot:false}))+'</div>'+
+   panel('Mês a mês por base','clique numa linha para filtrar o mês',tabela(cols,linhas.map(l=>Object.assign(l,{_tr:(F.mes===l.m?' class="sel"':'')+' data-mesrow="'+l.m+'" style="cursor:pointer"'})),{tot:1}))};
+
+PG.gerencia=()=>{
+  const a=filt();const ars=[...new Set([...areasFiltro(),...a.map(r=>r.area)])];
+  const rows=ars.map(ar=>{const x=a.filter(r=>r.area===ar),v=sum(x,r=>r.tot),m=F.base||!(ar in METAS)?null:metaPer([ar]),dia=sum(x,r=>r.dia);return {ar,ger:AREA_GER[ar]||(x[0]&&x[0].ger)||'–',v,m,ma:ar in METAS?+METAS[ar]:null,dia,n:x.length,cods:[...new Set(x.map(r=>r.cod))].filter(Boolean).sort().join(', '),p:m?v/m:null}}).sort((x,y)=>{const ix=g=>{const i=GERS.indexOf(g);return i<0?99:i};return ix(x.ger)-ix(y.ger)||y.v-x.v});
+  const rg=GERS.filter(g=>!F.ger||g===F.ger).map(g=>{const r=rows.filter(x=>x.ger===g);return {k:g,v:sum(r,x=>x.v),meta:F.base?null:sum(r,x=>x.m||0),tip:N(sum(r,x=>x.dia))+' diárias',attr:' data-setger="'+g+'"'}});
+  const cols=[{h:'Centro de custo',w:1,f:r=>'<b>'+esc(r.ar)+'</b><br><span class="sml">'+esc(r.cods)+'</span>',t:()=>'Total'},{h:'Gerência',f:r=>'<span class="vgg" style="--g:'+(GCOR[r.ger]||'#8a7f82')+'">'+esc(r.ger)+'</span>'},
+   {h:'Realizado',n:1,f:r=>'<b>'+R(r.v)+'</b>',t:()=>R(sum(rows,r=>r.v))},{h:'Meta período',n:1,f:r=>r.m==null?'–':R(r.m),t:()=>F.base?'–':R(sum(rows,r=>r.m||0))},
+   {h:'Saldo',n:1,f:r=>r.m==null?'–':'<span class="'+(r.m-r.v<0?'neg':'pos')+'">'+R(r.m-r.v)+'</span>',t:()=>F.base?'–':R(sum(rows,r=>(r.m||0)-r.v))},
+   {h:'% consumo',n:1,f:r=>r.m?pctTag(r.p):'–'},{h:'Situação',f:r=>r.m?pill(r.p):'<span class="pill nd">Sem meta</span>'},
+   {h:'Meta anual',n:1,f:r=>r.ma==null?'–':R(r.ma),t:()=>R(sum(rows,r=>r.ma||0))},{h:'Diárias',n:1,f:r=>N(r.dia),t:()=>N(sum(rows,r=>r.dia))},{h:'R$/diária',n:1,f:r=>R(r.dia?r.v/r.dia:0)},{h:'Tendência',f:r=>spark(MESES_DADOS().map(m=>sum(a.filter(x=>x.area===r.ar&&x.mes===m),x=>x.tot)))}];
+  return ubar('Gerência e centro de custo',esc(ctxTxt())+(F.base?' · metas ocultas com filtro de base':''),'moeda')+
+   '<div class="xg2b">'+panel('Centros de custo','realizado × meta do período · clique para filtrar',metaBars(rows.filter(r=>r.v||r.m).map(r=>({k:r.ar,sub:r.ger,v:r.v,meta:r.m,tip:N(r.dia)+' diárias · '+N(r.n)+' lançamentos',attr:' data-setarea="'+esc(r.ar)+'"'}))))+
+   panel('Por gerência','',metaBars(rg))+'</div>'+
+   panel('Tabela de acompanhamento','meta do período = soma das metas mensais (mês corrente proporcional aos dias)',tabela(cols,rows,{tot:1}))};
+
+PG.bases=()=>{
+  const a=filt('base'),tot=sum(a,r=>r.tot);
+  const bs=Object.keys(BASES).map(b=>{const x=a.filter(r=>r.b===b);return {b,v:sum(x,r=>r.tot),dia:sum(x,r=>r.dia),n:x.length,col:new Set(x.map(r=>r.col)).size,ger:Object.fromEntries(GERS.map(g=>[g,sum(x.filter(r=>r.ger===g),r=>r.tot)]))}}).sort((x,y)=>y.v-x.v);
+  const a2=filt();const cid=grp(a2,r=>r.cid).sort((x,y)=>y.tot-x.tot);
+  return ubar('Bases e cidades',esc(ctxTxt()),'pin')+
+   '<div class="ubases">'+bs.map(x=>'<div class="bk"'+(F.base&&F.base!==x.b?' style="opacity:.55"':'')+' data-setbase="'+x.b+'" role="button" tabindex="0" style="cursor:pointer"><span>'+x.b+'</span><b>'+Rk(x.v)+'</b><small>'+bnome(x.b)+' · '+P(x.v/(tot||1))+'</small></div>').join('')+'<div class="bk geral"><span>CGB</span><b>'+Rk(tot)+'</b><small>'+N(sum(bs,x=>x.dia))+' diárias</small></div></div>'+
+   '<div class="xg2">'+panel('Gasto por base','clique para filtrar a base',metaBars(bs.map(x=>({k:bnome(x.b),sub:x.b,v:x.v,rt:N(x.dia)+' diárias',tip:N(x.col)+' colaboradores · R$/diária '+R(x.dia?x.v/x.dia:0),attr:' data-setbase="'+x.b+'"'}))))+
+   panel('Cidades com maior gasto',cid.length+' cidades',metaBars(cid.slice(0,12).map(c=>({k:c.k,v:c.tot,rt:N(c.dia)+' diárias',tip:'R$/diária '+R(c.dia?c.tot/c.dia:0)}))))+'</div>'+
+   panel('Base × gerência','',tabela([{h:'Base',f:r=>'<b>'+bnome(r.b)+'</b> <span class="sml">'+r.b+'</span>',t:()=>'Total'},...GERS.map(g=>({h:g,n:1,f:r=>R(r.ger[g]),t:()=>R(sum(bs,x=>x.ger[g]))})),{h:'Total',n:1,f:r=>'<b>'+R(r.v)+'</b>',t:()=>R(tot)},{h:'Diárias',n:1,f:r=>N(r.dia),t:()=>N(sum(bs,x=>x.dia))},{h:'R$/diária',n:1,f:r=>R(r.dia?r.v/r.dia:0)},{h:'Colaboradores',n:1,f:r=>N(r.col)}],bs,{tot:1}))+
+   panel('Todas as cidades','',tabela([{h:'Cidade',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Bases',f:r=>[...new Set(r.rows.map(x=>x.b))].join(', ')},{h:'Hotéis',n:1,f:r=>N(new Set(r.rows.map(x=>x.est)).size)},{h:'Lançamentos',n:1,f:r=>N(r.n)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Gasto',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'R$/diária',n:1,f:r=>R(r.dia?r.tot/r.dia:0)}],cid,{alto:1}))};
+
+PG.hoteis=()=>{
+  const a=filt(),tot=sum(a,r=>r.tot);
+  const hs=grp(a,r=>r.est).map(h=>{const ps=h.rows.map(r=>r.pr).filter(p=>p>0).sort((x,y)=>x-y);return Object.assign(h,{min:ps[0]||0,max:ps[ps.length-1]||0,med:ps.length?ps[Math.floor(ps.length/2)]:0,cid:[...new Set(h.rows.map(r=>r.cid))].join(', '),bs:[...new Set(h.rows.map(r=>r.b))].join(', ')})}).sort((x,y)=>y.tot-x.tot);
+  const varia=hs.filter(h=>h.min>0&&h.max/h.min>=(isA()?2:1.3)&&h.n>=3).sort((x,y)=>y.max/y.min-x.max/x.min);
+  const caros=grp(a,r=>r.cid).filter(c=>new Set(c.rows.map(r=>r.est)).size>1).map(c=>{const hh=grp(c.rows,r=>r.est).map(h=>({k:h.k,pm:h.dia?h.tot/h.dia:0,dia:h.dia})).filter(h=>h.dia>=5&&h.pm>0).sort((x,y)=>x.pm-y.pm);return {cid:c.k,hh}}).filter(c=>c.hh.length>1&&c.hh[c.hh.length-1].pm-c.hh[0].pm>15).sort((x,y)=>(y.hh[y.hh.length-1].pm-y.hh[0].pm)-(x.hh[x.hh.length-1].pm-x.hh[0].pm));
+  return ubar('Hotéis',esc(ctxTxt())+' · '+hs.length+' estabelecimentos','cama')+
+   '<div class="xg2">'+panel('Hotéis com maior gasto','top 12 · R$/diária no detalhe',metaBars(hs.slice(0,12).map(h=>({k:h.k,sub:h.cid,v:h.tot,rt:P(h.tot/(tot||1))+' do total',tip:N(h.dia)+' diárias · R$/diária médio '+R(h.dia?h.tot/h.dia:0)}))))+
+   panel('Oportunidades de negociação','mesma cidade, hotéis com R$/diária diferente (mín. 5 diárias)',caros.length?'<div class="tw"><table class="utab"><thead><tr><th>Cidade</th><th>Mais barato</th><th class="n">R$/diária</th><th>Mais caro</th><th class="n">R$/diária</th></tr></thead><tbody>'+caros.slice(0,10).map(c=>{const lo=c.hh[0],hi=c.hh[c.hh.length-1];return '<tr><td class="wr"><b>'+esc(c.cid)+'</b></td><td class="wr">'+esc(lo.k)+'</td><td class="n"><span class="pos">'+R(lo.pm)+'</span></td><td class="wr">'+esc(hi.k)+'</td><td class="n"><span class="neg">'+R(hi.pm)+'</span></td></tr>'}).join('')+'</tbody></table></div>':'<div class="empty">Sem diferenças relevantes de preço dentro da mesma cidade.</div>')+'</div>'+
+   (varia.length?panel('Hotéis com preço variando','valor muda 30% ou mais entre lançamentos — confira se é tarifa diferente ou erro de digitação',tabela([{h:'Hotel',w:1,f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Cidade',w:1,f:r=>esc(r.cid)},{h:'Menor valor',n:1,f:r=>R(r.min)},{h:'Mediana',n:1,f:r=>R(r.med)},{h:'Maior valor',n:1,f:r=>R(r.max)},{h:'Variação',n:1,f:r=>'<span class="pct par">+'+P(r.max/r.min-1)+'</span>'}],varia.slice(0,15))):'')+
+   panel('Ranking de hotéis','',tabela([{h:'#',f:r=>'<span class="sml">'+(hs.indexOf(r)+1)+'</span>'},{h:'Hotel',w:1,f:r=>'<b>'+esc(r.k)+'</b>',t:()=>'Total'},{h:'Cidade',w:1,f:r=>esc(r.cid)},{h:'Base',f:r=>r.bs},{h:'Lançamentos',n:1,f:r=>N(r.n),t:()=>N(a.length)},{h:'Diárias',n:1,f:r=>N(r.dia),t:()=>N(sum(hs,h=>h.dia))},{h:'Gasto',n:1,f:r=>'<b>'+R(r.tot)+'</b>',t:()=>R(tot)},{h:'% total',n:1,f:r=>P(r.tot/(tot||1))},{h:'R$/diária',n:1,f:r=>R(r.dia?r.tot/r.dia:0)},{h:'Faixa de valor',n:1,f:r=>r.min===r.max?R(r.min):R(r.min)+' a '+R(r.max)}],hs,{alto:1,tot:1}))};
+
+PG.colab=()=>{
+  const a=filt();
+  const cs=grp(a,r=>r.col).map(c=>{const mot=grp(c.rows,r=>r.mot).sort((x,y)=>y.n-x.n)[0];return Object.assign(c,{bs:[...new Set(c.rows.map(r=>r.b))].join(', '),ccs:[...new Set(c.rows.map(r=>r.area))].join(', '),mot:mot?mot.k:'',hot:new Set(c.rows.map(r=>r.est)).size})}).sort((x,y)=>y.tot-x.tot);
+  const longas=isA()?grp(a,r=>r.col+'|'+r.ent).filter(g=>g.n>3).map(g=>({col:g.rows[0].col,ent:g.rows[0].ent,b:g.rows[0].b,n:g.n,tot:g.tot,tipos:g.rows.map(r=>r.tipo+(r.hr!=null?' '+r.hr+'h':'')).join(' · '),est:[...new Set(g.rows.map(r=>r.est))].join(', '),area:g.rows[0].area})).sort((x,y)=>y.n-x.n||y.tot-x.tot):a.filter(r=>r.dia>=10).sort((x,y)=>y.dia-x.dia);
+  const sol=grp(a,r=>r.sol).sort((x,y)=>y.tot-x.tot),aut=grp(a,r=>r.aut).sort((x,y)=>y.tot-x.tot);
+  return ubar('Colaboradores',esc(ctxTxt())+' · '+N(cs.length)+' colaboradores hospedados','user')+
+   '<div class="xg2">'+panel('Quem mais gerou custo','top 12',metaBars(cs.slice(0,12).map(c=>({k:c.k,sub:c.ccs,v:c.tot,rt:N(c.dia)+' diárias',tip:N(c.n)+' hospedagens · '+c.bs+'<br>Motivo mais comum: '+esc(c.mot)}))))+
+   panel('Quem autoriza','gasto autorizado por pessoa',metaBars(aut.slice(0,12).map(c=>({k:c.k||'(sem autorizador)',v:c.tot,rt:N(c.n)+' lanç.'}))))+'</div>'+
+   (isA()?panel('Mais de 3 refeições no mesmo dia','possível excesso ou lançamento duplicado',tabela([{h:'Colaborador',f:r=>'<b>'+esc(r.col)+'</b>'},{h:'Dia',f:r=>dt(r.ent)},{h:'Base',f:r=>r.b},{h:'Refeições',n:1,f:r=>'<b>'+N(r.n)+'</b>'},{h:'Total',n:1,f:r=>R(r.tot)},{h:'O que foi lançado',w:1,f:r=>'<span class="sml">'+esc(r.tipos)+'</span>'},{h:'Restaurantes',w:1,f:r=>'<span class="sml">'+esc(r.est)+'</span>'}],longas.slice(0,300),{alto:1})):panel('Permanências longas','hospedagens com 10 diárias ou mais num único lançamento',tabela([{h:'Colaborador',f:r=>'<b>'+esc(r.col)+'</b>'},{h:'Hotel',f:r=>esc(r.est)+'<br><span class="sml">'+esc(r.cid)+' · '+r.b+'</span>'},{h:'Entrada',f:r=>dt(r.ent)},{h:'Saída',f:r=>dt(r.sai)},{h:'Diárias',n:1,f:r=>'<b>'+N(r.dia)+'</b>'},{h:'Total',n:1,f:r=>R(r.tot)},{h:'C. custo',f:r=>esc(r.area)},{h:'Motivo',w:1,f:r=>'<span class="sml">'+esc(r.mot)+'</span>'}],longas,{alto:1})))+
+   panel('Todos os colaboradores','',tabela([{h:'Colaborador',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Base',f:r=>r.bs},{h:'C. custo',w:1,f:r=>'<span class="sml">'+esc(r.ccs)+'</span>'},{h:'Hospedagens',n:1,f:r=>N(r.n)},{h:'Hotéis',n:1,f:r=>N(r.hot)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Gasto',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'Motivo mais comum',w:1,f:r=>'<span class="sml">'+esc(r.mot)+'</span>'}],cs,{alto:1}))+
+   panel('Quem solicita','',tabela([{h:'Solicitante',f:r=>'<b>'+esc(r.k||'(vazio)')+'</b>'},{h:'Lançamentos',n:1,f:r=>N(r.n)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Gasto',n:1,f:r=>R(r.tot)}],sol,{alto:1}))};
+
+
+PG.tipos=()=>{
+  const a=filt(),tot=sum(a,r=>r.tot);const ts=grp(a,r=>r.tipo).sort((x,y)=>y.tot-x.tot);
+  const hrs=Array.from({length:24},(_,h)=>h).map(h=>({l:String(h).padStart(2,'0'),t:String(h).padStart(2,'0')+'h',v:sum(a.filter(r=>r.hr===h),r=>r.tot),sub:N(a.filter(r=>r.hr===h).length)+' refeições'})).filter((x,i,arr)=>arr.slice(0,i+1).some(y=>y.v)&&arr.slice(i).some(y=>y.v));
+  const bs=Object.keys(BASES);
+  return ubar('Tipos de refeição',esc(ctxTxt()),'mix')+
+   '<div class="ubases">'+ts.slice(0,5).map(t=>'<div class="bk"><span>'+esc(t.k.toUpperCase())+'</span><b>'+Rk(t.tot)+'</b><small>'+N(t.n)+' · ticket '+R(t.tot/(t.n||1))+'</small></div>').join('')+'<div class="bk geral"><span>TOTAL</span><b>'+Rk(tot)+'</b><small>'+N(a.length)+' refeições</small></div></div>'+
+   '<div class="xg2">'+panel('Gasto por tipo','quantidade e ticket médio no detalhe',metaBars(ts.map(t=>({k:t.k,v:t.tot,rt:N(t.n)+' refeições',tip:'Ticket médio '+R(t.tot/(t.n||1))+' · '+P(t.tot/(tot||1))+' do total'}))))+
+   panel('Gasto por horário do lançamento','hora em que a refeição foi registrada no APP',colChart(hrs,{rot:false,aria:'Gasto por hora'}))+'</div>'+
+   panel('Tipo × base','gasto, quantidade e ticket médio',tabela([{h:'Tipo',f:r=>'<b>'+esc(r.k)+'</b>',t:()=>'Total'},...bs.filter(b=>!F.base||b===F.base).map(b=>({h:b,n:1,f:r=>{const x=r.rows.filter(y=>y.b===b);return R(sum(x,y=>y.tot))+'<br><span class="sml">'+N(x.length)+' · '+R(x.length?sum(x,y=>y.tot)/x.length:0)+'</span>'},t:()=>R(sum(a.filter(y=>y.b===b),y=>y.tot))})),{h:'Total',n:1,f:r=>'<b>'+R(r.tot)+'</b>',t:()=>R(tot)},{h:'Qtd',n:1,f:r=>N(r.n),t:()=>N(a.length)},{h:'Ticket médio',n:1,f:r=>R(r.tot/(r.n||1)),t:()=>R(tot/(a.length||1))}],ts,{tot:1}))};
+const COLS_A=()=>[{h:'Base',f:r=>r.b},{h:'Data',f:r=>dt(r.ent)},{h:'Hora',f:r=>r.hr!=null?String(r.hr).padStart(2,'0')+'h':'–'},{h:'Colaborador',f:r=>'<b>'+esc(r.col)+'</b>'},{h:'Tipo',f:r=>esc(r.tipo)},{h:'Restaurante',w:1,f:r=>esc(r.est)},{h:'Cidade',f:r=>esc(r.cid)},{h:'Valor',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'Gerência',f:r=>esc(r.ger)},{h:'C. custo',f:r=>esc(r.cod)+' '+esc(r.area)},{h:'Motivo',w:1,f:r=>'<span class="sml">'+esc(r.mot)+'</span>'},{h:'Solicitante',f:r=>esc(r.sol)}];
+PG.qualidade=()=>{
+  const a=filt();
+  const cards=FLAGS.map(f=>{const x=a.filter(r=>r.fl&f.b);return '<button type="button" class="qc'+(QF===f.b?' on':'')+'" data-qf="'+f.b+'" style="--c:'+f.c+'"><span>'+f.nm+'</span><b>'+N(x.length)+'</b><small>'+R(sum(x,r=>r.tot))+'</small></button>'}).join('');
+  const fx=FLAGS.find(f=>f.b===QF);const lst=a.filter(r=>r.fl&QF).sort((x,y)=>(x.b>y.b?1:x.b<y.b?-1:0)||(y.ent||0)-(x.ent||0));
+  const mtx=Object.keys(BASES).map(b=>Object.assign({b},Object.fromEntries(FLAGS.map(f=>[f.b,a.filter(r=>r.b===b&&r.fl&f.b).length]))));
+  return ubar('Pendências da base',esc(ctxTxt())+' · checagens automáticas em cada lançamento','alerta')+
+   '<div class="qcards">'+cards+'</div>'+
+   panel('Pendências por base','número de lançamentos',tabela([{h:'Base',f:r=>'<b>'+bnome(r.b)+'</b>'},...FLAGS.map(f=>({h:f.nm,n:1,f:r=>r[f.b]?'<b style="color:'+f.c+'">'+N(r[f.b])+'</b>':'<span class="sml">0</span>'}))],mtx))+
+   panel(fx.nm,fx.d+' · '+N(lst.length)+' lançamentos',tabela(isA()?COLS_A():[{h:'Base',f:r=>r.b},{h:'Colaborador',f:r=>'<b>'+esc(r.col)+'</b>'},{h:'Hotel',f:r=>esc(r.est)},{h:'Entrada',f:r=>dt(r.ent)},{h:'Saída',f:r=>dt(r.sai)},{h:'Mês',f:r=>esc(r.mes)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Diária',n:1,f:r=>R(r.pr)},{h:'Total',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'Cálculo',n:1,f:r=>'<span class="sml">'+R(r.dia*r.pr)+'</span>'},{h:'NF',f:r=>esc(r.nf)||'<span class="neg">–</span>'},{h:'Status',f:r=>esc(r.st)},{h:'C. custo',f:r=>esc(r.cod)+' '+esc(r.area)}],lst.slice(0,500),{alto:1})+(lst.length>500?'<p class="tnota">Mostrando 500 de '+N(lst.length)+'. Baixe o banco de dados para ver todos.</p>':''))};
+
+let BQ='',BN=200;
+PG.banco=()=>{
+  const a=filt();const q=BQ.trim().toUpperCase();const x=q?a.filter(r=>(r.col+' '+r.est+' '+r.cid+' '+r.mot+' '+r.nf+' '+r.sol+' '+r.aut+' '+r.area).toUpperCase().includes(q)):a;
+  const fontes=Object.keys(BASES).map(b=>'<div class="'+(FONTE[b]?'ok':'falta')+'"><small>'+b+' · '+bnome(b)+'</small><b>'+(FONTE[b]?N(ROWS.filter(r=>r.b===b).length)+' lanç.':'sem dados')+'</b><span class="sml">'+(FONTE[b]?esc(FONTE[b].origem)+' · '+esc(FONTE[b].at):'')+'</span></div>').join('');
+  return ubar('Banco de dados',esc(ctxTxt())+' · '+N(a.length)+' lançamentos','lista')+
+   panel('Atualizar os dados',isA()?'envie a planilha de alimentação exportada do APP (aba Worksheet)':'envie as planilhas das bases (.xlsm ou .xlsx). Cada arquivo substitui os lançamentos daquela base.',
+    '<div class="drop" id="drop"><span class="mi">'+ico('upload')+'</span><strong>'+(isA()?'Arraste aqui a planilha de alimentação do APP':'Arraste aqui as planilhas de hospedagem')+'</strong><span class="muted">ou <label for="upArq">escolha '+(isA()?'o arquivo':'os arquivos')+'</label>'+(isA()?' · substitui todos os lançamentos de alimentação':' · pode enviar as 5 de uma vez')+'</span><input id="upArq" type="file" accept=".xlsm,.xlsx,.xls" multiple hidden></div><div class="arqs" id="arqs"></div><div class="cal">'+fontes+'</div><p class="tnota" id="upNota">'+(DBX?(CAN_EDIT?'Ao enviar, os dados ficam salvos nesta central para todos que a abrirem.':'Você pode visualizar com os arquivos enviados, mas só o dono ou editores salvam para todos.'):'Os dados enviados valem enquanto a página estiver aberta.')+'</p>')+
+   '<div class="panel"><div class="phd"><h3>Lançamentos</h3><div class="busca"><input type="search" id="bq" placeholder="Buscar colaborador, hotel, cidade, NF…" value="'+esc(BQ)+'" aria-label="Buscar"><button class="btn primary" type="button" id="b-xlsx">'+ico('upload').replace('M12 16V4M7 9l5-5 5 5','M12 4v12M7 11l5 5 5-5')+' Baixar Excel</button></div></div><p class="sml" style="margin:0">'+N(x.length)+' lançamentos · '+R(sum(x,r=>r.tot))+'</p>'+
+   tabela(isA()?COLS_A():[{h:'Base',f:r=>r.b},{h:'Mês',f:r=>esc(r.mes)},{h:'Colaborador',f:r=>'<b>'+esc(r.col)+'</b>'},{h:'Hotel',f:r=>esc(r.est)},{h:'Cidade',f:r=>esc(r.cid)},{h:'Entrada',f:r=>dt(r.ent)},{h:'Saída',f:r=>dt(r.sai)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Diária',n:1,f:r=>R(r.pr)},{h:'Total',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'Gerência',f:r=>esc(r.ger)},{h:'C. custo',f:r=>esc(r.area)},{h:'Motivo',w:1,f:r=>'<span class="sml">'+esc(r.mot)+'</span>'},{h:'NF',f:r=>esc(r.nf)},{h:'Status',f:r=>esc(r.st)}],x.slice(0,BN),{alto:1})+
+   (x.length>BN?'<button class="btn mais" type="button" id="b-mais">Mostrar mais ('+N(x.length-BN)+' restantes)</button>':'')+'</div>'};
+
+PG.metas=()=>{
+  const ms=Array.from({length:12},(_,i)=>'2026-'+String(i+1).padStart(2,'0'));
+  const ars=Object.keys(METAS).sort((x,y)=>GERS.indexOf(AREA_GER[x])-GERS.indexOf(AREA_GER[y])||METAS[y]-METAS[x]);
+  const real=a=>m=>sum(ROWS.filter(r=>r.area===a&&r.mes===m),r=>r.tot);
+  const tot=metaAnual(ars),rt=sum(ROWS.filter(r=>/^2026-/.test(r.mes)),r=>r.tot);
+  const cel=(v,r)=>{if(!v&&!r)return '<span class="sml">–</span>';return R(v).replace('R$ ','')+(r!=null&&v?'<br>'+pctTag(r/v):'')};
+  const cods=Object.keys(METAS_M[ms[0]]||{}).length;
+  return ubar('Metas','metas mensais de hospedagem 2026 por centro de custo','cad')+
+   '<div class="note">Fonte: <b>'+esc(METAS_FONTE)+'</b> · '+N(cods)+' códigos de centro de custo · total de <b>'+R(tot)+'</b> no ano. Os códigos (2.127, 2.169, 2.170…) são somados por centro de custo, como na tabela CCUSTO.</div>'+
+   panel('Atualizar metas','envie a planilha de metas no mesmo formato (colunas CODCCUSTO, ANOMES e '+(isA()?'REFEIÇÃO':'HOSPEDAGEM')+')',
+    '<div class="drop" id="dropM"><span class="mi">'+ico('upload')+'</span><strong>Arraste aqui a planilha de metas</strong><span class="muted">ou <label for="upMeta">escolha o arquivo</label></span><input id="upMeta" type="file" accept=".xlsx,.xlsm,.xls" hidden></div><div class="arqs" id="arqsM"></div><p class="tnota">'+(DBX?(CAN_EDIT?'As metas enviadas ficam salvas para todos que abrirem a central.':'Só o dono ou editores da central salvam metas para todos.'):'As metas enviadas valem enquanto a página estiver aberta.')+'</p>')+
+   panel('Meta mensal por centro de custo',GERS.map(g=>g+' '+Rk(metaAnual(ars.filter(a=>AREA_GER[a]===g)))).join(' · ')+' · abaixo de cada meta, o % já consumido',
+    '<div class="tw alto"><table class="utab"><thead><tr><th>Centro de custo</th>'+ms.map(m=>'<th class="n">'+MES3[+m.slice(5)-1]+'</th>').join('')+'<th class="n">Ano</th></tr></thead><tbody>'+
+    ars.map(a=>{const rf=real(a);return '<tr><td><span class="vgg" style="--g:'+(GCOR[AREA_GER[a]]||'#8a7f82')+'">'+esc(AREA_GER[a])+'</span> <b>'+esc(a)+'</b></td>'+ms.map(m=>'<td class="n">'+cel(metaMes([a],m),fracMes(m)>0?rf(m):null)+'</td>').join('')+'<td class="n"><b>'+R(METAS[a])+'</b></td></tr>'}).join('')+
+    '<tr class="tot"><td>Total</td>'+ms.map(m=>{const v=metaMes(ars,m),r=sum(ROWS.filter(x=>x.mes===m),x=>x.tot);return '<td class="n">'+cel(v,fracMes(m)>0?r:null)+'</td>'}).join('')+'<td class="n">'+R(tot)+'<br>'+pctTag(rt/tot)+'</td></tr></tbody></table></div>')};
+
+/* ===== PATRIMÔNIO ===== */
+const PAT=RAW.pat;const PBASES={BCB:'Bacabal',PDT:'Presidente Dutra',STI:'Santa Inês',PDS:'Pedreiras',ITM:'Itapecuru',BDC:'Barra do Corda',REP:'Repúblicas',SLZ:'São Luís',OUT:'Outros locais','':'Sem local'};
+const pbn=b=>PBASES[b]??b;
+const PMESES=[...new Set(PAT.inv.map(x=>x.m))].sort((a,b)=>a-b);const PAT_ULT=PMESES[PMESES.length-1];
+const STN={C:'Em conformidade',NC:'Não conforme',NE:'Não encontrado',SS:'Sem status'},STC={C:'c',NC:'nc',NE:'ne',SS:'ss'};
+const pst=s=>'<span class="pst '+STC[s]+'">'+STN[s]+'</span>';
+const PF={m:'',b:'',st:'NCNE',banco:'inv',q:'',n:200};
+const VAL=pl=>(PAT.val[pl]||[0,null]);
+const pInv=(ignM)=>PAT.inv.filter(x=>(!PF.b||x.b===PF.b)&&(ignM||!PF.m||x.m===+PF.m));
+const pCad=()=>PAT.cad.filter(x=>!PF.b||x.b===PF.b);
+function atual(rows){const m=new Map();for(const x of rows){const o=m.get(x.pl);if(!o||x.m>o.m)m.set(x.pl,x)}return m}
+function contSt(rows){const c={C:0,NC:0,NE:0,SS:0};for(const x of rows)c[x.st]++;c.t=rows.length;c.pc=(c.C+c.NC+c.NE)?c.C/(c.C+c.NC+c.NE):null;return c}
+function stk(c){const t=c.t||1;return '<div class="stk" data-tip="'+esc('Em conformidade: <b>'+N(c.C)+'</b><br>Não conforme: <b>'+N(c.NC)+'</b><br>Não encontrado: <b>'+N(c.NE)+'</b>'+(c.SS?'<br>Sem status: '+N(c.SS):''))+'">'+['C','NC','NE','SS'].map(k=>c[k]?'<i class="s-'+STC[k]+'" style="width:'+(100*c[k]/t)+'%"></i>':'').join('')+'</div>'}
+const legSt='<div class="dleg"><span><i style="background:#3C9E18"></i>Em conformidade</span><span><i style="background:#d98a00"></i>Não conforme</span><span><i style="background:#C00000"></i>Não encontrado</span><span><i style="background:#b9b1b3"></i>Sem status</span></div>';
+const pcTag=p=>p==null?'–':'<span class="pct '+(p>=.9?'ate':p>=.8?'par':'nao')+'">'+P(p)+'</span>';
+function pfBar(o={}){
+  const sel=(k,lab,opts)=>'<label>'+lab+'<select data-pf="'+k+'" class="'+(PF[k]?'on':'')+'">'+opts.map(([v,t])=>'<option value="'+esc(v)+'"'+(String(PF[k])===String(v)?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>';
+  const bs=[...new Set(PAT.cad.map(x=>x.b).concat(PAT.inv.map(x=>x.b)))].filter(b=>b!=='');
+  return '<div class="pfbar">'+(o.mes!==false?sel('m','Mês do inventário',[['','Todos os meses']].concat(PMESES.map(m=>[m,MESES[m-1]]))):'')+sel('b','Base / local',[['','Todas']].concat(bs.sort((a,b)=>pbn(a).localeCompare(pbn(b))).map(b=>[b,pbn(b)])))+(o.extra||'')+((PF.m||PF.b)?'<button class="btn sm" type="button" data-pflimpa>Limpar</button>':'')+'</div>'}
+function pUbar(t,sub,ic){return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico(ic)+'</span><div class="ubar-t"><span class="ubar-tag">Central de Patrimônio · Inventário 2026</span><h2>'+t+'</h2><span>'+sub+'</span></div></div></div>'}
+const pCtx=()=>[PF.m?MESES[PF.m-1]:'Todos os meses',PF.b&&pbn(PF.b)].filter(Boolean).join(' · ');
+PG['pat-painel']=()=>{
+  const cad=pCad(),inv=pInv(true),invM=pInv(),mRef=PF.m?+PF.m:PAT_ULT;
+  const cadPl=new Set(cad.map(x=>x.pl)),verif=new Set(inv.map(x=>x.pl).filter(p=>cadPl.has(p)));
+  const at=[...atual(inv).values()],cAt=contSt(at),cM=contSt(inv.filter(x=>x.m===mRef));
+  const rec=[...grp(inv.filter(x=>x.st==='NC'||x.st==='NE'),x=>x.pl)].filter(g=>new Set(g.rows.map(r=>r.m)).size>=2);
+  const vTot=sum(cad,x=>VAL(x.pl)[0]),sTot=sum(cad,x=>VAL(x.pl)[1]||0),nVal=cad.filter(x=>VAL(x.pl)[0]).length;
+  const vNC=sum(at.filter(x=>x.st==='NC'),x=>VAL(x.pl)[0]),vNE=sum(at.filter(x=>x.st==='NE'),x=>VAL(x.pl)[0]);
+  const semResp=cad.filter(x=>!x.nm&&!x.nm2).length,fora=new Set(inv.map(x=>x.pl).filter(p=>!new Set(PAT.cad.map(c=>c.pl)).has(p))).size;
+  const meses=PMESES.map(m=>({m,c:contSt(inv.filter(x=>x.m===m))}));
+  const melhor=meses.filter(x=>x.c.pc!=null).sort((a,b)=>b.c.pc-a.c.pc)[0],pior=meses.filter(x=>x.c.pc!=null).sort((a,b)=>a.c.pc-b.c.pc)[0];
+  const bases=grp(inv.filter(x=>x.m===mRef),x=>x.b).map(g=>({b:g.k,c:contSt(g.rows)})).filter(x=>x.c.pc!=null&&x.c.t>=10).sort((a,b)=>a.c.pc-b.c.pc);
+  const dest=[];
+  dest.push({c:'info',i:'i',h:'Último inventário registrado: <b>'+MESES[PAT_ULT-1]+'</b>. '+(PAT_ULT<new Date().getMonth()+1?'Os resultados de <b>'+MESES.slice(PAT_ULT,new Date().getMonth()+1).join(', ')+'</b> ainda não estão na planilha (veja o <a href="#pat-crono">cronograma</a>).':'')});
+  if(melhor&&pior)dest.push({c:'ok',i:'✓',h:'Melhor mês: <b>'+MESES[melhor.m-1]+'</b> ('+P(melhor.c.pc)+' em conformidade). Pior: <b>'+MESES[pior.m-1]+'</b> ('+P(pior.c.pc)+').'});
+  if(bases[0])dest.push({c:'mal',i:'!',h:'Base com menor conformidade em '+MESES[mRef-1]+': <b>'+pbn(bases[0].b)+'</b> ('+P(bases[0].c.pc)+', '+N(bases[0].c.NC+bases[0].c.NE)+' itens com problema).'});
+  if(rec.length)dest.push({c:'mal',i:'!',h:'<a href="#pat-nc">'+N(rec.length)+' bens</a> ficaram não conformes ou não encontrados em 2 meses ou mais.'});
+  dest.push({c:'at',i:'↑',h:'<b>'+N(cad.length-verif.size)+'</b> bens do cadastro ainda não apareceram em nenhum inventário de 2026 (cobertura de '+P(verif.size/(cad.length||1))+').'});
+  if(fora)dest.push({c:'at',i:'↑',h:'<b>'+N(fora)+'</b> placas inventariadas não estão no cadastro INVENTÁRIO 2026 — confira se foram baixadas ou se a placa mudou.'});
+  return pUbar('Painel do inventário',esc(pCtx())+' · '+N(PMESES.length)+' meses de inventário','caixa')+pfBar()+
+   '<div class="k6">'+
+   icard('Bens cadastrados',PF.b?pbn(PF.b):'Todas as bases',N(cad.length),semResp?'<span class="pill nao">'+N(semResp)+' sem responsável</span>':'<span class="pill ate">todos com responsável</span>',[['Movimentações a atualizar',N(cad.filter(x=>(x.loc2&&x.loc2!==x.loc)||(x.nm2&&x.nm2!==x.nm)).length)],['Grupos',N(new Set(cad.map(x=>x.gr)).size)]],'pat-bens')+
+   icard('Verificados em 2026','cobertura do cadastro',P(verif.size/(cad.length||1)),'<span class="pill nd">'+N(verif.size)+' de '+N(cad.length)+' bens</span>',[['Registros de inventário',N(inv.length)],['Placas fora do cadastro',N(fora)]],'pat-bens',verif.size/(cad.length||1)>=.9?'ate':'par')+
+   icard('Conformidade',MESES[mRef-1],P(cM.pc),'<span class="pill '+(cM.pc>=.9?'ate':cM.pc>=.8?'par':'nao')+'">'+N(cM.C)+' de '+N(cM.C+cM.NC+cM.NE)+' itens</span>',[['Não conformes no mês',N(cM.NC)],['Não encontrados no mês',N(cM.NE)]],'pat-nc',cM.pc>=.9?'ate':cM.pc>=.8?'par':'nao')+
+   icard('Não conformes hoje','situação mais recente de cada bem',N(cAt.NC),'<span class="pill par">'+Rk(vNC)+' em bens</span>',[['Recorrentes (2+ meses)',N(rec.filter(g=>g.rows.some(r=>r.st==='NC')).length)],['% dos bens verificados',P(cAt.NC/(cAt.t||1))]],'pat-nc','par')+
+   icard('Não encontrados hoje','situação mais recente de cada bem',N(cAt.NE),'<span class="pill nao">'+Rk(vNE)+' em bens</span>',[['Recorrentes (2+ meses)',N(rec.filter(g=>g.rows.some(r=>r.st==='NE')).length)],['% dos bens verificados',P(cAt.NE/(cAt.t||1))]],'pat-nc','nao')+
+   icard('Valor patrimonial','valor de aquisição conhecido',Rk(vTot),'<span class="pill nd">'+N(nVal)+' bens com valor</span>',[['Saldo residual',R(sTot)],['Depreciação acumulada',R(vTot-sTot)]],'pat-bens')+'</div>'+
+   '<div class="vg2">'+panel('Resultado mês a mês','clique num mês para filtrar',meses.map(x=>'<div class="msr'+(+PF.m===x.m?' on':'')+'" data-pm="'+x.m+'"><b>'+MESES[x.m-1]+'</b>'+stk(x.c)+'<span>'+N(x.c.t)+' itens · '+pcTag(x.c.pc)+'</span></div>').join('')+legSt)+
+   panel('Destaques','gerados automaticamente','<ul class="vgdest">'+dest.map(d=>'<li class="vgl vgl-'+d.c+'"><span class="vgl-i">'+d.i+'</span><span>'+d.h+'</span></li>').join('')+'</ul>')+'</div>'+
+   '<div class="xg2">'+panel('Por base',MESES[mRef-1]+' · clique para filtrar',tabela([{h:'Base',f:r=>'<b>'+pbn(r.b)+'</b>'},{h:'Itens',n:1,f:r=>N(r.c.t)},{h:'Resultado',f:r=>stk(r.c)},{h:'Conformidade',n:1,f:r=>pcTag(r.c.pc)},{h:'NC',n:1,f:r=>N(r.c.NC)},{h:'NE',n:1,f:r=>N(r.c.NE)}],grp(PAT.inv.filter(x=>x.m===mRef),x=>x.b).map(g=>({b:g.k,c:contSt(g.rows),_tr:' data-pb="'+g.k+'" style="cursor:pointer"'+(PF.b===g.k?' class="sel"':'')})).sort((a,b)=>b.c.t-a.c.t)))+
+   panel('Por grupo de bem',MESES[mRef-1],tabela([{h:'Grupo',w:1,f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Itens',n:1,f:r=>N(r.c.t)},{h:'Resultado',f:r=>stk(r.c)},{h:'Conformidade',n:1,f:r=>pcTag(r.c.pc)}],grp(inv.filter(x=>x.m===mRef),x=>x.gr).map(g=>({k:g.k,c:contSt(g.rows)})).sort((a,b)=>b.c.t-a.c.t)))+'</div>'};
+PG['pat-crono']=()=>{
+  const hoje=new Date(),hj=Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  const linhas=PAT.cron.map(c=>{const ini=Date.parse(c.ini+'T00:00:00Z'),fim=Date.parse(c.fim+'T00:00:00Z'),m=new Date(ini).getUTCMonth()+1;const inv=PAT.inv.filter(x=>x.m===m&&(!PF.b||x.b===PF.b));const cc=contSt(inv);
+    let s,cl;if(inv.length){s='Realizado';cl='ok'}else if(hj>fim){s='Sem resultado na planilha';cl='atr'}else if(hj>=ini){s='Em andamento';cl='and'}else{s='Previsto';cl=''}
+    const apr=c.apres?Date.parse(c.apres+'T00:00:00Z'):null;return Object.assign({},c,{m,cc,s,cl,inv:inv.length,aprErr:apr!=null&&apr<ini,hojeM:hj>=ini&&hj<=fim})});
+  const ok=linhas.filter(l=>l.cl==='ok').length,atr=linhas.filter(l=>l.cl==='atr').length;
+  return pUbar('Cronograma 2026',esc(PF.b?pbn(PF.b):'Todas as bases')+' · '+ok+' de '+linhas.length+' etapas com resultado','cal')+pfBar({mes:false})+
+   panel('Linha do tempo','verde = realizado · vermelho = prazo passou sem resultado · laranja = em andamento','<div class="crono">'+linhas.map(l=>'<div class="'+(l.cl?'c-'+l.cl:'')+(l.hojeM?' c-hoje':'')+'" data-tip="'+esc('<b>'+MESES[l.m-1]+'</b><br>'+esc(l.item)+'<br>'+l.s+(l.inv?'<br>'+N(l.inv)+' itens · '+P(l.cc.pc)+' conformes':''))+'"><b>'+MES3[l.m-1]+'</b><small>'+(l.inv?N(l.inv)+' itens':l.s)+'</small>'+(l.inv?'<small>'+P(l.cc.pc)+'</small>':'')+'</div>').join('')+'</div>'+
+    (atr?'<div class="note err">'+atr+' etapa(s) com prazo encerrado e sem resultado na planilha: <b>'+linhas.filter(l=>l.cl==='atr').map(l=>MESES[l.m-1]).join(', ')+'</b>. Se o inventário foi feito, falta incluir a aba do mês na planilha do cronograma.</div>':''))+
+   panel('Etapas do inventário','itens previstos, prazos e resultado',tabela([{h:'Mês',f:r=>'<b>'+MESES[r.m-1]+'</b>'},{h:'Itens a inventariar',w:1,f:r=>r.item.split(',').map(t=>t.trim()).filter(Boolean).map(t=>'<span class="tagi">'+esc(t)+'</span>').join('')},{h:'Período',f:r=>dt(Date.parse(r.ini)/864e5)+' a '+dt(Date.parse(r.fim)/864e5)},{h:'Apresentação',f:r=>r.apres?dt(Date.parse(r.apres)/864e5)+(r.aprErr?'<br><span class="neg sml">data antes do início — conferir</span>':''):'–'},
+     {h:'Situação',f:r=>'<span class="pill '+({ok:'ate',atr:'nao',and:'par'}[r.cl]||'nd')+'">'+r.s+'</span>'},{h:'Itens verificados',n:1,f:r=>r.inv?N(r.inv):'–'},{h:'Conformidade',n:1,f:r=>r.inv?pcTag(r.cc.pc):'–'},{h:'Resultado',f:r=>r.inv?stk(r.cc):''},{h:'Apoio necessário',w:1,f:r=>'<span class="sml">'+esc(r.obs)+'</span>'}],linhas))};
+PG['pat-nc']=()=>{
+  const inv=pInv(),alvo=PF.st==='NC'?['NC']:PF.st==='NE'?['NE']:['NC','NE'];
+  const lst=inv.filter(x=>alvo.includes(x.st)).sort((a,b)=>b.m-a.m||(a.b>b.b?1:-1));
+  const rec=grp(pInv(true).filter(x=>alvo.includes(x.st)),x=>x.pl).map(g=>({pl:g.k,ms:[...new Set(g.rows.map(r=>r.m))].sort((a,b)=>a-b),r:g.rows.sort((a,b)=>b.m-a.m)[0]})).filter(g=>g.ms.length>=2).sort((a,b)=>b.ms.length-a.ms.length);
+  const segSt='<label>Situação<span class="seg">'+[['NCNE','Ambos'],['NC','Não conforme'],['NE','Não encontrado']].map(([v,t])=>'<button type="button" data-pst="'+v+'" aria-pressed="'+(PF.st===v)+'">'+t+'</button>').join('')+'</span></label>';
+  const porB=grp(lst,x=>x.b).sort((a,b)=>b.n-a.n);
+  const obsF=grp(lst.filter(x=>x.obs),x=>x.obs.toUpperCase()).sort((a,b)=>b.n-a.n).slice(0,10);
+  return pUbar('Não conformidades',esc(pCtx())+' · '+N(lst.length)+' registros','alerta')+pfBar({extra:segSt})+
+   '<div class="xg2">'+panel('Por base','',metaBars(porB.map(g=>({k:pbn(g.k),v:g.n,rt:N(g.rows.filter(r=>r.st==='NC').length)+' NC · '+N(g.rows.filter(r=>r.st==='NE').length)+' NE',attr:' data-pb="'+g.k+'"'})),{fmt:N}))+
+   panel('Observações mais frequentes','o que o inventariante anotou',obsF.length?metaBars(obsF.map(g=>({k:g.k.length>60?g.k.slice(0,60)+'…':g.k,v:g.n,rt:'registros'})),{fmt:N}):'<div class="empty">Sem observações.</div>')+'</div>'+
+   panel('Reincidentes','bens com problema em 2 meses ou mais',tabela([{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.r.ds)},{h:'Base',f:r=>pbn(r.r.b)},{h:'Meses',f:r=>r.ms.map(m=>'<span class="tagi">'+MES3[m-1]+'</span>').join('')},{h:'Situação mais recente',f:r=>pst(r.r.st)},{h:'Responsável',f:r=>esc(r.r.nm)},{h:'Observação',w:1,f:r=>'<span class="sml">'+esc(r.r.obs)+'</span>'}],rec,{alto:1}))+
+   panel('Lista de não conformidades',N(lst.length)+' registros',tabela([{h:'Mês',f:r=>MES3[r.m-1]},{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Grupo',f:r=>'<span class="sml">'+esc(r.gr)+'</span>'},{h:'Local',w:1,f:r=>esc(r.loc)},{h:'Responsável',f:r=>esc(r.nm)},{h:'Situação',f:r=>pst(r.st)},{h:'Observação',w:1,f:r=>'<span class="sml">'+esc(r.obs)+'</span>'},{h:'Valor',n:1,f:r=>VAL(r.pl)[0]?R(VAL(r.pl)[0]):'–'}],lst.slice(0,600),{alto:1}))};
+PG['pat-bens']=()=>{
+  const cad=pCad(),inv=PAT.inv,ver=new Set(inv.map(x=>x.pl)),at=atual(inv);
+  const mov=cad.filter(x=>(x.loc2&&x.loc2!==x.loc)||(x.nm2&&x.nm2!==x.nm));
+  const cnt=new Map();PAT.cad.forEach(x=>cnt.set(x.pl,(cnt.get(x.pl)||0)+1));const dup=cad.filter(x=>cnt.get(x.pl)>1);
+  const nv=cad.filter(x=>!ver.has(x.pl));
+  const porB=grp(cad,x=>x.b).map(g=>({b:g.k,n:g.n,sr:g.rows.filter(x=>!x.nm&&!x.nm2).length,mv:g.rows.filter(x=>(x.loc2&&x.loc2!==x.loc)||(x.nm2&&x.nm2!==x.nm)).length,vf:g.rows.filter(x=>ver.has(x.pl)).length,v:sum(g.rows,x=>VAL(x.pl)[0])})).sort((a,b)=>b.n-a.n);
+  const resp=grp(cad,x=>x.nm2||x.nm||'(sem responsável)').map(g=>({k:g.k,n:g.n,bs:[...new Set(g.rows.map(x=>pbn(x.b)))].join(', '),v:sum(g.rows,x=>VAL(x.pl)[0]),pr:g.rows.filter(x=>{const a=at.get(x.pl);return a&&(a.st==='NC'||a.st==='NE')}).length})).sort((a,b)=>b.n-a.n);
+  const gr=grp(cad,x=>x.gr).sort((a,b)=>b.n-a.n);
+  return pUbar('Bens e responsáveis',esc(PF.b?pbn(PF.b):'Todas as bases')+' · '+N(cad.length)+' bens no cadastro INVENTÁRIO 2026','user')+pfBar({mes:false})+
+   '<div class="xg2">'+panel('Bens por base','clique para filtrar',tabela([{h:'Base',f:r=>'<b>'+pbn(r.b)+'</b>',t:()=>'Total'},{h:'Bens',n:1,f:r=>N(r.n),t:()=>N(cad.length)},{h:'Verificados 2026',n:1,f:r=>N(r.vf)+' <span class="sml">('+P(r.vf/(r.n||1))+')</span>',t:()=>N(sum(porB,x=>x.vf))},{h:'Sem responsável',n:1,f:r=>r.sr?'<span class="neg">'+N(r.sr)+'</span>':'0'},{h:'Movimentações',n:1,f:r=>N(r.mv)},{h:'Valor conhecido',n:1,f:r=>R(r.v),t:()=>R(sum(porB,x=>x.v))}],porB.map(r=>Object.assign(r,{_tr:' data-pb="'+r.b+'" style="cursor:pointer"'+(PF.b===r.b?' class="sel"':'')})),{tot:1}))+
+   panel('Bens por grupo','',metaBars(gr.map(g=>({k:g.k,v:g.n,rt:Rk(sum(g.rows,x=>VAL(x.pl)[0]))})),{fmt:N}))+'</div>'+
+   panel('Movimentações para atualizar no sistema','local ou responsável atualizado diferente do cadastrado · '+N(mov.length)+' bens',tabela([{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Local cadastrado',w:1,f:r=>esc(r.loc)},{h:'Local atualizado',w:1,f:r=>r.loc2&&r.loc2!==r.loc?'<b>'+esc(r.loc2)+'</b>':'<span class="sml">igual</span>'},{h:'Responsável',f:r=>esc(r.nm)},{h:'Responsável atualizado',f:r=>r.nm2&&r.nm2!==r.nm?'<b>'+esc(r.nm2)+'</b>':'<span class="sml">igual</span>'}],mov,{alto:1}))+
+   '<div class="xg2">'+panel('Responsáveis com mais bens','',tabela([{h:'Responsável',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Bens',n:1,f:r=>N(r.n)},{h:'Com problema hoje',n:1,f:r=>r.pr?'<span class="neg">'+N(r.pr)+'</span>':'0'},{h:'Bases',w:1,f:r=>'<span class="sml">'+esc(r.bs)+'</span>'},{h:'Valor conhecido',n:1,f:r=>R(r.v)}],resp,{alto:1}))+
+   panel('Ainda não verificados em 2026',N(nv.length)+' bens do cadastro',tabela([{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Grupo',f:r=>'<span class="sml">'+esc(r.gr)+'</span>'},{h:'Local',w:1,f:r=>esc(r.loc2||r.loc)},{h:'Responsável',f:r=>esc(r.nm2||r.nm)}],nv,{alto:1}))+'</div>'+
+   (dup.length?panel('Sem placa ou placa repetida',N(dup.filter(x=>/SEM PLACA/i.test(x.pl)).length)+' bens marcados SEM PLACA · '+N(new Set(dup.filter(x=>!/SEM PLACA/i.test(x.pl)).map(x=>x.pl)).size)+' placas repetidas',tabela([{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Local',w:1,f:r=>esc(r.loc)},{h:'Responsável',f:r=>esc(r.nm)}],dup.sort((a,b)=>a.pl>b.pl?1:-1),{alto:1})):'')};
+PG['pat-banco']=()=>{
+  const q=PF.q.trim().toUpperCase();const isInv=PF.banco==='inv';
+  const base=isInv?pInv():pCad();const x=q?base.filter(r=>(r.pl+' '+r.ds+' '+(r.nm||'')+' '+(r.nm2||'')+' '+r.loc+' '+(r.loc2||'')+' '+(r.obs||'')).toUpperCase().includes(q)):base;
+  const segB='<label>Tabela<span class="seg"><button type="button" data-pbanco="inv" aria-pressed="'+isInv+'">Inventários mensais</button><button type="button" data-pbanco="cad" aria-pressed="'+!isInv+'">Cadastro 2026</button></span></label>';
+  const cols=isInv?[{h:'Mês',f:r=>MES3[r.m-1]},{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Grupo',f:r=>'<span class="sml">'+esc(r.gr)+'</span>'},{h:'C. custo',f:r=>esc(r.cc)},{h:'Local',w:1,f:r=>esc(r.loc)},{h:'Responsável',f:r=>esc(r.nm)},{h:'Aquisição',f:r=>r.aq?dt(Date.parse(r.aq)/864e5):'–'},{h:'NF',f:r=>esc(r.nf)},{h:'Valor',n:1,f:r=>VAL(r.pl)[0]?R(VAL(r.pl)[0]):'–'},{h:'Situação',f:r=>pst(r.st)},{h:'Observação',w:1,f:r=>'<span class="sml">'+esc(r.obs)+'</span>'}]
+   :[{h:'Placa',f:r=>'<b>'+esc(r.pl)+'</b>'},{h:'Bem',w:1,f:r=>esc(r.ds)},{h:'Grupo',f:r=>'<span class="sml">'+esc(r.gr)+'</span>'},{h:'Contrato',f:r=>esc(r.ct)},{h:'Responsável',f:r=>esc(r.nm)},{h:'Resp. atualizado',f:r=>esc(r.nm2)},{h:'Local',w:1,f:r=>esc(r.loc)},{h:'Local atualizado',w:1,f:r=>esc(r.loc2)},{h:'Valor',n:1,f:r=>VAL(r.pl)[0]?R(VAL(r.pl)[0]):'–'}];
+  return pUbar('Banco do patrimônio',esc(pCtx())+' · '+N(x.length)+' registros','lista')+pfBar({mes:isInv,extra:segB})+
+   '<div class="panel"><div class="phd"><h3>'+(isInv?'Inventários mensais':'Cadastro INVENTÁRIO 2026')+'</h3><div class="busca"><input type="search" id="pq" placeholder="Buscar placa, bem, responsável, local…" value="'+esc(PF.q)+'" aria-label="Buscar"><button class="btn primary" type="button" id="b-pxlsx">Baixar Excel</button></div></div>'+tabela(cols,x.slice(0,PF.n),{alto:1})+(x.length>PF.n?'<button class="btn mais" type="button" id="b-pmais">Mostrar mais ('+N(x.length-PF.n)+' restantes)</button>':'')+'</div>'};
+function ligarPat(m){
+  m.querySelectorAll('[data-pf]').forEach(s=>s.onchange=()=>{PF[s.dataset.pf]=s.value;PF.n=200;render()});
+  m.querySelectorAll('[data-pflimpa]').forEach(b=>b.onclick=()=>{PF.m='';PF.b='';render()});
+  m.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{PF.m=String(PF.m)===b.dataset.pm?'':b.dataset.pm;render()});
+  m.querySelectorAll('[data-pb]').forEach(b=>b.onclick=e=>{e.preventDefault();PF.b=PF.b===b.dataset.pb?'':b.dataset.pb;render()});
+  m.querySelectorAll('[data-pst]').forEach(b=>b.onclick=()=>{PF.st=b.dataset.pst;render()});
+  m.querySelectorAll('[data-pbanco]').forEach(b=>b.onclick=()=>{PF.banco=b.dataset.pbanco;PF.n=200;render()});
+  if($('pq')){let t;$('pq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{PF.q=e.target.value;PF.n=200;render();const i=$('pq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},300)}}
+  if($('b-pmais'))$('b-pmais').onclick=()=>{PF.n+=500;render()};
+  if($('b-pxlsx'))$('b-pxlsx').onclick=async()=>{const q=PF.q.trim().toUpperCase(),isInv=PF.banco==='inv';const base=isInv?pInv():pCad();const x=q?base.filter(r=>(r.pl+' '+r.ds+' '+(r.nm||'')+' '+(r.nm2||'')+' '+r.loc+' '+(r.loc2||'')+' '+(r.obs||'')).toUpperCase().includes(q)):base;
+    const L=x.map(r=>isInv?{'MÊS':MESES[r.m-1],PLACA:r.pl,'BEM':r.ds,GRUPO:r.gr,'C. CUSTO':r.cc,LOCAL:r.loc,BASE:pbn(r.b),'RESPONSÁVEL':r.nm,'MATRÍCULA':r.mat,'AQUISIÇÃO':r.aq,NF:r.nf,VALOR:VAL(r.pl)[0]||'','SITUAÇÃO':STN[r.st],'OBSERVAÇÃO':r.obs}:{PLACA:r.pl,'BEM':r.ds,GRUPO:r.gr,CONTRATO:r.ct,'RESPONSÁVEL':r.nm,'RESP. ATUALIZADO':r.nm2,LOCAL:r.loc,'LOCAL ATUALIZADO':r.loc2,BASE:pbn(r.b),VALOR:VAL(r.pl)[0]||''});
+    try{await lib(XLSX_URL);const ws=XLSX.utils.json_to_sheet(L),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,isInv?'Inventario':'Cadastro');await salvarArquivo('patrimonio_'+(isInv?'inventario':'cadastro')+'.xlsx',new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})]))}
+    catch(e){const cs=Object.keys(L[0]||{PLACA:1});await salvarArquivo('patrimonio.csv','﻿'+cs.join(';')+'\n'+L.map(r=>cs.map(c=>'"'+String(r[c]??'').replace(/"/g,'""')+'"').join(';')).join('\n'))}};
+}
+
+/* ===== FALE CONOSCO ===== */
+const FC=RAW.fc;const FC_ULT=Math.max(...FC.at.map(x=>x.d||0));
+const FCB={BCB:'Bacabal',STI:'Santa Inês',PDT:'Presidente Dutra',PDS:'Pedreiras',ITM:'Itapecuru',BDC:'Barra do Corda'};const fcb=b=>FCB[b]||b||'–';
+const FF={m:'',b:'',co:'',as:'',st:'',q:''};
+const ymd=d=>{const x=new Date(d*864e5);return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')};
+const fcRows=(ign)=>FC.at.filter(x=>(ign==='m'||!FF.m||ymd(x.d)===FF.m)&&(!FF.b||x.b===FF.b)&&(!FF.co||x.co===FF.co)&&(!FF.as||x.as===FF.as)&&(ign==='st'||!FF.st||x.st===FF.st));
+const fcSt=s=>s==='RESOLVIDO'?'<span class="pill ate">Resolvido</span>':s==='ANDAMENTO'?'<span class="pill par">Em andamento</span>':'<span class="pill nao">'+esc(s)+'</span>';
+function fcBar(extra){
+  const uniq=k=>[...new Set(FC.at.map(x=>x[k]).filter(Boolean))].sort();
+  const sel=(k,lab,opts)=>'<label>'+lab+'<select data-ff="'+k+'" class="'+(FF[k]?'on':'')+'">'+opts.map(([v,t])=>'<option value="'+esc(v)+'"'+(FF[k]===v?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>';
+  const ms=[...new Set(FC.at.map(x=>ymd(x.d)))].sort();
+  return '<div class="pfbar">'+sel('m','Mês',[['','Todos']].concat(ms.map(m=>[m,mesNome(m)])))+sel('b','Base',[['','Todas']].concat(uniq('b').map(b=>[b,fcb(b)])))+sel('co','Coordenador',[['','Todos']].concat(uniq('co').map(c=>[c,c])))+sel('as','Assunto',[['','Todos']].concat(uniq('as').map(c=>[c,c])))+sel('st','Status',[['','Todos']].concat(uniq('st').map(c=>[c,c==='RESOLVIDO'?'Resolvido':c==='ANDAMENTO'?'Em andamento':c])))+(extra||'')+(['m','b','co','as','st'].some(k=>FF[k])?'<button class="btn sm" type="button" data-fflimpa>Limpar</button>':'')+'</div>'}
+const fcUbar=(t,sub,ic)=>'<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico(ic)+'</span><div class="ubar-t"><span class="ubar-tag">Central do Fale Conosco · CGB</span><h2>'+t+'</h2><span>'+sub+'</span></div></div></div>';
+PG['fc-painel']=()=>{
+  const a=fcRows(),res=a.filter(x=>x.st==='RESOLVIDO').length,and=a.filter(x=>x.st==='ANDAMENTO').length,out=a.length-res-and;
+  const col=grp(a,x=>x.mat||x.nm),rein=col.filter(g=>g.n>=2).sort((x,y)=>y.n-x.n);
+  const ass=grp(a,x=>x.as).sort((x,y)=>y.n-x.n);
+  const ativT=Object.entries(FC.ativos).filter(([b])=>!FF.b||b===FF.b).reduce((s,[,v])=>s+v,0);
+  const ms=[...new Set(FC.at.map(x=>ymd(x.d)))].sort();const am=fcRows('m');
+  const itens=ms.map(m=>({k:m,l:MES3[+m.slice(5)-1],t:mesNome(m),v:am.filter(x=>ymd(x.d)===m).length,sub:N(am.filter(x=>ymd(x.d)===m&&x.st==='RESOLVIDO').length)+' resolvidos'}));
+  const bases=Object.keys(FCB).map(b=>{const x=a.filter(r=>r.b===b);return {b,n:x.length,at:FC.ativos[b]||0,col:new Set(x.map(r=>r.mat||r.nm)).size,res:x.filter(r=>r.st==='RESOLVIDO').length}}).sort((p,q)=>q.n-p.n);
+  const coord=grp(a,x=>x.co).map(g=>({k:g.k,n:g.n,at:FC.ativosCoord[g.k]||0,col:new Set(g.rows.map(r=>r.mat||r.nm)).size,top:grp(g.rows,r=>r.as).sort((p,q)=>q.n-p.n)[0]})).sort((p,q)=>q.n-p.n);
+  const dest=[];
+  if(ass[0])dest.push({c:'info',i:'i',h:'Assunto mais procurado: <b>'+esc(ass[0].k)+'</b> ('+N(ass[0].n)+' atendimentos, '+P(ass[0].n/(a.length||1))+').'});
+  const ponto=a.filter(x=>x.as==='PONTO ELETRÔNICO');const pr=grp(ponto,x=>x.mat||x.nm).filter(g=>g.n>=2);
+  if(ponto.length)dest.push({c:'at',i:'↑',h:'<b>'+N(ponto.length)+'</b> atendimentos sobre ponto eletrônico, a maioria por celular quebrado ou batida não registrada'+(pr.length?'; <b>'+N(pr.length)+'</b> colaborador(es) voltaram com o mesmo problema':'')+'.'});
+  const ps=a.filter(x=>x.as==='PLANO DE SAÚDE');if(ps.length)dest.push({c:'at',i:'↑',h:'<b>'+N(ps.length)+'</b> atendimentos sobre plano de saúde, com dúvidas e reclamações sobre a rede credenciada no interior ('+[...new Set(ps.map(x=>fcb(x.b)))].join(', ')+').'});
+  const fer=a.filter(x=>x.as==='FÉRIAS');if(fer.length)dest.push({c:'info',i:'i',h:'<b>'+N(fer.length)+'</b> perguntas sobre data de férias. Quase todas foram encaminhadas ao supervisor, o que sugere divulgar a programação de férias às equipes.'});
+  if(rein[0])dest.push({c:'at',i:'↑',h:'<b>'+N(rein.length)+'</b> colaboradores procuraram o canal 2 vezes ou mais. O que mais procurou: <b>'+esc(rein[0].rows[0].nm)+'</b> ('+N(rein[0].n)+' vezes).'});
+  if(and)dest.push({c:'mal',i:'!',h:'<a href="#fc-lista">'+N(and)+' atendimento(s)</a> ainda em andamento.'});
+  return fcUbar('Painel do Fale Conosco',N(a.length)+' atendimentos · '+mesNome(ymd(Math.min(...FC.at.map(x=>x.d))))+' a '+mesNome(ymd(FC_ULT)),'chat')+fcBar()+
+   '<div class="k6">'+
+   icard('Atendimentos','no filtro',N(a.length),'<span class="pill '+(res/(a.length||1)>=.9?'ate':'par')+'">'+P(res/(a.length||1))+' resolvidos</span>',[['Resolvidos',N(res)],['Em andamento',N(and)]],'fc-lista',res/(a.length||1)>=.9?'ate':'par')+
+   icard('Colaboradores atendidos','pessoas diferentes',N(col.length),'<span class="pill nd">'+nf1.format(a.length/(col.length||1))+' atendimentos por pessoa</span>',[['Voltaram 2+ vezes',N(rein.length)],['Funções diferentes',N(new Set(a.map(x=>x.fn)).size)]],'fc-lista')+
+   icard('Alcance do canal','colaboradores ativos que já usaram',P(col.length/(ativT||1)),'<span class="pill nd">'+N(col.length)+' de '+N(ativT)+' ativos</span>',[['Base com maior alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>q.col/q.at-p.col/p.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()],['Base com menor alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>p.col/p.at-q.col/q.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()]],'fc-painel')+
+   '</div>'+
+   '<div class="vg2">'+panel('Atendimentos por mês','clique num mês para filtrar',colChart(itens,{cnt:1,leg:'Atendimentos',aria:'Atendimentos por mês'}))+
+   panel('Destaques','gerados automaticamente','<ul class="vgdest">'+dest.map(d=>'<li class="vgl vgl-'+d.c+'"><span class="vgl-i">'+d.i+'</span><span>'+d.h+'</span></li>').join('')+'</ul>')+'</div>'+
+   '<div class="xg2">'+panel('Por assunto','clique para filtrar',metaBars(ass.map(g=>({k:g.k,v:g.n,rt:N(g.rows.filter(r=>r.st==='RESOLVIDO').length)+' resolvidos',attr:' data-fas="'+esc(g.k)+'"'})),{fmt:N}))+
+   panel('Por área',' ',metaBars(grp(a,x=>x.ar).sort((p,q)=>q.n-p.n).map(g=>({k:g.k||'(sem área)',v:g.n,rt:P(g.n/(a.length||1))})),{fmt:N}))+'</div>'+
+   '<div class="xg2">'+panel('Por base','alcance = colaboradores que usaram ÷ colaboradores ativos da base',tabela([{h:'Base',f:r=>'<b>'+fcb(r.b)+'</b>'},{h:'Atendimentos',n:1,f:r=>N(r.n),t:()=>N(a.length)},{h:'Colaboradores',n:1,f:r=>N(r.col)},{h:'Ativos',n:1,f:r=>N(r.at),t:()=>N(ativT)},{h:'Alcance',n:1,f:r=>r.at?P(r.col/r.at):'–'},{h:'Resolvidos',n:1,f:r=>r.n?P(r.res/r.n):'–'}],bases.map(r=>Object.assign(r,{_tr:' data-fb="'+r.b+'" style="cursor:pointer"'+(FF.b===r.b?' class="sel"':'')})),{tot:1}))+
+   panel('Por coordenador','',tabela([{h:'Coordenador',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Atendimentos',n:1,f:r=>N(r.n)},{h:'Colaboradores',n:1,f:r=>N(r.col)},{h:'Assunto principal',w:1,f:r=>r.top?'<span class="sml">'+esc(r.top.k)+' ('+N(r.top.n)+')</span>':''}],coord.map(r=>Object.assign(r,{_tr:' data-fco="'+esc(r.k)+'" style="cursor:pointer"'+(FF.co===r.k?' class="sel"':'')}))))+'</div>'+
+   panel('Funções que mais procuram','',metaBars(grp(a,x=>x.fn).sort((p,q)=>q.n-p.n).slice(0,10).map(g=>({k:g.k||'(sem função)',v:g.n,rt:N(new Set(g.rows.map(r=>r.mat||r.nm)).size)+' pessoas'})),{fmt:N}))};
+PG['fc-lista']=()=>{
+  const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn).toUpperCase().includes(q)).sort((p,r)=>(r.d||0)-(p.d||0));
+  const rein=grp(fcRows(),x=>x.mat||x.nm).filter(g=>g.n>=2).sort((p,r)=>r.n-p.n);
+  return fcUbar('Atendimentos',N(a.length)+' atendimentos no filtro','lista')+fcBar('<label>Buscar<input type="search" id="fq" placeholder="Nome, pergunta, resolução…" value="'+esc(FF.q)+'" style="min-height:36px;border:1px solid var(--line);border-radius:9px;padding:4px 10px;min-width:220px"></label>')+
+   '<div class="panel"><div class="phd"><h3>Lista de atendimentos</h3><button class="btn primary" type="button" id="b-fxlsx">Baixar Excel</button></div>'+
+   tabela([{h:'Data',f:r=>dt(r.d)},{h:'Colaborador',f:r=>'<b>'+esc(r.nm)+'</b><br><span class="sml">'+esc(r.fn)+' · '+fcb(r.b)+'</span>'},{h:'Área',f:r=>esc(r.ar)},{h:'Coordenador',f:r=>esc(r.co)},{h:'Assunto',f:r=>'<span class="tagi">'+esc(r.as)+'</span>'},{h:'Pergunta',w:1,f:r=>esc(r.q)},{h:'Resolução',w:1,f:r=>'<span class="sml">'+esc(r.res)+'</span>'},{h:'Status',f:r=>fcSt(r.st)}],a,{alto:1})+'</div>'+
+   panel('Colaboradores que voltaram ao canal','2 atendimentos ou mais',tabela([{h:'Colaborador',f:r=>'<b>'+esc(r.rows[0].nm)+'</b>'},{h:'Base',f:r=>fcb(r.rows[0].b)},{h:'Atendimentos',n:1,f:r=>N(r.n)},{h:'Assuntos',w:1,f:r=>[...new Set(r.rows.map(x=>x.as))].map(t=>'<span class="tagi">'+esc(t)+'</span>').join('')}],rein))};
+function ligarFC(m){
+  m.querySelectorAll('[data-ff]').forEach(s=>s.onchange=()=>{FF[s.dataset.ff]=s.value;render()});
+  m.querySelectorAll('[data-fflimpa]').forEach(b=>b.onclick=()=>{FF.m=FF.b=FF.co=FF.as=FF.st='';render()});
+  m.querySelectorAll('[data-fas]').forEach(b=>b.onclick=()=>{FF.as=FF.as===b.dataset.fas?'':b.dataset.fas;render()});
+  m.querySelectorAll('[data-fb]').forEach(b=>b.onclick=()=>{FF.b=FF.b===b.dataset.fb?'':b.dataset.fb;render()});
+  m.querySelectorAll('[data-fco]').forEach(b=>b.onclick=()=>{FF.co=FF.co===b.dataset.fco?'':b.dataset.fco;render()});
+  if(pag().id==='fc-painel')m.querySelectorAll('[data-mes]').forEach(b=>b.onclick=e=>{e.stopPropagation();FF.m=FF.m===b.dataset.mes?'':b.dataset.mes;render()});
+  if($('fq')){let t;$('fq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{FF.q=e.target.value;render();const i=$('fq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},300)}}
+  if($('b-fxlsx'))$('b-fxlsx').onclick=async()=>{const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn).toUpperCase().includes(q));
+    const L=a.map(r=>({DATA:dt(r.d),'MATRÍCULA':r.mat,COLABORADOR:r.nm,BASE:fcb(r.b),'FUNÇÃO':r.fn,'ÁREA':r.ar,SUPERVISOR:r.sup,COORDENADOR:r.co,ASSUNTO:r.as,PERGUNTA:r.q,'RESOLUÇÃO':r.res,STATUS:r.st}));
+    try{await lib(XLSX_URL);const ws=XLSX.utils.json_to_sheet(L),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Fale Conosco');await salvarArquivo('fale_conosco.xlsx',new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})]))}
+    catch(e){const cs=Object.keys(L[0]||{DATA:1});await salvarArquivo('fale_conosco.csv','﻿'+cs.join(';')+'\n'+L.map(r=>cs.map(c=>'"'+String(r[c]??'').replace(/"/g,'""')+'"').join(';')).join('\n'))}};
+}
+
+/* ===== CENTRO DE COMANDO: alertas, tendência e busca rápida ===== */
+function spark(vals){const v=vals.filter(x=>x!=null);if(v.length<2)return '';const mx=Math.max(...v,1),mn=Math.min(...v,0),W=84,H=22;const pts=vals.map((x,i)=>[2+i*(W-4)/(vals.length-1),H-3-(H-6)*((x||0)-mn)/((mx-mn)||1)]);
+  const a=v.slice(-3).reduce((s,x)=>s+x,0)/3,b=v.slice(-6,-3).reduce((s,x)=>s+x,0)/(v.slice(-6,-3).length||1);const cls=b&&a>b*1.1?'up':b&&a<b*.9?'dn':'';const l=pts[pts.length-1];
+  return '<svg class="spk '+cls+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'"/><circle cx="'+l[0].toFixed(1)+'" cy="'+l[1].toFixed(1)+'" r="2.2"/></svg>'}
+function alertasLista(){
+  const p=pag(),L=[];
+  if(p.g==='Patrimônio'){const at=[...atual(PAT.inv).values()];L.push({h:'#pat-nc',b:N(at.filter(x=>x.st==='NE').length)+' bens',t:'não encontrados',c:'var(--nao)'});L.push({h:'#pat-nc',b:N(at.filter(x=>x.st==='NC').length)+' bens',t:'não conformes',c:'var(--par)'});
+    const hj=Date.now();const atr=PAT.cron.filter(c=>{const m=new Date(Date.parse(c.ini)).getUTCMonth()+1;return Date.parse(c.fim)<hj&&!PAT.inv.some(x=>x.m===m)});if(atr.length)L.push({h:'#pat-crono',b:atr.length+' etapas',t:'sem resultado no cronograma',c:'var(--nao)'});
+    const sr=PAT.cad.filter(x=>!x.nm&&!x.nm2).length;if(sr)L.push({h:'#pat-bens',b:N(sr)+' bens',t:'sem responsável',c:'var(--par)'});}
+  else if(p.g==='Fale Conosco'){const and=FC.at.filter(x=>x.st!=='RESOLVIDO');if(and.length)L.push({h:'#fc-lista',b:N(and.length),t:'atendimento(s) em andamento',c:'var(--par)'});
+    const rein=grp(FC.at,x=>x.mat||x.nm).filter(g=>g.n>=3);if(rein.length)L.push({h:'#fc-lista',b:N(rein.length),t:'colaborador(es) com 3+ atendimentos',c:'var(--par)'});}
+  else{const a=ROWS.filter(r=>/^2026-/.test(r.mes));
+    for(const ar of Object.keys(METAS)){const m=metaPer([ar],mesesPeriodo());if(!m)continue;const v=sum(a.filter(r=>r.area===ar&&(!F.mes||r.mes===F.mes)),r=>r.tot);if(v>m)L.push({h:'#gerencia',b:esc(ar),t:P(v/m)+' da meta',c:'var(--nao)',o:v/m})}
+    L.sort((x,y)=>(y.o||0)-(x.o||0));const pd=ROWS.filter(r=>r.fl&PMASK).length;if(pd)L.push({h:'#qualidade',b:N(pd),t:'pendências na base',c:'var(--par)'});}
+  return L}
+function renderAlertas(){const L=alertasLista(),el=$('alertas');const p=pag();
+  el.innerHTML=(L.filter(x=>x.c==='var(--nao)').length?'<span class="al-t"><i></i><span class="al-n">'+L.length+'</span> alertas</span>':L.length?'<span class="al-t" style="color:var(--par)"><i></i><span class="al-n">'+L.length+'</span> pontos de atenção</span>':'<span class="al-t ok"><i></i>Tudo em ordem</span>')+
+   L.map(x=>'<a class="al" href="'+x.h+'" style="--c:'+x.c+'"><b>'+x.b+'</b><small>'+x.t+'</small></a>').join('')}
+/* busca rápida (Ctrl K) */
+let CK={itens:[],sel:0};
+function ckItens(q){
+  q=q.trim();const Q=q.toUpperCase(),out=[];const has=s=>!Q||String(s).toUpperCase().includes(Q);
+  for(const p of PAGS())if(has(p.nm+' '+p.sub+' '+p.g))out.push({g:p.g,ic:p.ic,t:p.nm,s:p.sub,go:()=>{location.hash=p.id}});
+  const acoes=[{t:'Ver Hospedagem',s:'trocar a visão de custos',go:()=>{usar('hosp');location.hash=pag().g==='Hospedagem / Alimentação'?location.hash:'inicio';render()}},{t:'Ver Alimentação',s:'trocar a visão de custos',go:()=>{usar('alim');if(pag().g!=='Hospedagem / Alimentação')location.hash='inicio';render()}},{t:'Alternar tema claro / escuro',s:'aparência',go:()=>$('b-tema').click()},{t:'Gerar imagem do painel',s:'Print / Enviar',go:()=>$('b-copiar').click()}];
+  for(const a of acoes)if(has(a.t))out.push(Object.assign({g:'Ações',ic:'painel'},a));
+  if(q.length>=2){
+    const cols=[...new Set(ROWS.map(r=>r.col))].filter(c=>c.toUpperCase().includes(Q)).slice(0,5);
+    cols.forEach(c=>out.push({g:'Colaboradores · '+(isA()?'Alimentação':'Hospedagem'),ic:'user',t:c,s:'ver lançamentos',go:()=>{BQ=c;BN=200;location.hash='banco';render()}}));
+    const ests=[...new Set(ROWS.map(r=>r.est))].filter(c=>c.toUpperCase().includes(Q)).slice(0,4);
+    ests.forEach(c=>out.push({g:isA()?'Restaurantes':'Hotéis',ic:'cama',t:c,s:'ver lançamentos',go:()=>{BQ=c;BN=200;location.hash='banco';render()}}));
+    const pls=PAT.cad.filter(x=>(x.pl+' '+x.ds).toUpperCase().includes(Q)).slice(0,5);
+    pls.forEach(x=>out.push({g:'Patrimônio',ic:'caixa',t:x.pl+' · '+x.ds.slice(0,48),s:pbn(x.b),go:()=>{PF.banco='cad';PF.q=x.pl;PF.n=200;location.hash='pat-banco';render()}}));
+    const fcs=[...new Set(FC.at.map(x=>x.nm))].filter(c=>c.includes(Q)).slice(0,4);
+    fcs.forEach(c=>out.push({g:'Fale Conosco',ic:'chat',t:c,s:'ver atendimentos',go:()=>{FF.q=c;location.hash='fc-lista';render()}}));
+    out.push({g:'Buscar em toda a base',ic:'lista',t:'"'+q+'" nos lançamentos de '+(isA()?'alimentação':'hospedagem'),s:'Banco de dados',go:()=>{BQ=q;BN=200;location.hash='banco';render()}});
+    out.push({g:'Buscar em toda a base',ic:'lista',t:'"'+q+'" no patrimônio',s:'Banco do patrimônio',go:()=>{PF.q=q;PF.n=200;location.hash='pat-banco';render()}});
+    out.push({g:'Buscar em toda a base',ic:'lista',t:'"'+q+'" no Fale Conosco',s:'Atendimentos',go:()=>{FF.q=q;location.hash='fc-lista';render()}});
+  }
+  return out}
+function ckDesenha(){const L=CK.itens;let g='',h='';L.forEach((x,i)=>{if(x.g!==g){g=x.g;h+='<li class="g">'+esc(g)+'</li>'}h+='<li class="o'+(i===CK.sel?' on':'')+'" data-ck="'+i+'">'+ico(x.ic)+'<span>'+esc(x.t)+'</span><small>'+esc(x.s||'')+'</small></li>'});
+  $('cmdkList').innerHTML=h||'<li class="g">Nada encontrado</li>';const on=$('cmdkList').querySelector('.on');if(on)on.scrollIntoView({block:'nearest'});
+  $('cmdkList').querySelectorAll('[data-ck]').forEach(li=>{li.onmousemove=()=>{if(CK.sel!==+li.dataset.ck){CK.sel=+li.dataset.ck;ckDesenha()}};li.onclick=()=>ckAbre(+li.dataset.ck)})}
+function ckAbre(i){const x=CK.itens[i];ckFecha();if(x)x.go()}
+function ckAbrir(){$('cmdk').hidden=false;$('cmdkIn').value='';CK.itens=ckItens('');CK.sel=0;$('cmdkIn').focus();ckDesenha()}
+function ckFecha(){$('cmdk').hidden=true}
+$('b-cmd').onclick=ckAbrir;$('cmdk').onclick=e=>{if(e.target.id==='cmdk')ckFecha()};
+$('cmdkIn').oninput=e=>{CK.itens=ckItens(e.target.value);CK.sel=0;ckDesenha()};
+$('cmdkIn').onkeydown=e=>{if(e.key==='ArrowDown'){e.preventDefault();CK.sel=Math.min(CK.sel+1,CK.itens.length-1);ckDesenha()}else if(e.key==='ArrowUp'){e.preventDefault();CK.sel=Math.max(CK.sel-1,0);ckDesenha()}else if(e.key==='Enter'){e.preventDefault();ckAbre(CK.sel)}else if(e.key==='Escape')ckFecha()};
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('cmdk').hidden?ckAbrir():ckFecha()}else if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();ckAbrir()}});
+
+/* ===== navegação e eventos ===== */
+function popularFiltros(){
+  const opt=(v,t,s)=>'<option value="'+esc(v)+'"'+(s===v?' selected':'')+'>'+esc(t)+'</option>';
+  $('f-mes').innerHTML=opt('','Acumulado 2026',F.mes)+MESES_DADOS().map(m=>opt(m,mesNome(m),F.mes)).join('');
+  $('f-base').innerHTML=opt('','Todas',F.base)+Object.keys(BASES).map(b=>opt(b,bnome(b)+' ('+b+')',F.base)).join('');
+  $('f-ger').innerHTML=opt('','Todas',F.ger)+GERS.map(g=>opt(g,g,F.ger)).join('');
+  $('f-area').innerHTML=opt('','Todos',F.area)+[...new Set([...Object.keys(METAS),...ROWS.map(r=>r.area)])].filter(a=>!F.ger||AREA_GER[a]===F.ger).sort().map(a=>opt(a,a,F.area)).join('');
+  ['mes','base','ger','area'].forEach(k=>$('f-'+k).classList.toggle('on',!!F[k]));
+}
+function render(){
+  const p=pag();railAberto=p.g;
+  const ehPat=p.g!=='Hospedagem / Alimentação';document.body.classList.toggle('pat',ehPat);
+  $('main').innerHTML='<section data-pag="'+p.id+'" class="upbi">'+(ehPat?PG[p.id]():tx(PG[p.id]()))+'</section>';
+  $('tituloTop').textContent=p.g==='Fale Conosco'?'Central do Fale Conosco':ehPat?'Central de Patrimônio':isA()?'Central de Alimentação':'Central de Hospedagem';document.title=$('tituloTop').textContent+' · CGB';
+  document.querySelectorAll('[data-modo]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.modo===MODO));
+  $('periodoTxt').textContent=periodoTxt();const n=nFiltros();$('filtrosN').hidden=!n;$('filtrosN').textContent=n;
+  $('topAte').textContent=p.g==='Fale Conosco'?dt(FC_ULT):ehPat?MES3[PAT_ULT-1]+'/2026':dt(Math.floor(CUT/864e5));
+  ligar();renderRail();popularFiltros();renderAlertas();
+}
+function setF(k,v){F[k]=F[k]===v?'':v;if(k==='ger'&&F.area&&AREA_GER[F.area]!==F.ger)F.area='';render()}
+function ligar(){
+  const m=$('main');
+  m.querySelectorAll('[data-gav]').forEach(b=>b.onclick=abrirGaveta);
+  m.querySelectorAll('[data-rmf]').forEach(b=>b.onclick=()=>{F[b.dataset.rmf]='';render()});
+  m.querySelectorAll('[data-mes]').forEach(b=>b.onclick=()=>setF('mes',b.dataset.mes));
+  m.querySelectorAll('[data-mesrow]').forEach(b=>b.onclick=()=>setF('mes',b.dataset.mesrow));
+  m.querySelectorAll('[data-setarea]').forEach(b=>b.onclick=e=>{e.preventDefault();setF('area',b.dataset.setarea)});
+  m.querySelectorAll('[data-setger]').forEach(b=>b.onclick=e=>{if(b.tagName==='A'){F.ger=b.dataset.setger;F.area='';return}e.preventDefault();setF('ger',b.dataset.setger)});
+  m.querySelectorAll('[data-setbase]').forEach(b=>b.onclick=e=>{if(b.tagName==='A'){F.base=b.dataset.setbase;return}setF('base',b.dataset.setbase)});
+  m.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{QF=+b.dataset.qf;render()});
+  if($('bq')){let t;$('bq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{BQ=e.target.value;BN=200;render();const i=$('bq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},300)}}
+  if($('b-mais'))$('b-mais').onclick=()=>{BN+=500;render()};
+  if($('b-xlsx'))$('b-xlsx').onclick=baixarExcel;
+  if($('drop'))ligarUpload();
+  ligarPat(m);ligarFC(m);
+  if($('dropM')){const d=$('dropM'),inp=$('upMeta');d.ondragover=e=>{e.preventDefault();d.classList.add('over')};d.ondragleave=()=>d.classList.remove('over');d.ondrop=e=>{e.preventDefault();d.classList.remove('over');importarMetas(e.dataTransfer.files[0])};inp.onchange=()=>importarMetas(inp.files[0])}
+}
+document.querySelectorAll('[data-modo]').forEach(b=>b.onclick=()=>{if(b.dataset.modo===MODO)return;usar(b.dataset.modo);BQ='';BN=200;try{localStorage.setItem('central.modo',MODO)}catch(e){}if(!PAGS().some(p=>p.id===location.hash.slice(1))&&location.hash)location.hash='inicio';render();window.scrollTo(0,0)});
+window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0);if(matchMedia('(max-width:1000px)').matches){document.body.classList.remove('rail-on');$('railFundo').hidden=true}});
+$('hamb').onclick=()=>{if(matchMedia('(max-width:1000px)').matches){const on=document.body.classList.toggle('rail-on');$('railFundo').hidden=!on}else if(!document.body.classList.contains('rail-pin'))document.body.classList.toggle('rail-peek')};
+document.addEventListener('click',e=>{if(document.body.classList.contains('rail-peek')&&!e.target.closest('#rail')&&!e.target.closest('#hamb'))document.body.classList.remove('rail-peek')});
+$('railFundo').onclick=()=>{document.body.classList.remove('rail-on');$('railFundo').hidden=true};
+function abrirGaveta(){popularFiltros();$('gaveta').hidden=false;$('gavFundo').hidden=false}
+function fecharGaveta(){$('gaveta').hidden=true;$('gavFundo').hidden=true}
+$('b-filtros').onclick=abrirGaveta;$('b-periodo').onclick=abrirGaveta;$('b-fechag').onclick=fecharGaveta;$('gavFundo').onclick=fecharGaveta;
+['mes','base','ger','area'].forEach(k=>$('f-'+k).onchange=e=>{F[k]=e.target.value;if(k==='ger'&&F.area&&AREA_GER[F.area]!==F.ger)F.area='';popularFiltros()});
+$('b-verg').onclick=()=>{fecharGaveta();render()};$('b-limpar').onclick=()=>{F.mes=F.base=F.ger=F.area='';popularFiltros();render()};
+/* tooltip */
+document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]'),tp=$('tip');if(!t){tp.hidden=true;return}tp.innerHTML=t.dataset.tip;tp.hidden=false;const w=tp.offsetWidth,h=tp.offsetHeight;let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tp.style.left=x+'px';tp.style.top=y+'px'});
+function toast(s){const t=$('toast');t.textContent=s;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3500)}
+
+/* ===== bibliotecas sob demanda ===== */
+const libs={};
+function lib(url){return libs[url]||(libs[url]=new Promise((ok,er)=>{const s=document.createElement('script');s.src=url;s.onload=ok;s.onerror=()=>{delete libs[url];er(new Error('não carregou'))};document.head.appendChild(s)}))}
+const LIM_A=60;const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',H2C_URL='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+let DL=null,DBX=null,CAN_EDIT=false;
+async function salvarArquivo(nome,data){if(!DL){toast('Download indisponível nesta visualização.');return false}try{await DL.save({filename:nome,data});return true}catch(e){if(e&&e.code!=='declined')toast('Não foi possível baixar: '+(e.message||e.code));return false}}
+async function baixarExcel(){
+  const q=BQ.trim().toUpperCase(),a=filt().filter(r=>!q||(r.col+' '+r.est+' '+r.cid+' '+r.mot+' '+r.nf+' '+r.sol+' '+r.aut+' '+r.area).toUpperCase().includes(q));
+  const L=isA()?a.map(r=>({BASE:r.b,'MÊS':r.mes,DATA:dt(r.ent),HORA:r.hr,CIDADE:r.cid,ESTABELECIMENTO:r.est,COLABORADOR:r.col,'TIPO':r.tipo,VALOR:r.tot,'SOLICITAÇÃO':r.sol,AUTORIZADO:r.aut,'CÓDIGO GERENCIAL':r.cod,'GERÊNCIA':r.ger,'CENTRO DE CUSTO':r.area,MOTIVO:r.mot,NF:r.nf,'PENDÊNCIAS':FLAGS.filter(f=>r.fl&f.b).map(f=>f.nm).join('; ')})):a.map(r=>({BASE:r.b,'MÊS':r.mes,CIDADE:r.cid,ESTABELECIMENTO:r.est,COLABORADOR:r.col,'SOLICITAÇÃO':r.sol,AUTORIZADO:r.aut,'CÓDIGO GERENCIAL':r.cod,'GERÊNCIA':r.ger,'CENTRO DE CUSTO':r.area,MOTIVO:r.mot,ENTRADA:dt(r.ent),'SAÍDA':dt(r.sai),'DIÁRIAS':r.dia,'DIÁRIA (R$)':r.pr,TOTAL:r.tot,'NOTA FISCAL':r.nf,STATUS:r.st,CONFERENTE:r.conf,'PENDÊNCIAS':FLAGS.filter(f=>r.fl&f.b).map(f=>f.nm).join('; ')}));
+  try{await lib(XLSX_URL);const ws=XLSX.utils.json_to_sheet(L),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Hospedagem');const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'});await salvarArquivo((isA()?'alimentacao':'hospedagem')+'_cgb_'+(F.mes||'2026')+'.xlsx',new Blob([buf]))}
+  catch(e){const cols=Object.keys(L[0]||{BASE:1});const csv='﻿'+cols.join(';')+'\n'+L.map(r=>cols.map(c=>'"'+String(r[c]??'').replace(/"/g,'""')+'"').join(';')).join('\n');await salvarArquivo('hospedagem_cgb.csv',csv)}
+}
+/* ===== atualização pelas planilhas ===== */
+function ligarUpload(){const d=$('drop'),inp=$('upArq');
+  d.ondragover=e=>{e.preventDefault();d.classList.add('over')};d.ondragleave=()=>d.classList.remove('over');
+  d.ondrop=e=>{e.preventDefault();d.classList.remove('over');processar([...e.dataTransfer.files])};inp.onchange=()=>processar([...inp.files])}
+const txt=v=>v==null?'':String(v).replace(/ /g,' ').replace(/\s+/g,' ').trim();
+const numv=v=>{if(v==null||v===''||typeof v==='boolean')return null;if(typeof v==='number')return v;const n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));return isFinite(n)?n:null};
+const serialDia=v=>typeof v==='number'&&v>20000&&v<120000?Math.round(v-25569):null;
+function parseWb(wb){
+  const nm=wb.SheetNames.find(s=>/^HOSP/i.test(s.trim()));if(!nm)throw new Error('não encontrei a aba HOSP. E ALIM.');
+  let cct=CCT;if(wb.Sheets.CCUSTO){const t=XLSX.utils.sheet_to_json(wb.Sheets.CCUSTO,{header:1,raw:true});const c={};t.slice(1).forEach(r=>{if(r[0])c[txt(r[0])]=[txt(r[1]),txt(r[2]),txt(r[3])]});if(Object.keys(c).length)cct=c}
+  const A=XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,raw:true,defval:null});
+  const hi=A.findIndex(r=>r&&r.some(c=>txt(c)==='SOLICITAÇÃO'));if(hi<0)throw new Error('cabeçalho não encontrado');
+  const H={};A[hi].forEach((c,i)=>{const k=txt(c);if(k&&!(k in H))H[k]=i});
+  const g=(r,k)=>H[k]==null?null:r[H[k]];const seen=new Map();const out=[];
+  for(const r of A.slice(hi+1)){if(!r||(!g(r,'SOLICITAÇÃO')&&!g(r,'TOTAL')&&!g(r,'COLABORADORES')))continue;
+    let fl=0;const cod=txt(g(r,'CODIGO GERENCIAL'));const c=cct[cod];let cc,ger,area;
+    if(c){[cc,ger,area]=c}else{cc=txt(g(r,'CCUSTO'))||'SEM CENTRO DE CUSTO';ger=txt(g(r,'GERÊNCIA'))||'SEM GERÊNCIA';area=cc;fl|=16}
+    if(ger==='VERIFICAR'||cc==='VERIFICAR')fl|=16;
+    const ent=serialDia(g(r,'ENTRADA')),sai=serialDia(g(r,'SAIDA')),md=serialDia(g(r,'MÊS'));
+    const ym=d=>{const x=new Date(d*864e5);return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')};
+    let mes=md!=null?ym(md):null;if(!mes||!/^2026-/.test(mes)){fl|=8;mes=ent!=null&&/^2026-/.test(ym(ent))?ym(ent):'DATA INVÁLIDA'}
+    const dia=numv(g(r,'DIÁRIAS'))||0,pr=numv(g(r,'DIÁRIA (R$)'))||0;let tot=numv(g(r,'TOTAL'));if(tot==null){fl|=32;tot=0}if(tot===0)fl|=32;if(Math.abs(tot-dia*pr)>1)fl|=4;
+    const st=txt(g(r,'STATUS_HOSP')).toUpperCase();if(st!=='OK')fl|=1;const nfv=txt(g(r,'NOTA FISCAL'));if(!nfv||nfv==='0')fl|=2;if(ent!=null&&sai!=null&&sai<ent)fl|=8;
+    const b=txt(g(r,'BASE')),col=txt(g(r,'COLABORADORES')),est=txt(g(r,'ESTABELECIMENTO'));const key=b+'|'+col+'|'+ent+'|'+est;seen.set(key,(seen.get(key)||0)+1);if(seen.get(key)>1)fl|=64;
+    out.push({b,cid:txt(g(r,'CIDADE')),est,col,sol:txt(g(r,'SOLICITAÇÃO')),aut:txt(g(r,'AUTORIZADO')),cod,cc,ger,area,mot:txt(g(r,'MOTIVO')),ent,sai,mes,dia,pr,tot:Math.round(tot*100)/100,q:numv(g(r,'QTD DE COLAB'))||1,nf:nfv,st:st||'(vazio)',conf:txt(g(r,'CONFERENTE')),fl})}
+  return out}
+function parseAlim(wb){
+  let ws=null,A=null,hi=-1;for(const n of wb.SheetNames){const t=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null});const i=t.findIndex(r=>r&&r.some(c=>txt(c)==='VALOR')&&r.some(c=>txt(c)==='SERVIÇO')&&r.some(c=>txt(c)==='CODIGO GERENCIAL'));if(i>=0){A=t;hi=i;break}}
+  if(!A)throw new Error('não encontrei a aba com VALOR, SERVIÇO e CODIGO GERENCIAL');
+  const H={};A[hi].forEach((c,i)=>{const k=txt(c);if(k&&!(k in H))H[k]=i});const g=(r,k)=>H[k]==null?null:r[H[k]];
+  const TIPO={'Self-Service Almoço':'Almoço','Self-Service Jantar':'Jantar','Self-Service Café':'Café da Manhã'};const seen=new Map(),out=[];
+  for(const r of A.slice(hi+1)){if(!r||!r.some(c=>c!=null&&c!==''))continue;let d=null,hr=null;const v0=g(r,'DATA');
+    if(typeof v0==='number'){d=Math.floor(v0)-25569;hr=Math.floor((v0%1)*24+1e-6)}else{const m=/(\d+)\/(\d+)\/(\d{4})(?:\s+(\d+))?/.exec(txt(v0));if(m){d=Math.round(Date.UTC(+m[3],+m[2]-1,+m[1])/864e5);hr=m[4]!=null?+m[4]:null}}
+    if(d==null)continue;let fl=0;const cod=txt(g(r,'CODIGO GERENCIAL')),c=CCT[cod];if(!c)fl|=16;let tipo=txt(g(r,'SERVIÇO'));if(!tipo){fl|=8;tipo='NÃO INFORMADO'}
+    const v=numv(g(r,'VALOR'))||0;if(v<=0)fl|=32;if(v>LIM_A)fl|=4;const col=txt(g(r,'COLABORADOR'));const k=col+'|'+d+'|'+(TIPO[tipo]||tipo);seen.set(k,(seen.get(k)||0)+1);if(seen.get(k)>1)fl|=64;
+    const x=new Date(d*864e5);out.push({b:txt(g(r,'BASE')),cid:txt(g(r,'CIDADE')),est:txt(g(r,'ESTABELECIMENTO')),col,sol:txt(g(r,'SOLICITAÇÃO')),aut:txt(g(r,'AUTORIZADO')),cod,cc:c?c[0]:txt(g(r,'CCUSTO'))||'SEM CENTRO DE CUSTO',ger:c?c[1]:txt(g(r,'GERÊNCIA'))||'SEM GERÊNCIA',area:c?c[2]:txt(g(r,'CCUSTO'))||'SEM CENTRO DE CUSTO',mot:txt(g(r,'MOTIVO')),tipo,ent:d,sai:d,hr,mes:x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0'),dia:1,pr:v,tot:Math.round(v*100)/100,q:1,nf:txt(g(r,'NF')),st:'',conf:'',fl})}
+  if(!out.length)throw new Error('nenhuma refeição encontrada');return out}
+async function processarAlim(f){
+  const box=$('arqs');if(!f)return;box.innerHTML='<div class="arq"><span class="tag">…</span><span class="nome">'+esc(f.name)+'</span><span class="st-ok">lendo… (arquivo grande, pode levar alguns segundos)</span></div>';
+  try{await lib(XLSX_URL)}catch(e){box.innerHTML='<div class="note err">Não consegui carregar o leitor de Excel. Verifique a conexão e tente de novo.</div>';return}
+  try{const rs=parseAlim(XLSX.read(await f.arrayBuffer(),{type:'array'}));const hoje=new Date(),hj=String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();
+    ROWS=rs;FONTE={};for(const b of new Set(rs.map(r=>r.b)))FONTE[b]={at:hj,origem:'arquivo enviado'};CUT=Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),12);
+    let msg=N(rs.length)+' refeições carregadas ('+R(sum(rs,r=>r.tot))+').';
+    if(DBX&&CAN_EDIT){try{await salvarAlim(rs,hj);msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+    render();if($('arqs'))$('arqs').innerHTML='<div class="arq"><span class="tag">APP</span><span class="nome">'+esc(f.name)+'</span><span class="st-ok">'+N(rs.length)+' refeições</span></div>';toast(msg)}
+  catch(e){box.innerHTML='<div class="arq erro"><span class="tag">ERRO</span><span class="nome">'+esc(f.name)+'</span><span class="st-err">'+esc(e.message)+'</span></div>'}}
+const KA=['b','cid','est','col','sol','aut','cod','cc','ger','area','mot','tipo','ent','hr','tot','nf','fl'];
+async function salvarAlim(rs,hj){
+  const old=(await DBX.doc('cfg/alim').get()).data();const s=JSON.stringify(rs.map(r=>KA.map(k=>r[k])));const parts=[];for(let i=0;i<s.length;i+=200000)parts.push(s.slice(i,i+200000));
+  const ver=Date.now().toString(36);for(let i=0;i<parts.length;i++)await DBX.doc('partes/ALIM-'+ver+'-'+i).set({s:parts[i]});
+  await DBX.doc('cfg/alim').set({ver,n:parts.length,at:hj,linhas:rs.length,cut:CUT});
+  if(old&&old.ver)for(let i=0;i<old.n;i++){try{await DBX.doc('partes/ALIM-'+old.ver+'-'+i).delete()}catch(e){}}}
+async function carregarAlim(){
+  const m=(await DBX.doc('cfg/alim').get()).data();if(!m||!m.ver)return false;let s='';for(let i=0;i<m.n;i++){const d=(await DBX.doc('partes/ALIM-'+m.ver+'-'+i).get()).data();if(!d)return false;s+=d.s}
+  const rs=JSON.parse(s).map(a=>{const o=Object.fromEntries(KA.map((k,i)=>[k,a[i]]));const x=new Date(o.ent*864e5);return Object.assign(o,{sai:o.ent,dia:1,pr:o.tot,q:1,st:'',conf:'',mes:x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')})});
+  const fonte={};for(const b of new Set(rs.map(r=>r.b)))fonte[b]={at:m.at,origem:'arquivo enviado'};
+  if(MODO==='alim'){ROWS=rs;FONTE=fonte;CUT=m.cut||CUT}else{DS.alim.rows=rs;DS.alim.fonte=fonte;DS.alim.cut=m.cut||DS.alim.cut}return true}
+async function processar(files){
+  if(isA())return processarAlim(files[0]);
+  const box=$('arqs');if(!files.length)return;
+  try{await lib(XLSX_URL)}catch(e){box.innerHTML='<div class="note err">Não consegui carregar o leitor de Excel. Verifique a conexão e tente de novo.</div>';return}
+  const hoje=new Date(),hj=String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();const novos={};
+  for(const f of files){const id='a'+Math.random().toString(36).slice(2);box.insertAdjacentHTML('beforeend','<div class="arq" id="'+id+'"><span class="tag">…</span><span class="nome">'+esc(f.name)+'</span><span class="st-ok">lendo…</span></div>');const el=$(id);
+    try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const rs=parseWb(wb);const bs=[...new Set(rs.map(r=>r.b))].filter(Boolean);if(!rs.length)throw new Error('nenhum lançamento encontrado');
+      for(const b of bs)novos[b]=rs.filter(r=>r.b===b);el.querySelector('.tag').textContent=bs.join(', ');el.lastChild.outerHTML='<span class="st-ok">'+N(rs.length)+' lançamentos · '+R(sum(rs,r=>r.tot))+'</span>'}
+    catch(e){el.classList.add('erro');el.querySelector('.tag').textContent='ERRO';el.lastChild.outerHTML='<span class="st-err">'+esc(e.message)+'</span>'}}
+  const bs=Object.keys(novos);if(!bs.length)return;
+  ROWS=ROWS.filter(r=>!bs.includes(r.b)).concat(...bs.map(b=>novos[b]));bs.forEach(b=>FONTE[b]={at:hj,origem:'arquivo enviado'});CUT=Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),12);
+  let msg='Dados de '+bs.map(bnome).join(', ')+' atualizados.';
+  if(DBX&&CAN_EDIT){try{await salvarBases(novos,hj);msg+=' Salvos para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+  const keep=box.innerHTML;render();if($('arqs'))$('arqs').innerHTML=keep;toast(msg)}
+const K=['b','cid','est','col','sol','aut','cod','cc','ger','area','mot','ent','sai','mes','dia','pr','tot','q','nf','st','conf','fl'];
+async function salvarBases(novos,hj){
+  const meta=(await DBX.doc('cfg/bases').get()).data()||{};const nmeta={...meta};
+  for(const b of Object.keys(novos)){const s=JSON.stringify(novos[b].map(r=>K.map(k=>r[k])));const parts=[];for(let i=0;i<s.length;i+=60000)parts.push(s.slice(i,i+60000));
+    const ver=Date.now().toString(36);for(let i=0;i<parts.length;i++)await DBX.doc('partes/'+b+'-'+ver+'-'+i).set({s:parts[i]});
+    const old=meta[b];nmeta[b]={ver,n:parts.length,at:hj,linhas:novos[b].length,cut:CUT};
+    await DBX.doc('cfg/bases').set(nmeta);
+    if(old&&old.ver)for(let i=0;i<old.n;i++){try{await DBX.doc('partes/'+b+'-'+old.ver+'-'+i).delete()}catch(e){}}}
+}
+async function carregarBases(){
+  const meta=(await DBX.doc('cfg/bases').get()).data();if(!meta)return false;let mud=false;
+  for(const b of Object.keys(meta)){const m=meta[b];if(!m||!m.ver)continue;try{let s='';for(let i=0;i<m.n;i++){const d=(await DBX.doc('partes/'+b+'-'+m.ver+'-'+i).get()).data();if(!d)throw 0;s+=d.s}
+    const rs=JSON.parse(s).map(a=>Object.fromEntries(K.map((k,i)=>[k,a[i]])));const H=MODO==='hosp';const rw=(H?ROWS:DS.hosp.rows).filter(r=>r.b!==b).concat(rs);if(H){ROWS=rw;FONTE[b]={at:m.at,origem:'arquivo enviado'};if(m.cut&&m.cut>CUT)CUT=m.cut}else{DS.hosp.rows=rw;DS.hosp.fonte[b]={at:m.at,origem:'arquivo enviado'};if(m.cut&&m.cut>DS.hosp.cut)DS.hosp.cut=m.cut}mud=true}catch(e){}}
+  return mud}
+function parseMetas(wb){
+  const ws=wb.Sheets[wb.SheetNames.find(n=>{const t=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true});return t.some(r=>r&&r.some(c=>txt(c)==='CODCCUSTO'))})];if(!ws)throw new Error('não encontrei a coluna CODCCUSTO');
+  const A=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});const hi=A.findIndex(r=>r&&r.some(c=>txt(c)==='CODCCUSTO'));const H={};A[hi].forEach((c,i)=>{const k=txt(c).toUpperCase();if(k&&!(k in H))H[k]=i});
+  const CM=isA()?'REFEIÇÃO':'HOSPEDAGEM';if(H[CM]==null||H.ANOMES==null)throw new Error('faltam as colunas ANOMES ou '+CM);
+  const m={};let n=0;for(const r of A.slice(hi+1)){if(!r)continue;const cod=txt(r[H.CODCCUSTO]),d=serialDia(r[H.ANOMES]);if(!cod||d==null)continue;const x=new Date(d*864e5),mes=x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0');const v=numv(r[H[CM]])||0;(m[mes]=m[mes]||{})[cod]=Math.round(((m[mes][cod]||0)+v)*100)/100;n++}
+  if(!n)throw new Error('nenhuma linha de meta encontrada');return m}
+async function importarMetas(f){
+  if(!f)return;const box=$('arqsM');box.innerHTML='<div class="arq"><span class="tag">…</span><span class="nome">'+esc(f.name)+'</span><span class="st-ok">lendo…</span></div>';
+  try{await lib(XLSX_URL)}catch(e){box.innerHTML='<div class="note err">Não consegui carregar o leitor de Excel. Verifique a conexão e tente de novo.</div>';return}
+  try{const m=parseMetas(XLSX.read(await f.arrayBuffer(),{type:'array'}));DS[MODO].mm=m;aplicarMetas(m);const hoje=new Date();METAS_FONTE=DS[MODO].mf=f.name+' · '+String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();
+    let msg='Metas atualizadas: '+R(metaAnual(Object.keys(METAS)))+' no ano.';
+    if(DBX&&CAN_EDIT){try{await DBX.doc(isA()?'cfg/metas_alim':'cfg/metas').set({m,fonte:METAS_FONTE,em:new Date().toISOString()});msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+    render();toast(msg)}
+  catch(e){box.innerHTML='<div class="arq erro"><span class="tag">ERRO</span><span class="nome">'+esc(f.name)+'</span><span class="st-err">'+esc(e.message)+'</span></div>'}}
+/* ===== print ===== */
+let PNG=null;
+$('b-copiar').onclick=async()=>{const md=$('modalPrint');md.hidden=false;$('pmImg').innerHTML='<div class="pm-load"><i></i>Gerando imagem do painel…</div>';
+  const temaAnt=document.documentElement.getAttribute('data-tema');try{await lib(H2C_URL);document.documentElement.removeAttribute('data-tema');document.body.classList.add('capt');const sec=$('main').firstElementChild;const cv=await html2canvas(sec,{backgroundColor:'#f4f4f4',scale:2,useCORS:true,windowWidth:Math.max(1400,innerWidth)});document.body.classList.remove('capt');
+    if(temaAnt)document.documentElement.setAttribute('data-tema',temaAnt);PNG=await new Promise(r=>cv.toBlob(r,'image/png'));$('pmImg').innerHTML='<img alt="Imagem do painel" src="'+URL.createObjectURL(PNG)+'">'}
+  catch(e){if(temaAnt)document.documentElement.setAttribute('data-tema',temaAnt);document.body.classList.remove('capt');$('pmImg').innerHTML='<div class="note err">Não foi possível gerar a imagem nesta visualização.</div>'}};
+$('pmFecha').onclick=()=>$('modalPrint').hidden=true;
+$('pmBaixar').onclick=()=>PNG&&salvarArquivo('central_'+(isA()?'alimentacao':'hospedagem')+'_'+pag().id+'.png',PNG);
+$('pmCopiar').onclick=async()=>{if(!PNG)return;try{await navigator.clipboard.write([new ClipboardItem({'image/png':PNG})]);toast('Imagem copiada. Cole no WhatsApp ou e-mail.')}catch(e){toast('Este navegador não deixou copiar. Use Baixar PNG.')}};
+
+/* ---------- tema claro / escuro (igual Central de Indicadores) ---------- */
+(function(){
+  const raiz=document.documentElement,bt=document.getElementById('b-tema');if(!bt)return;
+  const pinta=()=>{const e=raiz.getAttribute('data-tema')==='escuro';bt.setAttribute('aria-pressed',e?'true':'false');bt.title=e?'Mudar para o tema claro':'Mudar para o tema escuro'};
+  bt.onclick=()=>{const e=raiz.getAttribute('data-tema')==='escuro';if(e)raiz.removeAttribute('data-tema');else raiz.setAttribute('data-tema','escuro');try{localStorage.setItem('farol.tema',e?'claro':'escuro')}catch(x){}pinta()};
+  pinta();
+})();
+try{if(localStorage.getItem('central.modo')==='alim')usar('alim')}catch(e){}
+render();
+/* capacidades (aparecem depois do primeiro desenho) */
+(async()=>{try{if(!window.claude||!claude.use)return;
+  claude.use('downloads').then(d=>{DL=d}).catch(()=>{});
+  const u=await claude.use('user').catch(()=>null);const db=await claude.use('db').catch(()=>null);if(!db)return;DBX=db;
+  try{CAN_EDIT=u&&u.canEdit?!!(await u.canEdit()):false}catch(e){CAN_EDIT=false}
+  let mud=false;for(const [k,doc] of [['hosp','cfg/metas'],['alim','cfg/metas_alim']]){try{const m=(await db.doc(doc).get()).data();if(m&&m.m){DS[k].mm=m.m;DS[k].mf=m.fonte||DS[k].mf;if(MODO===k){aplicarMetas(m.m);METAS_FONTE=DS[k].mf}mud=true}}catch(e){}}
+  try{if(await carregarAlim())mud=true}catch(e){}
+  try{if(await carregarBases())mud=true}catch(e){}
+  render();if(mud)toast('Dados salvos carregados.')}catch(e){}})();
+</script></body></html>

@@ -37,7 +37,8 @@ Com o servidor rodando, `npm run teste` confere a API (rotas protegidas, login e
 
 | Pasta | Conteúdo |
 |---|---|
-| `site/` | O site: `index.html` (Gestão Administrativa e o menu), `contratacoes.html` + `ct-adaptador.js` (módulo Contratações) e `modelo-docx.js` (modelo do documento Word). Sem dados pessoais |
+| `site/` | O site: `index.html` (Gestão Administrativa e o menu), `contratacoes.html` + `ct-adaptador.js` (módulo Contratações), `central.html` + `ca-adaptador.js` (Central Administrativa: Financeiro, Patrimônio, Atendimento e TI) e `modelo-docx.js` (modelo do documento Word). Sem dados pessoais |
+| `central-administrativa/` | Fonte da Central Administrativa e o `publicar.mjs` (gera o site sem dados e manda os dados para o Neon). A versão completa, com dados, fica só no computador (`.gitignore`) |
 | `api/` | Funções da API (Vercel): login, Gestão Administrativa (carga, solicitações, arquivos, cadastro), Contratações (`ct-*`) e usuários |
 | `banco/` | Estrutura do banco (`schema.sql`) e importação dos CSVs (ver `banco/LEIA-ME.md`) |
 | `dev/` | Servidor local para testar site + API (`npm run dev`) |

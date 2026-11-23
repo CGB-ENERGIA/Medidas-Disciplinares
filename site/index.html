@@ -1413,6 +1413,7 @@ body.em-hub { overflow-x: clip; }
     <main id="view"></main>
     <div class="ct-host" id="ct-host" hidden></div>
     <div class="ct-host" id="he-host" hidden></div>
+    <div class="ct-host" id="ca-host" hidden></div>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -1900,6 +1901,10 @@ const ICON = {
   'mod-medidas': '<path d="M12 3v18M5 7h14"/><path d="M5 7l-2.5 6a3 3 0 0 0 5 0zM19 7l-2.5 6a3 3 0 0 0 5 0z"/><path d="M8 21h8"/>',
   'mod-contratacoes': '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3 13h18"/>',
   'mod-horas': '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  'mod-financeiro': '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/>',
+  'mod-patrimonio': '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  'mod-atendimento': '<path d="M20 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/>',
+  'mod-ti': '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
   'ct-vagas': '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M12 11.5v4M10 13.5h4"/>',
   'ct-candidatos': '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><path d="m16 11.5 2 2 3.5-4"/>',
   'ct-agenda': '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
@@ -2706,8 +2711,15 @@ const MODULOS = {
   medidas: { nome: "Gestão Administrativa", desc: "Fluxo das medidas disciplinares", eyebrow: "Sistema de Gestão Administrativa", titulo: "Gestão Administrativa", sub: "Política de Consequências · PG.001.SGI 019 · versão 06", ico: "mod-medidas", inicio: "inicio" },
   contratacoes: { nome: "Contratações", desc: "Recrutamento e seleção de pessoal", eyebrow: "Sistema de Recrutamento e Seleção", titulo: "Contratações CGB", sub: "Contratos CT 127 · 169 · 170", ico: "mod-contratacoes", inicio: "ct:inicio" },
   // Só aparece para quem foi liberado na aba Usuários (usuarios.horas_extras); o administrador não ganha sozinho
-  horas: { nome: "Horas Extras", desc: "Análise e carga da base de batidas", eyebrow: "Controle de Horas Extras", titulo: "Horas Extras CGB", sub: "Análise de batidas e banco de horas", ico: "mod-horas", inicio: "he:analise" }
+  horas: { nome: "Horas Extras", desc: "Análise e carga da base de batidas", eyebrow: "Controle de Horas Extras", titulo: "Horas Extras CGB", sub: "Análise de batidas e banco de horas", ico: "mod-horas", inicio: "he:analise" },
+  // Central Administrativa: uma página só (central.html), aberta já filtrada na área (central.html?area=...)
+  financeiro: { nome: "Financeiro", desc: "Hospedagem, alimentação, locação e produtividade", eyebrow: "Central Administrativa", titulo: "Financeiro", sub: "Hospedagem · Alimentação · Locação", ico: "mod-financeiro", inicio: "ca:painel", ca: true },
+  patrimonio: { nome: "Patrimônio", desc: "Inventário, cronograma e bens", eyebrow: "Central Administrativa", titulo: "Patrimônio", sub: "Inventário 2026", ico: "mod-patrimonio", inicio: "ca:painel", ca: true },
+  atendimento: { nome: "Atendimento", desc: "Fale Conosco: atendimentos aos colaboradores", eyebrow: "Central Administrativa", titulo: "Atendimento", sub: "Fale Conosco", ico: "mod-atendimento", inicio: "ca:painel", ca: true },
+  ti: { nome: "Tecnologia (TI)", desc: "Custos, notas e aquisições do Setor de TI", eyebrow: "Central Administrativa", titulo: "Tecnologia (TI)", sub: "Controle de custos", ico: "mod-ti", inicio: "ca:painel", ca: true }
 };
+const NIVEL_CA = { usuario: "Consulta", gestor: "Gestor" };
+const ehCentral = m => !!(MODULOS[m] && MODULOS[m].ca);
 const NIVEL_CT = { usuario: "Solicitante", gestor: "Recrutamento" };
 const NIVEL_HE = { usuario: "Analista", gestor: "Carga e análise" };
 const modulosDoUsuario = () => Object.keys((state.user && state.user.modulos) || {}).filter(k => MODULOS[k]);
@@ -2717,13 +2729,17 @@ function acessoTxt(m) {
   const u = state.user; if (!u) return "";
   if (u.admin) return "Administrador";
   const a = u.modulos[m]; if (!a) return "";
-  return m === "medidas" ? ROLE_NOME[a.perfil] : m === "horas" ? NIVEL_HE[a.nivel] : NIVEL_CT[a.nivel];
+  return m === "medidas" ? ROLE_NOME[a.perfil] : m === "horas" ? NIVEL_HE[a.nivel] : ehCentral(m) ? NIVEL_CA[a.nivel] : NIVEL_CT[a.nivel];
 }
 // Ícones Lucide (SVG embutido) da tela de ambientes. Ambiente novo sem ícone aqui usa o quadrado de apps.
 const HUB_ICO = {
   medidas: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
   contratacoes: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
-  horas: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+  horas: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  financeiro: '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  patrimonio: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>',
+  atendimento: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  ti: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>'
 };
 const HUB_PADRAO = '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>';
 function viewAmbientes() {
@@ -2768,7 +2784,7 @@ const CT_TELAS = [
   ["ct:banco", "Banco de talentos", "Processos guardados para retomar", "Registro", "todos"],
   ["ct:rm", "Integração RM", "Conferência com o RM, padrões e planilha", "Registro", "gestor"]
 ];
-const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
+const CT_ICO = { "ca:painel": "painel", "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
 const ctVisivel = quem => state.user.modulos.contratacoes.nivel === "gestor" || quem === "todos";
 function menuContratacoes() {
   const grupos = []; CT_TELAS.filter(t => ctVisivel(t[4])).forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
@@ -2827,6 +2843,28 @@ function heMostrar() {
     host.appendChild(f);
     f.addEventListener("load", () => { heEnviar({ tipo: "tema", tema: document.documentElement.getAttribute("data-tema") }); });
   } else if (view !== heVista) { heVista = view; heEnviar({ tipo: "ir", view }); }
+}
+
+// Central Administrativa (Financeiro, Patrimônio, Atendimento e TI): a página central.html tem o próprio menu
+// com as telas da área; aqui fica só o item de entrada (e Usuários, para o administrador).
+function menuCentral(m) {
+  const grupos = [["Central Administrativa", [["ca:painel", MODULOS[m].nome, "Indicadores e telas da área"]]]];
+  if (state.user.admin) grupos.push(["Administração", [["usuarios", "Usuários", "Pedidos de acesso e níveis de cada pessoa", state.pendentes || 0]]]);
+  return grupos;
+}
+let caArea = "";
+const caFrame = () => document.getElementById("ca-frame");
+function caEnviar(msg) { const f = caFrame(); if (f && f.contentWindow) f.contentWindow.postMessage(msg, location.origin); }
+// Abre a Central na área do ambiente escolhido (a página é criada na primeira vez; trocar de área recarrega o quadro)
+function caMostrar(m) {
+  const host = document.getElementById("ca-host");
+  let f = caFrame();
+  if (!f) {
+    f = document.createElement("iframe"); f.id = "ca-frame"; f.title = "Central Administrativa";
+    host.appendChild(f);
+    f.addEventListener("load", () => { caEnviar({ tipo: "tema", tema: document.documentElement.getAttribute("data-tema") }); });
+  }
+  if (caArea !== m) { caArea = m; f.src = "central.html?area=" + encodeURIComponent(m); }
 }
 
 // ---------- Login (usuário e senha) ----------
@@ -2938,13 +2976,19 @@ async function carregarUsuarios() {
 const ACESSO_MEDIDAS = { supervisor: "Supervisor", coordenador: "Coordenador", dp: "DP (gestor)" };
 const ACESSO_CT = { usuario: "Solicitante", gestor: "Recrutamento (gestor)" };
 const ACESSO_HE = { usuario: "Analista (só analisa)", gestor: "Gestor (analisa e carrega a base)" };
+const ACESSO_CA = { usuario: "Consulta (só vê)", gestor: "Gestor (lança e atualiza)" };
 // Ambientes que o administrador libera. Ambiente novo = uma linha aqui (e o nível dele em /api/usuarios).
 //   padrao: nível que vale ao ligar a chave | total: o administrador já tem acesso total a este ambiente
 const AMB_ACESSO = [
   { k: "medidas", nome: "Gestão Administrativa", niveis: ACESSO_MEDIDAS, padrao: "supervisor", total: true },
   { k: "contratacoes", nome: "Contratações", niveis: ACESSO_CT, padrao: "usuario", total: true },
-  { k: "horas", nome: "Horas Extras", niveis: ACESSO_HE, padrao: "usuario", total: false }
+  { k: "horas", nome: "Horas Extras", niveis: ACESSO_HE, padrao: "usuario", total: false },
+  { k: "financeiro", nome: "Financeiro", niveis: ACESSO_CA, padrao: "usuario", total: true },
+  { k: "patrimonio", nome: "Patrimônio", niveis: ACESSO_CA, padrao: "usuario", total: true },
+  { k: "atendimento", nome: "Atendimento", niveis: ACESSO_CA, padrao: "usuario", total: true },
+  { k: "ti", nome: "Tecnologia (TI)", niveis: ACESSO_CA, padrao: "usuario", total: true }
 ];
+const CA_KEYS = ["financeiro", "patrimonio", "atendimento", "ti"];
 const iniciaisDe = n => String(n || "").split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
 function viewUsuarios() {
   if (!state.usu) { carregarUsuarios(); return `<section class="panel"><h2>Usuários</h2><p class="muted" style="margin:0">Carregando…</p></section>`; }
@@ -3014,6 +3058,7 @@ async function salvarAcesso(id, mud, aviso) {
     await api("/api/usuarios", "PATCH", corpo);
     if (id === state.user.uid) { location.reload(); return; } // mudou o próprio acesso
     Object.assign(u, { admin: corpo.admin, medidas: corpo.medidas || null, contratacoes: corpo.contratacoes || null, horas: corpo.horas || null });
+    CA_KEYS.forEach(k => { if (k in mud) u[k] = mud[k] || null; });
     render(); toast(aviso || "Acesso atualizado.");
   } catch (err) { toast(err.message); render(); }
 }
@@ -3081,7 +3126,8 @@ document.addEventListener("click", async e => {
   if (act === "usu-aprovar") {
     const card = b.closest(".usu-pend"), g = k => ((card && card.querySelector(`[data-pend-nv="${k}"]`)) || {}).value || "";
     const corpo = { id: b.dataset.id, aprovar: true, admin: false, medidas: g("medidas"), contratacoes: g("contratacoes"), horas: g("horas") };
-    if (!corpo.medidas && !corpo.contratacoes && !corpo.horas) { toast("Escolha o nível em pelo menos um ambiente, ou recuse o pedido."); return; }
+    CA_KEYS.forEach(k => { corpo[k] = g(k); });
+    if (!corpo.medidas && !corpo.contratacoes && !corpo.horas && !CA_KEYS.some(k => corpo[k])) { toast("Escolha o nível em pelo menos um ambiente, ou recuse o pedido."); return; }
     try { await api("/api/usuarios", "PATCH", corpo); state.usu = null; render(); toast(`Acesso de ${b.dataset.u} aprovado.`); } catch (err) { toast(err.message); }
     return;
   }
@@ -3148,6 +3194,7 @@ function render() {
     document.getElementById("perfil-nome").textContent = u.nome;
     document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
     document.getElementById("perfil-nota").textContent = u.admin ? "Administrador: controle total dos dois módulos e dos usuários."
+      : ehCentral(MOD0) ? ({ usuario: "Você consulta os indicadores desta área.", gestor: "Você consulta, lança e atualiza os dados desta área." })[u.modulos[MOD0].nivel]
       : MOD0 === "horas" ? ({ usuario: "Você analisa as horas extras de todas as bases.", gestor: "Você analisa, carrega a base de batidas e edita o cadastro." })[u.modulos.horas.nivel]
       : MOD0 === "contratacoes" ? ({ usuario: "Você abre vagas e acompanha as suas solicitações.", gestor: "Você gerencia o módulo Contratações." })[u.modulos.contratacoes.nivel]
       : u.role === "dp" ? "O DP vê todas as bases e equipes e gerencia o módulo." : u.role === "coordenador" ? "Você vê todas as equipes e autoriza as solicitações." : "Você vê todas as equipes e abre as solicitações.";
@@ -3161,13 +3208,13 @@ function render() {
   if (!state.user) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewLogin(); return; }
   if (state.user.trocarSenha) { ses.hidden = true; nav.hidden = true; v0.innerHTML = viewTrocarSenha(true); return; }
   if (state.hub && modulosDoUsuario().length > 1) { // tela de ambientes: sem menu lateral, só os cartões
-    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true;
+    ses.hidden = true; nav.hidden = true; v0.hidden = false; document.getElementById("ct-host").hidden = true; document.getElementById("he-host").hidden = true; document.getElementById("ca-host").hidden = true;
     ctEnviar({ tipo: "visivel", v: false }); v0.innerHTML = viewAmbientes(); return;
   }
   ses.hidden = true; nav.hidden = false;
   if (LOGIN_ATIVO) ses.innerHTML = `<h3>Conectado como</h3><div class="sessao-box"><div><strong>${esc(state.user.nome)}</strong><span>${ROLE_NOME[state.role]} · ${nomeBases(state.user)}</span></div><button class="btn sair" data-act="sair">Sair</button></div>`;
   const MOD = moduloAtual();
-  const MENU = MOD === "horas" ? menuHoras() : MOD === "contratacoes" ? menuContratacoes() : menuMedidas();
+  const MENU = ehCentral(MOD) ? menuCentral(MOD) : MOD === "horas" ? menuHoras() : MOD === "contratacoes" ? menuContratacoes() : menuMedidas();
   const tabs = MENU.flatMap(([, its]) => its);
   // "Minha senha" fica só no menu do perfil (canto superior direito), não no menu lateral
   if (!tabs.some(t => t[0] === state.tab) && !(LOGIN_ATIVO && state.tab === "senha")) state.tab = MODULOS[MOD].inicio;
@@ -3180,7 +3227,9 @@ function render() {
     `<div class="rail-pe"><button type="button" class="menu-it" data-act="menu-fixar" title="${fixo ? "Recolher o menu" : "Manter o menu aberto"}"><span class="mi"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${fixo ? '<path d="M15 6l-6 6 6 6"/><path d="M4 4v16"/>' : '<path d="M9 6l6 6-6 6"/><path d="M20 4v16"/>'}</svg></span><span class="rail-tx"><b>${fixo ? "Recolher menu" : "Manter menu aberto"}</b><small>${fixo ? "Mostra só os ícones" : "Deixa os nomes sempre visíveis"}</small></span></button></div>`;
   const emCt = MOD === "contratacoes" && state.tab.startsWith("ct:");
   const emHe = MOD === "horas" && state.tab.startsWith("he:");
-  v.hidden = emCt || emHe; document.getElementById("ct-host").hidden = !emCt; document.getElementById("he-host").hidden = !emHe;
+  const emCa = ehCentral(MOD) && state.tab.startsWith("ca:");
+  v.hidden = emCt || emHe || emCa; document.getElementById("ct-host").hidden = !emCt; document.getElementById("he-host").hidden = !emHe; document.getElementById("ca-host").hidden = !emCa;
+  if (emCa) { ctEnviar({ tipo: "visivel", v: false }); caMostrar(MOD); return; }
   if (emHe) { ctEnviar({ tipo: "visivel", v: false }); heMostrar(); return; }
   if (emCt) { ctMostrar(); return; }
   ctEnviar({ tipo: "visivel", v: false });
@@ -4530,7 +4579,7 @@ document.addEventListener("input", e => { if (e.target.id === "ajuda-busca") fil
 
 // ---------- Tema claro/escuro (lembrado neste navegador) ----------
 function aplicarTema(t) {
-  document.documentElement.setAttribute("data-tema", t); ctEnviar({ tipo: "tema", tema: t }); heEnviar({ tipo: "tema", tema: t });
+  document.documentElement.setAttribute("data-tema", t); ctEnviar({ tipo: "tema", tema: t }); heEnviar({ tipo: "tema", tema: t }); caEnviar({ tipo: "tema", tema: t });
   const b = document.getElementById("tema-btn");
   if (b) { const esc = t === "escuro"; b.setAttribute("aria-label", esc ? "Mudar para o tema claro" : "Mudar para o tema escuro"); b.title = esc ? "Tema claro" : "Tema escuro"; }
 }

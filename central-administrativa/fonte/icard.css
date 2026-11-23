@@ -1,0 +1,26 @@
+/* ===== cartões de indicador modernos ===== */
+#main .icard:not([data-ind]){--icc:#8d1d31;position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(141,29,49,.10)!important;border-top:1px solid rgba(141,29,49,.10)!important;border-radius:22px!important;
+  background:linear-gradient(160deg,#fdfbfc 0%,#f7f1f3 100%)!important;box-shadow:0 1px 2px rgba(61,8,18,.05),0 14px 34px rgba(61,8,18,.07)!important;padding:20px 22px 18px!important;gap:10px!important;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s}
+#main .icard:not([data-ind]):has(.ic-v.par){--icc:var(--par)}#main .icard:not([data-ind]):has(.ic-v.nao){--icc:var(--nao)}#main .icard:not([data-ind]):has(.ic-v.sup){--icc:var(--sup)}#main .icard:not([data-ind]):has(.ic-v.ate){--icc:var(--ate)}
+#main .icard:not([data-ind])::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:4px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,var(--icc),color-mix(in srgb,var(--icc) 35%,transparent));z-index:-1}
+#main .icard:not([data-ind])::after{content:"";position:absolute;right:-70px;top:-70px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--icc) 16%,transparent) 0%,transparent 68%);z-index:-1;transition:transform .35s}
+#main .icard:not([data-ind]):hover{transform:translateY(-3px)!important;border-color:color-mix(in srgb,var(--icc) 35%,transparent)!important;box-shadow:0 2px 4px rgba(61,8,18,.06),0 22px 44px rgba(61,8,18,.13)!important}
+#main .icard:not([data-ind]):hover::after{transform:scale(1.18)}
+#main .icard:not([data-ind]) .ic-k{display:inline-flex;align-items:center;gap:8px;font-size:11.5px!important;letter-spacing:.12em!important;color:var(--fg)!important;opacity:.85}
+#main .icard:not([data-ind]) .ic-k::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--icc);box-shadow:0 0 0 4px color-mix(in srgb,var(--icc) 16%,transparent)}
+#main .icard:not([data-ind]) .ic-m{font-size:11.5px;background:rgba(141,29,49,.06);border-radius:999px;padding:3px 9px;white-space:nowrap}
+#main .icard:not([data-ind]) .ic-v{font-size:clamp(26px,2.7vw,42px)!important;font-weight:850;letter-spacing:-.035em;margin-top:2px}
+#main .icard:not([data-ind]) .ic-v:not(.par):not(.nao):not(.sup):not(.ate){background:linear-gradient(135deg,#2a2326 0%,#6a1222 120%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#main .icard:not([data-ind]) .pill{border-radius:999px;font-size:10.5px;padding:4px 10px;letter-spacing:.06em}
+#main .icard:not([data-ind]) .ic-l{border-top:0!important;background:rgba(141,29,49,.045);border-radius:12px;padding:8px 12px!important;align-items:center}
+#main .icard:not([data-ind]) .ic-l b{font-size:14px}
+#main .icard:not([data-ind]) .ic-go{display:inline-flex;align-items:center;gap:8px;align-self:start;justify-self:start;margin-top:4px;padding:7px 8px 7px 14px;border-radius:999px;background:rgba(141,29,49,.07);font-size:12.5px;transition:background .2s,gap .2s}
+#main .icard:not([data-ind]):hover .ic-go{background:#8d1d31;color:#fff;gap:12px}
+#main .icard:not([data-ind]) .kpad-s{font-size:12px;color:var(--muted);margin:0}
+html[data-tema="escuro"] #main .icard:not([data-ind]){background:linear-gradient(160deg,#252124 0%,#1d1a1c 100%)!important;border-color:rgba(255,255,255,.07)!important;box-shadow:0 14px 34px rgba(0,0,0,.35)!important}
+html[data-tema="escuro"] #main .icard:not([data-ind]) .ic-v:not(.par):not(.nao):not(.sup):not(.ate){background:linear-gradient(135deg,#ffffff 0%,#f0b9c6 120%);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-tema="escuro"] #main .icard:not([data-ind]) .ic-l{background:rgba(255,255,255,.045)}
+html[data-tema="escuro"] #main .icard:not([data-ind]) .ic-m,html[data-tema="escuro"] #main .icard:not([data-ind]) .ic-go{background:rgba(255,255,255,.07)}
+html[data-tema="escuro"] #main .icard:not([data-ind]):hover .ic-go{background:#c9879a;color:#1c0408}
+@media print{#main .icard:not([data-ind]) .ic-v{color:#2a2326!important;-webkit-text-fill-color:#2a2326}}
+#main .icard:not([data-ind]) .ic-v.sm{font-size:clamp(22px,2vw,34px)!important}

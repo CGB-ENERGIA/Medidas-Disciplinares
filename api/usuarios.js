@@ -9,6 +9,8 @@
 //   admin        → controle total dos dois módulos (age como DP em Medidas e como gestor em Contratações)
 //   medidas      → "supervisor" | "coordenador" (usuários) | "dp" (gestor) | "" (sem acesso)
 //   contratacoes → "usuario" (solicitante) | "gestor" (Recrutamento) | "" (sem acesso)
+//   financeiro, patrimonio, atendimento, ti (Central Administrativa) → "usuario" (consulta) | "gestor" (lança e atualiza) | "" (sem acesso).
+//                  O administrador é gestor nas quatro.
 //   horas        → "usuario" (analisa) | "gestor" (analisa, carrega a base, edita o cadastro) | "" (sem acesso). O administrador NÃO ganha este módulo sozinho.
 // Todos os perfis veem todas as equipes; não há vínculo com a estrutura de equipes.
 import { consulta, rota } from "./_lib/db.js";
@@ -19,6 +21,16 @@ const MEDIDAS = ["supervisor", "coordenador", "dp"];
 const CONTRATACOES = ["usuario", "gestor"];
 const HORAS = ["usuario", "gestor"];
 const SO_ADMIN = { admin: true, modulo: null };
+// Central Administrativa: campo da API → coluna do banco
+const CA = { financeiro: "ca_financeiro", patrimonio: "ca_patrimonio", atendimento: "ca_atendimento", ti: "ca_ti" };
+const CA_NIVEIS = ["usuario", "gestor"];
+// Lê os níveis da Central enviados (undefined = não mexer) e confere
+function lerCa(c, atual = {}) {
+  const v = {};
+  for (const [k, col] of Object.entries(CA)) v[k] = c[k] === undefined ? (atual[col] ?? null) : vazioParaNulo(c[k]);
+  for (const k of Object.keys(CA)) if (v[k] !== null && !CA_NIVEIS.includes(v[k])) return { erro: "Nível inválido na Central Administrativa." };
+  return { v, algum: Object.values(v).some(Boolean) };
+}
 
 const vazioParaNulo = v => (v === undefined || v === null || v === "" ? null : v);
 const erroAcesso = (medidas, contratacoes, horas = null) => {
@@ -31,7 +43,7 @@ const erroAcesso = (medidas, contratacoes, horas = null) => {
 const outrosAdmins = async id => (await consulta("select count(*)::int as n from usuarios where admin and ativo and excluido_em is null and id <> $1", [id]))[0].n;
 
 export const GET = rota(comLogin(async () => {
-  const usuarios = await consulta(`select id, usuario, nome, matricula, setor, pendente, solicitado_em, admin, perfil as medidas, contratacoes, horas_extras as horas, ativo, trocar_senha,
+  const usuarios = await consulta(`select id, usuario, nome, matricula, setor, pendente, solicitado_em, admin, perfil as medidas, contratacoes, horas_extras as horas, ca_financeiro as financeiro, ca_patrimonio as patrimonio, ca_atendimento as atendimento, ca_ti as ti, ativo, trocar_senha,
                                           bloqueado_ate > now() as bloqueado, ultimo_acesso, criado_em
                                      from usuarios where excluido_em is null order by pendente desc, ativo desc, nome`);
   return ok({ usuarios });
@@ -44,19 +56,21 @@ export const POST = rota(comLogin(async request => {
   if (!usuarioValido(usuario)) return erro("Usuário deve ter de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado (ex.: joao.silva).", 400);
   if (nome.length < 3) return erro("Informe o nome completo.", 400);
   const e = erroAcesso(medidas, contratacoes, horas); if (e) return erro(e, 400);
-  if (!admin && !medidas && !contratacoes && !horas) return erro("Escolha pelo menos um acesso: administrador, Gestão Administrativa, Contratações ou Horas Extras.", 400);
+  const ca = lerCa(c); if (ca.erro) return erro(ca.erro, 400);
+  if (!admin && !medidas && !contratacoes && !horas && !ca.algum) return erro("Escolha pelo menos um acesso: administrador, Gestão Administrativa, Contratações, Horas Extras ou uma área da Central.", 400);
   const [existe] = await consulta("select 1 from usuarios where usuario = $1", [usuario]);
   if (existe) return erro(`O usuário "${usuario}" já existe.`, 409);
   const temp = senhaTemporaria();
-  const [novo] = await consulta(`insert into usuarios (usuario, nome, perfil, contratacoes, horas_extras, admin, chave_pessoa, senha_hash, trocar_senha)
-                                 values ($1, $2, $3, $4, $7, $5, null, $6, true) returning id`,
-    [usuario, nome, medidas, contratacoes, admin, await hashSenha(temp), horas]);
+  const [novo] = await consulta(`insert into usuarios (usuario, nome, perfil, contratacoes, horas_extras, admin, chave_pessoa, senha_hash, trocar_senha,
+                                                     ca_financeiro, ca_patrimonio, ca_atendimento, ca_ti)
+                                 values ($1, $2, $3, $4, $7, $5, null, $6, true, $8, $9, $10, $11) returning id`,
+    [usuario, nome, medidas, contratacoes, admin, await hashSenha(temp), horas, ca.v.financeiro, ca.v.patrimonio, ca.v.atendimento, ca.v.ti]);
   return ok({ id: novo.id, usuario, senha_temporaria: temp }, 201);
 }, SO_ADMIN));
 
 export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const c = await lerJSON(request); if (!c || !c.id) return erro("Dados inválidos.", 400);
-  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras, pendente from usuarios where id = $1 and excluido_em is null", [c.id]);
+  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras, ca_financeiro, ca_patrimonio, ca_atendimento, ca_ti, pendente from usuarios where id = $1 and excluido_em is null", [c.id]);
   if (!u) return erro("Usuário não encontrado.", 404);
   if (u.pendente && !c.aprovar && c.ativo === true) return erro("Este pedido de acesso ainda não foi aprovado. Aprove escolhendo o nível em cada ambiente.", 400);
   if (c.aprovar && !u.pendente) return erro("Este pedido já foi tratado.", 409);
@@ -66,8 +80,9 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const contratacoes = c.contratacoes === undefined ? u.contratacoes : vazioParaNulo(c.contratacoes);
   const horas = c.horas === undefined ? u.horas_extras : vazioParaNulo(c.horas);
   const e = erroAcesso(medidas, contratacoes, horas); if (e) return erro(e, 400);
+  const ca = lerCa(c, u); if (ca.erro) return erro(ca.erro, 400);
   if (u.id === eu.id && (c.ativo === false || novoAdmin === false)) return erro("Você não pode desativar nem tirar o próprio acesso de administrador.", 400);
-  if (!novoAdmin && !medidas && !contratacoes && !horas) return erro(c.aprovar ? "Escolha o acesso em pelo menos um ambiente para aprovar. Para não liberar nada, recuse o pedido." : "O usuário precisa ter pelo menos um acesso. Para tirar tudo, desative ou exclua o usuário.", 400);
+  if (!novoAdmin && !medidas && !contratacoes && !horas && !ca.algum) return erro(c.aprovar ? "Escolha o acesso em pelo menos um ambiente para aprovar. Para não liberar nada, recuse o pedido." : "O usuário precisa ter pelo menos um acesso. Para tirar tudo, desative ou exclua o usuário.", 400);
   if (u.admin && (!novoAdmin || c.ativo === false) && (await outrosAdmins(u.id)) === 0) return erro("É preciso manter pelo menos um administrador ativo.", 400);
 
   const sets = [], p = [u.id];
@@ -80,8 +95,9 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
     set("usuario", novo);
   }
   if (c.nome !== undefined) { const n = String(c.nome).trim(); if (n.length < 3) return erro("Informe o nome completo.", 400); set("nome", n); }
-  const mudouAcesso = novoAdmin !== u.admin || medidas !== u.perfil || contratacoes !== u.contratacoes || horas !== u.horas_extras;
-  if (mudouAcesso) { set("horas_extras", horas); set("admin", novoAdmin); set("perfil", medidas); set("contratacoes", contratacoes); set("chave_pessoa", null); }
+  const mudouCa = Object.entries(CA).some(([k, col]) => ca.v[k] !== (u[col] ?? null));
+  const mudouAcesso = novoAdmin !== u.admin || medidas !== u.perfil || contratacoes !== u.contratacoes || horas !== u.horas_extras || mudouCa;
+  if (mudouAcesso) { for (const [k, col] of Object.entries(CA)) set(col, ca.v[k]); set("horas_extras", horas); set("admin", novoAdmin); set("perfil", medidas); set("contratacoes", contratacoes); set("chave_pessoa", null); }
   if (c.ativo !== undefined) set("ativo", !!c.ativo);
   if (c.aprovar) { set("pendente", false); set("ativo", true); set("trocar_senha", false); } // a pessoa já escolheu a própria senha ao pedir
   let temp = null;
@@ -107,7 +123,9 @@ export const DELETE = rota(comLogin(async (request, _q, eu) => {
                                           or exists (select 1 from medidas_arquivos where enviado_por = $1)
                                           or exists (select 1 from ct_docs where criado_por = $1 or atualizado_por = $1)
                                           or exists (select 1 from ct_arquivos where enviado_por = $1)
-                                          or exists (select 1 from ct_log where usuario_id = $1) as usado`, [u.id]);
+                                          or exists (select 1 from ct_log where usuario_id = $1)
+                                          or exists (select 1 from ca_docs where atualizado_por = $1)
+                                          or exists (select 1 from ca_arquivos where enviado_por = $1) as usado`, [u.id]);
   await consulta("delete from sessoes where usuario_id = $1", [u.id]);
   if (!usado) { await consulta("delete from usuarios where id = $1", [u.id]); return ok({ excluido: true, definitivo: true }); }
   // Já participou de medidas: não dá para apagar sem perder quem fez cada passo. Sai da lista, perde o acesso e libera o login.

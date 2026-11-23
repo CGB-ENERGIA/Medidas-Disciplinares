@@ -1,0 +1,54 @@
+/* ===== Hospedagem e Alimentação: lançar no próprio sistema ===== */
+let HL=[],HLVER=0,HLE=null,HLQ='';
+const hlPode=()=>!!(DBX&&CAN_EDIT);
+function hlSync(){['hosp','alim'].forEach(m=>{const arr=MODO===m?ROWS:DS[m].rows;if(arr&&arr._hlv===HLVER)return;const novo=(arr||[]).filter(r=>!r.man).concat(HL.filter(x=>x.m===m).map(x=>x.r));novo._hlv=HLVER;if(MODO===m)ROWS=novo;else DS[m].rows=novo})}
+async function hlCarregar(db){let mud=false;try{const s=await db.collection('hlan').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){const o=JSON.parse(v.j);HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);mud=true}})}catch(e){}if(mud)HLVER++;return mud}
+async function hlGrava(o){HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);HLVER++;if(hlPode()){try{await DBX.doc('hlan/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
+const hlDia=s=>{const t=Date.parse(s);return isNaN(t)?null:Math.floor(t/864e5)};
+const hlYmd=d=>d==null?'':new Date(d*864e5).toISOString().slice(0,10);
+const hlYm=d=>{const x=new Date(d*864e5);return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')};
+const hlUniq=k=>{const s=new Set();(DS.hosp.rows||[]).concat(DS.alim.rows||[]).forEach(r=>{if(r[k])s.add(r[k])});return [...s].sort((a,b)=>String(a).localeCompare(String(b)))};
+function hlMonta(e){const A=MODO==='alim',c=CCT[e.cod];const r={man:e.id,b:e.b||'',cid:(e.cid||'').toUpperCase(),est:(e.est||'').toUpperCase(),col:(e.col||'').toUpperCase(),sol:(e.sol||'').toUpperCase(),aut:(e.aut||'').toUpperCase(),cod:e.cod||'',cc:c?c[0]:'SEM CENTRO DE CUSTO',ger:c?c[1]:'SEM GERÊNCIA',area:c?c[2]:'SEM CENTRO DE CUSTO',mot:(e.mot||'').toUpperCase(),nf:e.nf||''};let fl=c?0:16;
+  if(A){const d=hlDia(e.data),v=+e.v||0;Object.assign(r,{tipo:e.tipo||'NÃO INFORMADO',ent:d,sai:d,hr:e.hr===''||e.hr==null?null:+e.hr,mes:d!=null?hlYm(d):'DATA INVÁLIDA',dia:1,pr:v,tot:v,q:1,st:'',conf:''});if(!e.tipo)fl|=8;if(v<=0)fl|=32;if(v>LIM_A)fl|=4;if(d==null)fl|=8}
+  else{const ent=hlDia(e.ent),sai=hlDia(e.sai),dia=+e.dia||0,pr=+e.pr||0,tot=e.tot!=null&&e.tot!==''?+e.tot:dia*pr;Object.assign(r,{ent,sai,mes:e.mes||(ent!=null?hlYm(ent):'DATA INVÁLIDA'),dia,pr,tot:Math.round(tot*100)/100,q:+e.q||1,st:e.st||'OK',conf:(e.conf||'').toUpperCase()});
+    if(r.st!=='OK')fl|=1;if(!r.nf)fl|=2;if(Math.abs(r.tot-dia*pr)>1)fl|=4;if(!r.tot)fl|=32;if(ent!=null&&sai!=null&&sai<ent)fl|=8;if(ent==null)fl|=8}
+  r.fl=fl;return r}
+PG.lancar=()=>{const A=MODO==='alim',nm=A?'refeição':'hospedagem';
+  const meus=HL.filter(x=>x.m===MODO).filter(x=>!HLQ||(x.r.col+' '+x.r.est+' '+x.r.cid+' '+x.r.nf).toUpperCase().includes(HLQ.toUpperCase())).sort((a,b)=>(b.r.ent||0)-(a.r.ent||0));
+  const e=HLE;let form='';
+  if(e){const dl=(id,arr)=>'<datalist id="'+id+'">'+arr.slice(0,3000).map(x=>'<option value="'+esc(x)+'">').join('')+'</datalist>';
+    const inp=(k,lab,t,ph,ex)=>'<label'+(ex&&ex.cls?' class="'+ex.cls+'"':'')+'><small>'+lab+'</small><input type="'+(t||'text')+'" data-hle="'+k+'" value="'+esc(e[k]==null?'':String(e[k]))+'" placeholder="'+(ph||'')+'"'+(ex&&ex.list?' list="'+ex.list+'"':'')+(ex&&ex.ro?' readonly':'')+'></label>';
+    const sel=(k,lab,ops)=>'<label><small>'+lab+'</small><select data-hle="'+k+'"><option value="">Escolha</option>'+ops.map(([v,t])=>'<option value="'+esc(v)+'"'+(String(e[k]||'')===String(v)?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>';
+    const cods=Object.keys(CCT).sort().map(k=>[k,k+' · '+CCT[k][0]+' ('+CCT[k][1]+')']);const c=CCT[e.cod];
+    form='<div class="panel aqform"><div class="phd"><h3>'+(e.novo?'Novo lançamento de '+nm:'Editar lançamento')+'</h3><small>os mesmos campos da planilha · entra na hora nos painéis</small></div><div class="aqgrid">'+
+      sel('b','Base *',Object.keys(BASES).map(b=>[b,bnome(b)]))+inp('cid','Cidade *','text','Cidade',{list:'hl-cid'})+inp('est',A?'Restaurante *':'Hotel / estabelecimento *','text','Nome',{list:'hl-est'})+
+      inp('col','Colaborador *','text','Nome do colaborador',{list:'hl-col',cls:'aqw2'})+(A?'':inp('q','Qtd de colaboradores','number','1'))+
+      inp('sol','Solicitação (quem pediu)','text','',{list:'hl-sol'})+inp('aut','Autorizado por','text','',{list:'hl-aut'})+
+      sel('cod','Código gerencial *',cods)+'<label><small>Centro de custo / gerência</small><input readonly value="'+esc(c?c[0]+' · '+c[1]:'escolha o código gerencial')+'"></label>'+inp('mot','Motivo','text','',{list:'hl-mot'})+
+      (A?sel('tipo','Tipo de refeição *',[['Café da Manhã','Café da manhã'],['Almoço','Almoço'],['Jantar','Jantar']])+inp('data','Data *','date')+inp('hr','Hora','number','0 a 23')+inp('v','Valor (R$) *','text','ex.: 25,00')
+        :inp('ent','Entrada *','date')+inp('sai','Saída *','date')+inp('dia','Diárias','text','calculado pelas datas')+inp('pr','Valor da diária (R$) *','text','ex.: 120,00')+inp('tot','Total (R$)','text','diárias × diária')+inp('mes','Mês de referência','month')+
+         sel('st','Status',[['OK','OK'],['VERIFICAR','Verificar']])+inp('conf','Conferente','text','',{list:'hl-conf'}))+
+      inp('nf','Nota fiscal','text','ex.: NF 268')+'</div><div class="aqbar">'+(!e.novo?'<button type="button" class="btn" data-hlexclui>Excluir</button>':'')+'<span class="aqtot" data-hltot>'+(A?'':'Total: <b>'+R(e.tot!=null&&e.tot!==''?+e.tot:(+e.dia||0)*(+e.pr||0))+'</b>')+'</span><button type="button" class="btn" data-hlcancela>Cancelar</button><button type="button" class="btn primary" data-hlsalva>'+(e.novo?'Lançar':'Salvar alterações')+'</button></div></div>'+
+      dl('hl-cid',hlUniq('cid'))+dl('hl-est',hlUniq('est'))+dl('hl-col',hlUniq('col'))+dl('hl-sol',hlUniq('sol'))+dl('hl-aut',hlUniq('aut'))+dl('hl-mot',hlUniq('mot'))+dl('hl-conf',hlUniq('conf'))}
+  return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico('mais')+'</span><div class="ubar-t"><span class="ubar-tag">'+(A?'Alimentação':'Hospedagem')+' · Cadastro</span><h2>Lançar no sistema</h2><span>Cadastre cada '+nm+' aqui, sem planilha: entra na hora no Painel geral, Onde se gasta, metas e pendências</span></div></div><div class="ubar-r">'+(e?'':'<button type="button" class="btn primary" data-hlnovo>+ Novo lançamento</button>')+'</div></div>'+
+   (hlPode()?'':'<div class="note">Modo de teste: dá para lançar e ver nos painéis, mas só fica salvo para todos quando quem pode editar o site lança pelo Claude.</div>')+form+
+   panel('Lançados no sistema',N(meus.length)+' '+(A?'refeições':'hospedagens')+' · '+R(meus.reduce((s,x)=>s+(x.r.tot||0),0)),'<div class="lcbar"><label class="lsel lcq"><small>Buscar</small><input type="search" data-hlq value="'+esc(HLQ)+'" placeholder="colaborador, '+(A?'restaurante':'hotel')+', cidade ou NF"></label></div>'+
+    (meus.length?tabela([{h:A?'Data':'Entrada',f:x=>dt(x.r.ent)},{h:'Colaborador',w:1,f:x=>'<b>'+esc(x.r.col)+'</b><br><small class="muted">'+esc(x.r.est)+' · '+esc(x.r.cid)+'</small>'},{h:'Base',f:x=>x.r.b},{h:'Centro de custo',f:x=>esc(x.r.cc)+'<br><small class="muted">'+esc(x.r.ger)+'</small>'},(A?{h:'Tipo',f:x=>esc(x.r.tipo)}:{h:'Diárias',n:1,f:x=>N(x.r.dia)}),{h:'Total',n:1,f:x=>'<b>'+R(x.r.tot)+'</b>'},{h:'NF',f:x=>esc(x.r.nf||'–')},{h:'',f:x=>(x.r.fl?'<span class="pill par" title="Tem pendência: aparece em Pendências da base">pendência</span> ':'')+'<button type="button" class="fced" data-hledita="'+x.id+'" title="Editar" aria-label="Editar"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>'}],meus,{}):'<div class="empty">Nenhum lançamento feito no sistema ainda. Clique em "+ Novo lançamento".</div>'))};
+const hlNum=v=>{if(v===''||v==null)return '';const n=parseFloat(String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'));return isNaN(n)?'':n};
+document.addEventListener('input',ev=>{const el=ev.target;if(el.dataset&&el.dataset.hlq!=null){HLQ=el.value;clearTimeout(window._hlqT);window._hlqT=setTimeout(()=>{render();const x=document.querySelector('[data-hlq]');if(x){x.focus();x.setSelectionRange(x.value.length,x.value.length)}},350);return}
+  if(!el.dataset||el.dataset.hle==null||!HLE)return;const k=el.dataset.hle;HLE[k]=['v','pr','tot','dia'].includes(k)?hlNum(el.value):el.value;
+  if((k==='ent'||k==='sai')&&HLE.ent&&HLE.sai){const d=hlDia(HLE.sai)-hlDia(HLE.ent);if(d>=0){HLE.dia=d||1;const x=document.querySelector('[data-hle="dia"]');if(x)x.value=HLE.dia}}
+  if(k==='ent'&&HLE.ent&&!HLE._mesManual){HLE.mes=HLE.ent.slice(0,7);const x=document.querySelector('[data-hle="mes"]');if(x)x.value=HLE.mes}if(k==='mes')HLE._mesManual=1;
+  if(k==='tot')HLE._totManual=HLE.tot!=='';if(!HLE._totManual&&['dia','pr','ent','sai'].includes(k)){HLE.tot='';}
+  const t=document.querySelector('[data-hltot]');if(t&&MODO!=='alim')t.innerHTML='Total: <b>'+R(HLE.tot!==''&&HLE.tot!=null?+HLE.tot:(+HLE.dia||0)*(+HLE.pr||0))+'</b>'});
+document.addEventListener('change',ev=>{const el=ev.target;if(el.dataset&&el.dataset.hle!=null&&HLE&&el.tagName==='SELECT'){HLE[el.dataset.hle]=el.value;if(el.dataset.hle==='cod')render()}});
+document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-hlnovo],[data-hledita],[data-hlcancela],[data-hlsalva],[data-hlexclui]');if(!b)return;
+  if(b.hasAttribute('data-hlnovo')){HLE={novo:1,id:'H'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),q:1,st:'OK',b:F.base||''};render();scrollTo({top:0});return}
+  if(b.dataset.hledita){const x=HL.find(y=>y.id===b.dataset.hledita);if(!x)return;HLE=Object.assign({},x.e,{id:x.id});render();scrollTo({top:0});return}
+  if(b.hasAttribute('data-hlcancela')){HLE=null;render();return}
+  if(b.hasAttribute('data-hlexclui')){if(!confirm('Excluir este lançamento?'))return;await hlGrava({id:HLE.id,m:MODO,del:true});HLE=null;toast('Lançamento excluído.');render();return}
+  const e=HLE,A=MODO==='alim';const req=A?[['b','a base'],['cid','a cidade'],['est','o restaurante'],['col','o colaborador'],['cod','o código gerencial'],['tipo','o tipo de refeição'],['data','a data'],['v','o valor']]:[['b','a base'],['cid','a cidade'],['est','o hotel'],['col','o colaborador'],['cod','o código gerencial'],['ent','a entrada'],['sai','a saída'],['pr','o valor da diária']];
+  const falta=req.find(([k])=>e[k]===''||e[k]==null);if(falta){toast('Preencha '+falta[1]+'.');const c=document.querySelector('[data-hle="'+falta[0]+'"]');c&&c.focus();return}
+  const ed=Object.assign({},e);delete ed.novo;const o={id:e.id,m:MODO,e:ed,r:hlMonta(e),em:new Date().toISOString()};
+  const r=await hlGrava(o);HLE=null;toast((r==='ok'?'Lançado. ':r==='teste'?'Lançado nesta tela (modo de teste). ':'')+(o.r.fl?'Ficou com pendência: confira em Pendências da base.':'Já aparece nos painéis.'));render()});
+{const _r=render;render=function(){try{hlSync()}catch(e){console.error(e)}return _r.apply(this,arguments)}}

@@ -10,3 +10,10 @@ testes/Solicitacoes_de_exemplo_Medidas_Disciplinares.xlsx
 # exportação do site de Contratações antigo (nomes e currículos de pessoas): nunca vai para o GitHub
 contratacoes-exportacao*/
 contratacoes-exportacao*.zip
+# Central Administrativa: banco exportado (nomes de colaboradores) e a sal da locação nunca vão para o GitHub
+central-administrativa/banco-exportado/
+central-administrativa/fonte/loc/
+# Central Administrativa: a versão completa (com dados) e as bases extraídas ficam só no computador.
+# O site publica site/central.html SEM dados; os dados vão para o Neon com "npm run central:banco".
+central-administrativa/site/
+central-administrativa/fonte/dados/

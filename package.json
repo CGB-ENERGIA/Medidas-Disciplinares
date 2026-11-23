@@ -10,7 +10,10 @@
     "usuario:criar": "node --env-file=.env --no-warnings banco/criar-usuario.mjs",
     "usuario:redefinir": "node --env-file=.env --no-warnings banco/redefinir-senha.mjs",
     "horas:liberar": "node --env-file=.env --no-warnings banco/liberar-horas.mjs",
-    "teste": "node testes/teste_api.mjs"
+    "teste": "node testes/teste_api.mjs",
+    "central:tabelas": "node --env-file=.env central-administrativa/publicar.mjs tabelas",
+    "central:site": "node central-administrativa/publicar.mjs site",
+    "central:banco": "node --env-file=.env central-administrativa/publicar.mjs banco"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",
