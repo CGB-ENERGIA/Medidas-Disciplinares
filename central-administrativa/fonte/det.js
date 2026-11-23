@@ -39,23 +39,28 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')DT.fechar()});
 /* ---------- HOSPEDAGEM / ALIMENTAÇÃO ---------- */
 DT.hosp={
   base(){let a=[];try{a=filt()}catch(e){}return a.length?a:ROWS},
-  achar(l){const t=DT.nrm(l);if(!t)return null;const A=DT.hosp.base(),m=DT.mes(l);if(m)return {c:'mes',v:m,nm:mesNome?mesNome(m):l};
+  achar(l,pista){const t=DT.nrm(l);if(!t)return null;const A=DT.hosp.base(),m=DT.mes(l);if(m)return {c:'mes',v:m,nm:mesNome?mesNome(m):l};
+    if(pista){const x=A.find(r=>DT.nrm(r[pista])===t);if(x)return {c:pista,v:x[pista],nm:VX.cap(x[pista])}}
     for(const b of Object.keys(BASES)){if(t===b||t===DT.nrm(bnome(b)))return {c:'b',v:b,nm:bnome(b)}}
     const ix=DT.idx('hosp',{k:A.length+'|'+(A[0]&&A[0].tot)+'|'+(typeof MODO!=='undefined'?MODO:''),f:m=>{for(const c of ['area','ger','cid','est','col','mot','sol','aut','cc'])for(const x of A)DT.put(m,x[c],{c,v:x[c],nm:VX.cap(x[c])})}});
     return ix.get(t)||null},
-  NM:{b:'Base',cid:'Cidade',est:'Hotel / restaurante',col:'Colaborador',area:'Área',ger:'Gerência',mot:'Motivo',sol:'Solicitante',aut:'Autorizador',cc:'Centro de custo',mes:'Mês',tudo:'Visão geral'},
-  COMP:{b:'cid',cid:'est',est:'col',col:'est',area:'b',ger:'area',mot:'b',sol:'col',aut:'b',cc:'b',mes:'b',tudo:'b'},
-  abrir(q,extra){const A=DT.hosp.base(),S=q.c==='tudo'?A:A.filter(r=>r[q.c]===q.v),isA=typeof MODO!=='undefined'&&MODO==='alim';
+  NM:{b:'Base',cid:'Cidade',est:'Hotel / restaurante',tipo:'Refeição',col:'Colaborador',area:'Área',ger:'Gerência',mot:'Motivo',sol:'Solicitante',aut:'Autorizador',cc:'Centro de custo',mes:'Mês',tudo:'Visão geral'},
+  COMP:{b:'cid',cid:'est',est:'area',col:'est',area:'b',ger:'area',mot:'b',sol:'col',aut:'b',cc:'b',mes:'b',tudo:'b'},
+  COMP_A:{b:'cid',cid:'est',est:'tipo',col:'est',area:'b',ger:'area',mot:'b',sol:'col',aut:'b',cc:'b',mes:'b',tudo:'b',tipo:'b'},
+  /* o filtro da própria coisa clicada não vale (ex.: filtro em novembro e clique em "Janeiro" mostrava R$ 0) */
+  baseSem(c){const K={mes:'mes',b:'base',ger:'ger',area:'area'}[c];if(!K||typeof F==='undefined'||!F[K])return DT.hosp.base();const v=F[K];F[K]='';try{return DT.hosp.base()}finally{F[K]=v}},
+  abrir(q,extra){const A=DT.hosp.baseSem(q.c),S=q.c==='tudo'?A:A.filter(r=>r[q.c]===q.v),isA=typeof MODO!=='undefined'&&MODO==='alim';
     const tot=DT.sum(S,r=>r.tot),di=DT.sum(S,r=>r.dia),cols=new Set(S.map(r=>r.col)).size,med=di?tot/di:0;
     let meta=null;try{if(q.c==='area')meta=metaPer([q.v]);else if(q.c==='tudo'&&!F.base)meta=metaPer()}catch(e){}
     const ms=(typeof MESES_DADOS==='function'?MESES_DADOS():[...new Set(S.map(r=>r.mes))].sort()).filter(m=>/^\d{4}-\d{2}$/.test(m));
     const ev=DT.barras(ms.map(m=>({l:VX.M3[+m.slice(5)-1],v:DT.sum(S.filter(r=>r.mes===m),r=>r.tot)})),VX.brl);
-    const cc=DT.hosp.COMP[q.c],gs=DT.grp(S,r=>cc==='b'?bnome(r.b):r[cc]).map(g=>({k:VX.cap(g.k),v:DT.sum(g.rows,r=>r.tot)})).sort((a,b)=>b.v-a.v);
+    const cc=(isA?DT.hosp.COMP_A:DT.hosp.COMP)[q.c]||'b',gs=DT.grp(S,r=>cc==='b'?bnome(r.b):r[cc]).map(g=>({k:VX.cap(g.k),v:DT.sum(g.rows,r=>r.tot)})).sort((a,b)=>b.v-a.v);
     const top=DT.top(gs.slice(0,6),VX.brl,tot);
-    const reg=DT.tab([['Entrada'],['Colaborador'],['Hotel'],['Base'],['Valor',1]],S.slice().sort((a,b)=>(b.ent||0)-(a.ent||0)).slice(0,8).map(r=>[DT.dia(r.ent),VX.esc(VX.cap(r.col)),VX.esc(VX.cap(r.est)),r.b,VX.brl(r.tot)]));
-    const maior=gs[0];const frase=(q.c==='tudo'?'No período filtrado':DT.rot(DT.hosp.NM[q.c],q.nm))+' soma <b>'+VX.brl(tot)+'</b> em '+DT.num(di)+' diárias'+(meta?', <b>'+VX.pc(tot/meta)+'</b> da meta até hoje':'')+'.'+(maior?' A maior parte vem de <b>'+VX.esc(maior.k)+'</b> ('+VX.pc(maior.v/(tot||1))+').':'');
-    DT.abrir({tag:(isA?'Alimentação':'Hospedagem')+' · '+DT.hosp.NM[q.c],tit:extra&&extra.tit||q.nm,sub:S.length+' lançamentos no período filtrado',frase,
-      kpis:[['Gasto',VX.brl(tot)],['Diárias',DT.num(di)],['Colaboradores',DT.num(cols)],['Custo médio por diária',VX.brl(med)]].concat(meta?[['Meta até hoje',VX.brl(meta)],['Consumo da meta',VX.pc(tot/meta),tot>meta?'bad':'ok']]:[]),
+    const reg=DT.tab([[isA?'Data':'Entrada'],['Colaborador'],[isA?'Restaurante':'Hotel'],['Base'],['Valor',1]],S.slice().sort((a,b)=>(b.ent||0)-(a.ent||0)).slice(0,8).map(r=>[DT.dia(r.ent),VX.esc(VX.cap(r.col)),VX.esc(VX.cap(r.est)),r.b,VX.brl(r.tot)]));
+    const NMq=q.c==='est'?(isA?'Restaurante':'Hotel'):DT.hosp.NM[q.c];
+    const maior=gs[0];const UN=isA?'refeições':'diárias';const frase=(q.c==='tudo'?'No período filtrado':DT.rot(NMq,q.nm))+(q.c==='aut'?' autorizou <b>'+VX.brl(tot)+'</b> em '+DT.num(di)+' '+UN:q.c==='sol'?' solicitou <b>'+VX.brl(tot)+'</b> em '+DT.num(di)+' '+UN:' soma <b>'+VX.brl(tot)+'</b> em '+DT.num(di)+' '+UN)+(meta?', <b>'+VX.pc(tot/meta)+'</b> da meta até hoje':'')+'.'+(maior&&gs.length>1?(maior.v/(tot||1)>=.5?' A maior parte vem de <b>':' O maior peso é <b>')+VX.esc(maior.k)+'</b> ('+VX.pc(maior.v/(tot||1))+').':'');
+    DT.abrir({tag:(isA?'Alimentação':'Hospedagem')+' · '+NMq,tit:extra&&extra.tit||q.nm,sub:S.length+' lançamentos no período filtrado',frase,
+      kpis:[[q.c==='aut'?'Gasto autorizado':q.c==='sol'?'Gasto solicitado':'Gasto',VX.brl(tot)],[isA?'Refeições':'Diárias',DT.num(di)],q.c==='col'?[isA?'Restaurantes':'Hotéis',DT.num(new Set(S.map(r=>r.est)).size)]:['Colaboradores',DT.num(cols)],[isA?'Custo médio por refeição':'Custo médio por diária',VX.brl(med)]].concat(meta?[['Meta até hoje',VX.brl(meta)],['Consumo da meta',VX.pc(tot/meta),tot>meta?'bad':'ok']]:[]),
       ev,top,topT:'Onde se concentra · por '+DT.hosp.NM[cc].toLowerCase(),reg,regT:'Últimos lançamentos',ir:q.c==='tudo'?null:['onde','Ver em Onde se gasta']})}
 };
 
@@ -89,33 +94,41 @@ DT.loc={
 
 /* ---------- PATRIMÔNIO ---------- */
 DT.pat={
-  achar(l){const t=DT.nrm(l);if(!t)return null;const m=DT.mes(l);if(m)return {c:'m',v:+m.slice(5),nm:DT.MFA[+m.slice(5)-1]};
+  achar(l,pista){const t=DT.nrm(l);if(!t)return null;
+    if(pista==='obs'){const t2=t.replace(/…$/,'');const x=pInv(true).find(r=>r.obs&&DT.nrm(r.obs).startsWith(t2));if(x)return {c:'obs',v:String(x.obs).toUpperCase(),nm:'“'+String(x.obs).toUpperCase().slice(0,60)+'”'}}
+    if(pista){const inv0=pInv(true),x=PAT.cad.concat(inv0).find(r=>DT.nrm(r[pista])===t);if(x)return {c:pista,v:x[pista],nm:pista==='pl'?'Plaqueta '+x.pl:VX.cap(x[pista])}}
+    const m=DT.mes(l);if(m)return {c:'m',v:+m.slice(5),nm:DT.MFA[+m.slice(5)-1]};
     const inv=pInv(true);for(const b of [...new Set(inv.map(x=>x.b))]){let nb=b;try{nb=pbn(b)}catch(e){}if(t===b||t===DT.nrm(nb))return {c:'b',v:b,nm:nb}}
     const ix=DT.idx('pat',{k:inv.length+'|'+PAT.cad.length,f:m=>{for(const c of ['pl','gr','loc','nm','ds'])for(const x of PAT.cad.concat(inv))DT.put(m,x[c],{c,v:x[c],nm:c==='pl'?'Plaqueta '+x.pl:VX.cap(x[c])})}});
     if(ix.get(t))return ix.get(t);
     for(const [k,n] of Object.entries(STN))if(DT.nrm(n)===t)return {c:'st',v:k,nm:n};
     return null},
-  NM:{b:'Base',gr:'Grupo de bem',loc:'Local',nm:'Responsável',ds:'Bem',pl:'Bem',m:'Mês',st:'Situação',tudo:'Visão geral'},
-  abrir(q,extra){const inv=pInv(true),cad=PAT.cad;const fx=x=>q.c==='tudo'||(q.c==='m'?true:q.c==='st'?true:x[q.c]===q.v);
+  NM:{b:'Base',gr:'Grupo de bem',loc:'Local',nm:'Responsável',ds:'Bem',pl:'Bem',m:'Mês',st:'Situação',obs:'Observação',tudo:'Visão geral'},
+  abrir(q,extra){const inv=pInv(true),cad=PAT.cad;const fx=x=>q.c==='tudo'||(q.c==='m'?true:q.c==='st'?true:q.c==='obs'?String(x.obs||'').toUpperCase()===q.v:x[q.c]===q.v);
     const C=cad.filter(fx),I=q.c==='m'?inv.filter(x=>x.m===q.v):inv.filter(fx),at=[...atual(I).values()].filter(x=>q.c!=='st'||x.st===q.v),c=contSt(at);
     const ms=[...new Set(inv.map(x=>x.m))].sort((a,b)=>a-b);
     const ev=DT.barras(ms.map(m=>{const cc=contSt(inv.filter(x=>x.m===m&&(q.c==='m'||q.c==='st'?true:fx(x))));return {l:VX.M3[m-1],v:cc.pc==null?0:cc.pc}}),v=>VX.pc(v));
     const cc=q.c==='b'?'gr':'b',gs=DT.grp(at.filter(x=>x.st==='NC'||x.st==='NE'),x=>cc==='b'?(()=>{try{return pbn(x.b)}catch(e){return x.b}})():x.gr).map(g=>({k:VX.cap(g.k),v:g.n})).sort((a,b)=>b.v-a.v);
     const prob=at.filter(x=>x.st==='NC'||x.st==='NE').sort((a,b)=>b.m-a.m);
     const reg=DT.tab([['Plaqueta'],['Bem'],['Local'],['Situação']],prob.slice(0,10).map(x=>[VX.esc(x.pl),VX.esc(VX.cap(x.ds).slice(0,34)),VX.esc(VX.cap(x.loc).slice(0,28)),'<span class="dt-st"><i class="'+(x.st==='NE'?'vx-bad':'vx-par')+'"></i>'+STN[x.st]+'</span>']));
-    const frase=(q.c==='tudo'?'No inventário,':DT.rot(DT.pat.NM[q.c],q.nm)+':')+' <b>'+DT.num(at.length)+'</b> bens conferidos, <b>'+VX.pc(c.pc)+'</b> em conformidade. '+(c.NC+c.NE?'<b class="dt-bad">'+DT.num(c.NC+c.NE)+'</b> com problema ('+DT.num(c.NC)+' não conformes, '+DT.num(c.NE)+' não encontrados).':'Nenhum bem com problema.');
+    const oNC=I.filter(x=>x.st==='NC').length,oNE=I.filter(x=>x.st==='NE').length;
+    const plC=new Set(C.map(x=>x.pl)),fora=q.c==='m'||q.c==='st'||q.c==='tudo'?0:at.filter(x=>!plC.has(x.pl)).length;
+    const frase=(q.c==='tudo'?'No inventário,':DT.rot(DT.pat.NM[q.c],q.nm)+':')+' <b>'+DT.num(at.length)+'</b> '+(at.length===1?'bem conferido':'bens conferidos')+(q.c==='m'?' no mês':'')+', <b>'+VX.pc(c.pc)+'</b> em conformidade'+(q.c==='m'?'':' (situação no último inventário de cada bem)')+'. '+(c.NC+c.NE?'<b class="dt-bad">'+DT.num(c.NC+c.NE)+'</b> com problema hoje ('+DT.num(c.NC)+' não conformes, '+DT.num(c.NE)+' não encontrados).':'Nenhum bem com problema.')+
+      (q.c!=='m'&&(oNC+oNE)>(c.NC+c.NE)?' Somando todos os meses, foram <b>'+DT.num(oNC+oNE)+'</b> ocorrências ('+DT.num(oNC)+' não conformes, '+DT.num(oNE)+' não encontrados), porque o mesmo bem aparece em vários inventários.':'')+
+      (fora?' <b>'+DT.num(fora)+'</b> dos bens conferidos não estão no cadastro desta '+DT.pat.NM[q.c].toLowerCase()+'.':'');
     let ficha='';if(q.c==='pl'){const b=cad.find(x=>x.pl===q.v)||I[0]||{},h=inv.filter(x=>x.pl===q.v).sort((a,b)=>a.m-b.m);
       ficha='<dl class="dt-dl"><dt>Bem</dt><dd>'+VX.esc(VX.cap(b.ds))+'</dd><dt>Grupo</dt><dd>'+VX.esc(VX.cap(b.gr))+'</dd><dt>Local</dt><dd>'+VX.esc(VX.cap(b.loc))+'</dd><dt>Responsável</dt><dd>'+VX.esc(VX.cap(b.nm)||'–')+'</dd></dl>'+(h.length?'<div class="dt-sm">'+h.slice(-6).map(x=>'<span><i class="'+({C:'vx-ok',NC:'vx-par',NE:'vx-bad'}[x.st]||'vx-sem')+'"></i>'+VX.M3[x.m-1]+'<small>'+STN[x.st]+'</small></span>').join('')+'</div>':'')}
     if(q.c==='pl'){const u=at[0];DT.abrir({ficha,tag:'Patrimônio · Bem',tit:q.nm,sub:'Histórico do bem nos inventários',frase:u?'Último inventário ('+DT.MFA[u.m-1]+'): <b'+(u.st==='C'?'':' class="dt-bad"')+'>'+STN[u.st]+'</b>.'+(u.obs?' Observação: '+VX.esc(u.obs):''):'Bem ainda não conferido em nenhum inventário.',ir:['pat-bens','Ver bens']});return}
     DT.abrir({ficha,tag:'Patrimônio · '+DT.pat.NM[q.c],tit:extra&&extra.tit||q.nm,sub:q.c==='m'?'Inventário do mês':'Último registro de cada bem',frase,
-      kpis:[['Bens cadastrados',DT.num(q.c==='m'||q.c==='st'?cad.length:C.length)],['Conferidos',DT.num(at.length)],['Em conformidade',VX.pc(c.pc),c.pc!=null&&c.pc<.85?'bad':'ok'],['Não conformes',DT.num(c.NC),c.NC?'par':''],['Não encontrados',DT.num(c.NE),c.NE?'bad':''],['Sem status',DT.num(c.SS)]],
+      kpis:(q.c==='obs'?[]:[['Bens no cadastro',DT.num(q.c==='m'||q.c==='st'?cad.length:C.length)]]).concat([[q.c==='m'?'Conferidos no mês':'Bens conferidos',DT.num(at.length)],['Em conformidade',VX.pc(c.pc),c.pc!=null&&c.pc<.85?'bad':'ok'],['Não conformes',DT.num(c.NC),c.NC?'par':''],['Não encontrados',DT.num(c.NE),c.NE?'bad':''],['Sem status',DT.num(c.SS)]]),
       ev,evT:'Conformidade mês a mês',top:DT.top(gs.slice(0,6),v=>DT.num(v)),topT:'Onde estão os problemas · por '+(cc==='b'?'base':'grupo'),reg,regT:'Bens com problema',ir:['pat-bens','Ver bens']})}
 };
 
 /* ---------- FALE CONOSCO ---------- */
 DT.fc={
   base(){try{return fcRows()}catch(e){return FC.at}},
-  achar(l){const t=DT.nrm(l);if(!t)return null;const A=FC.at,m=DT.mes(l);if(m)return {c:'mes',v:m,nm:l};
+  achar(l,pista){const t=DT.nrm(l);if(!t)return null;const A=FC.at,m=DT.mes(l);if(m)return {c:'mes',v:m,nm:l};
+    if(pista){const x=A.find(r=>DT.nrm(r[pista])===t);if(x)return {c:pista,v:x[pista],nm:VX.cap(x[pista])}}
     const w=DT.dsem(l);if(w!=null)return {c:'dow',v:w,nm:DT.DS[w]};
     for(const b of [...new Set(A.map(x=>x.b))]){let nb=b;try{nb=fcb(b)}catch(e){}if(t===b||t===DT.nrm(nb))return {c:'b',v:b,nm:nb}}
     const ix=DT.idx('fc',{k:A.length,f:m=>{for(const c of ['as','co','ar','fn','sup','st','nm'])for(const x of A)DT.put(m,x[c],{c,v:x[c],nm:VX.cap(x[c])})}});
@@ -127,9 +140,9 @@ DT.fc={
     const ev=DT.barras(ms.map(m=>({l:VX.M3[+m.slice(5)-1],v:S.filter(x=>ymd(x.d)===m).length})),v=>DT.num(v));
     const cc=q.c==='as'?'b':'as',gs=DT.grp(S,x=>cc==='b'?(()=>{try{return fcb(x.b)}catch(e){return x.b}})():x.as).map(g=>({k:VX.cap(g.k),v:g.n})).sort((a,b)=>b.v-a.v);
     const reg=DT.tab([['Data'],['Assunto'],['Base'],['Situação']],S.slice().sort((a,b)=>b.d-a.d).slice(0,10).map(x=>[DT.dia(new Date(x.d*864e5).toISOString()),VX.esc(VX.cap(x.as)),x.b,'<span class="dt-st"><i class="'+(x.st==='RESOLVIDO'?'vx-ok':x.st==='ANDAMENTO'?'vx-par':'vx-bad')+'"></i>'+VX.cap(x.st)+'</span>']));
-    const frase=(q.c==='tudo'?'No período,':DT.rot(DT.fc.NM[q.c],q.nm)+(q.as?' · '+VX.esc(VX.cap(q.as)):'')+':')+' <b>'+DT.num(S.length)+'</b> atendimentos de '+DT.num(col)+' colaboradores; <b>'+VX.pc(S.length?res/S.length:null)+'</b> resolvidos.'+(vol?' <b>'+vol+'</b> colaborador(es) voltaram mais de uma vez.':'')+(gs[0]?' Mais comum: <b>'+VX.esc(gs[0].k)+'</b>.':'');
+    const frase=(q.c==='tudo'?'No período,':DT.rot(DT.fc.NM[q.c],q.nm)+(q.as?' · '+VX.esc(VX.cap(q.as)):'')+':')+' <b>'+DT.num(S.length)+'</b> '+(S.length===1?'atendimento':'atendimentos')+(q.c==='nm'?'':' de '+DT.num(col)+' '+(col===1?'colaborador':'colaboradores'))+'; <b>'+VX.pc(S.length?res/S.length:null)+'</b> '+(S.length===1?'resolvido':'resolvidos')+'.'+(vol&&q.c!=='nm'?' <b>'+vol+'</b> '+(vol===1?'colaborador voltou':'colaboradores voltaram')+' mais de uma vez.':'')+(gs[0]?' Mais comum: <b>'+VX.esc(gs[0].k)+'</b>.':'');
     DT.abrir({tag:'Fale Conosco · '+DT.fc.NM[q.c],tit:extra&&extra.tit||q.nm,sub:'Atendimentos registrados',frase,
-      kpis:[['Atendimentos',DT.num(S.length)],['Resolvidos',DT.num(res),'ok'],['Em andamento',DT.num(and),and?'par':''],['Taxa de resolução',VX.pc(S.length?res/S.length:null)],['Colaboradores',DT.num(col)],['Voltaram 2+ vezes',DT.num(vol),vol?'par':'']],
+      kpis:[['Atendimentos',DT.num(S.length)],['Resolvidos',DT.num(res),'ok'],['Em andamento',DT.num(and),and?'par':''],['Taxa de resolução',VX.pc(S.length?res/S.length:null)],].concat(q.c==='nm'?[['Assuntos diferentes',DT.num(new Set(S.map(x=>x.as)).size)]]:[['Colaboradores',DT.num(col)],['Voltaram 2+ vezes',DT.num(vol),vol?'par':'']]),
       ev,evT:'Atendimentos por mês',top:DT.top(gs.slice(0,6),v=>DT.num(v)),topT:'Onde se concentra · por '+(cc==='b'?'base':'assunto'),reg,regT:'Últimos atendimentos',ir:['fc-lista','Ver lista de atendimentos']})}
 };
 
@@ -154,9 +167,9 @@ DT.ti={
     const forn=new Set(por.map(p=>p.n.fornN)).size;
     const reg=DT.tab([['Emissão'],['Fornecedor'],['Nota'],['Valor',1]],por.slice().sort((a,b)=>(b.n.emissao||'')<(a.n.emissao||'')?-1:1).slice(0,10).map(p=>[DT.dia(p.n.emissao),VX.esc(VX.cap(p.n.fornN)),VX.esc(p.n.num||p.n.id),VX.brl(p.v)]));
     let meta=null;if(q.c==='grp'){const g=(TI_CFG.grupos||[]).find(g=>g.cts===q.v);meta=g&&g.meta}else if(q.c==='tudo'){try{meta=tiMetaMes()}catch(e){}}
-    const frase=(q.c==='tudo'?'No período filtrado,':DT.rot(DT.ti.NM[q.c],q.nm)+':')+' <b>'+VX.brl(tot)+'</b> em '+por.length+' compra'+(por.length===1?'':'s')+' de '+forn+' fornecedor'+(forn===1?'':'es')+'.'+(gs[0]?' Maior item: <b>'+VX.esc(gs[0].k)+'</b> ('+VX.brl(gs[0].v)+').':'');
+    const frase=(q.c==='tudo'?'No período filtrado,':DT.rot(DT.ti.NM[q.c],q.nm)+':')+' <b>'+VX.brl(tot)+'</b> em '+por.length+' compra'+(por.length===1?'':'s')+(q.c==='fornN'?'':' de '+forn+' fornecedor'+(forn===1?'':'es'))+'.'+(gs[0]?' Maior item: <b>'+VX.esc(gs[0].k)+'</b> ('+VX.brl(gs[0].v)+').':'');
     DT.abrir({tag:'Setor de TI · '+DT.ti.NM[q.c],tit:extra&&extra.tit||q.nm,sub:'Compras registradas',frase,
-      kpis:[['Gasto',VX.brl(tot)],['Compras',DT.num(por.length)],['Fornecedores',DT.num(forn)],['Ticket médio',VX.brl(por.length?tot/por.length:0)]].concat(meta?[['Meta mensal',VX.brl(meta)]]:[]),
+      kpis:[['Gasto',VX.brl(tot)],['Compras',DT.num(por.length)],q.c==='fornN'?['Notas',DT.num(new Set(por.map(p=>p.n.num||p.n.id)).size)]:['Fornecedores',DT.num(forn)],['Ticket médio',VX.brl(por.length?tot/por.length:0)]].concat(meta?[['Meta mensal',VX.brl(meta)]]:[]),
       ev,evT:'Gasto por mês de emissão',top:DT.top(gs.slice(0,6),VX.brl,tot),topT:'Itens que mais pesaram',reg,regT:'Compras',ir:['ti-notas','Ver notas e prestação de contas']})}
 };
 
@@ -165,6 +178,18 @@ DT.dom=()=>{const p=typeof pag==='function'?pag():{};const g=p.g||'';
   if(/Hospedagem/.test(g))return 'hosp';if(/Locação/.test(g))return 'loc';if(/Patrimônio/.test(g))return 'pat';if(/Fale/.test(g))return 'fc';if(/Setor de TI/.test(g))return 'ti';return null};
 DT.SEM=['lancar','loc-cad','fc-novo','ti-aquis','ti-nota','ti-seg','dados','entrada','catalogo','ficha','portal','controle'];
 DT.ALVO='.mb-r,.tirank-r,.bk,.msr,.timb,tbody tr,div.icard,.vgg-card,[data-vxd]';
+/* De que campo é o nome clicado? O título do quadro ("Quem autoriza", "Quem solicita"...) ou o cabeçalho da coluna decide.
+   Sem isso, um nome que é ao mesmo tempo colaborador e autorizador abria sempre como colaborador. */
+DT.PISTA={
+  hosp:[[/autoriz/,'aut'],[/solicit/,'sol'],[/motivo/,'mot'],[/hot|restaurante|estabelec|onde (se )?(hosped|come)/,'est'],[/cidade/,'cid'],[/ger[êe]ncia/,'ger'],[/centro de custo|[áa]rea/,'area'],[/colaborador|quem mais|pessoa/,'col']],
+  fc:[[/coordenador/,'co'],[/supervisor/,'sup'],[/assunto/,'as'],[/fun[çc][ãa]o/,'fn'],[/[áa]rea/,'ar'],[/colaborador/,'nm']],
+  pat:[[/observa/,'obs'],[/placa|plaqueta/,'pl'],[/respons|colaborador/,'nm'],[/grupo|categoria/,'gr'],[/^local|local$/,'loc']],
+  loc:[[/locador/,'lo'],[/endere/,'end'],[/localidade|cidade/,'loc'],[/im[óo]vel/,'im'],[/contrato/,'ct']]
+};
+DT.pista=(dom,txt)=>{const t=String(txt||'').toLowerCase();for(const [re,c] of (DT.PISTA[dom]||[]))if(re.test(t))return c;return null};
+DT.pistas=(el,dom)=>{const out=[];
+  if(el.matches('tr')){const tb=el.closest('table'),hs=tb?[...tb.querySelectorAll('thead th')].map(h=>h.innerText||''):[];return [...el.cells].slice(0,6).map((c,i)=>DT.pista(dom,hs[i]))}
+  const p=el.closest('.panel,.vgp,section');const h=p&&p.querySelector('.phd h3,h3,h2');const c=DT.pista(dom,h&&h.innerText);return [c,c,c]};
 DT.textos=el=>{const t=(el.innerText||'').split('\n').map(s=>s.trim()).filter(Boolean);if(el.matches('tr'))return [...el.cells].slice(0,6).map(c=>(c.innerText||'').split('\n')[0].trim()).filter(Boolean);return t.slice(0,3)};
 DT.clique=function(e){const pid=typeof pag==='function'?pag().id:'';if(DT.SEM.includes(pid))return;const dom=DT.dom();if(!dom)return;
   if(e.target.closest('button,a[href],input,select,textarea,label,summary,[data-tie],[data-fce],[data-fcedita],[data-hle],[data-lce],[data-tid],[data-tii],[data-tiver],[data-lsel]'))return;
@@ -172,7 +197,11 @@ DT.clique=function(e){const pid=typeof pag==='function'?pag().id:'';if(DT.SEM.in
   if(el.matches('[data-vxd]')){const [c,v,nm,as,m2]=el.getAttribute('data-vxd').split('|');e.preventDefault();
     if(c==='tudo'){R.abrir({c:'tudo',v:null,nm:nm},{tit:nm});return}const val=c==='m'||c==='dow'?+v:c==='grp'?(TI_CFG.grupos||[]).find(g=>g.nome===v).cts:v;R.abrir({c,v:val,nm:nm||v,as:as||'',mes2:m2||''});return}
   if(el.matches('div.icard,.vgg-card')){const t=DT.textos(el);e.preventDefault();R.abrir({c:'tudo',v:null,nm:VX.cap(t[0]||'Resumo')},{tit:VX.cap(t[0]||'Resumo')});return}
-  for(const l of DT.textos(el)){const q=R.achar(l);if(q){e.preventDefault();R.abrir(q);return}}};
+  /* linha de um imóvel específico (tem o id): abre aquele imóvel, não o primeiro com o mesmo nome */
+  if(dom==='ti'){const a=el.querySelector('a[href^="#ti-nota-"]');if(a){e.preventDefault();location.hash=a.getAttribute('href').slice(1);return}}
+  if(dom==='loc'){const sl=el.querySelector('[data-lsel]');if(sl){const im=DT.loc.I().find(i=>i.id===sl.dataset.lsel);e.preventDefault();if(im)R.abrir({c:'id',v:im.id,nm:VX.cap(im.im)+(im.loc?' · '+VX.cap(im.loc):'')});else if(typeof toast==='function')toast('Contrato distratado: use Consultar imóvel para ver o histórico.');return}}
+  const ps=DT.pistas(el,dom);const ts=DT.textos(el);const ord=[...ts.keys()].sort((a,b)=>(ps[b]?1:0)-(ps[a]?1:0));
+  for(const i of ord){const q=R.achar(ts[i],ps[i]);if(q){e.preventDefault();R.abrir(q);return}}};
 document.addEventListener('click',DT.clique,true);
 function dtMarca(){try{const pid=typeof pag==='function'?pag().id:'';const dom=DT.dom();document.body.classList.toggle('dt-pode',!!dom&&!DT.SEM.includes(pid));
   if(!dom||DT.SEM.includes(pid))return;const R=DT[dom];document.querySelectorAll('#main '+DT.ALVO.split(',').join(',#main ')).forEach(el=>{if(el.closest('.vx')&&!el.matches('[data-vxd]'))return;const ok=el.matches('[data-vxd],div.icard,.vgg-card')||DT.textos(el).some(l=>R.achar(l));el.classList.toggle('dt-ok',ok);if(ok&&!el.title)el.title='Clique para ver o resumo'})}catch(e){}}

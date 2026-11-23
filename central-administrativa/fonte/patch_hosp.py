@@ -3,6 +3,9 @@ def rep(a,b,n=1):
     global s
     assert s.count(a)>=1,a[:80]
     s=s.replace(a,b,n)
+# Alimentação: a data de corte e a fonte vêm da própria base de alimentação (pode ser mais nova que a de hospedagem)
+rep("alim:{rows:decodeAlim(RAW.alim),fonte:{},cut:GER0,","alim:{rows:decodeAlim(RAW.alim),fonte:{},cut:(RAW.alim.gerado?Date.parse(RAW.alim.gerado+'T12:00:00Z'):GER0),")
+rep("DS.alim.fonte[b]={at:RAW.gerado,origem:'planilha de alimentação (APP)'}","DS.alim.fonte[b]={at:RAW.alim.gerado||RAW.gerado,origem:RAW.alim.origem||'planilha de alimentação (APP)'}")
 rep("/* ===== PATRIMÔNIO ===== */",open('hosp3.js',encoding='utf-8').read()+"\n/* ===== PATRIMÔNIO ===== */")
 rep(" {id:'inicio',nm:'Visão geral',sub:'Resumo dos custos de hospedagem',ic:'home',g:'Hospedagem / Alimentação'},",
     " {id:'inicio',nm:'Painel geral',sub:'Gasto, meta e evolução mês a mês',ic:'home',g:'Hospedagem / Alimentação'},\n {id:'onde',nm:'Onde se gasta',sub:'Bases, hotéis e colaboradores',ic:'pin',g:'Hospedagem / Alimentação'},\n {id:'controle',nm:'Pendências da base',sub:'Correções e lançamentos a revisar',ic:'alerta',g:'Hospedagem / Alimentação'},")
