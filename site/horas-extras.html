@@ -210,11 +210,18 @@ tr[data-ch]:hover{background:var(--soft)}
   </section>
 
   <section id="vCarga" class="hidden">
-    <div class="card" id="drop">
-      <b>Clique ou arraste as planilhas (.xlsx)</b><br>
-      Batidas (aba “Batidas”), Cadastro (abas “Pessoas alocadas”, “Indiretos”, “Colaboradores”) e/ou Banco de horas (aba “Banco Dinâmica”). Pode selecionar vários ao mesmo tempo.<br>
-      <span class="note">Planilha modelo, com as colunas certas, uma linha de exemplo e instruções:</span> <button data-modelo="batidas" type="button">Baixar modelo de batidas</button> <button data-modelo="bancodin" type="button">Baixar modelo do banco dinâmica</button>
+    <div class="card">
+      <h2>Importar planilhas</h2>
+      <div id="drop" tabindex="0" role="button" aria-label="Selecionar planilhas para importar">
+        <b>Clique aqui ou arraste as planilhas (.xlsx)</b><br>
+        <span class="note">Pode selecionar vários arquivos ao mesmo tempo. O sistema reconhece o tipo pela aba: Batidas, Cadastro (Pessoas alocadas, Indiretos, Colaboradores) ou Banco Dinâmica.</span>
+      </div>
       <input type="file" id="file" accept=".xlsx,.xlsm,.xls" multiple class="hidden">
+      <div class="row" style="margin-top:12px;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="note">Precisa do formato certo? Baixe o modelo (colunas, exemplo e instruções):</span>
+        <button data-modelo="batidas" type="button">Modelo de batidas</button>
+        <button data-modelo="bancodin" type="button">Modelo do banco dinâmica</button>
+      </div>
     </div>
     <div class="card" id="prev" hidden>
       <h2>Arquivos lidos</h2><div id="prevtxt"></div>
@@ -889,7 +896,8 @@ async function carregarCarga(){
   }catch(e){$('#resumo').textContent='Não foi possível carregar: '+e.message}
 }
 $('#drop').onclick=()=>$('#file').click();
-$('#file').onchange=e=>e.target.files.length&&lerArquivos([...e.target.files]);
+$('#drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#file').click()}};
+$('#file').onchange=e=>{if(e.target.files.length)lerArquivos([...e.target.files]);e.target.value=''};
 ['dragover','dragenter'].forEach(t=>$('#drop').addEventListener(t,e=>{e.preventDefault();$('#drop').classList.add('over')}));
 ['dragleave','drop'].forEach(t=>$('#drop').addEventListener(t,e=>{e.preventDefault();$('#drop').classList.remove('over')}));
 $('#drop').addEventListener('drop',e=>e.dataTransfer.files.length&&lerArquivos([...e.dataTransfer.files]));
