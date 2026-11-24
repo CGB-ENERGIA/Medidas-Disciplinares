@@ -2168,6 +2168,7 @@ section[data-pag="ti-nota"] .tw{overflow-x:auto;max-width:100%}
 .tirat td,.tirat th{white-space:nowrap}
 .tihero-a{flex-wrap:wrap;max-width:100%}@media (max-width:700px){.tihero-a{justify-content:flex-start}.tihero-a .tihbtn{white-space:normal}}
 .aqform{border-left:4px solid var(--brand,#7a1f2b)}
+.lcfchips{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap}.lcfchips .chip{font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface,#fff);color:inherit;cursor:pointer}.lcfchips .chip[aria-pressed=true]{background:var(--brand,#7a1f2b);border-color:var(--brand,#7a1f2b);color:#fff}.lcfchips .chip b{margin-left:4px;opacity:.85}.lcsel,.lcval{font:inherit;font-size:12.5px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--surface,#fff);color:inherit}.lcval{width:96px;text-align:right}.lcmh{margin:16px 0 8px;font-size:13px}.lcmes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.lcmes>div{display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:9px}.lcmes>div.on{border-color:var(--brand,#7a1f2b);box-shadow:0 0 0 2px rgba(122,31,43,.15)}.lcmes b{font-size:12px}.lcmes select,.lcmes input{font:inherit;font-size:12px;padding:5px 7px;border:1px solid var(--line);border-radius:7px;background:var(--surface,#fff);color:inherit;width:100%;box-sizing:border-box}@media (max-width:900px){.lcmes{grid-template-columns:repeat(2,1fr)}}
 .dbc-b{text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}.dbc-b dd{overflow-wrap:anywhere}
 .vfk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 16px}.vfk .icard{cursor:default}@media (max-width:900px){.vfk{grid-template-columns:1fr 1fr}}
 .vfdet .aqgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.vfdet .aqgrid label.aqw3{grid-column:1/-1}.vfdet table input[type=checkbox]{width:16px;height:16px;accent-color:var(--brand,#7a1f2b)}
@@ -2832,11 +2833,57 @@ function lUtil(){const ag=LTIPO==='agua',ki=ag?0:1,kt=ag?2:1,nome=ag?'Água':'En
    '<div class="lfil">'+lSel('b','Base',[['','Todas']].concat(Object.keys(LBASE).map(b=>[b,lbn(b)])))+lSel('ct','Contrato',[['','Todos'],['127','127'],['169/170','169/170']])+lSel('mes','Mês de referência',[['','Último fechado ('+MES3[+lMesRef0().slice(5)-1].toLowerCase()+')']].concat(ms.map(m=>[m,mesNome(m)])))+'</div>'+cards+
    '<div class="xg2">'+panel(nome+' por mês',LF.b?'soma das contas na planilha de locação (a Contas a Pagar não separa por base)':'barra = pago na Contas a Pagar · traço = soma das contas na planilha de locação',ch)+panel('Situação das contas','imóveis ativos · set, out e nov',tabS)+'</div>'+
    '<div class="xg2">'+panel('Por base','soma na planilha de locação, meses fechados',porB.length?lRank(porB):'<div class="empty">Sem contas na planilha.</div>')+panel('Por contrato','pago no ano na Contas a Pagar',porC.length?lRank(porC):'<div class="empty">Sem pagamentos.</div>')+'</div>'+
-   panel('Contas de '+lM3Nome(2)+' a resolver',N(pend.length)+' imóveis com a conta "não saiu" ou "lançar"',tabela([{h:'Imóvel',w:1,f:i=>'<b data-lid="'+i.id+'">'+esc(i.im)+'</b><br><small class="muted">'+esc(i.loc)+'</small>'},{h:'Base',f:i=>i.b},{h:'CT',f:i=>i.ct},{h:'Situação · '+lM3Lab()[2].toLowerCase(),f:i=>'<span class="tidtag">'+esc(i[st][2])+'</span>'},{h:'Último valor na planilha',n:1,f:i=>{const m=ms.slice().reverse().find(m=>(i.cons[m]||[0,0])[ki]>0);return m?R(i.cons[m][ki])+' <small class="muted">('+MES3[+m.slice(5)-1].toLowerCase()+')</small>':'–'}},{h:'Titular',f:i=>esc(i.tit||'–')}],pend,{}))+
+   lContasHTML(at,st,ki,nome)+
    panel(nome+' por imóvel','valores mês a mês da planilha de locação · do maior gasto para o menor',grade)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ltipo]');if(!b)return;LTIPO=b.dataset.ltipo;render();scrollTo({top:0})});
 
-PG['loc-aluguel']=()=>{LTIPO='loc';return PG.locacao()};PG['loc-agua']=()=>{LTIPO='agua';return PG.locacao()};PG['loc-energia']=()=>{LTIPO='ener';return PG.locacao()};
+
+/* ===== Contas do mês (água / energia): filtro por situação e tudo editável, como na planilha ===== */
+let LCF={mes:'',st:'pend',q:''},LCE2=null;
+const L_STS={ens:['LANÇADO','LANÇAR','NÃO SAIU','PRYSCILLA','CON. PROPRIO','PG MORADOR','NÃO SE APLICA','DISTRATADO'],ags:['LANÇADO','LANÇAR','NÃO SAIU','PRYSCILLA','PAGA PELO MORADOR','POÇO ARTESIANO','NÃO SE APLICA','DISTRATADO']};
+const lMesesEd=()=>{const a=[];for(let y=2026;y<=2027;y++)for(let m=1;m<=12;m++){const k=y+'-'+String(m).padStart(2,'0');if(k<='2027-03')a.push(k)}return a};
+const lMN=m=>MES3[+m.slice(5)-1].toLowerCase()+'/'+m.slice(2,4);
+function lContasHTML(at,st,ki,nome){const sk=st==='ag'?'ags':'ens',ag=sk==='ags';if(!LCF.mes)LCF.mes=L_M3[2];const mes=LCF.mes,pode=true;
+  const stOf=i=>((i[sk]||{})[mes]||'').trim();const vOf=i=>(i.cons[mes]||[0,0])[ki]||0;
+  const ucOf=i=>ag?(i.ucag||''):(i.ucn||i.uca||'');
+  const cont={};at.forEach(i=>{const k=stOf(i)||'(sem situação)';cont[k]=(cont[k]||0)+1});
+  const nPend=at.filter(i=>/^(N[ÃA]O SAIU|LAN[ÇC]AR)$/.test(stOf(i))).length;
+  const ops=[...new Set(L_STS[sk].concat(Object.keys(cont).filter(x=>x!=='(sem situação)')))];
+  const q=LCF.q.trim().toUpperCase();
+  let L=at.filter(i=>LCF.st==='todos'?true:LCF.st==='pend'?/^(N[ÃA]O SAIU|LAN[ÇC]AR)$/.test(stOf(i)):(stOf(i)||'(sem situação)')===LCF.st);
+  if(q)L=L.filter(i=>(i.im+' '+i.loc+' '+i.b+' '+ucOf(i)+' '+(i.end||'')+' '+(i.lo||'')).toUpperCase().includes(q));
+  L.sort((a,b)=>a.b.localeCompare(b.b)||a.im.localeCompare(b.im));
+  const chip=(k,t,n)=>'<button type="button" class="chip" data-lcfst="'+esc(k)+'" aria-pressed="'+(LCF.st===k)+'">'+esc(t)+' <b>'+N(n)+'</b></button>';
+  const chips='<div class="chips lcfchips">'+chip('pend','Pendentes (não saiu + lançar)',nPend)+Object.entries(cont).sort((a,b)=>b[1]-a[1]).map(([k,n])=>chip(k,k,n)).join('')+chip('todos','Todos',at.length)+'</div>';
+  const ult=i=>{const m=Object.keys(i.cons).filter(x=>x<mes&&(i.cons[x]||[0,0])[ki]>0).sort().pop();return m?R(i.cons[m][ki])+' <small class="muted">('+lMN(m)+')</small>':'–'};
+  const sel=(i)=>'<select class="lcsel" data-lcst="'+i.id+'" aria-label="Situação">'+['',...ops].map(o=>'<option value="'+esc(o)+'"'+(stOf(i)===o?' selected':'')+'>'+esc(o||'—')+'</option>').join('')+'</select>';
+  const tab=tabela([{h:'Imóvel',w:1,f:i=>'<button type="button" class="vfpes" data-lced="'+i.id+'">'+esc(i.im)+'</button><br><small class="muted">'+esc(i.loc)+' · '+esc(i.lo||'')+'</small>'},{h:'Base',f:i=>i.b},{h:'CT',f:i=>i.ct},{h:ag?'UC água':'UC energia',f:i=>esc(ucOf(i)||'–')},{h:'Titular',f:i=>esc(i.tit||'–')},
+    {h:'Situação · '+lMN(mes),f:i=>sel(i)},{h:'Valor · '+lMN(mes),n:1,f:i=>'<input class="lcval" type="text" inputmode="decimal" data-lcv="'+i.id+'" value="'+(vOf(i)?nf2.format(vOf(i)):'')+'" placeholder="0,00">'},{h:'Último valor',n:1,f:ult},{h:'',f:i=>'<button type="button" class="btn sm" data-lced="'+i.id+'">Editar</button>'}],L,{alto:1});
+  let ed='';
+  if(LCE2){const e=LCE2,ms=lMesesEd();const inp=(k,lab)=>'<label><small>'+lab+'</small><input type="text" data-lce2="'+k+'" value="'+esc(e[k]==null?'':String(e[k]))+'"></label>';
+    ed='<div class="panel aqform lced"><div class="phd"><h3>'+esc(e.im)+' · '+esc(lbn?lbn(e.b):e.b)+' · CT '+esc(e.ct)+'</h3><small>'+esc(e.loc)+' · '+esc(e.lo||'')+'</small></div>'+
+      '<div class="aqgrid">'+(ag?inp('ucag','UC água'):inp('ucn','UC energia (nova)')+inp('uca','UC antiga'))+inp('titf','Titularidade')+(ag?'':inp('cp','Consumo próprio CEMAR'))+inp('ul','Última leitura')+inp('uv','Último vencimento')+'<label class="aqw3"><small>Endereço</small><input type="text" data-lce2="end" value="'+esc(e.end||'')+'"></label><label class="aqw3"><small>Observação das contas</small><input type="text" data-lce2="obsC" value="'+esc(e.obsC||'')+'" placeholder="opcional"></label></div>'+
+      '<h4 class="lcmh">'+nome+' mês a mês</h4><div class="lcmes">'+ms.map(m=>{const s0=((e[sk]||{})[m]||''),v0=(e.cons[m]||[0,0])[ki]||0;return '<div class="'+(m===mes?'on':'')+'"><b>'+lMN(m)+'</b><select data-lcm2="'+m+'|s">'+['',...ops].map(o=>'<option value="'+esc(o)+'"'+(s0===o?' selected':'')+'>'+esc(o||'—')+'</option>').join('')+'</select><input type="text" inputmode="decimal" data-lcm2="'+m+'|v" value="'+(v0?nf2.format(v0):'')+'" placeholder="valor"></div>'}).join('')+'</div>'+
+      '<div class="aqbar"><span class="aqtot tnota">Os meses seguintes (dez, jan…) já podem ser preenchidos. Tudo é salvo no site e vale mesmo se a planilha for enviada de novo.</span><button type="button" class="btn" data-lced-x>Cancelar</button><button type="button" class="btn primary" data-lced-ok>Salvar</button></div></div>'}
+  return ed+panel(nome+' · contas do mês',(LCF.st==='pend'?'pendentes':LCF.st==='todos'?'todos os imóveis ativos':LCF.st)+' · '+N(L.length)+' imóveis','<div class="lcbar"><label class="lsel"><small>Mês</small><select data-lcfmes>'+lMesesEd().map(m=>'<option value="'+m+'"'+(m===mes?' selected':'')+'>'+mesNome(m)+'</option>').join('')+'</select></label><label class="lsel lcq"><small>Buscar</small><input type="search" data-lcfq value="'+esc(LCF.q)+'" placeholder="imóvel, cidade, UC, endereço ou locador"></label></div>'+chips+
+    '<p class="tnota" style="margin:4px 0 10px">Troque a situação ou digite o valor direto na linha: salva na hora. Clique no imóvel ou em <b>Editar</b> para mudar UC, titular e os outros meses.</p>'+(L.length?tab:'<div class="empty">Nenhum imóvel nesta situação.</div>'))}
+async function lSalvaImv2(o,msg){o.em=new Date().toISOString();const r=await lGravaImv(o);toast(msg+(r==='teste'?' (modo de teste: só nesta tela)':r==='erro'?' Não ficou salvo para todos.':''));render()}
+const lNumV=v=>{const t=String(v||'').trim();if(!t)return 0;const n=parseFloat(t.replace(/[^\d,.-]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));return isNaN(n)?0:Math.round(n*100)/100};
+document.addEventListener('change',async ev=>{const el=ev.target;if(!el.dataset)return;const sk=LTIPO==='agua'?'ags':'ens',ki=LTIPO==='agua'?0:1;
+  if(el.dataset.lcfmes!=null){LCF.mes=el.value;LCE2=null;render();return}
+  if(el.dataset.lcst){const i=LOC.imv.find(x=>x.id===el.dataset.lcst);if(!i)return;const o=JSON.parse(JSON.stringify(i));o[sk]=o[sk]||{};if(el.value)o[sk][LCF.mes]=el.value;else delete o[sk][LCF.mes];lSalvaImv2(o,o.im+': '+(el.value||'sem situação')+' em '+lMN(LCF.mes)+'.');return}
+  if(el.dataset.lcv){const i=LOC.imv.find(x=>x.id===el.dataset.lcv);if(!i)return;const o=JSON.parse(JSON.stringify(i));const c=(o.cons[LCF.mes]||[0,0]).slice();c[ki]=lNumV(el.value);o.cons[LCF.mes]=c;
+    o[sk]=o[sk]||{};if(c[ki]>0&&/^(N[ÃA]O SAIU|LAN[ÇC]AR|)$/.test((o[sk][LCF.mes]||'').trim()))o[sk][LCF.mes]='LANÇADO';lSalvaImv2(o,o.im+': '+R(c[ki])+' em '+lMN(LCF.mes)+(c[ki]>0?' (situação: '+o[sk][LCF.mes]+')':'')+'.');return}
+  if(el.dataset.lcm2&&LCE2){const [m,t]=el.dataset.lcm2.split('|');if(t==='s'){LCE2[sk]=LCE2[sk]||{};if(el.value)LCE2[sk][m]=el.value;else delete LCE2[sk][m]}else{const c=(LCE2.cons[m]||[0,0]).slice();c[ki]=lNumV(el.value);LCE2.cons[m]=c}return}});
+document.addEventListener('input',ev=>{const el=ev.target;if(!el.dataset)return;
+  if(el.dataset.lcfq!=null){LCF.q=el.value;clearTimeout(window._lcfT);window._lcfT=setTimeout(()=>{render();const x=document.querySelector('[data-lcfq]');if(x){x.focus();x.setSelectionRange(x.value.length,x.value.length)}},350);return}
+  if(el.dataset.lce2&&LCE2){LCE2[el.dataset.lce2]=el.value}});
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-lcfst],[data-lced],[data-lced-x],[data-lced-ok]');if(!b)return;
+  if(b.dataset.lcfst!=null){LCF.st=b.dataset.lcfst;render();return}
+  if(b.dataset.lced){const i=LOC.imv.find(x=>x.id===b.dataset.lced);if(!i)return;LCE2=JSON.parse(JSON.stringify(i));LCE2.cons=LCE2.cons||{};render();const f=document.querySelector('.lced');f&&f.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(b.hasAttribute('data-lced-x')){LCE2=null;render();return}
+  if(b.hasAttribute('data-lced-ok')&&LCE2){const o=LCE2;['ucn','uca','ucag','titf','cp','ul','uv','end','obsC'].forEach(k=>{if(typeof o[k]==='string')o[k]=o[k].trim()});if(o.titf!=null)o.tit=/CGB/.test(o.titf.toUpperCase())?'CGB':o.titf.toUpperCase();LCE2=null;lSalvaImv2(o,o.im+' atualizado.')}});
+PG['loc-aluguel']=()=>{LTIPO='loc';return PG.locacao()};PG['loc-agua']=()=>{if(LTIPO!=='agua'){LCE2=null;LCF.mes=''}LTIPO='agua';return PG.locacao()};PG['loc-energia']=()=>{if(LTIPO!=='ener'){LCE2=null;LCF.mes=''}LTIPO='ener';return PG.locacao()};
 
 /* ---- Consultar imóvel (por UC, locador, endereço ou imóvel) ---- */
 let LQ='',LSEL=null;
@@ -2879,12 +2926,19 @@ let L_M3=['2026-09','2026-10','2026-11'],LCE=null,LCSEC='imoveis',LCQ='',LCMES='
 const lM3Lab=()=>L_M3.map(m=>MES3[+m.slice(5)-1].charAt(0)+MES3[+m.slice(5)-1].slice(1).toLowerCase());
 const lM3Nome=j=>MESES[+L_M3[j].slice(5)-1].toLowerCase();
 function lNormaliza(i){i.ens=i.ens||{};i.ags=i.ags||{};i.cons=i.cons||{};i.en=L_M3.map(m=>i.ens[m]||'');i.ag=L_M3.map(m=>i.ags[m]||'');i.tit=/CGB/.test(i.titf||i.tit||'')?'CGB':(i.titf||i.tit||'');return i}
-function lMeses3(){const s=new Set();LOC.imv.forEach(i=>{Object.keys(i.ens||{}).forEach(m=>s.add(m));Object.keys(i.ags||{}).forEach(m=>s.add(m))});const a=[...s].sort();if(a.length>=3)L_M3=a.slice(-3);LOC.imv.forEach(lNormaliza)}
+function lMeses3(){const c={};LOC.imv.forEach(i=>{new Set(Object.keys(i.ens||{}).concat(Object.keys(i.ags||{}))).forEach(m=>{c[m]=(c[m]||0)+1})});const min=Math.max(5,Math.round(LOC.imv.length*.2));const a=Object.keys(c).filter(m=>c[m]>=min).sort();if(a.length>=3)L_M3=a.slice(-3);LOC.imv.forEach(lNormaliza)}
 lMeses3();
 const lPodeCad=()=>!!(DBX&&CAN_EDIT);
 function lAplica(o){const k=LOC.imv.findIndex(x=>x.id===o.id);if(o.del){if(k>=0)LOC.imv.splice(k,1)}else if(k>=0)LOC.imv[k]=o;else LOC.imv.push(o);lMeses3();LVER++;LCACHE=null}
 async function lGravaImv(o){lAplica(o);if(lPodeCad()){try{await DBX.doc('loc_imv/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
-async function locCarregarImv(db){let m=false;try{const s=await db.collection('loc_imv').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){const o=JSON.parse(v.j);const k=LOC.imv.findIndex(x=>x.id===o.id);if(o.del){if(k>=0)LOC.imv.splice(k,1)}else if(k>=0)LOC.imv[k]=o;else LOC.imv.push(o);m=true}})}catch(e){}if(m){lMeses3();LVER++;LCACHE=null}return m}
+/* Imóvel editado no site + planilha nova: o que foi editado no site vale, mas o que a planilha trouxe de novo entra
+   (contas de meses que o site não tinha, situação que passou para LANÇADO e contrato renovado com término mais longe). */
+function lMergeImv(b,o){if(!b)return o;const r=Object.assign({},b,o),fraco=v=>!v||/^(N[ÃA]O SAIU|LAN[ÇC]AR)$/i.test(String(v).trim());
+  ['ens','ags'].forEach(k=>{const x=Object.assign({},b[k]||{});Object.entries(o[k]||{}).forEach(([m,v])=>{if(!(fraco(v)&&b[k]&&/^LAN[ÇC]ADO$/i.test(String(b[k][m]||''))))x[m]=v});r[k]=x});
+  const c=Object.assign({},b.cons||{});Object.entries(o.cons||{}).forEach(([m,v])=>{const bv=c[m]||[0,0];c[m]=[(v&&+v[0])||bv[0]||0,(v&&+v[1])||bv[1]||0]});r.cons=c;
+  if(b.fim&&o.fim&&b.fim>o.fim)r.fim=b.fim;
+  try{lNormaliza(r)}catch(e){}return r}
+async function locCarregarImv(db){let m=false;try{const s=await db.collection('loc_imv').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){const o=JSON.parse(v.j);const k=LOC.imv.findIndex(x=>x.id===o.id);if(o.del){if(k>=0)LOC.imv.splice(k,1)}else if(k>=0)LOC.imv[k]=lMergeImv(LOC.imv[k],o);else LOC.imv.push(o);m=true}})}catch(e){}if(m){lMeses3();LVER++;LCACHE=null}return m}
 const lOp=(arr,v,ph,lab)=>'<option value="">'+(ph||'–')+'</option>'+arr.map(x=>'<option value="'+esc(x)+'"'+(x===v?' selected':'')+'>'+esc(lab?lab(x):x)+'</option>').join('')+(v&&!arr.includes(v)?'<option selected value="'+esc(v)+'">'+esc(v)+'</option>':'');
 function lFormImv(){const e=LCE;
   const inp=(k,lab,t,ph,cls)=>'<label'+(cls?' class="'+cls+'"':'')+'><small>'+lab+'</small><input type="'+(t||'text')+'" data-lce="'+k+'" value="'+esc(e[k]==null?'':String(e[k]))+'" placeholder="'+(ph||'')+'"></label>';

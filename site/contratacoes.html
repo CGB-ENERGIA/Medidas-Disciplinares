@@ -760,10 +760,12 @@ body::after { content: ""; position: fixed; right: -60px; bottom: -80px; width: 
 @media (max-width: 760px) { body::after { width: 90vw; height: 60vh; opacity: .8; } .top { background-position: right 30% center, 0 0, 0 0; } }
 
 .tal-grid { display: grid; grid-template-columns: 270px minmax(0, 1fr) minmax(0, 1.15fr); gap: var(--s4); align-items: start; }
-@media (max-width: 1280px) { .tal-grid { grid-template-columns: 240px minmax(0, 1fr); } .tal-grid > section:last-child { grid-column: 1 / -1; } }
-@media (max-width: 760px) { .tal-grid { grid-template-columns: minmax(0, 1fr); } }
+/* A largura que vale é a da área de conteúdo (muda com o menu aberto ou fechado e com o zoom), não a da tela */
+:has(> .tal-grid) { container-type: inline-size; }
+@container (max-width: 1180px) { .tal-grid:not(.tab) { grid-template-columns: 240px minmax(0, 1fr); } .tal-grid:not(.tab) > .cats { grid-row: 1 / span 2; } .tal-grid:not(.tab) > section:last-child { grid-column: 2; } }
+@container (max-width: 760px) { .tal-grid:not(.tab) { grid-template-columns: minmax(0, 1fr); } .tal-grid:not(.tab) > .cats { grid-row: auto; position: static; max-height: none; } .tal-grid:not(.tab) > section:last-child { grid-column: auto; } }
 .tal-grid.tab { grid-template-columns: 240px minmax(0, 1fr); }
-@media (max-width: 1100px) { .tal-grid.tab { grid-template-columns: minmax(0, 1fr); } }
+@container (max-width: 900px) { .tal-grid.tab { grid-template-columns: minmax(0, 1fr); } .tal-grid.tab > .cats { position: static; max-height: none; } }
 .tal-grid.tab > .tal-col > section:last-child { grid-column: auto; }
 .cats { gap: 2px; position: sticky; top: calc(var(--top-h) + 16px); max-height: calc(100vh - var(--top-h) - 32px); overflow-y: auto; padding: var(--s3); }
 @media (max-width: 760px) { .cats { position: static; max-height: none; } }
@@ -2278,7 +2280,7 @@ function avisoBanco() {
 // Base importada das planilhas (BANCO RH 2025, Triagens 2024/2025, Bancos de talentos, PCD, Admissões).
 // Fica em "talentos" (partes p1..pN) e as marcações feitas no site ficam em "talentosEd/<id>".
 state.tal = { pronto: false, lista: [], partes: {}, cad: {}, ed: {}, meta: null }; state.talNovo = null;
-state.tf = { cat: "disp", q: "", base: "", ano: "", todos: false, modo: (() => { try { return localStorage.getItem("ct-tal-modo") || "tabela"; } catch { return "tabela"; } })() };
+state.tf = { cat: "disp", q: "", base: "", ano: "", sit: "", todos: false, modo: (() => { try { return localStorage.getItem("ct-tal-modo") || "tabela"; } catch { return "tabela"; } })() };
 state.talRow = null; state.talRowV = null;
 state.bancoAba = "inscritos";
 const PROGRAMAS = [
@@ -2378,12 +2380,13 @@ const talentosAno = () => state.tf.ano ? talentos().filter(p => p.anos.includes(
 function filtraTal() {
   const f = state.tf, k = norm(f.q);
   let l = talentosAno();
-  if (f.cat === "disp") l = l.filter(p => p.sit === "disp");
+  if (f.cat === "disp") l = f.sit ? l : l.filter(p => p.sit === "disp");
   else if (f.cat === "todos") l = l;
   else if (f.cat.startsWith("prog:")) { const t = f.cat.slice(5); l = l.filter(p => t === "escola-sug" ? p.escola : p.tags.has(t)); }
-  else if (f.cat.startsWith("area:")) { const a = f.cat.slice(5); l = l.filter(p => p.area === a && (f.todos || p.sit === "disp")); }
+  else if (f.cat.startsWith("area:")) { const a = f.cat.slice(5); l = l.filter(p => p.area === a && (f.todos || f.sit || p.sit === "disp")); }
   else if (f.cat.startsWith("sit:")) { const s = f.cat.slice(4); l = l.filter(p => p.sit === s); }
   if (f.base) l = l.filter(p => p.base === f.base);
+  if (f.sit) l = l.filter(p => p.sit === f.sit);
   if (k) { const dg = soDig(f.q); l = l.filter(p => norm(`${p.nome} ${p.funcao} ${p.cidade || ""} ${p.email || ""}`).includes(k) || (dg.length >= 4 && soDig(p.tel).includes(dg))); }
   return l.sort((a, b) => (b.ult || "").localeCompare(a.ult || "") || a.nome.localeCompare(b.nome));
 }
@@ -2510,7 +2513,8 @@ function vInscritos() {
         ${contAno.sem ? `<button class="chip" data-tano="sem" aria-pressed="${f.ano === "sem"}">Sem data válida<b>${contAno.sem}</b></button>` : ""}
       </div>
       <div class="filtros"><div class="tal-modo" role="group" aria-label="Como mostrar"><button data-talmodo="tabela" aria-pressed="${f.modo === "tabela"}">Tabela</button><button data-talmodo="lista" aria-pressed="${f.modo !== "tabela"}">Lista</button></div><input type="search" id="tf-q" placeholder="Buscar nome, cidade, telefone, e-mail" value="${esc(f.q)}" aria-label="Buscar inscrito">
-        <select id="tf-base" aria-label="Base mais próxima"><option value="">Todas as bases</option>${BASES.map(b => `<option value="${b}" ${f.base === b ? "selected" : ""}>${baseNome(b)}</option>`).join("")}</select></div>
+        <select id="tf-base" aria-label="Base mais próxima"><option value="">Todas as bases</option>${BASES.map(b => `<option value="${b}" ${f.base === b ? "selected" : ""}>${baseNome(b)}</option>`).join("")}</select>
+        <select id="tf-sit" aria-label="Situação"><option value="">Todas as situações</option>${SIT_TAL.map(([k]) => `<option value="${k}" ${f.sit === k ? "selected" : ""}>${SIT_ROT[k]} (${cnt(p => p.sit === k)})</option>`).join("")}</select></div>
       ${tab ? (pg.itens.length ? tabelaTal(pg.itens) : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`) : `<div class="lista">${pg.itens.length ? pg.itens.map(itemTal).join("") : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`}</div>`}
       ${pg.nav}
     </section>${tab ? "</div>" : ""}
@@ -4259,7 +4263,7 @@ document.addEventListener("click", e => {
   if (d.linkenv) { const c = getCand(state.sel); if (!c) return; if (d.linkenv === "copiar") { const m = msgLink(c); (navigator.clipboard ? navigator.clipboard.writeText(m) : Promise.reject()).then(() => toast("Mensagem copiada. Cole no WhatsApp do candidato."), () => toast("Não consegui copiar automaticamente. Use o botão WhatsApp ou copie o link em Integração RM › Configurações.")); } marcarLinkEnviado(c); if (d.linkenv === "wa") return; return; }
   if (d.bancoaba) { state.bancoAba = d.bancoaba; state.selTal = null; render(); return; }
   if (d.tano !== undefined) { state.tf.ano = d.tano; state.selTal = null; render(); return; }
-  if (d.tcat) { state.tf.cat = d.tcat; state.selTal = null; render(); document.querySelector(".tal-grid")?.scrollIntoView({ block: "nearest" }); return; }
+  if (d.tcat) { state.tf.cat = d.tcat; state.tf.sit = ""; state.selTal = null; render(); document.querySelector(".tal-grid")?.scrollIntoView({ block: "nearest" }); return; }
   if (d.talnovo !== undefined) { state.talNovo = d.talnovo === "1" ? { tags: [] } : null; render(); if (state.talNovo) { document.querySelector(".tal-form")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("tn-nome")?.focus(), 50); } return; }
   if (d.talmodo) { state.tf.modo = d.talmodo; state.talRow = null; try { localStorage.setItem("ct-tal-modo", d.talmodo); } catch {} render(); return; }
   if (d.talfecha) { state.selTal = null; state.talNovo = null; render(); return; }
@@ -4414,7 +4418,7 @@ document.addEventListener("change", e => {
   if (d.agenda) { const c = getCand(state.sel); if (!c) return; const cs0 = c.etapas?.[d.agenda], cs = cs0?.s; if (cs && cs !== "ag" && !(ETAPAS.find(x => x.k === d.agenda)?.ag && cs === "pend" && !cs0.mot && t.value)) { if ((c.etapas[d.agenda].d || "") !== t.value) setEtapa(c, d.agenda, { d: t.value }); return; } if (t.value && !ETAPAS.find(x => x.k === d.agenda)?.ag) { setEtapa(c, d.agenda, { s: "pend", d: t.value, sol: true }); return; } if (t.value) setEtapa(c, d.agenda, { s: "ag", d: t.value }); else if (c.etapas?.[d.agenda]?.s === "ag") setEtapa(c, d.agenda, null); return; }
   if (d.pendmot) { const c = getCand(state.sel); if (!c) return; const v = t.value.trim(); const cur = c.etapas?.[d.pendmot]; if ((cur?.mot || "") === v) return; setEtapa(c, d.pendmot, { s: "pend", mot: v }); return; }
   if (d.obs) { const c = getCand(state.sel); if (!c) return; const v = t.value.trim(); const cur = c.etapas?.[d.obs]; if ((cur?.t || "") === v) return; setEtapa(c, d.obs, cur ? { t: v } : { s: "pend", t: v }); return; }
-  const map = { "tf-base": ["tf", "base"], "bf-funcao": ["bf", "funcao"], "bf-base": ["bf", "base"], "bf-fase": ["bf", "fase"], "cf-etapa": ["filtro", "etapa"], "cf-base": ["filtro", "base"], "vf-base": ["vf", "base"], "hf-sit": ["hf", "sit"], "hf-base": ["hf", "base"], "hf-mes": ["hf", "mes"] };
+  const map = { "tf-base": ["tf", "base"], "tf-sit": ["tf", "sit"], "bf-funcao": ["bf", "funcao"], "bf-base": ["bf", "base"], "bf-fase": ["bf", "fase"], "cf-etapa": ["filtro", "etapa"], "cf-base": ["filtro", "base"], "vf-base": ["vf", "base"], "hf-sit": ["hf", "sit"], "hf-base": ["hf", "base"], "hf-mes": ["hf", "mes"] };
   if (map[t.id]) { state[map[t.id][0]][map[t.id][1]] = t.value; render(); return; }
   if (t.id === "nv-vaga") { const v = state.vagas.get(t.value); lerNovo(); if (v) Object.assign(state.novo, { vagaId: v.id, funcao: v.funcao, base: v.base, solicitante: v.solicitante, setor: v.setor, ccusto: v.ccusto, ct: v.ct || state.novo.ct }); else state.novo.vagaId = ""; render(); return; }
   if (d.rpup) { const f = t.files?.[0]; t.value = ""; const c = getCand(d.rpup); if (f && c) anexarRP(c, f); return; }
