@@ -32,7 +32,7 @@ const AJ={
     'ti-fin':['Painel do financeiro','Notas, parcelas e rateio por contrato.','Os cartões mostram o que já foi entregue ao financeiro.',''],
     'ti-notas':['Notas e prestação de contas','Cadastrar compras e anexar a nota (PDF/XML).','Os itens da nota são lidos sozinhos; informe o destino de cada um.',''],
     'ti-aquis':['Novas aquisições','Pedidos futuros e orçamento (perfil Compras).','Cada pedido tem setor, solicitante e situação.',''],
-    eqp:['Produtividade da equipe','Lançamentos de cada pessoa no Contas a Pagar, por mês e por dia (só o administrador e os gestores do Financeiro veem).','Os cartões mostram o total do mês e a média por pessoa; o gráfico compara a equipe mês a mês.','Para atualizar, use o botão de enviar a planilha nesta tela.'],
+    eqp:['Produtividade da equipe','Lançamentos de cada pessoa no Contas a Pagar, por mês e por dia (só quem o administrador autorizar vê).','Os cartões mostram o total do mês e a média por pessoa; o gráfico compara a equipe mês a mês.','Para atualizar, use o botão de enviar a planilha nesta tela.'],
     dados:['Banco de dados','De onde vêm os dados e como atualizar.','A linha de atualização mostra há quantos dias cada base foi atualizada.','Envie a planilha em Enviar planilha.'],
     ajuda:['Como usar','Este guia.','Use a busca ou o sumário para ir direto ao assunto.',''],
     sugestoes:['Sugestões e dúvidas','Mande dúvidas, ideias e problemas ao administrador.','Acompanhe a resposta em Minhas mensagens.','']

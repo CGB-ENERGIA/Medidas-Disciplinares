@@ -43,7 +43,7 @@ const erroAcesso = (medidas, contratacoes, horas = null) => {
 const outrosAdmins = async id => (await consulta("select count(*)::int as n from usuarios where admin and ativo and excluido_em is null and id <> $1", [id]))[0].n;
 
 export const GET = rota(comLogin(async () => {
-  const usuarios = await consulta(`select id, usuario, nome, matricula, setor, pendente, solicitado_em, admin, perfil as medidas, contratacoes, horas_extras as horas, ca_financeiro as financeiro, ca_patrimonio as patrimonio, ca_atendimento as atendimento, ca_ti as ti, ativo, trocar_senha,
+  const usuarios = await consulta(`select id, usuario, nome, matricula, setor, pendente, solicitado_em, admin, perfil as medidas, contratacoes, horas_extras as horas, ca_financeiro as financeiro, ca_patrimonio as patrimonio, ca_atendimento as atendimento, ca_ti as ti, ca_eqp as eqp, ativo, trocar_senha,
                                           bloqueado_ate > now() as bloqueado, ultimo_acesso, criado_em
                                      from usuarios where excluido_em is null order by pendente desc, ativo desc, nome`);
   return ok({ usuarios });
@@ -70,7 +70,7 @@ export const POST = rota(comLogin(async request => {
 
 export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const c = await lerJSON(request); if (!c || !c.id) return erro("Dados inválidos.", 400);
-  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras, ca_financeiro, ca_patrimonio, ca_atendimento, ca_ti, pendente from usuarios where id = $1 and excluido_em is null", [c.id]);
+  const [u] = await consulta("select id, usuario, admin, perfil, contratacoes, horas_extras, ca_financeiro, ca_patrimonio, ca_atendimento, ca_ti, ca_eqp, pendente from usuarios where id = $1 and excluido_em is null", [c.id]);
   if (!u) return erro("Usuário não encontrado.", 404);
   if (u.pendente && !c.aprovar && c.ativo === true) return erro("Este pedido de acesso ainda não foi aprovado. Aprove escolhendo o nível em cada ambiente.", 400);
   if (c.aprovar && !u.pendente) return erro("Este pedido já foi tratado.", 409);
@@ -98,6 +98,7 @@ export const PATCH = rota(comLogin(async (request, _q, eu) => {
   const mudouCa = Object.entries(CA).some(([k, col]) => ca.v[k] !== (u[col] ?? null));
   const mudouAcesso = novoAdmin !== u.admin || medidas !== u.perfil || contratacoes !== u.contratacoes || horas !== u.horas_extras || mudouCa;
   if (mudouAcesso) { for (const [k, col] of Object.entries(CA)) set(col, ca.v[k]); set("horas_extras", horas); set("admin", novoAdmin); set("perfil", medidas); set("contratacoes", contratacoes); set("chave_pessoa", null); }
+  if (c.eqp !== undefined && !!c.eqp !== !!u.ca_eqp) set("ca_eqp", !!c.eqp);   // chave "Ver Produtividade da equipe"
   if (c.ativo !== undefined) set("ativo", !!c.ativo);
   if (c.aprovar) { set("pendente", false); set("ativo", true); set("trocar_senha", false); } // a pessoa já escolheu a própria senha ao pedir
   let temp = null;

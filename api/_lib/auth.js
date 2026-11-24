@@ -45,11 +45,13 @@ export async function usuarioDaSessao(request) {
   const t = lerCookie(request, COOKIE);
   if (!t) return null;
   const [u] = await consulta(`
-    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.horas_extras, u.ca_financeiro, u.ca_patrimonio, u.ca_atendimento, u.ca_ti, u.chave_pessoa, u.trocar_senha
+    select u.id, u.usuario, u.nome, u.perfil, u.admin, u.contratacoes, u.horas_extras, u.ca_financeiro, u.ca_patrimonio, u.ca_atendimento, u.ca_ti, u.ca_eqp, u.chave_pessoa, u.trocar_senha
       from sessoes s join usuarios u on u.id = s.usuario_id
      where s.token_hash = $1 and s.expira_em > now() and u.ativo and u.excluido_em is null`, [hashToken(t)]);
   if (!u) return null;
   u.modulos = modulosDe(u);
+  // Produtividade da equipe (Financeiro): o administrador, ou quem tem Financeiro e a chave "Ver Produtividade da equipe" ligada
+  u.eqp = !!(u.admin || (u.ca_eqp && u.modulos.financeiro));
   // No módulo Gestão Administrativa o administrador age como DP; quem não tem acesso a ele fica sem perfil
   u.perfil = u.modulos.medidas ? u.modulos.medidas.perfil : null;
   return u;

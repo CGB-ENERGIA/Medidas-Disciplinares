@@ -5,7 +5,7 @@
 //   POST /api/ca-docs { col, id, dados }    → grava (cria ou substitui)
 //   POST /api/ca-docs { col, id, remover: true } → apaga
 // Regras (api/_lib/ca.js): cada coleção pertence a uma área; consulta lê, gestor grava; o administrador faz tudo.
-// Sugestões (sug): cada pessoa lê e grava só a sua; o administrador lê e responde todas. Produtividade (eqp): o administrador e os gestores do Financeiro.
+// Sugestões (sug): cada pessoa lê e grava só a sua; o administrador lê e responde todas. Produtividade (eqp): o administrador e quem tem a chave "Ver Produtividade da equipe" em Usuários.
 import { consulta, rota } from "./_lib/db.js";
 import { comLogin, lerJSON, ok, erro } from "./_lib/auth.js";
 import { colecaoValida, podeLer, erroGravar, temCentral } from "./_lib/ca.js";

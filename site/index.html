@@ -1301,6 +1301,8 @@ body:not(.menu-fixo) .side:not(.aberto):not(:hover):not(:focus-within) .menu-it 
 .sw input:focus-visible + i { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
 .sw input:disabled + i { opacity: .55; } .sw:has(input:disabled), .sw-fixa { cursor: default; }
 .sw-adm { margin-left: auto; }
+.sw-sub { flex-basis: 100%; font-size: 13px; padding-top: 8px; border-top: 1px dashed color-mix(in srgb, var(--accent) 30%, var(--line)); gap: 8px; }
+.sw-sub i { width: 30px; height: 18px; } .sw-sub i::after { width: 12px; height: 12px; } .sw-sub input:checked + i::after { transform: translateX(12px); }
 .usu-rod { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; }
 .hub-pend { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding: 10px 16px; border: 1px solid var(--accent); border-radius: 999px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
 .hub-pend b { display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 12.5px; }
@@ -3027,7 +3029,8 @@ function viewUsuarios() {
     if (u.admin && a.total) return `<div class="amb-lin on"><span class="sw-fixa"><i></i><b>${a.nome}</b></span><span class="muted amb-nv">Acesso total (administrador)</span></div>`;
     const atual = u[a.k] || "";
     return `<div class="amb-lin${atual ? " on" : ""}"><label class="sw"><input type="checkbox" data-sw="${a.k}" data-id="${u.id}" ${atual ? "checked" : ""}><i></i><b>${a.nome}</b></label>
-      ${atual ? `<select class="amb-nv" data-nv="${a.k}" data-id="${u.id}" aria-label="Nível em ${a.nome}">${Object.entries(a.niveis).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>` : `<span class="muted amb-nv">Sem acesso</span>`}</div>`;
+      ${atual ? `<select class="amb-nv" data-nv="${a.k}" data-id="${u.id}" aria-label="Nível em ${a.nome}">${Object.entries(a.niveis).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>` : `<span class="muted amb-nv">Sem acesso</span>`}
+      ${a.k === "financeiro" && atual ? `<label class="sw sw-sub" title="Lançamentos de cada pessoa no Contas a Pagar"><input type="checkbox" data-eqp="1" data-id="${u.id}" ${u.eqp ? "checked" : ""}><i></i><span>Ver Produtividade da equipe</span></label>` : ""}</div>`;
   };
   const cartao = u => { const [sit, cls] = situacao(u), eu = u.id === state.user.uid; return `<article class="usu-card${u.ativo ? "" : " usu-inativo"}${ed && ed.id === u.id ? " usu-linha-ed" : ""}" data-busca="${esc(texto(u))}" ${q && !texto(u).includes(q) ? "hidden" : ""}>
     <header class="usu-topo">${dados(u)}<span class="usu-sit ${cls}">${sit}</span>
@@ -3080,6 +3083,7 @@ async function salvarAcesso(id, mud, aviso) {
     if (id === state.user.uid) { location.reload(); return; } // mudou o próprio acesso
     Object.assign(u, { admin: corpo.admin, medidas: corpo.medidas || null, contratacoes: corpo.contratacoes || null, horas: corpo.horas || null });
     CA_KEYS.forEach(k => { if (k in mud) u[k] = mud[k] || null; });
+    if ("eqp" in mud) u.eqp = !!mud.eqp;
     render(); toast(aviso || "Acesso atualizado.");
   } catch (err) { toast(err.message); render(); }
 }
@@ -3087,6 +3091,7 @@ document.addEventListener("change", e => {
   const t = e.target; if (!t || !t.dataset) return;
   if (t.dataset.sw) { const a = AMB_ACESSO.find(x => x.k === t.dataset.sw); salvarAcesso(t.dataset.id, { [a.k]: t.checked ? a.padrao : "" }, t.checked ? `${a.nome}: acesso liberado como ${a.niveis[a.padrao]}.` : `${a.nome}: acesso removido.`); }
   else if (t.dataset.nv) salvarAcesso(t.dataset.id, { [t.dataset.nv]: t.value });
+  else if (t.dataset.eqp) salvarAcesso(t.dataset.id, { eqp: t.checked }, t.checked ? "Produtividade da equipe liberada." : "Produtividade da equipe bloqueada.");
   else if (t.dataset.adm) {
     const u = state.usu.usuarios.find(x => x.id === t.dataset.id); if (!u) return;
     if (t.checked) { if (!confirm(`Tornar ${u.nome} administrador?\n\nA pessoa passa a ter controle total da Gestão Administrativa e de Contratações e pode criar, editar e excluir usuários.`)) { t.checked = false; return; } salvarAcesso(u.id, { admin: true, medidas: "", contratacoes: "" }, `${u.nome} agora é administrador.`); }

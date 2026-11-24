@@ -6,7 +6,7 @@ const DONO = {
   hlan: "financeiro", loc_imv: "financeiro", loc_link: "financeiro", cfg: "financeiro", partes: "financeiro",
   fc_at: "atendimento",
   ti_notas: "ti", ti_cfg: "ti", ti_aquis: "ti",
-  eqp: "financeiro",   // Produtividade da equipe: só o administrador e os GESTORES do Financeiro (ver abaixo)
+  eqp: "financeiro",   // Produtividade da equipe: só o administrador e quem tem a chave em Usuários (u.eqp, ver abaixo)
   sug: "comum", faq: "comum"
 };
 export const colecaoValida = col => Object.prototype.hasOwnProperty.call(DONO, col);
@@ -19,7 +19,7 @@ export function podeLer(u, col) {
   const d = DONO[col];
   if (u.admin) return true;
   if (d === "admin") return false;
-  if (col === "eqp") return !!(u.modulos.financeiro && u.modulos.financeiro.nivel === "gestor");
+  if (col === "eqp") return !!u.eqp;
   if (d === "comum") return temCentral(u);
   return !!u.modulos[d];
 }
@@ -29,6 +29,7 @@ export function erroGravar(u, col, id) {
   const d = DONO[col];
   if (u.admin) return null;
   if (d === "admin") return "Só o administrador grava nesta área.";
+  if (col === "eqp") return u.eqp ? null : "Seu acesso não inclui a Produtividade da equipe.";
   if (col === "sug") return id === u.id ? null : "Você só grava as suas próprias mensagens.";
   if (col === "faq") return "Só o administrador publica dúvidas frequentes.";
   const m = u.modulos[d];
