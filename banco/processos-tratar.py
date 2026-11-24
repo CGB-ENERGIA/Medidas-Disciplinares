@@ -84,7 +84,7 @@ def base_de(v):
     return BASES.get(k, '')
 
 wb = load_workbook(TAB, data_only=True)
-cands, ids = [], Counter()
+cands, ids, ACONTRATAR = [], Counter(), []
 for aba in ['FINALIZADOS', 'ACOMPANHAMENTO ']:
     ws = wb[aba]
     cab = [norm(limpa(c.value)) for c in ws[1]]
@@ -92,6 +92,11 @@ for aba in ['FINALIZADOS', 'ACOMPANHAMENTO ']:
     g = lambda r, h: r[ix[h]] if h in ix and ix[h] < len(r) else None
     for n_lin, r in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
         nome = nome_ok(g(r, 'CANDIDATO'))
+        if norm(nome) == 'A CONTRATAR' and norm(limpa(g(r, 'SITUACAO'))).startswith('EM AND'):
+            ACONTRATAR.append({'aba': aba.strip(), 'linha': n_lin, 'ct': str(limpa(g(r, 'CT'))).split('.')[0], 'data': iso(g(r, 'DATA')), 'funcao': funcao(g(r, 'FUNCAO')).upper(),
+                               'solicitante': limpa(g(r, 'SOLICITADA POR:')).upper(), 'setor': SETOR.get(norm(limpa(g(r, 'SETOR'))), limpa(g(r, 'SETOR')).upper()),
+                               'base': base_de(g(r, 'BASE')), 'motivo': mot(g(r, 'MOTIVO')), 'obs': limpa(g(r, 'OBS'))})
+            continue
         if not nome or norm(nome) in ('A CONTRATAR', 'CANDIDATO'): continue
         sit_t = norm(limpa(g(r, 'SITUACAO')))
         obs = limpa(g(r, 'OBS'))
@@ -115,7 +120,8 @@ for aba in ['FINALIZADOS', 'ACOMPANHAMENTO ']:
              'funcao': funcao(g(r, 'FUNCAO')).upper(), 'solicitante': limpa(g(r, 'SOLICITADA POR:')).upper(),
              'setor': SETOR.get(norm(limpa(g(r, 'SETOR'))), limpa(g(r, 'SETOR')).upper()),
              'ccusto': CC.get(norm(limpa(g(r, 'C.CUSTO'))), limpa(g(r, 'C.CUSTO')).upper()),
-             'base': base_de(g(r, 'BASE')), 'motivo': mot(g(r, 'MOTIVO')), 'etapas': et, 'obs': obs, 'vagaId': '', 'origem': 'planilha'}
+             'base': base_de(g(r, 'BASE')), 'motivo': mot(g(r, 'MOTIVO')), 'etapas': et, 'obs': obs, 'vagaId': '', 'origem': 'planilha',
+             '_aba': aba.strip(), '_semSit': not sit_t}
         if not c['base'] and limpa(g(r, 'BASE')): c['obs'] = '; '.join(x for x in [obs, 'Base na planilha: ' + titulo(limpa(g(r, 'BASE')))] if x)
         mres = re.search(r'RESID[EI]\s+(EM|NO|NA)\s+(.+)$', norm(obs))
         if mres:
@@ -175,7 +181,7 @@ for n_lin, r in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
     v['id'] = 'impv' + hashlib.sha1(chave.encode()).hexdigest()[:12]
     vagas.append({k: x for k, x in v.items() if x not in ('', None) or k in ('obs', 'motivo')})
 
-json.dump({'gerado': H, 'fonte': os.path.basename(TAB), 'candidatos': cands, 'vagas': vagas, 'avisos': AVISOS}, open(SAIDA, 'w', encoding='utf-8'), ensure_ascii=False)
+json.dump({'gerado': H, 'fonte': os.path.basename(TAB), 'candidatos': cands, 'vagas': vagas, 'acontratar': ACONTRATAR, 'avisos': AVISOS}, open(SAIDA, 'w', encoding='utf-8'), ensure_ascii=False)
 print('candidatos', len(cands), Counter(c['situacao'] for c in cands))
 print('motivos', Counter(c.get('motivoCancel') for c in cands if c['situacao'] == 'cancelado'))
 print('etapas reprovação', Counter(c.get('etapaCancel') for c in cands if c.get('motivoCancel') == 'Reprovado na etapa'))

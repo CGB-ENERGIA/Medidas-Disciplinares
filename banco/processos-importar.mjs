@@ -7,7 +7,7 @@
 // Regras:
 //   - cada linha da tabela vira um processo com id fixo: rodar de novo atualiza o mesmo processo, não duplica;
 //   - processo que alguém já mexeu pelo site (etapa lançada, encerrado, editado) NÃO é sobrescrito;
-//   - nada é apagado: processos e vagas cadastrados direto no site não são tocados.
+//   - o que veio da planilha antes e saiu da lista é retirado do site (fica escondido, não apagado); o que foi cadastrado direto no site não é tocado.
 import pg from "pg";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -53,14 +53,22 @@ try {
       lotes[col].push({ id, dados, sol: norm(dados.solicitante) || null });
     }
   }
+  // o que veio da planilha numa importação anterior e não está mais na lista: sai do site (só se ninguém mexeu pelo site)
+  const tirar = { candidatos: [], vagas: [] };
+  for (const [col, lista] of [["candidatos", dadosNovos.candidatos], ["vagas", dadosNovos.vagas]]) {
+    const ids = new Set(lista.map(x => x.id));
+    for (const a of antes) if (a.colecao === col && a.id.startsWith("imp") && !a.removido && !ids.has(a.id)) { if (a.mexido) resumo[col].protegidos++; else tirar[col].push(a.id); }
+    resumo[col].retirados = tirar[col].length;
+  }
   const nome = { candidatos: "Processos (candidatos)", vagas: "Vagas" };
   for (const col of ["candidatos", "vagas"]) {
     const r = resumo[col];
-    console.log(`${nome[col]}: ${r.novos} novos · ${r.atualizados} atualizados · ${r.iguais} iguais · ${r.protegidos} já mexidos no site (mantidos como estão)`);
+    console.log(`${nome[col]}: ${r.novos} novos · ${r.atualizados} atualizados · ${r.iguais} iguais${r.retirados ? ` · ${r.retirados} retirados do site` : ""} · ${r.protegidos} já mexidos no site (mantidos como estão)`);
   }
   const c = dadosNovos.candidatos;
   const conta = s => c.filter(x => x.situacao === s).length;
-  console.log(`Na tabela: ${conta("andamento")} em andamento · ${conta("concluido")} concluídos · ${conta("cancelado")} cancelados · ${conta("suspenso")} suspensos.`);
+  const nBanco = conta("banco");
+  console.log(`Na tabela: ${conta("andamento")} em andamento · ${conta("concluido")} concluídos · ${conta("cancelado")} cancelados · ${conta("suspenso")} suspensos${nBanco ? ` · ${nBanco} guardados no Banco de talentos` : ""}.`);
   if (SIMULAR) console.log("(simulação: nada foi gravado)");
   else {
     await db.query("begin");
@@ -74,6 +82,9 @@ try {
           where ct_docs.atualizado_por is null and not ct_docs.removido`, [col, JSON.stringify(parte)]);
       }
     }
+    for (const col of ["candidatos", "vagas"]) if (tirar[col].length)
+      await db.query(`update ct_docs set removido = true, atualizado_em = now(), versao = nextval('ct_versao_seq')
+                      where colecao = $1 and id = any($2::text[]) and atualizado_por is null`, [col, tirar[col]]);
     await db.query("insert into ct_log (usuario_nome, colecao, doc_id, acao) values ('importação da Tabela de Acompanhamento', 'candidatos', 'lote', $1)",
       [`${resumo.candidatos.novos} novos, ${resumo.candidatos.atualizados} atualizados; vagas: ${resumo.vagas.novos} novas, ${resumo.vagas.atualizados} atualizadas`]);
     await db.query("commit");

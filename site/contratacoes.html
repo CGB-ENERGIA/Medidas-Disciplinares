@@ -407,6 +407,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .crumb b { color: var(--accent); }
 .crumb button { border: 0; background: none; padding: 0; color: var(--muted); font-weight: 600; }
 .crumb button:hover { color: var(--accent); text-decoration: underline; }
+.crumb .crumb-voltar { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px 4px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--fg); font-weight: 600; }
+.crumb .crumb-voltar:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+.crumb .crumb-div { width: 1px; height: 14px; background: var(--line); margin: 0 4px; }
 /* Busca geral (Ctrl K) */
 .cmd-fundo { position: fixed; inset: 0; z-index: 900; background: rgba(43,42,42,.42); display: flex; justify-content: center; align-items: flex-start; padding: max(10vh, calc(env(safe-area-inset-top, 0px) + 16px)) 16px 16px; }
 .cmd { width: min(680px, 100%); max-height: min(620px, 78vh); background: var(--surface); color: var(--fg); border-radius: 14px; box-shadow: 0 30px 70px rgba(0,0,0,.3); display: flex; flex-direction: column; overflow: hidden; animation: pkIn .14s ease-out; }
@@ -2322,15 +2325,18 @@ function talentos() {
   const emProc = new Set([...state.cand.values()].filter(c => c.situacao === "andamento" || c.situacao === "suspenso").map(c => norm(nomeBusca(c.nome))));
   const l = state.tal.lista.map(p0 => {
     const ed = state.tal.ed[p0.id] || {};
-    const p = ed.hist || ed.tel || ed.email || ed.cidade || ed.cnh || ed.def
+    const fx = ed.fix || {};
+    let p = ed.hist || ed.tel || ed.email || ed.cidade || ed.cnh || ed.def
       ? { ...p0, tel: p0.tel || ed.tel || "", email: p0.email || ed.email || "", cidade: p0.cidade || ed.cidade || "", cnh: p0.cnh || ed.cnh || "", def: p0.def || ed.def || "", tags: p0.tags || [], hist: [...(ed.hist || []), ...(p0.hist || [])].sort((a, b) => (b.d || "").localeCompare(a.d || "")) }
       : { ...p0, tags: p0.tags || [], hist: p0.hist || [] };
+    if (ed.fix) { ["nome", "tel", "email", "cidade", "cnh", "def"].forEach(k => { if (fx[k] !== undefined) p[k] = fx[k]; }); if (fx.funcao) p = { ...p, hist: [{ funcao: fx.funcao, _fix: 1 }, ...p.hist] }; }
     const area = areaTal(p), sit = situacaoTal(p, ed, emProc), tags = tagsTal(p);
     const cid = CID_N()[norm(p.cidade)] || p.cidade || "";
     const bp = cid ? baseProxima(cid) : null;
     const h0 = p.hist.find(x => x.funcao) || p.hist[0] || {};
     const anoMax = +HOJE.slice(0, 4), anos = [...new Set(p.hist.map(x => (x.d || "").slice(0, 4)).filter(y => +y >= 2020 && +y <= anoMax))];
-    return { ...p, area, sit, tags, anos: anos.length ? anos : ["sem"], base: bp ? bp.base : "", km: bp ? bp.d : null, funcao: h0.funcao || "", ult: p.hist[0]?.d || "", escola: !tags.has("escola") && sugereEscola(p, area) && sit === "disp", ed };
+    const histV = p.hist.filter(h => !h._fix);
+    return { ...p, hist: histV, area, sit, tags, anos: anos.length ? anos : ["sem"], base: bp ? bp.base : "", km: bp ? bp.d : null, funcao: h0.funcao || "", ult: histV[0]?.d || "", escola: !tags.has("escola") && sugereEscola(p, area) && sit === "disp", ed };
   });
   talCache = { k, l }; return l;
 }
@@ -2372,10 +2378,12 @@ function detalheTal(p) {
     <div class="det-head"><div class="det-tags">${[...p.tags].map(t => `<span class="pill p-acc">${esc(PROGRAMAS.find(x => x.k === t)?.n || t)}</span>`).join("")}<span class="pill ${sitCls(p.sit)}">${SIT_ROT[p.sit]}</span><span class="tag">${esc(AREA_ROT[p.area])}</span></div>
       <h2>${esc(p.nome)}</h2><span class="muted">${esc(p.funcao || "Função não informada")}${p.cidade ? ` · mora em ${esc(titulo(p.cidade))}` : ""}${p.base ? ` · base mais próxima: ${esc(baseNome(p.base))}${p.km != null ? ` (${Math.round(p.km)} km)` : ""}` : ""}</span></div>
     <dl class="kv">${[["Telefone", p.tel], ["E-mail", p.email], ["CNH", p.cnh], ["Deficiência", p.def]].filter(x => x[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    ${p.ed.fix && p.ed.fix.obs ? `<div class="note info"><span><b>Observação do RH:</b> ${esc(p.ed.fix.obs)}</span></div>` : ""}
+    ${p.ed.fix && p.ed.fix.em ? `<p class="muted sm" style="margin:0">Dados corrigidos pelo site em ${br(p.ed.fix.em)}${p.ed.fix.por ? ` por ${esc(titulo(p.ed.fix.por))}` : ""}.</p>` : ""}
     ${rm.length ? `<div class="note ${rm.some(r => r.sit !== "demitido") ? "info" : "warn"}"><span>${rm.map(r => `<b>${r.sit === "demitido" ? "Trabalhou na CGB" : "Trabalha na CGB"}:</b> ${esc(r.funcao)} · CT ${esc(r.ct)} · ${esc(baseNome(r.base))}, desde ${br(r.adm)}${r.dem ? ` até ${br(r.dem)} (${esc(motRM(r).toLowerCase())})` : ""}`).join("<br>")}</span></div>` : ""}
     ${p.escola ? `<div class="note info"><span><b>Sugerido para a Escola de Eletricista:</b> quer trabalhar como eletricista e ainda não tem certificação válida.</span>${edita ? `<button class="btn sm" data-taltag="escola">Incluir na Escola</button>` : ""}</div>` : ""}
     <div class="sub-form"><h3>Programas</h3><div class="chips">${PROGRAMAS.map(x => `<button class="chip" ${edita ? `data-taltag="${x.k}"` : "disabled"} aria-pressed="${p.tags.has(x.k)}" title="${esc(x.d)}">${x.n}</button>`).join("")}</div><p class="muted sm" style="margin:0">Clique para incluir ou tirar a pessoa de um programa.</p></div>
-    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button>${p.sit !== "desist" ? `<button class="btn" data-talindisp="1">Marcar como indisponível</button>` : (p.ed.indisp ? `<button class="btn" data-talindisp="0">Voltar a disponível</button>` : "")}</div>` : ""}
+    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button><button class="btn" data-taledit="${p.id}">Editar dados</button>${p.sit !== "desist" ? `<button class="btn" data-talindisp="1">Marcar como indisponível</button>` : (p.ed.indisp ? `<button class="btn" data-talindisp="0">Voltar a disponível</button>` : "")}</div>` : ""}
     <div class="sub-form"><h3>Registros nas planilhas (${p.hist.length})</h3><ol class="timeline">${p.hist.map(h => `<li><time>${h.d ? br(h.d) : "sem data"}</time><span><b>${esc(h.fonte)}</b>${h.funcao ? ` · ${esc(h.funcao)}` : ""}${h.area ? ` · ${esc(h.area)}` : ""}${h.cert ? ` · certificado: ${esc(h.cert)}` : ""}${h.st ? ` · <b>${esc(h.st)}</b>` : ""}${h.resp ? ` · ${esc(h.resp)}` : ""}${h.ind ? ` · indicação: ${esc(h.ind)}` : ""}${h.obs ? `<br><span class="muted sm">${esc(h.obs)}</span>` : ""}</span></li>`).join("")}</ol></div>
   </section>`;
 }
@@ -2434,19 +2442,20 @@ function dupTal(nome, tel) {
   return talentos().find(p => (n.split(" ").length >= 2 && norm(p.nome) === n) || (t.length >= 10 && soDig(p.tel) === t)) || null;
 }
 function avisoDupTal() {
-  const f = state.talNovo || {}, p = dupTal(f.nome, f.tel);
+  const f = state.talNovo || {}; if (f.editId) return "";
+  const p = dupTal(f.nome, f.tel);
   f.dupId = p ? p.id : "";
   if (!p) return "";
   return `<div class="note warn"><span><b>${esc(p.nome)} já está no banco</b> (${esc(p.funcao || "função não informada")}${p.cidade ? ` · ${esc(titulo(p.cidade))}` : ""}${p.tel ? ` · ${esc(p.tel)}` : ""}). Ao salvar, este cadastro entra como um registro novo na ficha dessa pessoa, sem criar outra.</span><button type="button" class="btn sm" data-seltal="${p.id}">Abrir ficha</button></div>`;
 }
 function formTal() {
-  const f = state.talNovo;
+  const f = state.talNovo, ed = !!f.editId;
   const opt = (l, v) => l.map(x => `<option value="${esc(x)}" ${x === v ? "selected" : ""}>${esc(x || "—")}</option>`).join("");
   const funcs = [...new Set([...funcOficiais(), ...talentos().map(p => p.funcao).filter(Boolean)])].sort((a, b) => a.localeCompare(b));
   return `<section class="panel tal-form">
     <form id="form-tal" autocomplete="off">
-      <div class="det-head"><h2>Cadastrar no banco de talentos</h2><span class="muted">A pessoa entra como disponível e pode ser chamada para um processo quando surgir a vaga.</span></div>
-      <div id="tn-dup">${avisoDupTal()}</div>
+      <div class="det-head"><h2>${ed ? "Editar dados" : "Cadastrar no banco de talentos"}</h2><span class="muted">${ed ? "Corrija o que estiver errado. O que veio das planilhas continua guardado no histórico, e a correção vale mesmo se a planilha for importada de novo." : "A pessoa entra como disponível e pode ser chamada para um processo quando surgir a vaga."}</span></div>
+      <div id="tn-dup">${ed ? "" : avisoDupTal()}</div>
       <fieldset><legend>Pessoa</legend><div class="form-grid">
         <label class="s3">Nome completo<input type="text" id="tn-nome" value="${esc(f.nome)}" required placeholder="NOME DA PESSOA"></label>
         <label>Telefone<input type="text" inputmode="tel" id="tn-tel" value="${esc(f.tel)}" placeholder="(99) 99999-9999"></label>
@@ -2458,15 +2467,17 @@ function formTal() {
         <label class="s3">Função de interesse<input type="text" id="tn-funcao" list="dl-tal-func" value="${esc(f.funcao)}" placeholder="Ex.: Eletricista"></label>
         <label>Setor<input type="text" id="tn-area" list="dl-setor" value="${esc(f.area)}" placeholder="Ex.: GSTC"></label>
         <label>Certificado<select id="tn-cert">${opt(TAL_CERT, f.cert)}</select></label>
-        <div class="s3"><span class="muted sm">Programas</span><div class="progs">${PROGRAMAS.map(x => `<label><input type="checkbox" data-tnprog="${x.k}" ${(f.tags || []).includes(x.k) ? "checked" : ""}>${esc(x.n)}</label>`).join("")}</div></div>
+        ${ed ? "" : `<div class="s3"><span class="muted sm">Programas</span><div class="progs">${PROGRAMAS.map(x => `<label><input type="checkbox" data-tnprog="${x.k}" ${(f.tags || []).includes(x.k) ? "checked" : ""}>${esc(x.n)}</label>`).join("")}</div></div>`}
         <label>Tipo de deficiência <small>se PCD</small><select id="tn-def">${opt(TAL_DEF, f.def)}</select></label>
       </div></fieldset>
-      <fieldset><legend>Origem</legend><div class="form-grid">
+      ${ed ? `<fieldset><legend>Observação do RH</legend><div class="form-grid">
+        <label class="s3">Aparece em destaque na ficha<textarea id="tn-obs" rows="3">${esc(f.obs)}</textarea></label>
+      </div></fieldset>` : `<fieldset><legend>Origem</legend><div class="form-grid">
         <label>Como chegou<select id="tn-fonte">${opt(TAL_FONTES, f.fonte || "Cadastro no site")}</select></label>
         <label>Indicado por<input type="text" id="tn-ind" value="${esc(f.ind)}"></label>
         <label class="s3">Observação<textarea id="tn-obs" rows="3">${esc(f.obs)}</textarea></label>
-      </div></fieldset>
-      <div class="actions"><button type="submit" class="btn primary" id="tn-salvar">${ico("novo")}Salvar no banco</button><button type="button" class="btn" data-talnovo="0">Cancelar</button></div>
+      </div></fieldset>`}
+      <div class="actions"><button type="submit" class="btn primary" id="tn-salvar">${ed ? "Salvar alterações" : `${ico("novo")}Salvar no banco`}</button><button type="button" class="btn" data-talnovo="0">Cancelar</button></div>
     </form>
     <datalist id="dl-tal-cid">${Object.keys(CID_XY).map(c => `<option value="${esc(c)}">`).join("")}</datalist>
     <datalist id="dl-tal-func">${funcs.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
@@ -2477,11 +2488,12 @@ function lerFormTal() {
   const f = state.talNovo;
   Object.assign(f, { nome: g("tn-nome"), tel: g("tn-tel"), email: g("tn-email"), cidade: g("tn-cidade"), cnh: g("tn-cnh"), funcao: g("tn-funcao"), area: g("tn-area"),
     cert: g("tn-cert"), def: g("tn-def"), fonte: g("tn-fonte"), ind: g("tn-ind"), obs: g("tn-obs"),
-    tags: [...document.querySelectorAll("[data-tnprog]")].filter(x => x.checked).map(x => x.dataset.tnprog) });
+    tags: document.querySelector("[data-tnprog]") ? [...document.querySelectorAll("[data-tnprog]")].filter(x => x.checked).map(x => x.dataset.tnprog) : (f.tags || []) });
   return f;
 }
 async function salvarTal() {
   const f = lerFormTal();
+  if (f.editId) return salvarEdicaoTal(f);
   const nome = UP(f.nome);
   if (nome.split(" ").length < 2) { toast("Escreva o nome completo da pessoa."); document.getElementById("tn-nome")?.focus(); return; }
   if (f.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) { toast("Confira o e-mail."); return; }
@@ -2509,6 +2521,28 @@ async function salvarTal() {
       toast(`${nome} entrou no banco de talentos.`);
     }
   } catch { toast("Não consegui salvar agora. Tente de novo."); if (btn) btn.disabled = false; }
+}
+// Abre o formulário já preenchido com os dados que a ficha mostra hoje
+function editarTal(id) {
+  const p = talentos().find(x => x.id === id); if (!p) return;
+  const fx = (p.ed && p.ed.fix) || {};
+  state.talNovo = { editId: id, nome: p.nome, tel: p.tel || "", email: p.email || "", cidade: p.cidade ? (CID_N()[norm(p.cidade)] || titulo(p.cidade)) : "", cnh: p.cnh || "",
+    funcao: p.funcao || "", area: "", cert: "", def: p.def || "", obs: fx.obs || "", tags: [...p.tags] };
+  render(); document.querySelector(".tal-form")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("tn-nome")?.focus(), 50);
+}
+async function salvarEdicaoTal(f) {
+  const nome = UP(f.nome);
+  if (nome.split(" ").length < 2) { toast("Escreva o nome completo da pessoa."); return; }
+  if (f.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) { toast("Confira o e-mail."); return; }
+  const id = f.editId, quem = (window.CT_ACESSO && window.CT_ACESSO.nome) || "";
+  const funcao = f.funcao.trim() ? (funcOficiais().find(x => norm(x) === norm(f.funcao)) || talentos().find(p => norm(p.funcao) === norm(f.funcao))?.funcao || titulo(f.funcao.trim())) : "";
+  const fix = { nome, tel: fmtTel(f.tel), email: f.email.trim().toLowerCase(), cidade: f.cidade.trim() ? (CID_N()[norm(f.cidade)] || titulo(f.cidade.trim())) : "", cnh: f.cnh, def: f.def, obs: f.obs.trim(), em: HOJE, por: quem };
+  if (funcao) fix.funcao = funcao;
+  const ed = state.tal.ed[id] || {};
+  if (f.def && !(ed.semTags || []).includes("pcd")) { const t = new Set(ed.tags || []); t.add("pcd"); await salvarEdTal(id, { fix, tags: [...t] }); }
+  else await salvarEdTal(id, { fix });
+  state.talNovo = null; state.selTal = id; render();
+  toast("Dados atualizados.");
 }
 async function salvarEdTal(id, patch) {
   const atual = state.tal.ed[id] || {}, novo = { ...atual, ...patch, em: HOJE };
@@ -3028,7 +3062,7 @@ function fixarMenu(v) {
   document.getElementById("rail-fundo").addEventListener("click", () => menuAbrir(false));
   if (ls.get("cgb-ct-rail", false)) document.body.classList.add("rail-fixo");
 })();
-function ir(v, sel) { if (!document.body.classList.contains("rail-fixo") || railMovel()) menuAbrir(false); state.view = v; if (sel !== undefined) state.sel = sel; state.cancelando = false; state.editando = false; if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v); render(); window.scrollTo({ top: 0 }); }
+function ir(v, sel) { if (!document.body.classList.contains("rail-fixo") || railMovel()) menuAbrir(false); const mudou = v !== state.view || (sel !== undefined && sel !== state.sel); state.view = v; if (sel !== undefined) state.sel = sel; state.cancelando = false; state.editando = false; if (mudou) { history.pushState({ v, sel: state.sel ?? null, n: (state.passos = (state.passos || 0) + 1) }, "", "#" + v); } else if (location.hash !== "#" + v) history.replaceState({ v, sel: state.sel ?? null, n: state.passos || 0 }, "", "#" + v); render(); window.scrollTo({ top: 0 }); }
 
 /* ===================== Busca geral (Ctrl + K) ===================== */
 const CMD = { aberto: false, q: "", idx: 0, vis: [] };
@@ -3123,6 +3157,7 @@ document.addEventListener("keydown", e => {
 
 /* ===================== Render principal ===================== */
 function render() {
+  try { const h = history.state; if (h && h.v === state.view && (h.sel ?? null) !== (state.sel ?? null)) history.replaceState({ ...h, sel: state.sel ?? null }, "", location.hash); } catch {}
   if (window.__ctNotificar) window.__ctNotificar();
   renderPerfil(); renderNav(); preencherListas();
   const el = $("#view");
@@ -3148,7 +3183,7 @@ function render() {
 function migalha() {
   const t = TELA[state.view] || TELA.painel, c = state.sel && (state.view === "candidatos" || state.view === "historico") ? getCand(state.sel) : null;
   const s = `<span class="sep" aria-hidden="true">›</span>`;
-  return `<nav class="crumb" aria-label="Você está em"><span>Contratações CGB</span>${s}<span>${t.g}</span>${s}${c ? `<button data-crumb="${state.view}">${t.n}</button>${s}<b>${esc(c.nome)}</b>` : `<b>${t.n}</b>`}</nav>`;
+  return `<nav class="crumb" aria-label="Você está em">${(state.passos || 0) > 0 || state.view !== "inicio" ? `<button class="crumb-voltar" data-voltar="1" title="Voltar para a tela anterior (Alt + ←)" aria-label="Voltar para a tela anterior"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Voltar</button><span class="crumb-div" aria-hidden="true"></span>` : ""}<span>Contratações CGB</span>${s}<span>${t.g}</span>${s}${c ? `<button data-crumb="${state.view}">${t.n}</button>${s}<b>${esc(c.nome)}</b>` : `<b>${t.n}</b>`}</nav>`;
 }
 function renderPerfil() {
   const r = { rh: ["Recrutamento", "RH"], sol: [state.pessoa ? state.pessoa : "Solicitante", iniciais(state.pessoa || "SO")], ges: ["Gestão", "GE"] }[state.role];
@@ -4109,6 +4144,7 @@ document.addEventListener("click", e => {
   if (!e.target.closest("#menu-pop, #menu-btn") && menuAberto()) menuAbrir(false);
   if (!t) return;
   const d = t.dataset;
+  if (d.voltar) { voltar(); return; }
   if (d.crumb) { state.sel = null; return ir(d.crumb); }
   if (t.id === "menu-btn") { if (!pop.hidden) { pop.hidden = true; pb.setAttribute("aria-expanded", "false"); } if (document.body.classList.contains("rail-fixo") && !railMovel()) fixarMenu(false); else menuAbrir(); return; }
   if (t.id === "busca-btn") { cmdAbrir(); return; }
@@ -4130,6 +4166,7 @@ document.addEventListener("click", e => {
   if (d.seltal) { state.talNovo = null; state.selTal = d.seltal; render(); if (innerWidth < 1100) document.querySelector(".tal-grid > section:last-child")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (d.taltag) { const p = talentos().find(x => x.id === state.selTal); if (p) alternarTagTal(p, d.taltag); return; }
   if (d.talindisp !== undefined) { const p = talentos().find(x => x.id === state.selTal); if (p) { salvarEdTal(p.id, { indisp: d.talindisp === "1" }); toast(d.talindisp === "1" ? "Marcado como indisponível." : "Voltou a ficar disponível."); } return; }
+  if (d.taledit) { editarTal(d.taledit); return; }
   if (d.talchamar) { const p = talentos().find(x => x.id === d.talchamar); if (p) chamarTal(p); return; }
   if (d.bfase !== undefined) { state.bf.fase = d.bfase; render(); return; }
   if (d.bancovaga) { const v = state.vagas.get(d.bancovaga); if (v) { state.bf = { q: "", funcao: v.funcao, base: "", fase: "" }; state.bancoVaga = v.id; state.bancoAba = "processos"; state.sel = null; ir("banco"); } return; }
@@ -4310,6 +4347,8 @@ document.addEventListener("submit", e => {
 });
 function rota() { const h = location.hash.slice(1); if (["inicio", "painel", "vagas", "candidatos", "agenda", "novo", "historico", "banco", "dados"].includes(h)) state.view = h; }
 addEventListener("hashchange", () => { rota(); render(); });
+addEventListener("popstate", e => { const st = e.state; if (st && st.v) { state.view = st.v; state.sel = st.sel ?? null; state.passos = st.n || 0; } else { rota(); state.passos = 0; } state.cancelando = false; state.editando = false; render(); window.scrollTo({ top: 0 }); });
+function voltar() { if ((state.passos || 0) > 0) history.back(); else if (state.view !== "inicio") ir("inicio"); }
 rota();
 pkIniciar();
 iniciar();
