@@ -9,7 +9,7 @@
 //     ganha os registros novos no histórico e os dados que faltavam (telefone, e-mail, cidade, CNH, programas);
 //   - quem não existia entra com um id novo;
 //   - nada do que já estava no banco é apagado; as marcações feitas no site (talentosEd) continuam valendo.
-// Pode rodar de novo sem duplicar: registro igual não entra duas vezes.
+// Pode rodar de novo sem duplicar. Quando uma planilha vem atualizada, os registros dela substituem os da versão anterior.
 import pg from "pg";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -39,29 +39,37 @@ try {
   const partes = Array.from({ length: nPartes }, (_, i) => rows.find(r => r.id === "p" + (i + 1)));
   if (partes.some(p => !p)) { console.error("O banco de talentos atual está incompleto (falta alguma parte). Nada foi gravado."); process.exit(1); }
   const lista = partes.flatMap(p => p.dados.r || []);
-  console.log(`Banco de talentos atual: ${lista.length} pessoas em ${nPartes} parte(s).`);
+  // quem foi cadastrado pelo site (um documento por pessoa, id "c-…") entra na conta para não duplicar e passa a morar nas partes
+  const doSite = rows.filter(r => r.id.startsWith("c-") && r.dados && r.dados.p);
+  for (const r of doSite) lista.push({ ...r.dados.p, id: r.id });
+  console.log(`Banco de talentos atual: ${lista.length} pessoas (${nPartes} parte(s) das planilhas${doSite.length ? ` + ${doSite.length} do site` : ""}).`);
 
   // cópia de segurança do que está no banco agora
   if (!SIMULAR) {
     mkdirSync(PASTA, { recursive: true });
     const arq = join(PASTA, `backup-talentos-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`);
-    writeFileSync(arq, JSON.stringify({ meta, partes: partes.map(p => ({ id: p.id, dados: p.dados })) }));
+    writeFileSync(arq, JSON.stringify({ meta, partes: partes.map(p => ({ id: p.id, dados: p.dados })), doSite: doSite.map(r => ({ id: r.id, dados: r.dados })) }));
     console.log("Cópia de segurança salva em " + arq);
   }
 
   const porNome = new Map(), porTel = new Map(), ids = new Set();
   lista.forEach(p => { porNome.set(norm(p.nome), p); const t = dig(p.tel); if (t.length >= 10) porTel.set(t, p); ids.add(p.id); });
-  let juntou = 0, entrou = 0, regNovos = 0, regIguais = 0;
+  let juntou = 0, entrou = 0, regNovos = 0, regIguais = 0, regTrocados = 0;
+  const FONTES = new Set(novos.fontes || []), vistos = new Set();
   for (const n of novos.pessoas) {
     let p = porNome.get(norm(n.nome));
     if (!p) { const t = dig(n.tel), q = t.length >= 10 && porTel.get(t); if (q && norm(q.nome).split(" ")[0] === norm(n.nome).split(" ")[0]) p = q; }
     if (p) {
-      juntou++;
+      juntou++; vistos.add(p.id);
       for (const c of ["tel", "email", "cidade", "cnh"]) if (n[c] && !p[c]) p[c] = n[c];
       if (n.tags) p.tags = [...new Set([...(p.tags || []), ...n.tags])];
       p.hist = p.hist || [];
+      // a versão nova de cada planilha SUBSTITUI a anterior: tira os registros antigos dessas planilhas e põe os atuais
+      const antes = new Set(p.hist.filter(h => FONTES.has(h.fonte)).map(chaveH));
+      p.hist = p.hist.filter(h => !FONTES.has(h.fonte));
       const tem = new Set(p.hist.map(chaveH));
-      for (const h of n.hist) { if (tem.has(chaveH(h))) { regIguais++; continue; } p.hist.push(h); tem.add(chaveH(h)); regNovos++; }
+      for (const h of n.hist) { if (tem.has(chaveH(h))) continue; p.hist.push(h); tem.add(chaveH(h)); if (antes.has(chaveH(h))) { regIguais++; antes.delete(chaveH(h)); } else regNovos++; }
+      regTrocados += antes.size;
       p.hist.sort((a, b) => (b.d || "").localeCompare(a.d || ""));
     } else {
       let id = n.id; while (ids.has(id)) id = id + "x";
@@ -75,7 +83,9 @@ try {
   console.log(`Planilhas novas: ${novos.pessoas.length} pessoas.`);
   console.log(`  ${juntou} já estavam no banco (ganharam os registros novos)`);
   console.log(`  ${entrou} pessoas novas`);
-  console.log(`  ${regNovos} registros novos no histórico · ${regIguais} já existiam e não foram repetidos`);
+  console.log(`  ${regNovos} registros novos ou atualizados · ${regIguais} iguais aos que já estavam · ${regTrocados} versões antigas substituídas`);
+  const sairam = lista.filter(p => !vistos.has(p.id) && !novos.pessoas.some(n => n.id === p.id) && (p.hist || []).some(h => FONTES.has(h.fonte)));
+  if (sairam.length) console.log(`  ${sairam.length} pessoa(s) não estão mais nas planilhas novas: continuam no banco como estavam (${sairam.slice(0, 8).map(p => p.nome).join(", ")}${sairam.length > 8 ? "…" : ""})`);
   console.log(`Banco de talentos depois: ${lista.length} pessoas.`);
 
   // divide em partes e grava
@@ -90,6 +100,8 @@ try {
   for (let i = 0; i < novasPartes.length; i++) await grava("p" + (i + 1), { r: novasPartes[i] });
   for (let i = novasPartes.length; i < nPartes; i++)
     await db.query("update ct_docs set removido = true, atualizado_em = now(), versao = nextval('ct_versao_seq') where colecao = 'talentos' and id = $1", ["p" + (i + 1)]);
+  for (const r of doSite)
+    await db.query("update ct_docs set removido = true, atualizado_em = now(), versao = nextval('ct_versao_seq') where colecao = 'talentos' and id = $1", [r.id]);
   const fontes = [...new Set([...(meta.fontes || []), ...(novos.fontes || [])])];
   await grava("meta", { ...meta, partes: novasPartes.length, total: lista.length, fontes, atualizado: new Date().toISOString().slice(0, 10) });
   await db.query("insert into ct_log (usuario_nome, colecao, doc_id, acao) values ('importação das planilhas do RH', 'talentos', 'meta', $1)",

@@ -113,6 +113,12 @@ textarea { min-height: 70px; resize: vertical; }
 ::placeholder { color: var(--soft); }
 .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .form-grid .s2 { grid-column: span 2; } .form-grid .s3 { grid-column: 1 / -1; }
+.tal-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tal-form .form-grid .s3 { grid-column: 1 / -1; }
+.tal-form .progs { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.tal-form .progs label { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.tal-form .progs input { width: auto; }
+@media (max-width: 700px) { .tal-form .form-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 700px) { .form-grid { grid-template-columns: minmax(0, 1fr); } .form-grid .s2, .form-grid .s3 { grid-column: auto; } }
 .filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .filtros select, .filtros input { width: auto; min-width: 150px; flex: 1 1 150px; }
@@ -2197,7 +2203,8 @@ function vBanco() {
   const funcoes = [...new Set(todos.map(c => c.funcao).filter(Boolean))].sort();
   const abas = `<div class="abas" role="tablist"><button role="tab" class="aba" data-bancoaba="inscritos" aria-selected="${state.bancoAba === "inscritos"}">Inscritos das planilhas<span class="count">${state.tal.pronto ? state.tal.lista.length : "…"}</span></button><button role="tab" class="aba" data-bancoaba="processos" aria-selected="${state.bancoAba === "processos"}">Processos guardados<span class="count">${todos.length}</span></button></div>`;
   if (state.bancoAba === "inscritos") return `
-  <div class="vhead"><div><h2>Banco de talentos</h2><p>Todas as pessoas que já se inscreveram ou passaram pelas planilhas do RH, organizadas por programa, área de interesse e situação. Encontrou alguém? Clique em "Chamar para processo".</p></div></div>
+  <div class="vhead"><div><h2>Banco de talentos</h2><p>Todas as pessoas que já se inscreveram ou passaram pelas planilhas do RH, organizadas por programa, área de interesse e situação. Encontrou alguém? Clique em "Chamar para processo".</p></div>
+    ${pode() && state.tal.pronto ? `<button class="btn primary" data-talnovo="1">${ico("novo")}Cadastrar no banco de talentos</button>` : ""}</div>
   ${abas}${vInscritos()}`;
   return `
   <div class="vhead"><div><h2>Banco de talentos</h2><p>Processos que pararam no meio do caminho. Tudo continua guardado: etapas, datas, observações e currículo. Quando surgir uma vaga parecida, retome o processo de onde parou.</p></div></div>
@@ -2238,7 +2245,7 @@ function avisoBanco() {
 /* ===================== Banco de talentos: inscritos das planilhas do RH ===================== */
 // Base importada das planilhas (BANCO RH 2025, Triagens 2024/2025, Bancos de talentos, PCD, Admissões).
 // Fica em "talentos" (partes p1..pN) e as marcações feitas no site ficam em "talentosEd/<id>".
-state.tal = { pronto: false, lista: [], partes: {}, ed: {}, meta: null };
+state.tal = { pronto: false, lista: [], partes: {}, cad: {}, ed: {}, meta: null }; state.talNovo = null;
 state.tf = { cat: "disp", q: "", base: "", ano: "", todos: false };
 state.bancoAba = "inscritos";
 const PROGRAMAS = [
@@ -2310,11 +2317,15 @@ function tagsTal(p) {
 const sugereEscola = (p, area) => (area === "eletaval" && /INAPTO|N\/A/.test(norm(p.hist.map(x => x.cert || "").join(" ")))) || /AUX(ILIAR|\.)? (DE )?ELETRI/.test(norm(p.hist.map(x => x.funcao || "").join(" ")));
 let talCache = { k: "", l: [] };
 function talentos() {
-  const k = state.tal.lista.length + ":" + JSON.stringify(state.tal.ed).length + ":" + (state.rm.pronto ? state.rm.recs.length : 0) + ":" + state.cand.size + ":" + ANDAMENTO().length;
+  const k = state.tal.lista.length + ":" + Object.keys(state.tal.cad).join(",").length + ":" + JSON.stringify(state.tal.ed).length + ":" + (state.rm.pronto ? state.rm.recs.length : 0) + ":" + state.cand.size + ":" + ANDAMENTO().length;
   if (talCache.k === k) return talCache.l;
   const emProc = new Set([...state.cand.values()].filter(c => c.situacao === "andamento" || c.situacao === "suspenso").map(c => norm(nomeBusca(c.nome))));
-  const l = state.tal.lista.map(p => {
-    const ed = state.tal.ed[p.id] || {}, area = areaTal(p), sit = situacaoTal(p, ed, emProc), tags = tagsTal(p);
+  const l = state.tal.lista.map(p0 => {
+    const ed = state.tal.ed[p0.id] || {};
+    const p = ed.hist || ed.tel || ed.email || ed.cidade || ed.cnh || ed.def
+      ? { ...p0, tel: p0.tel || ed.tel || "", email: p0.email || ed.email || "", cidade: p0.cidade || ed.cidade || "", cnh: p0.cnh || ed.cnh || "", def: p0.def || ed.def || "", tags: p0.tags || [], hist: [...(ed.hist || []), ...(p0.hist || [])].sort((a, b) => (b.d || "").localeCompare(a.d || "")) }
+      : { ...p0, tags: p0.tags || [], hist: p0.hist || [] };
+    const area = areaTal(p), sit = situacaoTal(p, ed, emProc), tags = tagsTal(p);
     const cid = CID_N()[norm(p.cidade)] || p.cidade || "";
     const bp = cid ? baseProxima(cid) : null;
     const h0 = p.hist.find(x => x.funcao) || p.hist[0] || {};
@@ -2324,9 +2335,10 @@ function talentos() {
   talCache = { k, l }; return l;
 }
 function montarTal(docs) {
-  docs.forEach(d => { if (d.id === "meta") state.tal.meta = d.data(); else state.tal.partes[d.id] = d.data().r || []; });
-  const n = state.tal.meta ? state.tal.meta.partes : 0, ok = n && Array.from({ length: n }, (_, i) => state.tal.partes["p" + (i + 1)]).every(Boolean);
-  if (ok) { state.tal.lista = Array.from({ length: n }, (_, i) => state.tal.partes["p" + (i + 1)]).flat(); state.tal.pronto = true; }
+  state.tal.cad = {};
+  docs.forEach(d => { if (d.id === "meta") state.tal.meta = d.data(); else if (d.id.startsWith("c-")) { const p = d.data().p; if (p) state.tal.cad[d.id] = { ...p, id: d.id }; } else state.tal.partes[d.id] = d.data().r || []; });
+  const n = state.tal.meta ? state.tal.meta.partes : 0, ok = !n || Array.from({ length: n }, (_, i) => state.tal.partes["p" + (i + 1)]).every(Boolean);
+  if (ok) { state.tal.lista = [...Array.from({ length: n }, (_, i) => state.tal.partes["p" + (i + 1)]).flat(), ...Object.values(state.tal.cad)]; state.tal.pronto = true; }
 }
 // Pessoas com algum registro no ano escolhido (inscrição, seletivo, triagem ou admissão)
 const talentosAno = () => state.tf.ano ? talentos().filter(p => p.anos.includes(state.tf.ano)) : talentos();
@@ -2406,8 +2418,97 @@ function vInscritos() {
       <div class="lista">${pg.itens.length ? pg.itens.map(itemTal).join("") : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`}</div>
       ${pg.nav}
     </section>
-    ${sel ? detalheTal(sel) : `<section class="panel"><div class="empty">Escolha uma pessoa para ver contatos, programas e tudo o que foi registrado nas planilhas.</div></section>`}
+    ${state.talNovo && pode() ? formTal() : sel ? detalheTal(sel) : `<section class="panel"><div class="empty">Escolha uma pessoa para ver contatos, programas e tudo o que foi registrado nas planilhas.${pode() ? ` Para incluir alguém novo, use "Cadastrar no banco de talentos".` : ""}</div></section>`}
   </div>`;
+}
+/* ===================== Banco de talentos: cadastro pelo site ===================== */
+const TAL_FONTES = ["Cadastro no site", "Currículo entregue", "Indicação", "Link de inscrição", "Feira ou evento", "Outro"];
+const TAL_CERT = ["", "OK", "EM ANÁLISE", "SOLICITADO", "NÃO OK", "N/A"];
+const TAL_CNH = ["", "A", "B", "AB", "C", "D", "E", "AC", "AD", "AE"];
+const TAL_DEF = ["", "Física", "Auditiva", "Visual", "Intelectual", "Psicossocial", "Múltipla", "Reabilitado (INSS)"];
+const fmtTel = v => { const d = soDig(v).replace(/^55(?=\d{10,11}$)/, ""); return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}` : String(v || "").trim(); };
+// Quem já está no banco com o mesmo nome ou o mesmo telefone
+function dupTal(nome, tel) {
+  const n = norm(nome), t = soDig(tel);
+  if (n.split(" ").length < 2 && t.length < 10) return null;
+  return talentos().find(p => (n.split(" ").length >= 2 && norm(p.nome) === n) || (t.length >= 10 && soDig(p.tel) === t)) || null;
+}
+function avisoDupTal() {
+  const f = state.talNovo || {}, p = dupTal(f.nome, f.tel);
+  f.dupId = p ? p.id : "";
+  if (!p) return "";
+  return `<div class="note warn"><span><b>${esc(p.nome)} já está no banco</b> (${esc(p.funcao || "função não informada")}${p.cidade ? ` · ${esc(titulo(p.cidade))}` : ""}${p.tel ? ` · ${esc(p.tel)}` : ""}). Ao salvar, este cadastro entra como um registro novo na ficha dessa pessoa, sem criar outra.</span><button type="button" class="btn sm" data-seltal="${p.id}">Abrir ficha</button></div>`;
+}
+function formTal() {
+  const f = state.talNovo;
+  const opt = (l, v) => l.map(x => `<option value="${esc(x)}" ${x === v ? "selected" : ""}>${esc(x || "—")}</option>`).join("");
+  const funcs = [...new Set([...funcOficiais(), ...talentos().map(p => p.funcao).filter(Boolean)])].sort((a, b) => a.localeCompare(b));
+  return `<section class="panel tal-form">
+    <form id="form-tal" autocomplete="off">
+      <div class="det-head"><h2>Cadastrar no banco de talentos</h2><span class="muted">A pessoa entra como disponível e pode ser chamada para um processo quando surgir a vaga.</span></div>
+      <div id="tn-dup">${avisoDupTal()}</div>
+      <fieldset><legend>Pessoa</legend><div class="form-grid">
+        <label class="s3">Nome completo<input type="text" id="tn-nome" value="${esc(f.nome)}" required placeholder="NOME DA PESSOA"></label>
+        <label>Telefone<input type="text" inputmode="tel" id="tn-tel" value="${esc(f.tel)}" placeholder="(99) 99999-9999"></label>
+        <label>E-mail<input type="text" inputmode="email" id="tn-email" value="${esc(f.email)}"></label>
+        <label>Cidade onde mora<input type="text" id="tn-cidade" list="dl-tal-cid" value="${esc(f.cidade)}" placeholder="Escolha ou digite"></label>
+        <label>CNH<select id="tn-cnh">${opt(TAL_CNH, f.cnh)}</select></label>
+      </div></fieldset>
+      <fieldset><legend>Interesse</legend><div class="form-grid">
+        <label class="s3">Função de interesse<input type="text" id="tn-funcao" list="dl-tal-func" value="${esc(f.funcao)}" placeholder="Ex.: Eletricista"></label>
+        <label>Setor<input type="text" id="tn-area" list="dl-setor" value="${esc(f.area)}" placeholder="Ex.: GSTC"></label>
+        <label>Certificado<select id="tn-cert">${opt(TAL_CERT, f.cert)}</select></label>
+        <div class="s3"><span class="muted sm">Programas</span><div class="progs">${PROGRAMAS.map(x => `<label><input type="checkbox" data-tnprog="${x.k}" ${(f.tags || []).includes(x.k) ? "checked" : ""}>${esc(x.n)}</label>`).join("")}</div></div>
+        <label>Tipo de deficiência <small>se PCD</small><select id="tn-def">${opt(TAL_DEF, f.def)}</select></label>
+      </div></fieldset>
+      <fieldset><legend>Origem</legend><div class="form-grid">
+        <label>Como chegou<select id="tn-fonte">${opt(TAL_FONTES, f.fonte || "Cadastro no site")}</select></label>
+        <label>Indicado por<input type="text" id="tn-ind" value="${esc(f.ind)}"></label>
+        <label class="s3">Observação<textarea id="tn-obs" rows="3">${esc(f.obs)}</textarea></label>
+      </div></fieldset>
+      <div class="actions"><button type="submit" class="btn primary" id="tn-salvar">${ico("novo")}Salvar no banco</button><button type="button" class="btn" data-talnovo="0">Cancelar</button></div>
+    </form>
+    <datalist id="dl-tal-cid">${Object.keys(CID_XY).map(c => `<option value="${esc(c)}">`).join("")}</datalist>
+    <datalist id="dl-tal-func">${funcs.map(x => `<option value="${esc(x)}">`).join("")}</datalist>
+  </section>`;
+}
+function lerFormTal() {
+  const g = id => (document.getElementById(id) || {}).value || "";
+  const f = state.talNovo;
+  Object.assign(f, { nome: g("tn-nome"), tel: g("tn-tel"), email: g("tn-email"), cidade: g("tn-cidade"), cnh: g("tn-cnh"), funcao: g("tn-funcao"), area: g("tn-area"),
+    cert: g("tn-cert"), def: g("tn-def"), fonte: g("tn-fonte"), ind: g("tn-ind"), obs: g("tn-obs"),
+    tags: [...document.querySelectorAll("[data-tnprog]")].filter(x => x.checked).map(x => x.dataset.tnprog) });
+  return f;
+}
+async function salvarTal() {
+  const f = lerFormTal();
+  const nome = UP(f.nome);
+  if (nome.split(" ").length < 2) { toast("Escreva o nome completo da pessoa."); document.getElementById("tn-nome")?.focus(); return; }
+  if (f.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) { toast("Confira o e-mail."); return; }
+  if (f.def && !f.tags.includes("pcd")) f.tags.push("pcd");
+  const tel = fmtTel(f.tel), cid = CID_N()[norm(f.cidade)] || titulo(f.cidade.trim());
+  const funcao = (funcOficiais().find(x => norm(x) === norm(f.funcao)) || talentos().find(p => norm(p.funcao) === norm(f.funcao))?.funcao || titulo(f.funcao.trim()));
+  const quem = (window.CT_ACESSO && window.CT_ACESSO.nome) || "";
+  const h = { d: HOJE, fonte: f.fonte || "Cadastro no site", funcao, area: UP(f.area), cert: f.cert, ind: UP(f.ind), obs: [f.def ? `Deficiência ${f.def.toLowerCase()}` : "", f.obs.trim()].filter(Boolean).join("; "), resp: quem ? `Cadastrado por ${titulo(quem)}` : "" };
+  Object.keys(h).forEach(k => { if (!h[k]) delete h[k]; });
+  const dup = dupTal(nome, tel);
+  const btn = document.getElementById("tn-salvar"); if (btn) btn.disabled = true;
+  try {
+    if (dup) {
+      const ed = state.tal.ed[dup.id] || {};
+      const extra = {}; [["tel", tel], ["email", f.email.trim().toLowerCase()], ["cidade", cid], ["cnh", f.cnh], ["def", f.def]].forEach(([k, v]) => { if (v && !dup[k]) extra[k] = v; });
+      const tags = new Set(ed.tags || []); f.tags.forEach(t => { if (!dup.tags.has(t)) tags.add(t); });
+      await salvarEdTal(dup.id, { ...extra, tags: [...tags], hist: [h, ...(ed.hist || [])] });
+      state.talNovo = null; state.selTal = dup.id; render();
+      toast(`${dup.nome} já estava no banco: o cadastro entrou como registro novo na ficha.`);
+    } else {
+      const id = novoId("c-");
+      const p = { nome, tel, email: f.email.trim().toLowerCase(), cidade: cid, cnh: f.cnh, def: f.def, tags: f.tags, hist: [h] };
+      await db.collection("talentos").doc(id).set({ p, em: HOJE, por: quem });
+      state.talNovo = null; state.selTal = id; state.tf = { ...state.tf, cat: "todos", ano: "" }; talCache.k = ""; render();
+      toast(`${nome} entrou no banco de talentos.`);
+    }
+  } catch { toast("Não consegui salvar agora. Tente de novo."); if (btn) btn.disabled = false; }
 }
 async function salvarEdTal(id, patch) {
   const atual = state.tal.ed[id] || {}, novo = { ...atual, ...patch, em: HOJE };
@@ -4025,7 +4126,8 @@ document.addEventListener("click", e => {
   if (d.bancoaba) { state.bancoAba = d.bancoaba; state.selTal = null; render(); return; }
   if (d.tano !== undefined) { state.tf.ano = d.tano; state.selTal = null; render(); return; }
   if (d.tcat) { state.tf.cat = d.tcat; state.selTal = null; render(); document.querySelector(".tal-grid")?.scrollIntoView({ block: "nearest" }); return; }
-  if (d.seltal) { state.selTal = d.seltal; render(); if (innerWidth < 1100) document.querySelector(".tal-grid > section:last-child")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (d.talnovo !== undefined) { state.talNovo = d.talnovo === "1" ? { tags: [] } : null; render(); if (state.talNovo) { document.querySelector(".tal-form")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("tn-nome")?.focus(), 50); } return; }
+  if (d.seltal) { state.talNovo = null; state.selTal = d.seltal; render(); if (innerWidth < 1100) document.querySelector(".tal-grid > section:last-child")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (d.taltag) { const p = talentos().find(x => x.id === state.selTal); if (p) alternarTagTal(p, d.taltag); return; }
   if (d.talindisp !== undefined) { const p = talentos().find(x => x.id === state.selTal); if (p) { salvarEdTal(p.id, { indisp: d.talindisp === "1" }); toast(d.talindisp === "1" ? "Marcado como indisponível." : "Voltou a ficar disponível."); } return; }
   if (d.talchamar) { const p = talentos().find(x => x.id === d.talchamar); if (p) chamarTal(p); return; }
@@ -4172,6 +4274,7 @@ document.addEventListener("input", e => {
   if (/^(fv|nv|ed)-cc$/.test(e.target.id) && e.target.value.trim() !== (e.target.dataset.auto || "")) e.target.classList.remove("cc-auto");
   const t = e.target, map = { "tf-q": ["tf", "q"], "bf-q": ["bf", "q"], "cf-q": ["filtro", "q"], "vf-q": ["vf", "q"], "hf-q": ["hf", "q"] };
   if (map[t.id]) { state[map[t.id][0]][map[t.id][1]] = t.value; clearTimeout(inT); inT = setTimeout(render, 180); return; }
+  if (t.id && t.id.startsWith("tn-") && state.talNovo) { lerFormTal(); if (t.id === "tn-nome" || t.id === "tn-tel") { clearTimeout(inT); inT = setTimeout(() => { const box = document.getElementById("tn-dup"); if (box) box.innerHTML = avisoDupTal(); }, 250); } return; }
   if (t.id && t.id.startsWith("nv-") && t.id !== "nv-cv") { lerNovo(); clearTimeout(inT); inT = setTimeout(atualizarNovo, 300); if (t.id === "nv-cpf" && soDig(t.value).length === 11) hashCPF(t.value).then(() => atualizarNovo()); }
 });
 function lerNovo() {
@@ -4185,6 +4288,7 @@ document.addEventListener("submit", e => {
   e.preventDefault();
   const up = s => String(s || "").trim().replace(/\s+/g, " ").toUpperCase();
   if (e.target.id === "form-novo") { salvarNovo(); return; }
+  if (e.target.id === "form-tal") { salvarTal(); return; }
   if (e.target.id === "form-vaga") {
     const g = id => document.getElementById(id).value;
     const qtd = Math.max(1, Math.min(30, +g("fv-qtd") || 1));

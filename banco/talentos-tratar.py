@@ -1,5 +1,5 @@
 # Trata as planilhas do RH para o Banco de talentos (aba Inscritos do Contratações CGB).
-# Uso: python banco/talentos-tratar.py BANCO_RH.xlsx TRIAGEM_PcD.xlsx banco/talentos-cidades.json contratacoes-exportacao-talentos/talentos-novos.json
+# Uso: python banco/talentos-tratar.py BANCO_RH.xlsx TRIAGEM_PcD.xlsx banco/talentos-cidades.json contratacoes-exportacao-talentos/talentos-novos.json [TABELA_ACOMPANHAMENTO.xlsx]
 # Entrada: BANCO_RH_TRIAGEM_2.xlsx e TRIAGEM_PcD_1.xlsx. Saída: talentos-novos.json (formato do site) + relatório.
 import sys, re, json, unicodedata, hashlib, datetime as dt
 from openpyxl import load_workbook
@@ -63,7 +63,13 @@ def tel(v, fonte='', nome=''):
 
 # ---------- cidade ----------
 CN = {norm(k): k for k in CID_XY}
-ALIAS = {'SANTA INES': 'Santa Inês', 'SAO LUIS': 'São Luís', 'SAAO LUIS': 'São Luís', 'SAO LUIS GONZAGA': 'São Luís Gonzaga do Maranhão',
+ALIAS = {'PRESIDENTE DUTA': 'Presidente Dutra', 'SANTO ANTONIO DO LOPES': 'Santo Antônio dos Lopes', 'GUARACIABA ZONA RURAL DE BACABAL': 'Bacabal',
+         'ZONA RURAL DE PDS': 'Pedreiras', 'BELA VISTA': 'Bela Vista do Maranhão', 'ANANINDEUA': 'Ananindeua - PA', 'BARCARENA': 'Barcarena - PA',
+         'CAMOCIM': 'Camocim - CE', 'CORRENTINA BAHIA': 'Correntina - BA', 'CURRAL NOVO DO PIAUI': 'Curral Novo do Piauí', 'GOIANIA': 'Goiânia - GO',
+         'GRANJA': 'Granja - CE', 'IPORA': 'Iporá - GO', 'JEQUIE': 'Jequié - BA', 'JI-PARANA': 'Ji-Paraná - RO', 'LAGOA DO PIAUI': 'Lagoa do Piauí',
+         'MARABA': 'Marabá - PA', 'OEIRAS': 'Oeiras - PI', 'OURICURI': 'Ouricuri - PE', 'PETROLINA': 'Petrolina - PE', 'PORTEL': 'Portel - PA',
+         'RIO VERDE': 'Rio Verde - GO', 'SALVADOR': 'Salvador - BA', 'SAO BENEDITO DO RIO PRETO': 'São Benedito do Rio Preto', 'SAO JOSE DO BEL MONTE': 'São José do Belmonte - PE',
+         'SERRA TALHADA': 'Serra Talhada - PE', 'TERESINA': 'Teresina/PI', 'TIMON': 'Timon', 'VILA BOA': 'Vila Boa - GO', 'SANTA INES': 'Santa Inês', 'SAO LUIS': 'São Luís', 'SAAO LUIS': 'São Luís', 'SAO LUIS GONZAGA': 'São Luís Gonzaga do Maranhão',
          'SAO LUIS GONZAGA DO MA': 'São Luís Gonzaga do Maranhão', 'SAO LUIS GONZAGA DO': 'São Luís Gonzaga do Maranhão', 'POVOADO JAPAOZINHO': 'Gonçalves Dias', 'SANTAREM': 'Santarém - PA', 'ITAPECURU': 'Itapecuru Mirim', 'ITAPERCURU MIRIM': 'Itapecuru Mirim',
          'ITAPECURU MIRIN': 'Itapecuru Mirim', 'ITAPECURU-MIRIM': 'Itapecuru Mirim', 'PINDARE MIRIM': 'Pindaré-Mirim', 'PINDARE': 'Pindaré-Mirim',
          'ALTAMIRA': 'Altamira do Maranhão', 'ALTO ALEGRE': 'Alto Alegre do Maranhão', 'ALTO-ALEGRE': 'Alto Alegre do Maranhão',
@@ -246,6 +252,51 @@ for r in wb['CONTROLE PCD'].iter_rows(min_row=3, values_only=True):
                                 ('Jurídico ' + limpa(r[7]).lower()) if limpa(r[7]) else '', ob[:1].upper() + ob[1:] if ob else ''] if x)
     add(F4, n, data(r[0], F4, n), tel(r[9], F4, n), '', cidade(r[5], F4, n), '', ['pcd'], {'funcao': fn, 'st': sit, 'obs': obs})
 
+# ---------- Tabela de acompanhamento (FINALIZADOS + ACOMPANHAMENTO) ----------
+if len(sys.argv) > 5:
+    wbc = load_workbook(sys.argv[5], data_only=True)
+    BASES = {'PDT': 'Presidente Dutra', 'STI': 'Santa Inês', 'BDC': 'Barra do Corda', 'BCB': 'Bacabal', 'ITM': 'Itapecuru Mirim', 'ITAPECURU': 'Itapecuru Mirim', 'PDS': 'Pedreiras'}
+    ETP = [(11, 'Currículo/certificados'), (12, 'Entrevista'), (13, 'Teste de atenção'), (14, 'Direção defensiva'), (15, 'CNH'), (16, 'Link'),
+           (17, 'Bernhoeft'), (18, 'Jurídico'), (19, 'RP'), (20, 'Documentação'), (21, 'ASO'), (22, 'Integração CGB'), (23, 'Integração Equatorial')]
+    def ev(v, f, n):
+        if isinstance(v, (dt.datetime, dt.date)): return v.strftime('%d/%m')
+        k = norm(limpa(v))
+        return {'NOK': 'não ok', 'NA': 'n/a', 'X': 'feito', 'OK': 'ok'}.get(k, limpa(v).lower())
+    for aba, F in [('FINALIZADOS', 'Acompanhamento RH · finalizados'), ('ACOMPANHAMENTO ', 'Acompanhamento RH · em andamento')]:
+        for r in wbc[aba].iter_rows(min_row=2, values_only=True):
+            r = list(r[:25]) + [None] * max(0, 25 - len(r))
+            n = nome_ok(r[10])
+            if not n or norm(n) in ('A CONTRATAR', 'CANDIDATO'): continue
+            sit, ob = norm(limpa(r[3])), limpa(r[24])
+            nok = [nm for j, nm in ETP if norm(limpa(r[j])) in ('NOK', 'INAPTO') or norm(limpa(r[j])).startswith('NAO COMPARECEU')]
+            adm = re.search(r'ADMI(TID|SS)[A-Z]*\s*(CGB\s*)?(\d{1,2}/\d{1,2}(/\d{2,4})?)?', norm(ob))
+            if sit.startswith('CONCLU'):
+                st = ('ADMITIDO' + (' em ' + adm.group(3) if adm and adm.group(3) else '')) if adm or isinstance(r[22], (dt.datetime, dt.date)) or norm(limpa(r[22])) == 'OK' else 'CONTRATADO (processo concluído)'
+            elif sit.startswith('CANC') or sit.startswith('CAND'):
+                st = ('REPROVADO (' + ', '.join(nok).lower() + ')') if nok else ('DESISTIU' if re.search(r'DESIST|NAO TEM INTERE|NAO QUIS|NAO ACEIT', norm(ob)) else 'CANCELADO')
+            elif sit.startswith('DESIST'): st = 'DESISTIU'
+            elif sit.startswith('SUSP'): st = 'SUSPENSO'
+            else: st = 'EM ANDAMENTO' + (' (pendência: ' + ', '.join(nok).lower() + ')' if nok else '')
+            mres = re.search(r'RESID[EI]\s+(EM|NO|NA)\s+(.+)$', norm(ob))
+            cid = ''
+            if mres:
+                raw = re.split(r'\s*(\(|/|;|,|\d|\bVERIFICAR\b|\bSO TEM\b|\bCANDIDATO\b|\.| - | – )', mres.group(2))[0].strip()
+                raw = {'PRESIDEBTE DUTRA': 'PRESIDENTE DUTRA', 'PIDARE MIRIM': 'PINDARE MIRIM', 'CANTANHEIDE': 'CANTANHEDE', 'GUAJAU': 'GRAJAU',
+                       'SAO BENEDITO DO RIO PETRO': 'SAO BENEDITO DO RIO PRETO', 'PI': ''}.get(raw, raw)
+                cid = '' if not raw else cidade({'PDT': 'Presidente Dutra', 'STI': 'Santa Inês', 'BDC': 'Barra do Corda'}.get(raw, raw), F, n)
+            base = BASES.get(norm(limpa(r[8])), titulo(limpa(r[8])) if limpa(r[8]) else '')
+            mot = limpa(r[9]).upper()
+            tags = ['excgb'] if re.search(r'EX[ -]?(COLABORADOR|FUNCION)', norm(ob)) else []
+            if 'PCD' in mot: tags.append('pcd')
+            if 'ESCOLINHA' in norm(limpa(r[11])): tags.append('escola')
+            etapas = ' · '.join(f'{nm} {ev(r[j], F, n)}' for j, nm in ETP if limpa(r[j]))
+            obs = '; '.join(x for x in [('CT ' + str(r[1]).strip()) if limpa(r[1]) else '', ('Base ' + base) if base else '', ('Motivo: ' + mot.capitalize()) if mot else '',
+                                        etapas, (ob[:1].upper() + ob[1:].lower()) if ob else ''] if x)
+            c = cert(r[11]) if limpa(r[11]) else ''
+            c = 'OK' if c.startswith('OK') else c
+            add(F, n, data(r[2] or r[0], F, n), '', '', cid, '', tags,
+                {'funcao': funcao(r[4], F, n), 'area': setor(r[6]), 'cert': c, 'st': st, 'resp': ('Solicitante ' + titulo(limpa(r[5]))) if limpa(r[5]) else '', 'obs': obs})
+
 # ---------- junta por pessoa ----------
 def chave(n): return norm(n)
 P, dup_linhas = {}, 0
@@ -286,7 +337,7 @@ for k, p in P.items():
     p['id'] = 't' + hashlib.sha1(k.encode()).hexdigest()[:10]
     L.append({'id': p['id'], 'nome': p['nome'], 'tel': p['tel'], 'email': p['email'], 'cidade': p['cidade'], 'cnh': p['cnh'], 'tags': p['tags'], 'hist': p['hist']})
 L.sort(key=lambda p: p['nome'])
-json.dump({'gerado': HOJE.isoformat(), 'fontes': [F1, F2, F3, F4], 'pessoas': L}, open(SAIDA, 'w', encoding='utf-8'), ensure_ascii=False)
+json.dump({'gerado': HOJE.isoformat(), 'fontes': sorted({x['h']['fonte'] for x in REG}), 'pessoas': L}, open(SAIDA, 'w', encoding='utf-8'), ensure_ascii=False)
 json.dump({'ajustes': AJUSTES, 'uniu': uniu, 'linhas': len(REG), 'linhas_repetidas': dup_linhas}, open(SAIDA.replace('.json', '-ajustes.json'), 'w', encoding='utf-8'), ensure_ascii=False)
 from collections import Counter
 print('linhas lidas', len(REG), '| linhas repetidas removidas', dup_linhas, '| pessoas', len(L), '| unidas pelo telefone', len(uniu))
