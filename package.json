@@ -13,7 +13,8 @@
     "teste": "node testes/teste_api.mjs",
     "central:tabelas": "node --env-file=.env central-administrativa/publicar.mjs tabelas",
     "central:site": "node central-administrativa/publicar.mjs site",
-    "central:banco": "node --env-file=.env central-administrativa/publicar.mjs banco"
+    "central:banco": "node --env-file=.env central-administrativa/publicar.mjs banco",
+    "talentos:importar": "node --env-file=.env banco/talentos-importar.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",
