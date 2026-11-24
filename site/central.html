@@ -3153,7 +3153,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fcst]');if
 /* ===== Hospedagem e Alimentação: lançar no próprio sistema ===== */
 let HL=[],HLVER=0,HLE=null,HLQ='';
 const hlPode=()=>!!(DBX&&CAN_EDIT);
-function hlSync(){['hosp','alim'].forEach(m=>{const arr=MODO===m?ROWS:DS[m].rows;if(arr&&arr._hlv===HLVER)return;const subs=new Set(HL.filter(x=>x.m===m&&x.sub).map(x=>x.sub));const base=arr&&arr._base||(arr||[]).filter(r=>!r.man);const novo=base.filter(r=>!(subs.size&&subs.has(vfKey(r,m)))).concat(HL.filter(x=>x.m===m&&!x.rm&&!x.dupok).map(x=>x.r));novo._hlv=HLVER;novo._base=base;if(MODO===m)ROWS=novo;else DS[m].rows=novo})}
+function hlSync(){['hosp','alim'].forEach(m=>{const arr=MODO===m?ROWS:DS[m].rows;if(arr&&arr._hlv===HLVER)return;const subs=new Set(HL.filter(x=>x.m===m&&x.sub).map(x=>x.sub));const base=arr&&arr._base||(arr||[]).filter(r=>!r.man);const novo=base.filter(r=>!(subs.size&&subs.has(vfKey(r,m)))).concat(HL.filter(x=>x.m===m&&!x.rm&&!x.dupok).map(x=>x.r));novo._hlv=HLVER;novo._base=base;if(m==='hosp')try{vfStNoite(novo)}catch(e){console.error(e)}if(MODO===m)ROWS=novo;else DS[m].rows=novo})}
 async function hlCarregar(db){let mud=false;try{const s=await db.collection('hlan').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){const o=JSON.parse(v.j);HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);mud=true}})}catch(e){}if(mud)HLVER++;return mud}
 async function hlGrava(o){HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);HLVER++;if(hlPode()){try{await DBX.doc('hlan/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
 const hlDia=s=>{const t=Date.parse(s);return isNaN(t)?null:Math.floor(t/864e5)};
@@ -3335,6 +3335,12 @@ document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-vf
   if(b.dataset.vfsed!=null){HLE=Object.assign(vfParaE(r),{_vf:1});if(!HLE.conf&&VF.f.conf)HLE.conf=VF.f.conf;VF.ab=null;render();const f=document.querySelector('.aqform');f&&f.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(!confirm('Remover este lançamento de '+r.col+' ('+r.est+', '+dt(r.ent)+')?\n\nEle sai dos painéis, mas fica guardado e pode voltar em "Ver removidos".'))return;
   const e=vfParaE(r);if(r.man&&!r.sub){await hlGrava({id:r.man,m:MODO,del:true});toast('Lançamento excluído.')}else{await hlGrava({id:e.id,m:MODO,sub:e.sub||vfKey(r),rm:1,e,r:{},em:new Date().toISOString()});toast('Removido. Dá para trazer de volta em "Ver removidos".')}render()});
+/* --- Status pela regra da noite: a diária vai até as 12h, então sair de um hotel e entrar em outro no mesmo dia não é duplicidade.
+   Lançamento da planilha com VERIFICAR, datas certas e nenhuma noite em comum com outra hospedagem da pessoa passa a OK. --- */
+function vfStNoite(rs){const g=new Map();rs.forEach(r=>{if(r.ent==null)return;const k=vfN(r.col);if(k)(g.get(k)||g.set(k,[]).get(k)).push(r)});
+  rs.forEach(r=>{if(r.st!=='VERIFICAR'||r.ent==null||r.sai==null||r.sai<=r.ent)return;
+    const cz=(g.get(vfN(r.col))||[]).some(x=>x!==r&&x.ent!=null&&x.ent<r.sai&&r.ent<(x.sai!=null&&x.sai>x.ent?x.sai:x.ent+1));
+    if(!cz){r.st='OK';r.stAuto=1;r.fl&=~1}})}
 /* --- Possíveis duplicidades: mesmo colaborador em hospedagens com período sobreposto (ou mesma refeição no mesmo dia) --- */
 const vfDupOk=()=>new Set(HL.filter(x=>x.m===MODO&&x.dupok).map(x=>x.dupok));
 function vfDups(){const A=isA(),ok=vfDupOk(),g=new Map();
@@ -3381,7 +3387,7 @@ function vfLinha(r,onde,i){const A=isA(),v=x=>x==null||x===''?'–':esc(String(x
     A?[['Refeição',v(r.tipo)],['Data',dt(r.ent)],['Hora',r.hr==null?'–':r.hr+'h'],['Valor','<b>'+R(r.tot)+'</b>']]
      :[['Entrada',dt(r.ent)],['Saída',dt(r.sai)],['Diárias',N(r.dia)],['Valor da diária',R(r.pr)],['Total','<b>'+R(r.tot)+'</b>'],['Mês de referência',vfMes(r.mes)]]).concat([
     ['Solicitação (quem pediu)',v(r.sol)],['Autorizado por',v(r.aut)],['Código gerencial',v(r.cod)],['Centro de custo',v(r.area)],['Gerência',v(r.ger)],['Motivo',v(r.mot)],
-    ['Nota fiscal',sNF?'<span class="neg">sem nota</span>':v(r.nf)]]).concat(A?[]:[['Status',r.st==='OK'?'<span class="pill ate">OK</span>':'<span class="pill par">'+v(r.st)+'</span>']]).concat([
+    ['Nota fiscal',sNF?'<span class="neg">sem nota</span>':v(r.nf)]]).concat(A?[]:[['Status',r.st==='OK'?'<span class="pill ate">OK</span>'+(r.stAuto?' <small class="muted">na planilha estava VERIFICAR; sem noite em comum com outra hospedagem, ficou OK</small>':''):'<span class="pill par">'+v(r.st)+'</span>']]).concat([
     ['Conferente',v(r.conf)]]).concat(r.vfOk?[['Conferido no site em',vfYmdBr(r.vfOk)],['Valor da nota',r.vnf==null?'–':R(+r.vnf)],['Data da nota',r.dnf?vfYmdBr(r.dnf):'–'],['Observação',v(r.vobs)]]:[]).concat([
     ['Origem',r.man?(r.sub?'Planilha, editado no site':'Lançado no site'):'Planilha']]);
   const pend=A?sNF:(sNF||r.st!=='OK'),probs=(typeof FLAGS!=='undefined'?FLAGS.filter(f=>r.fl&f.b).map(f=>f.nm):[]);
