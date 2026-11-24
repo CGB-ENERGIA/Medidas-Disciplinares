@@ -1,5 +1,7 @@
 /* administrador de verdade (no site principal vem do login; no Artifact, quem edita) */
 function caAdm(){return window.CA_ACESSO?!!window.CA_ACESSO.admin:CAN_EDIT}
+/* Produtividade da equipe: o administrador e os gestores do Financeiro (quem só consulta não vê) */
+function caEqp(){const A=window.CA_ACESSO;return A?(!!A.admin||(A.area==='financeiro'&&A.nivel==='gestor')):CAN_EDIT}
 /* ===== PRODUTIVIDADE DA EQUIPE (lançamentos no Contas a Pagar) · só administrador ===== */
 Object.assign(ICON,{equipe:'<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.8-3.2 3.2-5 6-5s5.2 1.8 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.3 4.6 1.3 5.3 4.3"/>'});
 PAGINAS.push({id:'eqp',nm:'Produtividade da equipe',sub:'Lançamentos no Contas a Pagar',ic:'equipe',g:'Equipe'});
@@ -7,7 +9,7 @@ GRUPO_ICO['Equipe']='equipe';GRUPO_SUB['Equipe']='Lançamentos da equipe';
 const EQP={d:null,ok:false,carregando:true,f:{mes:'',u:''},erro:''};
 EQP.nome=u=>{const s=String(u||'').split('.');return s.map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ')};
 EQP.curto=u=>{const n=EQP.nome(u).split(' ');return n[0]};
-EQP.carregar=async function(){try{if(!DBX||!caAdm()){EQP.carregando=false;return}const m=(await DBX.doc('eqp/dados').get()).data();if(m&&m.j){EQP.d=JSON.parse(m.j)}}catch(e){EQP.erro=String(e.message||e)}EQP.carregando=false;EQP.ok=true;try{renderRail()}catch(e){}if(pag().id==='eqp')render()};
+EQP.carregar=async function(){try{if(!DBX||!caEqp()){EQP.carregando=false;return}const m=(await DBX.doc('eqp/dados').get()).data();if(m&&m.j){EQP.d=JSON.parse(m.j)}}catch(e){EQP.erro=String(e.message||e)}EQP.carregando=false;EQP.ok=true;try{renderRail()}catch(e){}if(pag().id==='eqp')render()};
 setTimeout(function esp(n){n=n||0;let ok=false;try{ok=!!DBX}catch(e){}if(ok){setTimeout(EQP.carregar,600);return}if(n>40){EQP.carregando=false;return}setTimeout(()=>esp(n+1),500)},400);
 
 /* agrega o BD Contas a Pagar e Baixados (mesma regra do script do Claude) */
@@ -31,10 +33,10 @@ EQP.enviar=async function(file){try{toast('Lendo a planilha... (arquivo grande, 
   const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
   const d=EQP.agregar(rows,(EQP.d&&EQP.d.eq)||['silas.pereira','jhennifer.santos','antonia.reis','deyvid.henrique','hugo.vitor','heloyse.medeiros','jayna.queiroz','berenice.franca']);
   d.rows=rows;EQP.bruto=rows;delete d.rows;EQP.d=d;
-  if(DBX&&caAdm()){await DBX.doc('eqp/dados').set({j:JSON.stringify(d),at:Date.now()});toast('Pronto! '+d.n.toLocaleString('pt-BR')+' documentos da equipe atualizados.')}else toast('Modo de teste: atualizado só nesta tela.');render()}
+  if(DBX&&caEqp()){await DBX.doc('eqp/dados').set({j:JSON.stringify(d),at:Date.now()});toast('Pronto! '+d.n.toLocaleString('pt-BR')+' documentos da equipe atualizados.')}else toast('Modo de teste: atualizado só nesta tela.');render()}
   catch(e){toast('Não foi possível ler: '+(e.message||e))}};
 EQP.salvarEquipe=async function(eq){if(!EQP.d)return;EQP.d.eq=eq;if(EQP.bruto){const d=EQP.agregar(EQP.bruto,eq);EQP.d=d}
-  try{if(DBX&&caAdm())await DBX.doc('eqp/dados').set({j:JSON.stringify(EQP.d),at:Date.now()})}catch(e){toast('Não foi possível salvar a equipe.')}render()};
+  try{if(DBX&&caEqp())await DBX.doc('eqp/dados').set({j:JSON.stringify(EQP.d),at:Date.now()})}catch(e){toast('Não foi possível salvar a equipe.')}render()};
 
 /* números de uma pessoa no filtro atual */
 EQP.soma=function(u,mes){const m=(EQP.d.M[u]||{});let r=[0,0,0,0];for(const k in m){if(mes&&k!==mes)continue;r=r.map((x,i)=>x+m[k][i])}return r};
@@ -42,7 +44,7 @@ EQP.meses=()=>{const s=new Set();Object.values(EQP.d.M).forEach(o=>Object.keys(o
 EQP.mesAtual=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 
 PG.eqp=()=>{
-  if(!caAdm())return '<div class="aj"><div class="sg-aviso">Esta área é restrita ao administrador.</div></div>';
+  if(!caEqp())return '<div class="aj"><div class="sg-aviso">Esta área é restrita ao administrador e aos gestores do Financeiro.</div></div>';
   if(EQP.carregando)return '<div class="aj"><p class="sg-vz">Carregando os dados da equipe...</p></div>';
   const up='<label class="aj-bt claro eqp-up">'+ico('db')+' Atualizar com o BD Contas a Pagar<input type="file" accept=".xlsx,.xls" data-eqpup hidden></label>';
   if(!EQP.d)return '<div class="aj"><div class="aj-hero"><div class="aj-hl"><span class="aj-tag">'+ico('equipe')+' Produtividade da equipe</span><h2>Ainda não há dados</h2><p>Envie o arquivo BD Contas a Pagar e Baixados (com a coluna DATACRIACAO_MOV) para montar os números da equipe.</p><div class="aj-hb">'+up+'</div></div></div></div>';
@@ -53,7 +55,7 @@ PG.eqp=()=>{
   const passados=ms.filter(k=>k<cur),ult=passados[passados.length-1],pen=passados[passados.length-2];
   const var_=ult&&pen?(()=>{const a=EQ.reduce((s,u)=>s+((D.M[u]||{})[ult]||[0])[0],0),b=EQ.reduce((s,u)=>s+((D.M[u]||{})[pen]||[0])[0],0);return b?a/b-1:null})():null;
   let h='<div class="aj eqp">';
-  h+='<div class="aj-hero"><div class="aj-hl"><span class="aj-tag">'+ico('equipe')+' Produtividade da equipe · só o administrador vê</span><h2>Lançamentos no Contas a Pagar</h2><p>Quantos documentos cada pessoa da equipe lançou, de quais tipos e quanto já foi pago. Fonte: '+VX.esc(D.fonte)+', atualizado em '+D.at.split('-').reverse().join('/')+'.</p>'+
+  h+='<div class="aj-hero"><div class="aj-hl"><span class="aj-tag">'+ico('equipe')+' Produtividade da equipe · administrador e gestores do Financeiro</span><h2>Lançamentos no Contas a Pagar</h2><p>Quantos documentos cada pessoa da equipe lançou, de quais tipos e quanto já foi pago. Fonte: '+VX.esc(D.fonte)+', atualizado em '+D.at.split('-').reverse().join('/')+'.</p>'+
     '<div class="aj-hb"><label class="eqp-sel"><span>Mês</span><select data-eqpmes><option value="">Ano todo</option>'+ms.map(k=>'<option value="'+k+'"'+(k===mes?' selected':'')+'>'+mesNm(k)+(k>cur?' (a vencer)':k===cur?' (em andamento)':'')+'</option>').join('')+'</select></label>'+up+'</div></div>'+
     '<div class="aj-hr"><div class="aj-hk"><b>'+T[0].toLocaleString('pt-BR')+'</b><span>documentos'+(mes?' em '+mesNm(mes):' no ano')+'</span></div><div class="aj-hk"><b>'+VX.brl(T[1])+'</b><span>valor lançado</span></div><div class="aj-hk"><b>'+Math.round(T[0]/ativos).toLocaleString('pt-BR')+'</b><span>média por pessoa</span></div></div></div>';
   h+='<div class="eqp-k">'+[['Pessoas na equipe',EQ.length,'com lançamentos no período: '+P.filter(p=>p.docs>0).length],['Quem mais lançou',top?EQP.curto(top.u):'–',top?top.docs.toLocaleString('pt-BR')+' documentos · '+VX.pc(top.docs/(T[0]||1))+' do total':''],['Já pagos',VX.pc(T[0]?T[2]/T[0]:null),T[2].toLocaleString('pt-BR')+' de '+T[0].toLocaleString('pt-BR')+' documentos'],['Último mês fechado',ult?EQ.reduce((s,u)=>s+((D.M[u]||{})[ult]||[0])[0],0).toLocaleString('pt-BR'):'–',ult?mesNm(ult)+(var_!=null?' · '+(var_>=0?'▲ +':'▼ ')+Math.round(var_*100)+'% vs '+mesC(pen):''):'']].map(k=>'<div class="eqp-kc"><span>'+k[0]+'</span><b>'+k[1]+'</b><small>'+k[2]+'</small></div>').join('')+'</div>';

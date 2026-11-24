@@ -85,7 +85,7 @@
   // ---------- db: documentos por caminho "colecao/id" ----------
   // Coleção → área dona (a mesma regra do servidor, api/_lib/ca.js). Fora da área aberta a tela nem pergunta ao servidor.
   const DONO = { hlan: "financeiro", loc_imv: "financeiro", loc_link: "financeiro", cfg: "financeiro", partes: "financeiro",
-    fc_at: "atendimento", ti_notas: "ti", ti_cfg: "ti", ti_aquis: "ti", eqp: "admin", sug: "comum", faq: "comum" };
+    fc_at: "atendimento", ti_notas: "ti", ti_cfg: "ti", ti_aquis: "ti", eqp: "financeiro", sug: "comum", faq: "comum" };
   const daArea = col => A.admin || DONO[col] === "comum" || DONO[col] === area;
   const parte = caminho => { const s = String(caminho), k = s.indexOf("/"); return [s.slice(0, k), s.slice(k + 1)]; };
   const snapDoc = (id, d) => ({ id, exists: d !== undefined && d !== null, data: () => (d ? { ...d } : undefined) });
@@ -147,7 +147,7 @@
   // A Central manda a lista das telas da área (o site monta o menu dele com ela) e avisa a tela aberta.
   const menuDaArea = () => {
     try {
-      return PAGS().filter(p => !p.hide && (p.g !== "Equipe" || (typeof caAdm === "function" && caAdm())))
+      return PAGS().filter(p => !p.hide && (p.g !== "Equipe" || (typeof caEqp === "function" && caEqp())))
         .map(p => [p.id, p.nm, p.sub || "", ico(p.ic), p.g === "Ajuda" ? "Ajuda" : p.g === "Equipe" ? "Equipe" : p.g]);
     } catch { return []; }
   };

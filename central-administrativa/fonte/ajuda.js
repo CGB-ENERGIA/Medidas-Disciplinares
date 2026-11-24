@@ -32,7 +32,7 @@ const AJ={
     'ti-fin':['Painel do financeiro','Notas, parcelas e rateio por contrato.','Os cartões mostram o que já foi entregue ao financeiro.',''],
     'ti-notas':['Notas e prestação de contas','Cadastrar compras e anexar a nota (PDF/XML).','Os itens da nota são lidos sozinhos; informe o destino de cada um.',''],
     'ti-aquis':['Novas aquisições','Pedidos futuros e orçamento (perfil Compras).','Cada pedido tem setor, solicitante e situação.',''],
-    eqp:['Produtividade da equipe','Lançamentos de cada pessoa no Contas a Pagar, por mês e por dia (só o administrador vê).','Os cartões mostram o total do mês e a média por pessoa; o gráfico compara a equipe mês a mês.','Para atualizar, use o botão de enviar a planilha nesta tela.'],
+    eqp:['Produtividade da equipe','Lançamentos de cada pessoa no Contas a Pagar, por mês e por dia (só o administrador e os gestores do Financeiro veem).','Os cartões mostram o total do mês e a média por pessoa; o gráfico compara a equipe mês a mês.','Para atualizar, use o botão de enviar a planilha nesta tela.'],
     dados:['Banco de dados','De onde vêm os dados e como atualizar.','A linha de atualização mostra há quantos dias cada base foi atualizada.','Envie a planilha em Enviar planilha.'],
     ajuda:['Como usar','Este guia.','Use a busca ou o sumário para ir direto ao assunto.',''],
     sugestoes:['Sugestões e dúvidas','Mande dúvidas, ideias e problemas ao administrador.','Acompanhe a resposta em Minhas mensagens.','']
@@ -41,7 +41,7 @@ const AJ={
 };
 
 const AJ_AREAS=[['cama','Hospedagem / Alimentação',['inicio','onde','lancar','controle']],['chave','Controle de Locação',['loc-cad','loc-busca','loc-aluguel','loc-agua','loc-energia']],['equipe','Produtividade da equipe',['eqp']],['caixa','Patrimônio',['pat-painel','pat-crono','pat-nc','pat-bens','pat-banco']],['chat','Fale Conosco',['fc-painel','fc-lista','fc-novo']],['pc','Setor de TI',['ti-custos','ti-fin','ti-notas','ti-aquis']],['db','Banco de dados',['dados']]];
-const ajTem=id=>PAGINAS.some(p=>p.id===id&&(p.id!=='eqp'||caAdm()));
+const ajTem=id=>PAGINAS.some(p=>p.id===id&&(p.id!=='eqp'||caEqp()));
 const ajArea=()=>{try{return AREA}catch(e){return null}};
 /* termo do glossário -> área (sem área = vale para todas) */
 const AJ_GA={'Meta até hoje':'financeiro','Consumo da meta':'financeiro','Diária':'financeiro','Ritmo do orçamento':'financeiro','UC':'financeiro','Distratado':'financeiro','Previsto × pago':'financeiro','Conformidade':'patrimonio','Não conforme':'patrimonio','Não encontrado':'patrimonio','Rateio':'ti'};

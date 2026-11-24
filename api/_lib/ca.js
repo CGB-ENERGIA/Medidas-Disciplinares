@@ -6,7 +6,7 @@ const DONO = {
   hlan: "financeiro", loc_imv: "financeiro", loc_link: "financeiro", cfg: "financeiro", partes: "financeiro",
   fc_at: "atendimento",
   ti_notas: "ti", ti_cfg: "ti", ti_aquis: "ti",
-  eqp: "admin",
+  eqp: "financeiro",   // Produtividade da equipe: só o administrador e os GESTORES do Financeiro (ver abaixo)
   sug: "comum", faq: "comum"
 };
 export const colecaoValida = col => Object.prototype.hasOwnProperty.call(DONO, col);
@@ -19,6 +19,7 @@ export function podeLer(u, col) {
   const d = DONO[col];
   if (u.admin) return true;
   if (d === "admin") return false;
+  if (col === "eqp") return !!(u.modulos.financeiro && u.modulos.financeiro.nivel === "gestor");
   if (d === "comum") return temCentral(u);
   return !!u.modulos[d];
 }
