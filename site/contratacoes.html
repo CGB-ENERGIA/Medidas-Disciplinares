@@ -114,6 +114,32 @@ textarea { min-height: 70px; resize: vertical; }
 .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .form-grid .s2 { grid-column: span 2; } .form-grid .s3 { grid-column: 1 / -1; }
 .tal-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tal-sit { display: grid; gap: 4px; max-width: 360px; font-weight: 600; font-size: 13px; }
+.tal-sit small { font-weight: 400; }
+.tal-modo { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; flex: none; }
+.tal-modo button { border: 0; background: var(--surface); padding: 7px 14px; font-weight: 600; color: var(--muted); }
+.tal-modo button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.tal-col { display: grid; gap: var(--s4); min-width: 0; }
+.tal-tab table { min-width: 1700px; }
+.tal-tab th, .tal-tab td { padding: 6px 8px; font-size: 12.5px; vertical-align: top; }
+.tal-tab td { white-space: nowrap; }
+.tal-tab td.obs { white-space: normal; min-width: 200px; max-width: 280px; }
+.tal-tab td.obs textarea { min-width: 200px; }
+.tal-tab th:first-child, .tal-tab td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; box-shadow: 1px 0 0 var(--line); min-width: 210px; }
+.tal-tab tr[aria-current="true"] td { background: var(--accent-soft); }
+.tal-tab tr.edit td { background: var(--accent-soft); }
+.tal-tab td input, .tal-tab td textarea { width: 100%; min-width: 110px; font: inherit; padding: 5px 7px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--fg); }
+.tal-tab .pk-btn { min-height: 30px; padding: 4px 8px; font-size: 12.5px; }
+.tal-tab td.sit { min-width: 170px; }
+.tal-tab .chips { gap: 4px; flex-wrap: nowrap; }
+.tal-tab .chips { display: flex; }
+.tal-tab .chip { padding: 3px 8px; font-size: 11.5px; white-space: nowrap; flex: none; min-height: 0; }
+.tal-tab .acoes { display: flex; gap: 6px; white-space: nowrap; }
+.tal-tab .ult { color: var(--muted); font-size: 11.5px; display: block; }
+.tal-hact { display: inline-flex; gap: 10px; margin-left: 8px; }
+.lnk { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; }
+.tal-hed { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; font-size: 12px; }
+.tal-hed label { display: grid; gap: 3px; font-weight: 600; } .tal-hed .s2, .tal-hed .actions { grid-column: 1 / -1; }
 .tal-form .form-grid .s3 { grid-column: 1 / -1; }
 .tal-form .progs { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .tal-form .progs label { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
@@ -736,6 +762,9 @@ body::after { content: ""; position: fixed; right: -60px; bottom: -80px; width: 
 .tal-grid { display: grid; grid-template-columns: 270px minmax(0, 1fr) minmax(0, 1.15fr); gap: var(--s4); align-items: start; }
 @media (max-width: 1280px) { .tal-grid { grid-template-columns: 240px minmax(0, 1fr); } .tal-grid > section:last-child { grid-column: 1 / -1; } }
 @media (max-width: 760px) { .tal-grid { grid-template-columns: minmax(0, 1fr); } }
+.tal-grid.tab { grid-template-columns: 240px minmax(0, 1fr); }
+@media (max-width: 1100px) { .tal-grid.tab { grid-template-columns: minmax(0, 1fr); } }
+.tal-grid.tab > .tal-col > section:last-child { grid-column: auto; }
 .cats { gap: 2px; position: sticky; top: calc(var(--top-h) + 16px); max-height: calc(100vh - var(--top-h) - 32px); overflow-y: auto; padding: var(--s3); }
 @media (max-width: 760px) { .cats { position: static; max-height: none; } }
 .cat-g { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); padding: var(--s3) var(--s2) var(--s1); }
@@ -2249,7 +2278,8 @@ function avisoBanco() {
 // Base importada das planilhas (BANCO RH 2025, Triagens 2024/2025, Bancos de talentos, PCD, Admissões).
 // Fica em "talentos" (partes p1..pN) e as marcações feitas no site ficam em "talentosEd/<id>".
 state.tal = { pronto: false, lista: [], partes: {}, cad: {}, ed: {}, meta: null }; state.talNovo = null;
-state.tf = { cat: "disp", q: "", base: "", ano: "", todos: false };
+state.tf = { cat: "disp", q: "", base: "", ano: "", todos: false, modo: (() => { try { return localStorage.getItem("ct-tal-modo") || "tabela"; } catch { return "tabela"; } })() };
+state.talRow = null; state.talRowV = null;
 state.bancoAba = "inscritos";
 const PROGRAMAS = [
   { k: "pcd", n: "PCD", d: "Pessoas com deficiência (cota legal)" },
@@ -2271,12 +2301,13 @@ const AREAS_TAL = [
 ];
 const SIT_TAL = [
   ["disp", "Disponíveis", "Podem ser chamados"],
-  ["proc", "Em processo no site", "Já estão em Candidatos"],
-  ["cgb", "Já trabalham na CGB", "Ativos no RM ou contratados"],
-  ["ex", "Ex-colaboradores", "Saíram da CGB (RM ou anotação)"],
-  ["reprov", "Reprovados antes", "Reprovação ou inapto registrado"],
-  ["desist", "Desistiram ou cancelados", ""],
-  ["contato", "Contato inválido", "Número errado"],
+  ["proc", "Em processo", "Em Candidatos ou marcados pelo RH"],
+  ["cgb", "Já trabalham na CGB", "Marcados pelo RH"],
+  ["ex", "Ex-colaboradores", "Marcados pelo RH"],
+  ["reprov", "Reprovados", "Marcados pelo RH"],
+  ["desist", "Desistiram ou cancelados", "Marcados pelo RH"],
+  ["indisp", "Indisponíveis", "Marcados pelo RH"],
+  ["contato", "Contato inválido", "Marcados pelo RH"],
 ];
 let CID_N_ = null; const CID_N = () => CID_N_ || (CID_N_ = Object.fromEntries(Object.entries(CID_XY).map(([k]) => [norm(k), k])));
 function areaTal(p) {
@@ -2296,17 +2327,12 @@ function areaTal(p) {
   if (/ADMINIS|ADMNIS|ADM\b|ASSIST|ANALISTA|\bRH\b|FINANC|RECEP|AUX\. ADM/.test(t) || /GERE/.test(a)) return "adm";
   return "sem";
 }
+// Identifica um registro do histórico (para editar ou remover sem mexer na planilha)
+const hKey = h => norm([h.fonte, h.d, h.funcao, h.st, (h.obs || "").slice(0, 60)].join("|"));
 function situacaoTal(p, ed, emProc) {
-  if (ed && ed.indisp) return "desist";
-  if (emProc && emProc.has(norm(p.nome))) return "proc";
-  const st = norm(p.hist.map(x => x.st || "").join(" | ")), cert = norm(p.hist.map(x => x.cert || "").join(" "));
-  const rm = state.rm.pronto ? rmDe(p) : [];
-  if (rm.some(r => r.sit !== "demitido")) return "cgb";
-  if (rm.some(r => r.sit === "demitido") || p.tags.includes("excgb")) return "ex";
-  if (/CONTRATAD|ADMITID|ADMISSAO: INTEGRACAO/.test(st)) return "cgb";
-  if (/NUMERO ERRADO|CONTATO ERRADO/.test(st)) return "contato";
-  if (/REPROVAD/.test(st) || /INAPTO/.test(cert)) return "reprov";
-  if (/DESIST|CANCELAD|APOSENTAD|REJEITOU|ENCERRAD/.test(st)) return "desist";
+  if (ed && ed.status && SIT_ROT[ed.status]) return ed.status;   // escolhida pelo RH na ficha
+  if (ed && ed.indisp) return "indisp";                           // marcação antiga ("Marcar como indisponível")
+  if (emProc && emProc.has(norm(p.nome))) return "proc";          // está em Candidatos agora
   return "disp";
 }
 // Marcas de programa: as que vieram das planilhas + as que o RH marcou/desmarcou no site
@@ -2329,7 +2355,8 @@ function talentos() {
     let p = ed.hist || ed.tel || ed.email || ed.cidade || ed.cnh || ed.def
       ? { ...p0, tel: p0.tel || ed.tel || "", email: p0.email || ed.email || "", cidade: p0.cidade || ed.cidade || "", cnh: p0.cnh || ed.cnh || "", def: p0.def || ed.def || "", tags: p0.tags || [], hist: [...(ed.hist || []), ...(p0.hist || [])].sort((a, b) => (b.d || "").localeCompare(a.d || "")) }
       : { ...p0, tags: p0.tags || [], hist: p0.hist || [] };
-    if (ed.fix) { ["nome", "tel", "email", "cidade", "cnh", "def"].forEach(k => { if (fx[k] !== undefined) p[k] = fx[k]; }); if (fx.funcao) p = { ...p, hist: [{ funcao: fx.funcao, _fix: 1 }, ...p.hist] }; }
+    if (ed.histEd) p = { ...p, hist: p.hist.map(h => { const c = ed.histEd[hKey(h)]; return c ? (c.rem ? null : { ...h, ...c, _ed: 1, _orig: h }) : h; }).filter(Boolean) };
+    if (ed.fix) { ["nome", "tel", "email", "cidade", "cnh", "def"].forEach(k => { if (fx[k] !== undefined) p[k] = fx[k]; }); if (fx.funcao || fx.cert || fx.setor) p = { ...p, hist: [{ funcao: fx.funcao || "", cert: fx.cert || "", area: fx.setor || "", _fix: 1 }, ...p.hist] }; }
     const area = areaTal(p), sit = situacaoTal(p, ed, emProc), tags = tagsTal(p);
     const cid = CID_N()[norm(p.cidade)] || p.cidade || "";
     const bp = cid ? baseProxima(cid) : null;
@@ -2360,9 +2387,9 @@ function filtraTal() {
   if (k) { const dg = soDig(f.q); l = l.filter(p => norm(`${p.nome} ${p.funcao} ${p.cidade || ""} ${p.email || ""}`).includes(k) || (dg.length >= 4 && soDig(p.tel).includes(dg))); }
   return l.sort((a, b) => (b.ult || "").localeCompare(a.ult || "") || a.nome.localeCompare(b.nome));
 }
-const SIT_ROT = { disp: "Disponível", proc: "Em processo no site", cgb: "Trabalha na CGB", ex: "Ex-colaborador", reprov: "Reprovado antes", desist: "Desistiu ou cancelado", contato: "Contato inválido" };
+const SIT_ROT = { disp: "Disponível", proc: "Em processo", cgb: "Trabalha na CGB", ex: "Ex-colaborador", reprov: "Reprovado", desist: "Desistiu ou cancelado", indisp: "Indisponível", contato: "Contato inválido" };
 const AREA_ROT = Object.fromEntries(AREAS_TAL.map(([k, n]) => [k, n]));
-const sitCls = s => ({ disp: "p-ok", proc: "p-acc", cgb: "p-info", ex: "p-acc", reprov: "p-crit", desist: "", contato: "p-warn" })[s] || "";
+const sitCls = s => ({ disp: "p-ok", proc: "p-acc", cgb: "p-info", ex: "p-acc", reprov: "p-crit", desist: "", indisp: "", contato: "p-warn" })[s] || "";
 function itemTal(p) {
   return `<div class="item" ${state.selTal === p.id ? 'aria-current="true"' : ""}><span></span>
     <div class="corpo" data-seltal="${p.id}" role="button" tabindex="0">
@@ -2377,15 +2404,74 @@ function detalheTal(p) {
   return `<section class="panel">
     <div class="det-head"><div class="det-tags">${[...p.tags].map(t => `<span class="pill p-acc">${esc(PROGRAMAS.find(x => x.k === t)?.n || t)}</span>`).join("")}<span class="pill ${sitCls(p.sit)}">${SIT_ROT[p.sit]}</span><span class="tag">${esc(AREA_ROT[p.area])}</span></div>
       <h2>${esc(p.nome)}</h2><span class="muted">${esc(p.funcao || "Função não informada")}${p.cidade ? ` · mora em ${esc(titulo(p.cidade))}` : ""}${p.base ? ` · base mais próxima: ${esc(baseNome(p.base))}${p.km != null ? ` (${Math.round(p.km)} km)` : ""}` : ""}</span></div>
-    <dl class="kv">${[["Telefone", p.tel], ["E-mail", p.email], ["CNH", p.cnh], ["Deficiência", p.def]].filter(x => x[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    <dl class="kv">${[["Telefone", p.tel], ["E-mail", p.email], ["CNH", p.cnh], ["Deficiência", p.def], ["Certificado", p.ed.fix && p.ed.fix.cert], ["Setor", p.ed.fix && p.ed.fix.setor]].filter(x => x[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
     ${p.ed.fix && p.ed.fix.obs ? `<div class="note info"><span><b>Observação do RH:</b> ${esc(p.ed.fix.obs)}</span></div>` : ""}
     ${p.ed.fix && p.ed.fix.em ? `<p class="muted sm" style="margin:0">Dados corrigidos pelo site em ${br(p.ed.fix.em)}${p.ed.fix.por ? ` por ${esc(titulo(p.ed.fix.por))}` : ""}.</p>` : ""}
     ${rm.length ? `<div class="note ${rm.some(r => r.sit !== "demitido") ? "info" : "warn"}"><span>${rm.map(r => `<b>${r.sit === "demitido" ? "Trabalhou na CGB" : "Trabalha na CGB"}:</b> ${esc(r.funcao)} · CT ${esc(r.ct)} · ${esc(baseNome(r.base))}, desde ${br(r.adm)}${r.dem ? ` até ${br(r.dem)} (${esc(motRM(r).toLowerCase())})` : ""}`).join("<br>")}</span></div>` : ""}
     ${p.escola ? `<div class="note info"><span><b>Sugerido para a Escola de Eletricista:</b> quer trabalhar como eletricista e ainda não tem certificação válida.</span>${edita ? `<button class="btn sm" data-taltag="escola">Incluir na Escola</button>` : ""}</div>` : ""}
     <div class="sub-form"><h3>Programas</h3><div class="chips">${PROGRAMAS.map(x => `<button class="chip" ${edita ? `data-taltag="${x.k}"` : "disabled"} aria-pressed="${p.tags.has(x.k)}" title="${esc(x.d)}">${x.n}</button>`).join("")}</div><p class="muted sm" style="margin:0">Clique para incluir ou tirar a pessoa de um programa.</p></div>
-    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button><button class="btn" data-taledit="${p.id}">Editar dados</button>${p.sit !== "desist" ? `<button class="btn" data-talindisp="1">Marcar como indisponível</button>` : (p.ed.indisp ? `<button class="btn" data-talindisp="0">Voltar a disponível</button>` : "")}</div>` : ""}
-    <div class="sub-form"><h3>Registros nas planilhas (${p.hist.length})</h3><ol class="timeline">${p.hist.map(h => `<li><time>${h.d ? br(h.d) : "sem data"}</time><span><b>${esc(h.fonte)}</b>${h.funcao ? ` · ${esc(h.funcao)}` : ""}${h.area ? ` · ${esc(h.area)}` : ""}${h.cert ? ` · certificado: ${esc(h.cert)}` : ""}${h.st ? ` · <b>${esc(h.st)}</b>` : ""}${h.resp ? ` · ${esc(h.resp)}` : ""}${h.ind ? ` · indicação: ${esc(h.ind)}` : ""}${h.obs ? `<br><span class="muted sm">${esc(h.obs)}</span>` : ""}</span></li>`).join("")}</ol></div>
+    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button><button class="btn" data-taledit="${p.id}">Editar dados</button></div>
+    <label class="tal-sit">Situação<select data-talsit="${p.id}">${SIT_TAL.map(([k]) => `<option value="${k}" ${p.sit === k ? "selected" : ""}>${SIT_ROT[k]}</option>`).join("")}</select>
+      <small class="muted">${p.ed.statusEm ? `Alterada em ${br(p.ed.statusEm)}${p.ed.statusPor ? ` por ${esc(titulo(p.ed.statusPor))}` : ""}.` : "Todos começam como Disponível. Escolha outra situação quando precisar."}</small></label>` : ""}
+    <div class="sub-form"><h3>Registros nas planilhas (${p.hist.length})</h3><ol class="timeline">${p.hist.map(h => { const k = hKey(h._orig || h);
+      if (edita && state.talHist === k) return `<li><time>${h.d ? br(h.d) : "sem data"}</time><div class="tal-hed" data-hk="${esc(k)}">
+        <label>Data<input type="date" data-hf="d" value="${esc(h.d || "")}"></label>
+        <label>Função<input type="text" data-hf="funcao" value="${esc(h.funcao || "")}"></label>
+        <label>Setor<input type="text" data-hf="area" value="${esc(h.area || "")}"></label>
+        <label>Certificado<input type="text" data-hf="cert" value="${esc(h.cert || "")}"></label>
+        <label>Situação<input type="text" data-hf="st" value="${esc(h.st || "")}"></label>
+        <label>Responsável<input type="text" data-hf="resp" value="${esc(h.resp || "")}"></label>
+        <label class="s2">Observação<textarea rows="2" data-hf="obs">${esc(h.obs || "")}</textarea></label>
+        <div class="actions"><button class="btn primary sm" data-histsalvar="${p.id}">Salvar registro</button><button class="btn sm" data-histed="">Cancelar</button></div></div></li>`;
+      return `<li><time>${h.d ? br(h.d) : "sem data"}</time><span><b>${esc(h.fonte)}</b>${h.funcao ? ` · ${esc(h.funcao)}` : ""}${h.area ? ` · ${esc(h.area)}` : ""}${h.cert ? ` · certificado: ${esc(h.cert)}` : ""}${h.st ? ` · <b>${esc(h.st)}</b>` : ""}${h.resp ? ` · ${esc(h.resp)}` : ""}${h.ind ? ` · indicação: ${esc(h.ind)}` : ""}${h._ed ? ` · <span class="muted sm">(editado no site)</span>` : ""}${h.obs ? `<br><span class="muted sm">${esc(h.obs)}</span>` : ""}${edita ? `<span class="tal-hact"><button class="lnk" data-histed="${esc(k)}">Editar</button><button class="lnk" data-histrem="${p.id}" data-hk="${esc(k)}">Remover</button></span>` : ""}</span></li>`; }).join("")}</ol>
+      ${edita && p.ed.histEd && Object.values(p.ed.histEd).some(c => c.rem) ? `<button class="lnk" data-histvolta="${p.id}">Mostrar de novo os registros removidos (${Object.values(p.ed.histEd).filter(c => c.rem).length})</button>` : ""}</div>
   </section>`;
+}
+// Valores que a tabela mostra (já com as correções feitas no site)
+function colsTal(p) {
+  const fx = (p.ed && p.ed.fix) || {};
+  const setor = fx.setor || (p.hist.find(h => h.area) || {}).area || "";
+  const cert = fx.cert || (p.hist.find(h => h.cert) || {}).cert || "";
+  return { nome: p.nome, tel: p.tel || "", email: p.email || "", cidade: p.cidade ? (CID_N()[norm(p.cidade)] || titulo(p.cidade)) : "", cnh: p.cnh || "", funcao: p.funcao || "", area: setor, cert, def: p.def || "", obs: fx.obs || "" };
+}
+function linhaTal(p, edita) {
+  const v = colsTal(p), h = p.hist[0];
+  const ult = h ? `${h.d ? br(h.d) : "sem data"}<span class="ult">${esc(h.fonte || "")}${h.st ? ` · ${esc(h.st)}` : ""}</span>` : "—";
+  const progs = `<div class="chips">${PROGRAMAS.map(x => `<button class="chip" ${edita ? `data-ttag="${p.id}|${x.k}"` : "disabled"} aria-pressed="${p.tags.has(x.k)}" title="${esc(x.d)}">${x.k === "aprendiz" ? "Aprendiz" : x.k === "escola" ? "Escola" : x.n}</button>`).join("")}</div>`;
+  const sit = edita ? `<select data-talsit="${p.id}">${SIT_TAL.map(([k]) => `<option value="${k}" ${p.sit === k ? "selected" : ""}>${SIT_ROT[k]}</option>`).join("")}</select>` : `<span class="pill ${sitCls(p.sit)}">${SIT_ROT[p.sit]}</span>`;
+  if (edita && state.talRow === p.id) {
+    const r = state.talRowV || v;
+    const inp = (k, extra = "") => `<input type="text" data-tr="${k}" value="${esc(r[k] || "")}" ${extra}>`;
+    const sel = (k, l) => `<select data-tr="${k}">${[...new Set([r[k] || "", ...l])].map(x => `<option value="${esc(x)}" ${x === (r[k] || "") ? "selected" : ""}>${esc(x || "—")}</option>`).join("")}</select>`;
+    return `<tr class="edit" data-trid="${p.id}">
+      <td>${inp("nome")}</td><td>${inp("tel", 'inputmode="tel"')}</td><td>${inp("email", 'inputmode="email"')}</td><td>${inp("cidade", 'list="dl-tal-cid"')}</td><td>${esc(p.base ? baseNome(p.base) : "—")}</td>
+      <td>${sel("cnh", TAL_CNH)}</td><td>${inp("funcao", 'list="dl-tal-func"')}</td><td>${inp("area", 'list="dl-setor"')}</td><td>${inp("cert", 'list="dl-tal-cert"')}</td><td>${sel("def", TAL_DEF)}</td>
+      <td>${progs}</td><td class="sit">${sit}</td><td>${ult}</td><td class="obs"><textarea rows="2" data-tr="obs">${esc(r.obs || "")}</textarea></td>
+      <td><div class="acoes"><button class="btn primary sm" data-trsalvar="${p.id}">Salvar</button><button class="btn sm" data-trow="">Cancelar</button></div></td></tr>`;
+  }
+  return `<tr ${state.selTal === p.id ? 'aria-current="true"' : ""}>
+    <td><b>${esc(v.nome)}</b>${p.escola ? `<span class="ult">Sugerido p/ Escola</span>` : ""}</td><td style="white-space:nowrap">${esc(v.tel || "—")}</td><td>${esc(v.email || "—")}</td><td>${esc(v.cidade || "—")}</td><td>${esc(p.base ? baseNome(p.base) + (p.km != null ? ` (${Math.round(p.km)} km)` : "") : "—")}</td>
+    <td>${esc(v.cnh || "—")}</td><td>${esc(v.funcao || "—")}</td><td>${esc(v.area || "—")}</td><td>${esc(v.cert || "—")}</td><td>${esc(v.def || "—")}</td>
+    <td>${progs}</td><td class="sit">${sit}</td><td>${ult}</td><td class="obs">${esc(v.obs || "")}</td>
+    <td><div class="acoes">${edita ? `<button class="btn sm" data-trow="${p.id}">Editar</button>` : ""}<button class="btn sm" data-seltal="${p.id}">Ficha</button>${edita ? `<button class="btn sm" data-talchamar="${p.id}" title="Chamar para processo">Chamar</button>` : ""}</div></td></tr>`;
+}
+function tabelaTal(itens) {
+  const edita = podeEscrever && state.role === "rh";
+  const funcs = state.talRow ? [...new Set([...funcOficiais(), ...talentos().map(p => p.funcao).filter(Boolean)])].sort((a, b) => a.localeCompare(b)) : [];
+  return `<div class="table-wrap tal-tab"><table><thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Base mais próxima</th><th>CNH</th><th>Função</th><th>Setor</th><th>Certificado</th><th>Deficiência</th><th>Programas</th><th>Situação</th><th>Último registro</th><th>Observação do RH</th><th></th></tr></thead>
+    <tbody>${itens.map(p => linhaTal(p, edita)).join("")}</tbody></table></div>
+    ${state.talRow ? `<datalist id="dl-tal-cid">${Object.keys(CID_XY).map(c => `<option value="${esc(c)}">`).join("")}</datalist><datalist id="dl-tal-func">${funcs.map(x => `<option value="${esc(x)}">`).join("")}</datalist><datalist id="dl-tal-cert">${TAL_CERT.filter(Boolean).map(x => `<option value="${esc(x)}">`).join("")}</datalist>` : ""}`;
+}
+async function salvarLinhaTal(id) {
+  const tr = document.querySelector(`tr[data-trid="${id}"]`); if (!tr) return;
+  const v = {}; tr.querySelectorAll("[data-tr]").forEach(x => { v[x.dataset.tr] = x.value; });
+  const p = talentos().find(x => x.id === id); if (!p) return;
+  const prev = state.selTal;
+  state.talNovo = { editId: id, ...v, tags: [...p.tags] };
+  const nome = UP(v.nome);
+  if (nome.split(" ").length < 2) { state.talNovo = null; toast("Escreva o nome completo da pessoa."); return; }
+  await salvarEdicaoTal(state.talNovo);
+  state.talNovo = null; state.selTal = prev; state.talRow = null; state.talRowV = null; render();
 }
 function vInscritos() {
   if (!state.tal.pronto) return `<section class="panel"><div class="empty">Carregando os inscritos das planilhas…</div></section>`;
@@ -2395,7 +2481,8 @@ function vInscritos() {
   const disp = T.filter(p => p.sit === "disp");
   const cnt = fn => T.filter(fn).length;
   const sel = state.selTal && T.find(p => p.id === state.selTal);
-  const pg = paginar("tal", filtraTal(), JSON.stringify(f));
+  const tab = f.modo === "tabela";
+  const pg = paginar("tal", filtraTal(), JSON.stringify({ ...f, modo: 0 }), tab ? 50 : 25);
   const cat = (k, n, sub, nn) => `<button class="cat" data-tcat="${k}" aria-pressed="${f.cat === k}"><span><b>${n}</b>${sub ? `<small>${sub}</small>` : ""}</span><span class="count">${nn}</span></button>`;
   const progs = PROGRAMAS.map(x => ({ x, n: cnt(p => p.tags.has(x.k)) }));
   const nSug = cnt(p => p.escola);
@@ -2404,7 +2491,7 @@ function vInscritos() {
     <button class="kpi acao" data-tcat="disp"><span class="kpi-n">${disp.length}</span><span class="kpi-rot">Disponíveis</span><span class="kpi-sub">de ${T.length} pessoas${f.ano ? ` com registro em ${f.ano === "sem" ? "data não informada" : f.ano}` : " nas planilhas"}</span></button>
     ${progs.map(({ x, n }) => `<button class="kpi" data-tcat="prog:${x.k}"><span class="kpi-n">${n}</span><span class="kpi-rot">${x.n}</span><span class="kpi-sub">${x.k === "escola" ? `${nSug} sugeridos para a turma` : x.d}</span></button>`).join("")}
   </div>
-  <div class="tal-grid">
+  <div class="tal-grid${tab ? " tab" : ""}">
     <nav class="panel cats" aria-label="Categorias">
       <div class="cat-g">Programas</div>
       ${progs.map(({ x, n }) => cat("prog:" + x.k, x.n, x.d, n)).join("")}
@@ -2415,18 +2502,19 @@ function vInscritos() {
       ${SIT_TAL.map(([k, n, s]) => cat(k === "disp" ? "disp" : "sit:" + k, n, s, cnt(p => p.sit === k))).join("")}
       ${cat("todos", "Todos os inscritos", "", T.length)}
     </nav>
+    ${tab ? `<div class="tal-col">${state.talNovo && pode() ? formTal() : sel ? `<div class="actions" style="justify-content:flex-end;margin-bottom:-8px"><button class="btn sm" data-talfecha="1">Fechar ficha ✕</button></div>${detalheTal(sel)}` : ""}` : ""}
     <section class="panel">
       <div class="chips anos" role="group" aria-label="Ano">
         <button class="chip" data-tano="" aria-pressed="${!f.ano}">Todos os anos<b>${TT.length}</b></button>
         ${anosOpc.map(a => `<button class="chip" data-tano="${a}" aria-pressed="${f.ano === a}">${a}<b>${contAno[a]}</b></button>`).join("")}
         ${contAno.sem ? `<button class="chip" data-tano="sem" aria-pressed="${f.ano === "sem"}">Sem data válida<b>${contAno.sem}</b></button>` : ""}
       </div>
-      <div class="filtros"><input type="search" id="tf-q" placeholder="Buscar nome, cidade, telefone, e-mail" value="${esc(f.q)}" aria-label="Buscar inscrito">
+      <div class="filtros"><div class="tal-modo" role="group" aria-label="Como mostrar"><button data-talmodo="tabela" aria-pressed="${f.modo === "tabela"}">Tabela</button><button data-talmodo="lista" aria-pressed="${f.modo !== "tabela"}">Lista</button></div><input type="search" id="tf-q" placeholder="Buscar nome, cidade, telefone, e-mail" value="${esc(f.q)}" aria-label="Buscar inscrito">
         <select id="tf-base" aria-label="Base mais próxima"><option value="">Todas as bases</option>${BASES.map(b => `<option value="${b}" ${f.base === b ? "selected" : ""}>${baseNome(b)}</option>`).join("")}</select></div>
-      <div class="lista">${pg.itens.length ? pg.itens.map(itemTal).join("") : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`}</div>
+      ${tab ? (pg.itens.length ? tabelaTal(pg.itens) : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`) : `<div class="lista">${pg.itens.length ? pg.itens.map(itemTal).join("") : `<div class="empty">Ninguém nesta categoria com esses filtros.</div>`}</div>`}
       ${pg.nav}
-    </section>
-    ${state.talNovo && pode() ? formTal() : sel ? detalheTal(sel) : `<section class="panel"><div class="empty">Escolha uma pessoa para ver contatos, programas e tudo o que foi registrado nas planilhas.${pode() ? ` Para incluir alguém novo, use "Cadastrar no banco de talentos".` : ""}</div></section>`}
+    </section>${tab ? "</div>" : ""}
+    ${tab ? "" : state.talNovo && pode() ? formTal() : sel ? detalheTal(sel) : `<section class="panel"><div class="empty">Escolha uma pessoa para ver contatos, programas e tudo o que foi registrado nas planilhas.${pode() ? ` Para incluir alguém novo, use "Cadastrar no banco de talentos".` : ""}</div></section>`}
   </div>`;
 }
 /* ===================== Banco de talentos: cadastro pelo site ===================== */
@@ -2527,7 +2615,7 @@ function editarTal(id) {
   const p = talentos().find(x => x.id === id); if (!p) return;
   const fx = (p.ed && p.ed.fix) || {};
   state.talNovo = { editId: id, nome: p.nome, tel: p.tel || "", email: p.email || "", cidade: p.cidade ? (CID_N()[norm(p.cidade)] || titulo(p.cidade)) : "", cnh: p.cnh || "",
-    funcao: p.funcao || "", area: "", cert: "", def: p.def || "", obs: fx.obs || "", tags: [...p.tags] };
+    funcao: p.funcao || "", area: fx.setor || "", cert: fx.cert || "", def: p.def || "", obs: fx.obs || "", tags: [...p.tags] };
   render(); document.querySelector(".tal-form")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("tn-nome")?.focus(), 50);
 }
 async function salvarEdicaoTal(f) {
@@ -2538,12 +2626,22 @@ async function salvarEdicaoTal(f) {
   const funcao = f.funcao.trim() ? (funcOficiais().find(x => norm(x) === norm(f.funcao)) || talentos().find(p => norm(p.funcao) === norm(f.funcao))?.funcao || titulo(f.funcao.trim())) : "";
   const fix = { nome, tel: fmtTel(f.tel), email: f.email.trim().toLowerCase(), cidade: f.cidade.trim() ? (CID_N()[norm(f.cidade)] || titulo(f.cidade.trim())) : "", cnh: f.cnh, def: f.def, obs: f.obs.trim(), em: HOJE, por: quem };
   if (funcao) fix.funcao = funcao;
+  if (f.cert) fix.cert = f.cert;
+  if (f.area.trim()) fix.setor = UP(f.area);
   const ed = state.tal.ed[id] || {};
   if (f.def && !(ed.semTags || []).includes("pcd")) { const t = new Set(ed.tags || []); t.add("pcd"); await salvarEdTal(id, { fix, tags: [...t] }); }
   else await salvarEdTal(id, { fix });
   state.talNovo = null; state.selTal = id; render();
   toast("Dados atualizados.");
 }
+document.addEventListener("change", async e => {
+  const t = e.target; if (!t || !t.dataset || !t.dataset.talsit) return;
+  const quem = (window.CT_ACESSO && window.CT_ACESSO.nome) || "";
+  t.disabled = true;
+  try { await salvarEdTal(t.dataset.talsit, { status: t.value, indisp: false, statusEm: HOJE, statusPor: quem }); toast(`Situação: ${SIT_ROT[t.value]}.`); }
+  catch { toast("Não consegui salvar a situação. Tente de novo."); }
+  t.disabled = false;
+});
 async function salvarEdTal(id, patch) {
   const atual = state.tal.ed[id] || {}, novo = { ...atual, ...patch, em: HOJE };
   state.tal.ed[id] = novo; talCache.k = ""; render();
@@ -4163,10 +4261,33 @@ document.addEventListener("click", e => {
   if (d.tano !== undefined) { state.tf.ano = d.tano; state.selTal = null; render(); return; }
   if (d.tcat) { state.tf.cat = d.tcat; state.selTal = null; render(); document.querySelector(".tal-grid")?.scrollIntoView({ block: "nearest" }); return; }
   if (d.talnovo !== undefined) { state.talNovo = d.talnovo === "1" ? { tags: [] } : null; render(); if (state.talNovo) { document.querySelector(".tal-form")?.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => document.getElementById("tn-nome")?.focus(), 50); } return; }
-  if (d.seltal) { state.talNovo = null; state.selTal = d.seltal; render(); if (innerWidth < 1100) document.querySelector(".tal-grid > section:last-child")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  if (d.talmodo) { state.tf.modo = d.talmodo; state.talRow = null; try { localStorage.setItem("ct-tal-modo", d.talmodo); } catch {} render(); return; }
+  if (d.talfecha) { state.selTal = null; state.talNovo = null; render(); return; }
+  if (d.trow !== undefined) { state.talRow = d.trow || null; state.talRowV = null; render(); if (d.trow) setTimeout(() => document.querySelector(`tr[data-trid="${d.trow}"] [data-tr="nome"]`)?.focus(), 30); return; }
+  if (d.trsalvar) { t.disabled = true; salvarLinhaTal(d.trsalvar).catch(() => toast("Não consegui salvar agora. Tente de novo.")); return; }
+  if (d.ttag) { const [id, k] = d.ttag.split("|"); const p = talentos().find(x => x.id === id); if (p) alternarTagTal(p, k); return; }
+  if (d.seltal) { state.talNovo = null; state.selTal = d.seltal; render(); if (state.tf.modo === "tabela") document.querySelector(".tal-col")?.scrollIntoView({ behavior: "smooth", block: "start" }); else if (innerWidth < 1100) document.querySelector(".tal-grid > section:last-child")?.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   if (d.taltag) { const p = talentos().find(x => x.id === state.selTal); if (p) alternarTagTal(p, d.taltag); return; }
   if (d.talindisp !== undefined) { const p = talentos().find(x => x.id === state.selTal); if (p) { salvarEdTal(p.id, { indisp: d.talindisp === "1" }); toast(d.talindisp === "1" ? "Marcado como indisponível." : "Voltou a ficar disponível."); } return; }
   if (d.taledit) { editarTal(d.taledit); return; }
+  if (d.histed !== undefined) { state.talHist = d.histed || null; render(); return; }
+  if (d.histsalvar) {
+    const box = document.querySelector(".tal-hed"); if (!box) return;
+    const v = {}; box.querySelectorAll("[data-hf]").forEach(x => { v[x.dataset.hf] = x.value.trim(); });
+    if (v.funcao) v.funcao = funcOficiais().find(x => norm(x) === norm(v.funcao)) || UP(v.funcao);
+    if (v.st) v.st = UP(v.st); if (v.area) v.area = UP(v.area); if (v.cert) v.cert = UP(v.cert);
+    const id = d.histsalvar, ed = state.tal.ed[id] || {}, he = { ...(ed.histEd || {}) }; he[box.dataset.hk] = v;
+    salvarEdTal(id, { histEd: he }).then(() => { state.talHist = null; render(); toast("Registro atualizado."); }); return;
+  }
+  if (d.histrem) {
+    if (!confirm("Remover este registro do histórico da pessoa?\n\nEle some da ficha, mas continua guardado e pode voltar.")) return;
+    const id = d.histrem, ed = state.tal.ed[id] || {}, he = { ...(ed.histEd || {}) }; he[d.hk] = { rem: true };
+    salvarEdTal(id, { histEd: he }).then(() => { render(); toast("Registro removido da ficha."); }); return;
+  }
+  if (d.histvolta) {
+    const id = d.histvolta, ed = state.tal.ed[id] || {}, he = Object.fromEntries(Object.entries(ed.histEd || {}).filter(([, c]) => !c.rem));
+    salvarEdTal(id, { histEd: he }).then(() => { render(); toast("Registros removidos voltaram para a ficha."); }); return;
+  }
   if (d.talchamar) { const p = talentos().find(x => x.id === d.talchamar); if (p) chamarTal(p); return; }
   if (d.bfase !== undefined) { state.bf.fase = d.bfase; render(); return; }
   if (d.bancovaga) { const v = state.vagas.get(d.bancovaga); if (v) { state.bf = { q: "", funcao: v.funcao, base: "", fase: "" }; state.bancoVaga = v.id; state.bancoAba = "processos"; state.sel = null; ir("banco"); } return; }
@@ -4311,6 +4432,7 @@ document.addEventListener("input", e => {
   if (/^(fv|nv|ed)-cc$/.test(e.target.id) && e.target.value.trim() !== (e.target.dataset.auto || "")) e.target.classList.remove("cc-auto");
   const t = e.target, map = { "tf-q": ["tf", "q"], "bf-q": ["bf", "q"], "cf-q": ["filtro", "q"], "vf-q": ["vf", "q"], "hf-q": ["hf", "q"] };
   if (map[t.id]) { state[map[t.id][0]][map[t.id][1]] = t.value; clearTimeout(inT); inT = setTimeout(render, 180); return; }
+  if (t.dataset && t.dataset.tr && state.talRow) { const tr = t.closest("tr"); const v = {}; tr.querySelectorAll("[data-tr]").forEach(x => { v[x.dataset.tr] = x.value; }); state.talRowV = v; return; }
   if (t.id && t.id.startsWith("tn-") && state.talNovo) { lerFormTal(); if (t.id === "tn-nome" || t.id === "tn-tel") { clearTimeout(inT); inT = setTimeout(() => { const box = document.getElementById("tn-dup"); if (box) box.innerHTML = avisoDupTal(); }, 250); } return; }
   if (t.id && t.id.startsWith("nv-") && t.id !== "nv-cv") { lerNovo(); clearTimeout(inT); inT = setTimeout(atualizarNovo, 300); if (t.id === "nv-cpf" && soDig(t.value).length === 11) hashCPF(t.value).then(() => atualizarNovo()); }
 });
