@@ -2168,6 +2168,10 @@ section[data-pag="ti-nota"] .tw{overflow-x:auto;max-width:100%}
 .tirat td,.tirat th{white-space:nowrap}
 .tihero-a{flex-wrap:wrap;max-width:100%}@media (max-width:700px){.tihero-a{justify-content:flex-start}.tihero-a .tihbtn{white-space:normal}}
 .aqform{border-left:4px solid var(--brand,#7a1f2b)}
+.dbc-b{text-align:left;font:inherit;color:inherit;cursor:pointer;width:100%}.dbc-b dd{overflow-wrap:anywhere}
+.vfk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 16px}.vfk .icard{cursor:default}@media (max-width:900px){.vfk{grid-template-columns:1fr 1fr}}
+.vfdet .aqgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.vfdet .aqgrid label.aqw3{grid-column:1/-1}.vfdet table input[type=checkbox]{width:16px;height:16px;accent-color:var(--brand,#7a1f2b)}
+.vfac{display:inline-flex;gap:6px;white-space:nowrap}.btn.sm{padding:4px 10px;font-size:12px}.vfrm{margin:0 0 14px}
 .aqgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;margin-top:10px}
 .aqgrid label{display:grid;gap:4px}.aqgrid small{font-size:11.5px;font-weight:700;color:var(--muted)}
 .aqgrid input,.aqgrid select,.aqgrid textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface,#fff);color:inherit;width:100%;box-sizing:border-box}
@@ -2432,6 +2436,7 @@ const PAGINAS=[
  {id:'inicio',nm:'Painel geral',sub:'Gasto, meta e evolução mês a mês',ic:'home',g:'Hospedagem / Alimentação'},
  {id:'onde',nm:'Onde se gasta',sub:'Bases, hotéis e colaboradores',ic:'pin',g:'Hospedagem / Alimentação'},
  {id:'lancar',nm:'Lançar no sistema',sub:'Cadastro sem planilha',ic:'mais',g:'Hospedagem / Alimentação'},
+ {id:'verif',nm:'Verificação de notas',sub:'Conferir a nota quando chegar',ic:'cad',g:'Hospedagem / Alimentação'},
  {id:'controle',nm:'Pendências da base',sub:'Correções e lançamentos a revisar',ic:'alerta',g:'Hospedagem / Alimentação'},
  {id:'loc-cad',nm:'Cadastro de imóveis',sub:'Imóveis e contas do mês',ic:'mais',g:'Controle de Locação'},
  {id:'loc-busca',nm:'Consultar imóvel',sub:'Busca por UC, locador ou endereço',ic:'lupa',g:'Controle de Locação'},
@@ -2466,9 +2471,10 @@ PAGINAS.push(
  {id:'ti-prestacao',nm:'Prestação de contas',sub:'',ic:'lista',g:'Setor de TI',sec:'Controle de Custos',hide:1},
  {id:'ti-nota',nm:'Compra',sub:'',ic:'cad',g:'Setor de TI',sec:'Controle de Custos',hide:1},
  {id:'ti-seg',nm:'Painel de segurança',sub:'Em construção',ic:'escudo',g:'Setor de TI',sec:'Controle de Segurança'});
-PAGINAS.push({id:'dados',nm:'Todas as bases',sub:'O que cada base atualiza e como enviar',ic:'db',g:'Banco de dados'});
+PAGINAS.push({id:'atualiz',nm:'Banco de atualizações',sub:'Hospedagem, alimentação e contas a pagar',ic:'upload',g:'Banco de dados'});
+PAGINAS.push({id:'dados',nm:'Todas as bases',sub:'O que cada base atualiza e quem envia',ic:'db',g:'Banco de dados'});
 const GRUPO_ICO={'Banco de dados':'db','Controle de Locação':'chave','Setor de TI':'pc','Administrativo':'painel','Hospedagem / Alimentação':'cama','Patrimônio':'caixa','Fale Conosco':'chat'},GRUPO_SUB={'Banco de dados':'Envio e atualização dos dados','Controle de Locação':'Aluguel, água e energia dos imóveis','Setor de TI':'Controle de custos e de segurança','Administrativo':'Indicadores da CGB','Hospedagem / Alimentação':'Custos, metas e pendências','Patrimônio':'Inventário 2026','Fale Conosco':'Atendimentos aos colaboradores'};
-const PAGS=()=>PAGINAS.filter(p=>!p.m||p.m===MODO);
+const PAGS=()=>PAGINAS.filter(p=>(!p.m||p.m===MODO)&&(p.id!=='atualiz'||caUpd()));
 const pag=()=>{const h=location.hash.slice(1);if(/^ind-\d+$/.test(h))return PAGINAS.find(p=>p.id==='ficha');if(/^ti-nota-/.test(h))return PAGINAS.find(p=>p.id==='ti-nota');return PAGS().find(p=>p.id===h)||PAGINAS[0]};
 let railAberto=null;
 function renderRail(){
@@ -2945,7 +2951,7 @@ function dFontes(){const h=DS.hosp,a=DS.alim,ult=t=>t?Math.floor(t/864e5):null;
    dt:a.cut?dt(ult(a.cut)):'–',reg:N((a.rows||[]).length)+' lançamentos',freq:'Toda semana',sub:'Substitui os lançamentos da planilha. Ou lance um a um em Hospedagem → Lançar no sistema (modo Alimentação).'},
   {k:'metas-h',nm:'Metas de hospedagem',ic:'alvo',env:'site',arq:'Planilha de metas 2026 · colunas CODCCUSTO, ANOMES e HOSPEDAGEM',at:[['inicio','Consumo da meta e acumulado no ano'],['onde','Gerências e centros de custo']],dt:'2026',reg:'12 meses',freq:'Quando a meta mudar',sub:''},
   {k:'metas-a',nm:'Metas de alimentação',ic:'alvo',env:'site',arq:'Planilha de metas 2026 · colunas CODCCUSTO, ANOMES e ALIMENTAÇÃO',at:[['inicio','Consumo da meta (modo Alimentação)']],dt:'2026',reg:'12 meses',freq:'Quando a meta mudar',sub:''},
-  {k:'cp',nm:'Contas a Pagar e Baixados',ic:'moeda',env:'claude',arq:'BD_Contas_A_Pagar_E_Baixados.xlsx (exportação do sistema)',at:[['loc-aluguel','Locação · aluguel previsto × pago'],['loc-agua','Locação · água paga'],['loc-energia','Locação · energia paga']],dt:cpUlt?mesNome(cpUlt):'–',reg:N(Object.keys(LOC.grp).length)+' fornecedores de aluguel',freq:'Todo mês, depois das baixas',sub:'Usa os grupos 03.02.01 Locação de imóveis, 03.08.01 Água e 03.08.02 Energia.'},
+  {k:'cp',nm:'Contas a Pagar e Baixados',ic:'moeda',env:'site',arq:'BD_Contas_A_Pagar_E_Baixados.xlsx (exportação do sistema)',at:[['eqp','Produtividade da equipe'],['loc-aluguel','Locação · aluguel previsto × pago'],['loc-agua','Locação · água paga'],['loc-energia','Locação · energia paga']],dt:cpUlt?mesNome(cpUlt):'–',reg:N(Object.keys(LOC.grp).length)+' fornecedores de aluguel',freq:'Todo mês, depois das baixas',sub:'Pelo site atualiza a Produtividade da equipe. Os pagamentos de aluguel, água e energia da Locação continuam sendo atualizados pelo Claude (os nomes dos fornecedores não ficam no site).'},
   {k:'loc',nm:'Cadastro de imóveis (locação)',ic:'chave',env:'cadastro',arq:'Imóveis e contas cadastrados no próprio site (o histórico veio da PLANILHA DE LOCAÇÃO 2026)',at:[['loc-cad','Cadastro de imóveis'],['loc-busca','Consultar imóvel'],['loc-aluguel','Aluguel e contratos'],['loc-agua','Água'],['loc-energia','Energia']],dt:mesNome(L_M3[L_M3.length-1]),reg:N(LOC.imv.length)+' imóveis',freq:'A cada conta ou contrato novo',sub:'Cadastre em Controle de Locação → Cadastro de imóveis. CPF/CNPJ e telefone não entram no site.'},
   {k:'ti',nm:'Setor de TI · compras',ic:'pc',env:'cadastro',arq:'Notas e compras cadastradas no próprio site (o histórico veio da planilha Controle de Gastos T.I.C)',at:[['ti-custos','Painel de custos'],['ti-fin','Painel do financeiro'],['ti-notas','Notas e prestação de contas']],dt:tiUlt?dDia(tiUlt):'–',reg:N(tiN.length)+' compras',freq:'A cada compra',sub:'Não precisa enviar planilha: cadastre a nota em Setor de TI.'},
   {k:'pat',nm:'Patrimônio',ic:'caixa',env:'claude',arq:'Planilhas do inventário 2026 (inventário, cadastro e validação)',at:[['pat','Páginas do Patrimônio']],dt:dDia((RAW.pat||{}).gerado),reg:N(((RAW.pat||{}).inv||[]).length)+' itens inventariados',freq:'A cada rodada do inventário',sub:''},
@@ -2955,21 +2961,35 @@ function dLink(id,t){const p=PAGS().find(x=>x.id===id||x.id.startsWith(id+'-')||
 PG.dados=()=>{const F_=dFontes(),ns=F_.filter(f=>f.env==='site').length,nc=F_.filter(f=>f.env==='claude').length;
   const card=f=>'<div class="dbc'+(f.env==='site'&&DSEL===f.k?' on':'')+'"><div class="dbc-h"><span class="dbc-ic">'+ico(f.ic)+'</span><div><b>'+f.nm+'</b><span class="dbc-env '+D_ENV[f.env][1]+'">'+D_ENV[f.env][0]+'</span></div></div>'+
     '<dl><dt>Arquivo</dt><dd>'+esc(f.arq)+'</dd><dt>Atualiza</dt><dd>'+f.at.map(([id,t])=>dLink(id,t)).join(' ')+'</dd><dt>Dados até</dt><dd><b>'+f.dt+'</b> · '+f.reg+'</dd><dt>Quando enviar</dt><dd>'+f.freq+'</dd></dl>'+(f.sub?'<p class="dbc-s">'+esc(f.sub)+'</p>':'')+
-    (f.env==='site'?'<button type="button" class="btn primary sm" data-dsel="'+f.k+'">'+ico('upload')+' Enviar planilha</button>':f.env==='claude'?'<p class="dbc-s"><b>Como atualizar:</b> mande o arquivo novo na conversa com o Claude.</p>':'')+'</div>';
+    (f.env==='site'?(caUpd()?'<a class="btn primary sm" href="#atualiz" data-dsel="'+f.k+'">'+ico('upload')+' Atualizar</a>':'<p class="dbc-s"><b>Quem atualiza:</b> o administrador e a responsável pelo financeiro, em Banco de atualizações.</p>'):f.env==='claude'?'<p class="dbc-s"><b>Como atualizar:</b> mande o arquivo novo na conversa com o Claude.</p>':'')+'</div>';
   const g=(t,s,arr)=>hSecao(t,s)+'<div class="dbg">'+arr.map(card).join('')+'</div>';
-  const modo=DSEL==='alim'||DSEL==='metas-a'?'alim':'hosp';if(MODO!==modo)usar(modo);
-  const sem=d=>[...d.children].filter(x=>!x.classList.contains('ubar')&&!x.classList.contains('chips')).map(x=>x.outerHTML).join('');
-  const envio=DSEL.startsWith('metas')?sem(hDom('metas')):sem(hDom('banco'));
-  return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico('db')+'</span><div class="ubar-t"><span class="ubar-tag">Banco de dados</span><h2>Todas as bases</h2><span>O que cada base atualiza, até quando vão os dados e como enviar</span></div></div></div>'+
-   '<div class="tifk dbk"><div class="bcard"><span>Bases de dados</span><b>'+N(F_.length)+'</b><small>alimentam todas as áreas do site</small></div><div class="bcard sup"><span>Você envia aqui</span><b>'+N(ns)+'</b><small>hospedagem, alimentação e metas</small></div><div class="bcard par"><span>Enviadas pelo Claude</span><b>'+N(nc)+'</b><small>mande o arquivo novo na conversa</small></div><div class="bcard"><span>Cadastro no site</span><b>3</b><small>notas do TI, Fale Conosco e imóveis</small></div></div>'+
-   g('Hospedagem e alimentação','você mesmo atualiza nesta página',F_.filter(f=>['hosp','alim','metas-h','metas-a'].includes(f.k)))+
-   hSecao('Enviar planilha','escolha o que vai atualizar')+hSeg('data-dsel',DSEL,[['hosp','Hospedagem'],['alim','Alimentação'],['metas-h','Metas de hospedagem'],['metas-a','Metas de alimentação']])+'<div class="dbenv">'+envio+'</div>'+
+  return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico('db')+'</span><div class="ubar-t"><span class="ubar-tag">Banco de dados</span><h2>Todas as bases</h2><span>O que cada base atualiza, até quando vão os dados e quem envia</span></div></div></div>'+
+   '<div class="tifk dbk"><div class="bcard"><span>Bases de dados</span><b>'+N(F_.length)+'</b><small>alimentam todas as áreas do site</small></div><div class="bcard sup"><span>Atualizadas pelo site</span><b>'+N(ns)+'</b><small>em Banco de atualizações</small></div><div class="bcard par"><span>Enviadas pelo Claude</span><b>'+N(nc)+'</b><small>mande o arquivo novo na conversa</small></div><div class="bcard"><span>Cadastro no site</span><b>3</b><small>notas do TI, Fale Conosco e imóveis</small></div></div>'+
+   (caUpd()?'<div class="note">Para enviar planilhas, use <a href="#atualiz"><b>Banco de atualizações</b></a>.</div>':'<div class="note">As bases de hospedagem, alimentação e contas a pagar são atualizadas só pelo administrador e pela responsável do financeiro.</div>')+
+   g('Hospedagem e alimentação','atualizadas em Banco de atualizações',F_.filter(f=>['hosp','alim','metas-h','metas-a'].includes(f.k)))+
    g('Locação','contratos, contas e pagamentos',F_.filter(f=>['loc','cp'].includes(f.k)))+
    g('Demais áreas','',F_.filter(f=>['ti','pat','fc'].includes(f.k)))+
    hSecao('Recebidas, ainda sem uso','')+'<div class="note">Recebi também <b>BD Oficina Interna</b> (combustível e manutenção de veículos, para um futuro indicador de frota) e <b>BD Provisões</b> (plano de saúde e refeições convenção, que pode completar a Alimentação). Elas ainda não alimentam nenhuma página.</div>'};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-dsel]');if(!b)return;DSEL=b.dataset.dsel;render();setTimeout(()=>{const x=document.querySelector('.dbenv');x&&x.scrollIntoView({behavior:'smooth',block:'start'})},60)});
-PG.banco=hVai('dados',()=>{DSEL=MODO==='alim'?'alim':'hosp'});PG.metas=hVai('dados',()=>{DSEL=MODO==='alim'?'metas-a':'metas-h'});
+PG.banco=()=>hVai(caUpd()?'atualiz':'dados',()=>{DSEL=MODO==='alim'?'alim':'hosp'})();PG.metas=()=>hVai(caUpd()?'atualiz':'dados',()=>{DSEL=MODO==='alim'?'metas-a':'metas-h'})();
 
+
+/* ===== Banco de atualizações: só o administrador e quem tem a chave "Atualizar as bases" ===== */
+PG.atualiz=()=>{if(!caUpd())return '<div class="aj"><div class="sg-aviso">Só o administrador e a responsável pelo financeiro atualizam as bases.</div></div>';
+  const F_=dFontes(),fx=k=>F_.find(f=>f.k===k);if(!['hosp','alim','cp','metas-h','metas-a'].includes(DSEL))DSEL='hosp';
+  const ed=EQP.d,cpAt=ed&&ed.at?dDia(ed.at):'–';
+  const card=(k,t,dtx,reg,sub)=>'<button type="button" class="dbc dbc-b'+(DSEL===k?' on':'')+'" data-dsel="'+k+'"><div class="dbc-h"><span class="dbc-ic">'+ico(fx(k).ic)+'</span><div><b>'+t+'</b><span class="dbc-env sup">'+(DSEL===k?'Selecionado':'Clique para atualizar')+'</span></div></div><dl><dt>Dados até</dt><dd><b>'+dtx+'</b> · '+reg+'</dd><dt>Arquivo</dt><dd>'+esc(fx(k).arq)+'</dd></dl>'+(sub?'<p class="dbc-s">'+esc(sub)+'</p>':'')+'</button>';
+  let envio='';
+  if(DSEL==='cp'){envio='<div class="panel"><div class="phd"><h3>Atualizar Contas a Pagar e Baixados</h3><small>envie o BD_Contas_A_Pagar_E_Baixados exportado do sistema (com a coluna DATACRIACAO_MOV)</small></div>'+
+    '<label class="drop" style="cursor:pointer"><span class="mi">'+ico('upload')+'</span><strong>Clique aqui e escolha o arquivo BD Contas a Pagar e Baixados</strong><span class="muted">atualiza a Produtividade da equipe · última atualização: '+cpAt+(ed?' · '+N(ed.n)+' documentos':'')+'</span><input type="file" accept=".xlsx,.xls" data-eqpup hidden></label>'+
+    '<p class="tnota">Os pagamentos de aluguel, água e energia (Controle de Locação) continuam sendo atualizados pelo Claude, porque os nomes dos fornecedores não ficam no site.</p></div>'}
+  else{const modo=DSEL==='alim'||DSEL==='metas-a'?'alim':'hosp';if(MODO!==modo)usar(modo);
+    const sem=d=>[...d.children].filter(x=>!x.classList.contains('ubar')&&!x.classList.contains('chips')).map(x=>x.outerHTML).join('');
+    envio=DSEL.startsWith('metas')?sem(hDom('metas')):sem(hDom('banco'))}
+  return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico('upload')+'</span><div class="ubar-t"><span class="ubar-tag">Banco de dados</span><h2>Banco de atualizações</h2><span>Atualize aqui as bases de hospedagem, alimentação e contas a pagar · só o administrador e a responsável pelo financeiro</span></div></div></div>'+
+   '<div class="dbg">'+card('hosp','Hospedagem',fx('hosp').dt,fx('hosp').reg,'Envie a planilha inteira (todas as bases). Cada base do arquivo substitui o que estava no site.')+card('alim','Alimentação',fx('alim').dt,fx('alim').reg,'Envie a planilha de voucher inteira. Substitui todas as refeições.')+card('cp','Contas a Pagar e Baixados',cpAt,ed?N(ed.n)+' documentos':'sem dados',"Atualiza a Produtividade da equipe.")+'</div>'+
+   '<div class="note">O que foi conferido ou corrigido em <a href="#verif"><b>Verificação de notas</b></a> e o que foi lançado em <a href="#lancar"><b>Lançar no sistema</b></a> continua valendo depois de cada envio.</div>'+
+   hSecao('Enviar','escolha o que vai atualizar')+hSeg('data-dsel',DSEL,[['hosp','Hospedagem'],['alim','Alimentação'],['cp','Contas a Pagar e Baixados'],['metas-h','Metas de hospedagem'],['metas-a','Metas de alimentação']])+'<div class="dbenv">'+envio+'</div>'};
 /* ===== filtros sempre no botão "Filtros" (gaveta lateral) ===== */
 let GF_OPEN=false;
 const gfIco='<svg class="ico" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>';
@@ -3132,7 +3152,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-fcst]');if
 /* ===== Hospedagem e Alimentação: lançar no próprio sistema ===== */
 let HL=[],HLVER=0,HLE=null,HLQ='';
 const hlPode=()=>!!(DBX&&CAN_EDIT);
-function hlSync(){['hosp','alim'].forEach(m=>{const arr=MODO===m?ROWS:DS[m].rows;if(arr&&arr._hlv===HLVER)return;const novo=(arr||[]).filter(r=>!r.man).concat(HL.filter(x=>x.m===m).map(x=>x.r));novo._hlv=HLVER;if(MODO===m)ROWS=novo;else DS[m].rows=novo})}
+function hlSync(){['hosp','alim'].forEach(m=>{const arr=MODO===m?ROWS:DS[m].rows;if(arr&&arr._hlv===HLVER)return;const subs=new Set(HL.filter(x=>x.m===m&&x.sub).map(x=>x.sub));const base=arr&&arr._base||(arr||[]).filter(r=>!r.man);const novo=base.filter(r=>!(subs.size&&subs.has(vfKey(r,m)))).concat(HL.filter(x=>x.m===m&&!x.rm).map(x=>x.r));novo._hlv=HLVER;novo._base=base;if(MODO===m)ROWS=novo;else DS[m].rows=novo})}
 async function hlCarregar(db){let mud=false;try{const s=await db.collection('hlan').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){const o=JSON.parse(v.j);HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);mud=true}})}catch(e){}if(mud)HLVER++;return mud}
 async function hlGrava(o){HL=HL.filter(x=>x.id!==o.id);if(!o.del)HL.push(o);HLVER++;if(hlPode()){try{await DBX.doc('hlan/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
 const hlDia=s=>{const t=Date.parse(s);return isNaN(t)?null:Math.floor(t/864e5)};
@@ -3143,9 +3163,8 @@ function hlMonta(e){const A=MODO==='alim',c=CCT[e.cod];const r={man:e.id,b:e.b||
   if(A){const d=hlDia(e.data),v=+e.v||0;Object.assign(r,{tipo:e.tipo||'NÃO INFORMADO',ent:d,sai:d,hr:e.hr===''||e.hr==null?null:+e.hr,mes:d!=null?hlYm(d):'DATA INVÁLIDA',dia:1,pr:v,tot:v,q:1,st:'',conf:''});if(!e.tipo)fl|=8;if(v<=0)fl|=32;if(v>LIM_A)fl|=4;if(d==null)fl|=8}
   else{const ent=hlDia(e.ent),sai=hlDia(e.sai),dia=+e.dia||0,pr=+e.pr||0,tot=e.tot!=null&&e.tot!==''?+e.tot:dia*pr;Object.assign(r,{ent,sai,mes:e.mes||(ent!=null?hlYm(ent):'DATA INVÁLIDA'),dia,pr,tot:Math.round(tot*100)/100,q:+e.q||1,st:e.st||'OK',conf:(e.conf||'').toUpperCase()});
     if(r.st!=='OK')fl|=1;if(!r.nf)fl|=2;if(Math.abs(r.tot-dia*pr)>1)fl|=4;if(!r.tot)fl|=32;if(ent!=null&&sai!=null&&sai<ent)fl|=8;if(ent==null)fl|=8}
-  r.fl=fl;return r}
-PG.lancar=()=>{const A=MODO==='alim',nm=A?'refeição':'hospedagem';
-  const meus=HL.filter(x=>x.m===MODO).filter(x=>!HLQ||(x.r.col+' '+x.r.est+' '+x.r.cid+' '+x.r.nf).toUpperCase().includes(HLQ.toUpperCase())).sort((a,b)=>(b.r.ent||0)-(a.r.ent||0));
+  r.fl=fl;if(e.sub)r.sub=e.sub;if(e.vfOk){r.vfOk=e.vfOk;r.vnf=e.vnf;r.dnf=e.dnf;r.vobs=e.obs||''}if(A)r.conf=(e.conf||'').toUpperCase();return r}
+function hlForm(){const A=MODO==='alim',nm=A?'refeição':'hospedagem';
   const e=HLE;let form='';
   if(e){const dl=(id,arr)=>'<datalist id="'+id+'">'+arr.slice(0,3000).map(x=>'<option value="'+esc(x)+'">').join('')+'</datalist>';
     const inp=(k,lab,t,ph,ex)=>'<label'+(ex&&ex.cls?' class="'+ex.cls+'"':'')+'><small>'+lab+'</small><input type="'+(t||'text')+'" data-hle="'+k+'" value="'+esc(e[k]==null?'':String(e[k]))+'" placeholder="'+(ph||'')+'"'+(ex&&ex.list?' list="'+ex.list+'"':'')+(ex&&ex.ro?' readonly':'')+'></label>';
@@ -3159,8 +3178,12 @@ PG.lancar=()=>{const A=MODO==='alim',nm=A?'refeição':'hospedagem';
       (A?sel('tipo','Tipo de refeição *',[['Café da Manhã','Café da manhã'],['Almoço','Almoço'],['Jantar','Jantar']])+inp('data','Data *','date')+inp('hr','Hora','number','0 a 23')+inp('v','Valor (R$) *','text','ex.: 25,00')
         :inp('ent','Entrada *','date')+inp('sai','Saída *','date')+inp('dia','Diárias','text','calculado pelas datas')+inp('pr','Valor da diária (R$) *','text','ex.: 120,00')+inp('tot','Total (R$)','text','diárias × diária')+inp('mes','Mês de referência','month')+
          sel('st','Status',[['OK','OK'],['VERIFICAR','Verificar']])+inp('conf','Conferente','text','',{list:'hl-conf'}))+
-      inp('nf','Nota fiscal','text','ex.: NF 268')+'</div><div class="aqbar">'+(!e.novo?'<button type="button" class="btn" data-hlexclui>Excluir</button>':'')+'<span class="aqtot" data-hltot>'+(A?'':'Total: <b>'+R(e.tot!=null&&e.tot!==''?+e.tot:(+e.dia||0)*(+e.pr||0))+'</b>')+'</span><button type="button" class="btn" data-hlcancela>Cancelar</button><button type="button" class="btn primary" data-hlsalva>'+(e.novo?'Lançar':'Salvar alterações')+'</button></div></div>'+
+      inp('nf','Nota fiscal','text','ex.: NF 268')+'</div><div class="aqbar">'+(!e.novo?'<button type="button" class="btn" data-hlexclui>'+(e.sub?'Desfazer edição':'Excluir')+'</button>':'')+'<span class="aqtot" data-hltot>'+(A?'':'Total: <b>'+R(e.tot!=null&&e.tot!==''?+e.tot:(+e.dia||0)*(+e.pr||0))+'</b>')+'</span><button type="button" class="btn" data-hlcancela>Cancelar</button><button type="button" class="btn primary" data-hlsalva>'+(e.novo?'Lançar':'Salvar alterações')+'</button></div></div>'+
       dl('hl-cid',hlUniq('cid'))+dl('hl-est',hlUniq('est'))+dl('hl-col',hlUniq('col'))+dl('hl-sol',hlUniq('sol'))+dl('hl-aut',hlUniq('aut'))+dl('hl-mot',hlUniq('mot'))+dl('hl-conf',hlUniq('conf'))}
+  return form}
+PG.lancar=()=>{const A=MODO==='alim',nm=A?'refeição':'hospedagem';
+  const meus=HL.filter(x=>x.m===MODO&&!x.sub&&!x.rm).filter(x=>!HLQ||(x.r.col+' '+x.r.est+' '+x.r.cid+' '+x.r.nf).toUpperCase().includes(HLQ.toUpperCase())).sort((a,b)=>(b.r.ent||0)-(a.r.ent||0));
+  const e=HLE,form=hlForm();
   return '<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico('mais')+'</span><div class="ubar-t"><span class="ubar-tag">'+(A?'Alimentação':'Hospedagem')+' · Cadastro</span><h2>Lançar no sistema</h2><span>Cadastre cada '+nm+' aqui, sem planilha: entra na hora no Painel geral, Onde se gasta, metas e pendências</span></div></div><div class="ubar-r">'+(e?'':'<button type="button" class="btn primary" data-hlnovo>+ Novo lançamento</button>')+'</div></div>'+
    (hlPode()?'':'<div class="note">Modo de teste: dá para lançar e ver nos painéis, mas só fica salvo para todos quando quem pode editar o site lança pelo Claude.</div>')+form+
    panel('Lançados no sistema',N(meus.length)+' '+(A?'refeições':'hospedagens')+' · '+R(meus.reduce((s,x)=>s+(x.r.tot||0),0)),'<div class="lcbar"><label class="lsel lcq"><small>Buscar</small><input type="search" data-hlq value="'+esc(HLQ)+'" placeholder="colaborador, '+(A?'restaurante':'hotel')+', cidade ou NF"></label></div>'+
@@ -3177,11 +3200,83 @@ document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-hl
   if(b.hasAttribute('data-hlnovo')){HLE={novo:1,id:'H'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),q:1,st:'OK',b:F.base||''};render();scrollTo({top:0});return}
   if(b.dataset.hledita){const x=HL.find(y=>y.id===b.dataset.hledita);if(!x)return;HLE=Object.assign({},x.e,{id:x.id});render();scrollTo({top:0});return}
   if(b.hasAttribute('data-hlcancela')){HLE=null;render();return}
-  if(b.hasAttribute('data-hlexclui')){if(!confirm('Excluir este lançamento?'))return;await hlGrava({id:HLE.id,m:MODO,del:true});HLE=null;toast('Lançamento excluído.');render();return}
+  if(b.hasAttribute('data-hlexclui')){if(!confirm(HLE.sub?'Desfazer as alterações feitas no site e voltar ao que veio da planilha?':'Excluir este lançamento?'))return;await hlGrava({id:HLE.id,m:MODO,del:true});HLE=null;toast('Lançamento excluído.');render();return}
   const e=HLE,A=MODO==='alim';const req=A?[['b','a base'],['cid','a cidade'],['est','o restaurante'],['col','o colaborador'],['cod','o código gerencial'],['tipo','o tipo de refeição'],['data','a data'],['v','o valor']]:[['b','a base'],['cid','a cidade'],['est','o hotel'],['col','o colaborador'],['cod','o código gerencial'],['ent','a entrada'],['sai','a saída'],['pr','o valor da diária']];
   const falta=req.find(([k])=>e[k]===''||e[k]==null);if(falta){toast('Preencha '+falta[1]+'.');const c=document.querySelector('[data-hle="'+falta[0]+'"]');c&&c.focus();return}
-  const ed=Object.assign({},e);delete ed.novo;const o={id:e.id,m:MODO,e:ed,r:hlMonta(e),em:new Date().toISOString()};
+  const ed=Object.assign({},e);delete ed.novo;const o={id:e.id,m:MODO,e:ed,r:hlMonta(e),em:new Date().toISOString()};if(e.sub)o.sub=e.sub;
   const r=await hlGrava(o);HLE=null;toast((r==='ok'?'Lançado. ':r==='teste'?'Lançado nesta tela (modo de teste). ':'')+(o.r.fl?'Ficou com pendência: confira em Pendências da base.':'Já aparece nos painéis.'));render()});
+
+/* ===== Verificação de notas (hospedagem e alimentação sem nota ou a conferir) ===== */
+let VF={q:'',ab:null,sel:null,f:{},vrm:0};
+const vfN=x=>String(x==null?'':x).trim().toUpperCase().replace(/\s+/g,' ');
+function vfKey(r,m){m=m||MODO;return m==='alim'?[r.b,r.col,r.ent,r.tipo,r.est].map(vfN).join('|'):[r.b,r.col,r.est,r.ent,r.sai].map(vfN).join('|')}
+const vfSemNF=r=>{const n=String(r.nf==null?'':r.nf).trim();return !n||n==='0'};
+const vfPend=r=>isA()?vfSemNF(r):(vfSemNF(r)||r.st!=='OK');
+const vfGrupo=r=>[r.b,vfN(r.est),r.mes].join('|');
+const vfId=()=>'H'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+// Transforma uma linha (da planilha ou do site) nos campos do formulário de lançamento
+function vfParaE(r){if(r.man){const x=HL.find(y=>y.id===r.man);if(x)return Object.assign({},x.e,{id:x.id,sub:x.sub||x.e.sub})}
+  const e={id:vfId(),sub:vfKey(r),b:r.b,cid:r.cid,est:r.est,col:r.col,sol:r.sol,aut:r.aut,cod:r.cod,mot:r.mot,nf:vfSemNF(r)?'':String(r.nf)};
+  if(isA())Object.assign(e,{tipo:({'SELF-SERVICE ALMOÇO':'Almoço','SELF-SERVICE JANTAR':'Jantar','SELF-SERVICE CAFÉ':'Café da Manhã','ALMOÇO':'Almoço','JANTAR':'Jantar','CAFÉ DA MANHÃ':'Café da Manhã'})[vfN(r.tipo)]||r.tipo,data:hlYmd(r.ent),hr:r.hr==null?'':r.hr,v:r.tot,conf:r.conf||''});
+  else Object.assign(e,{ent:hlYmd(r.ent),sai:hlYmd(r.sai),dia:r.dia,pr:r.pr,tot:r.tot,_totManual:1,mes:/^\d{4}-\d{2}$/.test(r.mes)?r.mes:'',_mesManual:1,q:r.q||1,st:r.st==='(vazio)'?'VERIFICAR':(r.st||'VERIFICAR'),conf:r.conf||''});
+  return e}
+function vfLinhas(){const q=VF.q.trim().toUpperCase();return filt().filter(vfPend).filter(r=>!q||(r.col+' '+r.est+' '+r.cid+' '+r.nf+' '+r.b).toUpperCase().includes(q))}
+function vfGrupos(L){const g=new Map();L.forEach(r=>{const k=vfGrupo(r);let x=g.get(k);if(!x){x={k,b:r.b,est:r.est,cid:r.cid,mes:r.mes,rs:[],tot:0,snf:0,ver:0};g.set(k,x)}x.rs.push(r);x.tot+=r.tot||0;if(vfSemNF(r))x.snf++;if(!isA()&&r.st!=='OK')x.ver++});
+  return [...g.values()].sort((a,b)=>String(a.mes).localeCompare(String(b.mes))||a.b.localeCompare(b.b)||a.est.localeCompare(b.est))}
+const vfMes=m=>{const x=/^(\d{4})-(\d{2})$/.exec(m||'');return x?['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+x[2]-1]+'/'+x[1]:esc(m||'–')};
+function vfDifHTML(g){const sel=g.rs.filter((r,i)=>VF.sel&&VF.sel.has(i)),base=Math.round(sel.reduce((s,r)=>s+(r.tot||0),0)*100)/100,nv=hlNum(VF.f.v);
+  if(nv===''||nv==null)return 'Selecionados: <b>'+N(sel.length)+'</b> · valor na base <b>'+R(base)+'</b> · digite o valor da nota para comparar';
+  const d=Math.round((nv-base)*100)/100;return 'Selecionados: <b>'+N(sel.length)+'</b> · base <b>'+R(base)+'</b> · nota <b>'+R(nv)+'</b> · '+(Math.abs(d)<=1?'<span class="pill ate">valor confere</span>':'<span class="pill nao">diferença de '+R(d)+'</span>')}
+PG.verif=()=>{const A=isA(),nm=A?'refeição':'hospedagem',L=vfLinhas(),G=vfGrupos(L),tot=L.reduce((s,r)=>s+(r.tot||0),0);
+  const conf=HL.filter(x=>x.m===MODO&&x.e&&x.e.vfOk&&!x.rm),rem=HL.filter(x=>x.m===MODO&&x.rm);
+  const g=VF.ab&&G.find(x=>x.k===VF.ab);if(VF.ab&&!g){VF.ab=null;VF.sel=null}
+  if(g&&(!VF.sel||VF.sel._k!==g.k||VF.sel._n!==g.rs.length)){VF.sel=new Set(g.rs.map((r,i)=>i));VF.sel._k=g.k;VF.sel._n=g.rs.length}
+  const kp=(v,t,s)=>'<div class="icard"><div class="ic-hd"><span class="ic-k">'+t+'</span></div><div class="ic-v sm">'+v+'</div><div class="ic-l"><span>'+s+'</span></div></div>';
+  let det='';
+  if(g){const f=VF.f,inp=(k,lab,t,ph)=>'<label><small>'+lab+'</small><input type="'+(t||'text')+'" data-vff="'+k+'" value="'+esc(f[k]==null?'':String(f[k]))+'" placeholder="'+(ph||'')+'"></label>';
+    const cols=[{h:'<input type="checkbox" data-vftodos aria-label="Marcar todos"'+(VF.sel.size===g.rs.length?' checked':'')+'>',f:(r)=>'<input type="checkbox" data-vfsel="'+g.rs.indexOf(r)+'"'+(VF.sel.has(g.rs.indexOf(r))?' checked':'')+' aria-label="Incluir na nota">'},
+      {h:'Colaborador',w:1,f:r=>'<b>'+esc(r.col)+'</b>'+(r.sub||r.man?'<br><small class="muted">'+(r.sub?'editado no site':'lançado no site')+'</small>':'')}].concat(A?[{h:'Data',f:r=>dt(r.ent)},{h:'Refeição',f:r=>esc(r.tipo)},{h:'Valor',n:1,f:r=>'<b>'+R(r.tot)+'</b>'}]:
+      [{h:'Entrada',f:r=>dt(r.ent)},{h:'Saída',f:r=>dt(r.sai)},{h:'Diárias',n:1,f:r=>N(r.dia)},{h:'Diária',n:1,f:r=>R(r.pr)},{h:'Total',n:1,f:r=>'<b>'+R(r.tot)+'</b>'},{h:'Status',f:r=>r.st==='OK'?'<span class="pill ate">OK</span>':'<span class="pill par">'+esc(r.st)+'</span>'}]).concat([
+      {h:'NF',f:r=>vfSemNF(r)?'<span class="neg">sem nota</span>':esc(r.nf)},{h:'',f:r=>'<span class="vfac"><button type="button" class="btn sm" data-vfedita="'+g.rs.indexOf(r)+'">Editar</button><button type="button" class="btn sm" data-vfrem="'+g.rs.indexOf(r)+'">Remover</button></span>'}]);
+    det='<div class="panel aqform vfdet"><div class="phd"><h3>'+esc(g.est)+' · '+esc(bnome(g.b))+' · '+vfMes(g.mes)+'</h3><small>'+N(g.rs.length)+' '+(A?'refeições':'hospedagens')+' sem conferência · '+R(g.tot)+'</small></div>'+
+      '<p class="tnota" style="margin:6px 0 0">Marque os lançamentos que estão nesta nota, preencha os dados e confirme. Os que ficarem desmarcados continuam aqui esperando.</p>'+
+      '<div class="aqgrid">'+inp('nf','Número da nota *','text','ex.: NF 4569')+inp('v','Valor da nota (R$)','text','ex.: 1.250,00')+inp('d','Data da nota','date')+inp('conf','Conferente *','text','quem conferiu')+'<label class="aqw3"><small>Observação</small><input type="text" data-vff="obs" value="'+esc(f.obs||'')+'" placeholder="opcional"></label></div>'+
+      '<div class="aqbar"><span class="aqtot" data-vfdif>'+vfDifHTML(g)+'</span><button type="button" class="btn" data-vfnovo>+ Acrescentar '+nm+'</button><button type="button" class="btn" data-vffecha>Fechar</button><button type="button" class="btn primary" data-vfok>Confirmar conferência</button></div>'+
+      tabela(cols,g.rs,{alto:1})+'</div>'}
+  const lista=G.length?tabela([{h:'Mês',f:x=>vfMes(x.mes)},{h:'Base',f:x=>esc(x.b)},{h:'Estabelecimento',w:1,f:x=>'<b>'+esc(x.est)+'</b><br><small class="muted">'+esc(x.cid||'')+'</small>'},{h:A?'Refeições':'Hospedagens',n:1,f:x=>N(x.rs.length)},{h:'Sem nota',n:1,f:x=>N(x.snf)}].concat(A?[]:[{h:'Status Verificar',n:1,f:x=>N(x.ver)}]).concat([{h:'Valor na base',n:1,f:x=>'<b>'+R(x.tot)+'</b>'},{h:'',f:x=>'<button type="button" class="btn sm'+(x.k===VF.ab?' primary':'')+'" data-vfabre="'+esc(x.k)+'">'+(x.k===VF.ab?'Aberto':'Conferir nota')+'</button>'}]),G.slice(0,300),{alto:1})+(G.length>300?'<p class="tnota">Mostrando 300 de '+N(G.length)+' grupos. Use os Filtros ou a busca para achar o que precisa.</p>':''):'<div class="empty">Nada para conferir com estes filtros. Tudo com nota'+(A?'':' e status OK')+'.</div>';
+  return ubar('Verificação de notas',esc(ctxTxt())+' · '+(A?'refeições sem nota fiscal':'hospedagens sem nota fiscal ou com status VERIFICAR'),'cad')+
+   (hlPode()?'':'<div class="note">Modo de teste: dá para conferir e ver o resultado, mas só fica salvo para todos quando quem pode editar usa o site.</div>')+
+   '<div class="vfk">'+kp(N(L.length),'Para conferir',A?'refeições sem nota':'hospedagens sem nota ou a verificar')+kp(R(tot),'Valor na base','soma do que falta conferir')+kp(N(G.length),'Grupos','estabelecimento + mês')+kp(N(conf.length),'Conferidos no site','já com nota, valendo nos painéis')+'</div>'+
+   (HLE?hlForm():'')+det+
+   panel('Para conferir por estabelecimento e mês',N(L.length)+' '+(A?'refeições':'hospedagens')+' · '+R(tot),'<div class="lcbar"><label class="lsel lcq"><small>Buscar</small><input type="search" data-vfq value="'+esc(VF.q)+'" placeholder="colaborador, '+(A?'restaurante':'hotel')+', cidade ou base"></label><button type="button" class="btn" data-vfbaixa>Baixar o que falta conferir</button>'+(rem.length?'<button type="button" class="btn" data-vfvrm>'+(VF.vrm?'Esconder':'Ver')+' removidos ('+N(rem.length)+')</button>':'')+'</div>'+
+    (VF.vrm&&rem.length?'<div class="vfrm">'+tabela([{h:'Colaborador',w:1,f:x=>'<b>'+esc(x.e.col)+'</b><br><small class="muted">'+esc(x.e.est)+'</small>'},{h:A?'Data':'Entrada',f:x=>esc(A?x.e.data:x.e.ent)},{h:'Valor',n:1,f:x=>R(A?+x.e.v||0:+x.e.tot||0)},{h:'Removido em',f:x=>esc((x.em||'').slice(0,10).split('-').reverse().join('/'))},{h:'',f:x=>'<button type="button" class="btn sm" data-vfvolta="'+x.id+'">Trazer de volta</button>'}],rem,{})+'</div>':'')+lista)};
+async function vfGravaLote(os){let ok=0,er=0;for(let i=0;i<os.length;i+=8){const rs=await Promise.all(os.slice(i,i+8).map(o=>hlGrava(o)));rs.forEach(x=>x==='erro'?er++:ok++)}return {ok,er}}
+document.addEventListener('input',ev=>{const el=ev.target;if(!el.dataset)return;
+  if(el.dataset.vfq!=null){VF.q=el.value;clearTimeout(window._vfqT);window._vfqT=setTimeout(()=>{render();const x=document.querySelector('[data-vfq]');if(x){x.focus();x.setSelectionRange(x.value.length,x.value.length)}},350);return}
+  if(el.dataset.vff!=null){VF.f[el.dataset.vff]=el.value;if(el.dataset.vff==='v'){const g=vfGrupos(vfLinhas()).find(x=>x.k===VF.ab),t=document.querySelector('[data-vfdif]');if(g&&t)t.innerHTML=vfDifHTML(g)}}});
+document.addEventListener('change',ev=>{const el=ev.target;if(!el.dataset)return;const g=VF.ab&&vfGrupos(vfLinhas()).find(x=>x.k===VF.ab);if(!g)return;
+  if(el.dataset.vfsel!=null){const i=+el.dataset.vfsel;el.checked?VF.sel.add(i):VF.sel.delete(i);const t=document.querySelector('[data-vfdif]');if(t)t.innerHTML=vfDifHTML(g);const a=document.querySelector('[data-vftodos]');if(a)a.checked=VF.sel.size===g.rs.length;return}
+  if(el.dataset.vftodos!=null){g.rs.forEach((r,i)=>el.checked?VF.sel.add(i):VF.sel.delete(i));document.querySelectorAll('[data-vfsel]').forEach(x=>{x.checked=el.checked});const t=document.querySelector('[data-vfdif]');if(t)t.innerHTML=vfDifHTML(g)}});
+document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-vfabre],[data-vffecha],[data-vfok],[data-vfedita],[data-vfrem],[data-vfnovo],[data-vfbaixa],[data-vfvrm],[data-vfvolta]');if(!b)return;const A=isA();
+  if(b.dataset.vfabre!=null){VF.ab=VF.ab===b.dataset.vfabre?null:b.dataset.vfabre;VF.sel=null;VF.f={conf:VF.f.conf||''};HLE=null;render();if(VF.ab){const d=document.querySelector('.vfdet');d&&d.scrollIntoView({behavior:'smooth',block:'start'})}return}
+  if(b.hasAttribute('data-vffecha')){VF.ab=null;VF.sel=null;render();return}
+  if(b.hasAttribute('data-vfvrm')){VF.vrm=!VF.vrm;render();return}
+  if(b.dataset.vfvolta){const x=HL.find(y=>y.id===b.dataset.vfvolta);if(!x)return;await hlGrava({id:x.id,m:x.m,del:true});toast('Voltou para a verificação.');render();return}
+  if(b.hasAttribute('data-vfbaixa')){const L=vfLinhas();if(!L.length){toast('Nada para baixar.');return}
+    const X=L.map(r=>A?{BASE:r.b,'MÊS':r.mes,DATA:dt(r.ent),ESTABELECIMENTO:r.est,CIDADE:r.cid,COLABORADOR:r.col,'REFEIÇÃO':r.tipo,VALOR:r.tot,'CÓDIGO GERENCIAL':r.cod,'CENTRO DE CUSTO':r.area,NF:r.nf||''}:{BASE:r.b,'MÊS':r.mes,ESTABELECIMENTO:r.est,CIDADE:r.cid,COLABORADOR:r.col,ENTRADA:dt(r.ent),'SAÍDA':dt(r.sai),'DIÁRIAS':r.dia,'DIÁRIA (R$)':r.pr,TOTAL:r.tot,STATUS:r.st,'NOTA FISCAL':r.nf||'','CÓDIGO GERENCIAL':r.cod,'CENTRO DE CUSTO':r.area});
+    try{await lib(XLSX_URL);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(X),'Para conferir');await salvarArquivo('verificacao_'+(A?'alimentacao':'hospedagem')+'_'+new Date().toISOString().slice(0,10)+'.xlsx',new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})]))}catch(e){toast('Não consegui gerar o arquivo agora.')}return}
+  const g=VF.ab&&vfGrupos(vfLinhas()).find(x=>x.k===VF.ab);if(!g)return;
+  if(b.dataset.vfedita!=null){const r=g.rs[+b.dataset.vfedita];if(!r)return;HLE=vfParaE(r);render();const f=document.querySelector('.aqform');f&&f.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(b.hasAttribute('data-vfnovo')){const r=g.rs[0]||{};HLE={novo:1,id:vfId(),q:1,st:'VERIFICAR',b:g.b,cid:r.cid||'',est:g.est,cod:r.cod||'',sol:r.sol||'',aut:r.aut||'',mot:r.mot||''};if(/^\d{4}-\d{2}$/.test(g.mes))HLE.mes=g.mes;render();const f=document.querySelector('.aqform');f&&f.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(b.dataset.vfrem!=null){const r=g.rs[+b.dataset.vfrem];if(!r)return;if(!confirm('Remover este lançamento de '+r.col+'?\n\nEle sai dos painéis e da verificação, mas fica guardado e pode voltar em "Ver removidos".'))return;
+    const e=vfParaE(r);if(r.man&&!r.sub){await hlGrava({id:r.man,m:MODO,del:true});toast('Lançamento excluído.')}else{await hlGrava({id:e.id,m:MODO,sub:e.sub||vfKey(r),rm:1,e,r:{},em:new Date().toISOString()});toast('Removido. Dá para trazer de volta em "Ver removidos".')}
+    VF.sel=null;render();return}
+  if(b.hasAttribute('data-vfok')){const f=VF.f,nfv=String(f.nf||'').trim(),cf=String(f.conf||'').trim();if(!nfv){toast('Digite o número da nota.');document.querySelector('[data-vff="nf"]')?.focus();return}if(!cf){toast('Digite quem conferiu.');document.querySelector('[data-vff="conf"]')?.focus();return}
+    const sel=g.rs.filter((r,i)=>VF.sel.has(i));if(!sel.length){toast('Marque pelo menos um lançamento.');return}
+    const base=sel.reduce((s,r)=>s+(r.tot||0),0),nv=hlNum(f.v);if(nv!==''&&Math.abs(nv-base)>1&&!confirm('O valor da nota ('+R(nv)+') é diferente do valor da base ('+R(base)+').\n\nConfirmar mesmo assim? Se algum valor estiver errado, use "Editar" na linha antes.'))return;
+    const hoje=new Date().toISOString().slice(0,10),os=sel.map(r=>{const e=vfParaE(r);Object.assign(e,{nf:nfv,conf:cf.toUpperCase(),vfOk:hoje,vnf:nv===''?null:nv,dnf:f.d||'',obs:f.obs||''});if(!A)e.st='OK';delete e.novo;const o={id:e.id,m:MODO,e,r:hlMonta(e),em:new Date().toISOString()};if(e.sub)o.sub=e.sub;return o});
+    b.disabled=true;const x=await vfGravaLote(os);toast(N(x.ok)+' '+(A?'refeições conferidas':'hospedagens conferidas')+' com a nota '+nfv+'.'+(x.er?' '+x.er+' não foram salvas para todos.':''));VF.ab=null;VF.sel=null;VF.f={conf:cf};render();return}});
+
 {const _r=render;render=function(){try{hlSync()}catch(e){console.error(e)}return _r.apply(this,arguments)}}
 
 /* ===== Tela de entrada (modelo aprovado) ===== */
@@ -3701,7 +3796,7 @@ DT.ti={
 /* ---------- quem atende cada página ---------- */
 DT.dom=()=>{const p=typeof pag==='function'?pag():{};const g=p.g||'';
   if(/Hospedagem/.test(g))return 'hosp';if(/Locação/.test(g))return 'loc';if(/Patrimônio/.test(g))return 'pat';if(/Fale/.test(g))return 'fc';if(/Setor de TI/.test(g))return 'ti';return null};
-DT.SEM=['lancar','loc-cad','fc-novo','ti-aquis','ti-nota','ti-seg','dados','entrada','catalogo','ficha','portal','controle'];
+DT.SEM=['lancar','verif','atualiz','loc-cad','fc-novo','ti-aquis','ti-nota','ti-seg','dados','entrada','catalogo','ficha','portal','controle'];
 DT.ALVO='.mb-r,.tirank-r,.bk,.msr,.timb,tbody tr,div.icard,.vgg-card,[data-vxd]';
 /* De que campo é o nome clicado? O título do quadro ("Quem autoriza", "Quem solicita"...) ou o cabeçalho da coluna decide.
    Sem isso, um nome que é ao mesmo tempo colaborador e autorizador abria sempre como colaborador. */
@@ -3736,6 +3831,7 @@ function dtMarca(){try{const pid=typeof pag==='function'?pag().id:'';const dom=D
 /* administrador de verdade (no site principal vem do login; no Artifact, quem edita) */
 function caAdm(){return window.CA_ACESSO?!!window.CA_ACESSO.admin:CAN_EDIT}
 /* Produtividade da equipe: o administrador e quem tem a chave "Ver Produtividade da equipe" em Usuários */
+function caUpd(){const A=window.CA_ACESSO;return A?(!!A.admin||(A.area==='financeiro'&&!!A.upd)):CAN_EDIT}
 function caEqp(){const A=window.CA_ACESSO;return A?(!!A.admin||(A.area==='financeiro'&&!!A.eqp)):CAN_EDIT}
 /* ===== PRODUTIVIDADE DA EQUIPE (lançamentos no Contas a Pagar) · só administrador ===== */
 Object.assign(ICON,{equipe:'<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.8-3.2 3.2-5 6-5s5.2 1.8 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.3 4.6 1.3 5.3 4.3"/>'});
@@ -3768,10 +3864,10 @@ EQP.enviar=async function(file){try{toast('Lendo a planilha... (arquivo grande, 
   const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
   const d=EQP.agregar(rows,(EQP.d&&EQP.d.eq)||['silas.pereira','jhennifer.santos','antonia.reis','deyvid.henrique','hugo.vitor','heloyse.medeiros','jayna.queiroz','berenice.franca']);
   d.rows=rows;EQP.bruto=rows;delete d.rows;EQP.d=d;
-  if(DBX&&caEqp()){await DBX.doc('eqp/dados').set({j:JSON.stringify(d),at:Date.now()});toast('Pronto! '+d.n.toLocaleString('pt-BR')+' documentos da equipe atualizados.')}else toast('Modo de teste: atualizado só nesta tela.');render()}
+  if(DBX&&caUpd()){await DBX.doc('eqp/dados').set({j:JSON.stringify(d),at:Date.now()});EQP.atEm=Date.now();toast('Pronto! '+d.n.toLocaleString('pt-BR')+' documentos da equipe atualizados.')}else toast('Modo de teste: atualizado só nesta tela.');render()}
   catch(e){toast('Não foi possível ler: '+(e.message||e))}};
 EQP.salvarEquipe=async function(eq){if(!EQP.d)return;EQP.d.eq=eq;if(EQP.bruto){const d=EQP.agregar(EQP.bruto,eq);EQP.d=d}
-  try{if(DBX&&caEqp())await DBX.doc('eqp/dados').set({j:JSON.stringify(EQP.d),at:Date.now()})}catch(e){toast('Não foi possível salvar a equipe.')}render()};
+  try{if(DBX&&caUpd())await DBX.doc('eqp/dados').set({j:JSON.stringify(EQP.d),at:Date.now()})}catch(e){toast('Não foi possível salvar a equipe.')}render()};
 
 /* números de uma pessoa no filtro atual */
 EQP.soma=function(u,mes){const m=(EQP.d.M[u]||{});let r=[0,0,0,0];for(const k in m){if(mes&&k!==mes)continue;r=r.map((x,i)=>x+m[k][i])}return r};
@@ -3781,8 +3877,8 @@ EQP.mesAtual=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMont
 PG.eqp=()=>{
   if(!caEqp())return '<div class="aj"><div class="sg-aviso">Esta área é liberada só para quem o administrador autorizar.</div></div>';
   if(EQP.carregando)return '<div class="aj"><p class="sg-vz">Carregando os dados da equipe...</p></div>';
-  const up='<label class="aj-bt claro eqp-up">'+ico('db')+' Atualizar com o BD Contas a Pagar<input type="file" accept=".xlsx,.xls" data-eqpup hidden></label>';
-  if(!EQP.d)return '<div class="aj"><div class="aj-hero"><div class="aj-hl"><span class="aj-tag">'+ico('equipe')+' Produtividade da equipe</span><h2>Ainda não há dados</h2><p>Envie o arquivo BD Contas a Pagar e Baixados (com a coluna DATACRIACAO_MOV) para montar os números da equipe.</p><div class="aj-hb">'+up+'</div></div></div></div>';
+  const up='';   // a atualização do BD Contas a Pagar fica só no Banco de atualizações
+  if(!EQP.d)return '<div class="aj"><div class="aj-hero"><div class="aj-hl"><span class="aj-tag">'+ico('equipe')+' Produtividade da equipe</span><h2>Ainda não há dados</h2><p>'+(caUpd()?'Envie o arquivo BD Contas a Pagar e Baixados em <a href="#atualiz" data-dsel="cp">Banco de atualizações</a> para montar os números da equipe.':'O administrador e a responsável pelo financeiro atualizam estes números em Banco de atualizações.')+'</p></div></div></div>';
   const D=EQP.d,EQ=D.eq.filter(u=>D.M[u]),ms=EQP.meses(),cur=EQP.mesAtual(),mes=EQP.f.mes,MN=typeof MESES!=='undefined'?MESES:VX.M3;
   const mesNm=k=>MN[+k.slice(5)-1]+'/'+k.slice(2,4),mesC=k=>VX.M3[+k.slice(5)-1];
   const P=EQ.map(u=>{const s=EQP.soma(u,mes);return {u,docs:s[0],valor:s[1],pagos:s[2],vp:s[3]}}).sort((a,b)=>b.docs-a.docs);
@@ -3858,6 +3954,7 @@ const AJ={
     entrada:['Início','Resumo de toda a Central: saúde geral, avisos do momento e um cartão por área.','O anel mostra quantos indicadores com meta estão no verde. Os cartões das áreas mostram o principal número de cada uma.','Clique num cartão de área para abrir o painel dela.'],
     inicio:['Painel geral da Hospedagem','Quanto foi gasto com hospedagem (ou alimentação) e quanto isso representa da meta.','A barra com marca mostra cada área contra a meta até hoje; o ritmo do orçamento compara o acumulado com o tracejado da meta.','Use os botões Hospedagem/Alimentação no topo para trocar de modo.'],
     onde:['Onde se gasta','Em quais bases, cidades, hotéis e colaboradores o dinheiro está indo.','O mapa de blocos mostra cada base do tamanho do seu gasto, dividida pelas cidades.','Clique numa cidade ou hotel para ver os últimos lançamentos.'],
+    verif:['Verificação de notas','Tudo o que ainda está sem nota fiscal ou com status VERIFICAR, separado por estabelecimento e mês.','Quando a nota chegar: abra o grupo, marque os lançamentos da nota, digite número, valor e data e confirme. Dá para editar, acrescentar ou remover lançamentos.','O que for conferido aqui fica guardado no site e continua valendo mesmo se a planilha for enviada de novo.'],
     lancar:['Lançar no sistema','Registrar hospedagens ou refeições sem precisar de planilha.','Preencha os campos e salve; o lançamento entra nos painéis na hora.','Em modo de teste nada é gravado.'],
     controle:['Pendências da base','Lançamentos com erro, sem nota ou a revisar.','Cada linha mostra o problema encontrado e o valor envolvido.','Corrija na planilha da base e envie de novo em Banco de dados.'],
     'loc-cad':['Cadastro de imóveis','Incluir e editar imóveis e lançar as contas do mês.','Os meses aparecem a partir do mês atual; dá para editar qualquer informação.','Ao salvar, aluguel, água e energia se atualizam sozinhos.'],
@@ -3885,7 +3982,7 @@ const AJ={
   GLOSS:[['Meta até hoje','Parte da meta do ano que corresponde aos meses já passados (o mês atual entra proporcional aos dias).'],['Consumo da meta','Gasto realizado ÷ meta até hoje. Até 90% verde, 90–100% amarelo, acima de 100% vermelho.'],['Diária','Uma noite de hospedagem de um colaborador.'],['Ritmo do orçamento','Comparação do gasto acumulado com o tracejado da meta: abaixo do tracejado = dentro do planejado.'],['Último mês fechado','Mês completo mais recente. O mês atual não entra nas comparações porque ainda não terminou.'],['p.p. (pontos percentuais)','Diferença entre dois percentuais. De 80% para 81% = +1 p.p.'],['Conformidade','Bens encontrados e em ordem ÷ bens conferidos no inventário.'],['Não conforme','Bem encontrado, mas com algum problema (local, placa, responsável, estado).'],['Não encontrado','Bem do cadastro que não foi localizado no inventário.'],['UC','Unidade consumidora: o número da conta de água ou energia.'],['Distratado','Contrato de aluguel encerrado.'],['Previsto × pago','Valor de aluguel esperado no mês comparado com o que saiu no Contas a Pagar.'],['Rateio','Divisão do valor de uma nota entre bases, setores e contratos.'],['Modo de teste','Quando o site está aberto sem permissão de edição: dá para usar, mas nada é gravado.']]
 };
 
-const AJ_AREAS=[['cama','Hospedagem / Alimentação',['inicio','onde','lancar','controle']],['chave','Controle de Locação',['loc-cad','loc-busca','loc-aluguel','loc-agua','loc-energia']],['equipe','Produtividade da equipe',['eqp']],['caixa','Patrimônio',['pat-painel','pat-crono','pat-nc','pat-bens','pat-banco']],['chat','Fale Conosco',['fc-painel','fc-lista','fc-novo']],['pc','Setor de TI',['ti-custos','ti-fin','ti-notas','ti-aquis']],['db','Banco de dados',['dados']]];
+const AJ_AREAS=[['cama','Hospedagem / Alimentação',['inicio','onde','lancar','verif','controle']],['chave','Controle de Locação',['loc-cad','loc-busca','loc-aluguel','loc-agua','loc-energia']],['equipe','Produtividade da equipe',['eqp']],['caixa','Patrimônio',['pat-painel','pat-crono','pat-nc','pat-bens','pat-banco']],['chat','Fale Conosco',['fc-painel','fc-lista','fc-novo']],['pc','Setor de TI',['ti-custos','ti-fin','ti-notas','ti-aquis']],['db','Banco de dados',['dados']]];
 const ajTem=id=>PAGINAS.some(p=>p.id===id&&(p.id!=='eqp'||caEqp()));
 const ajArea=()=>{try{return AREA}catch(e){return null}};
 /* termo do glossário -> área (sem área = vale para todas) */
@@ -5374,7 +5471,7 @@ async function processarAlim(f){
   try{const rs=parseAlim(XLSX.read(await f.arrayBuffer(),{type:'array'}));const hoje=new Date(),hj=String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();
     ROWS=rs;FONTE={};for(const b of new Set(rs.map(r=>r.b)))FONTE[b]={at:hj,origem:'arquivo enviado'};CUT=Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),12);
     let msg=N(rs.length)+' refeições carregadas ('+R(sum(rs,r=>r.tot))+').';
-    if(DBX&&CAN_EDIT){try{await salvarAlim(rs,hj);msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+    if(DBX&&CAN_EDIT&&caUpd()){try{await salvarAlim(rs,hj);msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
     render();if($('arqs'))$('arqs').innerHTML='<div class="arq"><span class="tag">APP</span><span class="nome">'+esc(f.name)+'</span><span class="st-ok">'+N(rs.length)+' refeições</span></div>';toast(msg)}
   catch(e){box.innerHTML='<div class="arq erro"><span class="tag">ERRO</span><span class="nome">'+esc(f.name)+'</span><span class="st-err">'+esc(e.message)+'</span></div>'}}
 const KA=['b','cid','est','col','sol','aut','cod','cc','ger','area','mot','tipo','ent','hr','tot','nf','fl'];
@@ -5400,7 +5497,7 @@ async function processar(files){
   const bs=Object.keys(novos);if(!bs.length)return;
   ROWS=ROWS.filter(r=>!bs.includes(r.b)).concat(...bs.map(b=>novos[b]));bs.forEach(b=>FONTE[b]={at:hj,origem:'arquivo enviado'});CUT=Date.UTC(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),12);
   let msg='Dados de '+bs.map(bnome).join(', ')+' atualizados.';
-  if(DBX&&CAN_EDIT){try{await salvarBases(novos,hj);msg+=' Salvos para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+  if(DBX&&CAN_EDIT&&caUpd()){try{await salvarBases(novos,hj);msg+=' Salvos para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
   const keep=box.innerHTML;render();if($('arqs'))$('arqs').innerHTML=keep;toast(msg)}
 const K=['b','cid','est','col','sol','aut','cod','cc','ger','area','mot','ent','sai','mes','dia','pr','tot','q','nf','st','conf','fl'];
 async function salvarBases(novos,hj){
@@ -5427,7 +5524,7 @@ async function importarMetas(f){
   try{await lib(XLSX_URL)}catch(e){box.innerHTML='<div class="note err">Não consegui carregar o leitor de Excel. Verifique a conexão e tente de novo.</div>';return}
   try{const m=parseMetas(XLSX.read(await f.arrayBuffer(),{type:'array'}));DS[MODO].mm=m;aplicarMetas(m);const hoje=new Date();METAS_FONTE=DS[MODO].mf=f.name+' · '+String(hoje.getDate()).padStart(2,'0')+'/'+String(hoje.getMonth()+1).padStart(2,'0')+'/'+hoje.getFullYear();
     let msg='Metas atualizadas: '+R(metaAnual(Object.keys(METAS)))+' no ano.';
-    if(DBX&&CAN_EDIT){try{await DBX.doc(isA()?'cfg/metas_alim':'cfg/metas').set({m,fonte:METAS_FONTE,em:new Date().toISOString()});msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
+    if(DBX&&CAN_EDIT&&caUpd()){try{await DBX.doc(isA()?'cfg/metas_alim':'cfg/metas').set({m,fonte:METAS_FONTE,em:new Date().toISOString()});msg+=' Salvas para todos.'}catch(e){msg+=' Não foi possível salvar para todos ('+(e.message||e.code)+').'}}
     render();toast(msg)}
   catch(e){box.innerHTML='<div class="arq erro"><span class="tag">ERRO</span><span class="nome">'+esc(f.name)+'</span><span class="st-err">'+esc(e.message)+'</span></div>'}}
 /* ===== print ===== */

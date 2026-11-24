@@ -18,7 +18,7 @@ export const GET = rota(comLogin(async (_req, q, u) => {
   const [c] = await consulta("select conteudo from ca_carga where area = $1", [area]);
   if (!c) return erro("Os dados da Central ainda não foram carregados no banco (npm run central:banco).", 404);
   const nivel = u.admin ? "gestor" : u.modulos[area].nivel;
-  const acesso = encodeURIComponent(JSON.stringify({ id: u.id, nome: u.nome, admin: !!u.admin, area, nivel, eqp: !!u.eqp }));
+  const acesso = encodeURIComponent(JSON.stringify({ id: u.id, nome: u.nome, admin: !!u.admin, area, nivel, eqp: !!u.eqp, upd: !!u.upd }));
   return new Response(c.conteudo, { headers: {
     "content-type": "application/json; charset=utf-8", "content-encoding": "gzip",
     "cache-control": "private, no-store", "x-ca-acesso": acesso } });

@@ -489,6 +489,8 @@ alter table usuarios add constraint usuarios_ca_check check (
   (ca_atendimento is null or ca_atendimento in ('usuario', 'gestor')) and (ca_ti is null or ca_ti in ('usuario', 'gestor')));
 -- Produtividade da equipe (dentro do Financeiro): só o administrador e quem tiver esta chave ligada em Usuários
 alter table usuarios add column if not exists ca_eqp boolean not null default false;
+-- Banco de atualizações (hospedagem, alimentação e contas a pagar): só o administrador e quem tem esta chave
+alter table usuarios add column if not exists ca_upd boolean not null default false;
 
 -- Dados de cada área (o que antes ficava dentro do arquivo da Central), em JSON comprimido (gzip).
 -- Gravado por "npm run central:banco". O site busca por /api/ca-carga, só a área liberada para a pessoa.

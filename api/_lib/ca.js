@@ -29,7 +29,8 @@ export function erroGravar(u, col, id) {
   const d = DONO[col];
   if (u.admin) return null;
   if (d === "admin") return "Só o administrador grava nesta área.";
-  if (col === "eqp") return u.eqp ? null : "Seu acesso não inclui a Produtividade da equipe.";
+  // Bases enviadas por planilha (hospedagem, alimentação, metas e contas a pagar): só quem tem a chave "Atualizar as bases"
+  if (col === "cfg" || col === "partes" || col === "eqp") return u.upd ? null : "Só o administrador e a responsável pelo financeiro atualizam as bases.";
   if (col === "sug") return id === u.id ? null : "Você só grava as suas próprias mensagens.";
   if (col === "faq") return "Só o administrador publica dúvidas frequentes.";
   const m = u.modulos[d];

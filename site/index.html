@@ -3030,7 +3030,7 @@ function viewUsuarios() {
     const atual = u[a.k] || "";
     return `<div class="amb-lin${atual ? " on" : ""}"><label class="sw"><input type="checkbox" data-sw="${a.k}" data-id="${u.id}" ${atual ? "checked" : ""}><i></i><b>${a.nome}</b></label>
       ${atual ? `<select class="amb-nv" data-nv="${a.k}" data-id="${u.id}" aria-label="Nível em ${a.nome}">${Object.entries(a.niveis).map(([k, t]) => `<option value="${k}" ${atual === k ? "selected" : ""}>${t}</option>`).join("")}</select>` : `<span class="muted amb-nv">Sem acesso</span>`}
-      ${a.k === "financeiro" && atual ? `<label class="sw sw-sub" title="Lançamentos de cada pessoa no Contas a Pagar"><input type="checkbox" data-eqp="1" data-id="${u.id}" ${u.eqp ? "checked" : ""}><i></i><span>Ver Produtividade da equipe</span></label>` : ""}</div>`;
+      ${a.k === "financeiro" && atual ? `<label class="sw sw-sub" title="Lançamentos de cada pessoa no Contas a Pagar"><input type="checkbox" data-eqp="1" data-id="${u.id}" ${u.eqp ? "checked" : ""}><i></i><span>Ver Produtividade da equipe</span></label><label class="sw sw-sub" title="Enviar as planilhas de hospedagem, alimentação e contas a pagar (Banco de atualizações)"><input type="checkbox" data-upd="1" data-id="${u.id}" ${u.upd ? "checked" : ""}><i></i><span>Atualizar as bases</span></label>` : ""}</div>`;
   };
   const cartao = u => { const [sit, cls] = situacao(u), eu = u.id === state.user.uid; return `<article class="usu-card${u.ativo ? "" : " usu-inativo"}${ed && ed.id === u.id ? " usu-linha-ed" : ""}" data-busca="${esc(texto(u))}" ${q && !texto(u).includes(q) ? "hidden" : ""}>
     <header class="usu-topo">${dados(u)}<span class="usu-sit ${cls}">${sit}</span>
@@ -3084,6 +3084,7 @@ async function salvarAcesso(id, mud, aviso) {
     Object.assign(u, { admin: corpo.admin, medidas: corpo.medidas || null, contratacoes: corpo.contratacoes || null, horas: corpo.horas || null });
     CA_KEYS.forEach(k => { if (k in mud) u[k] = mud[k] || null; });
     if ("eqp" in mud) u.eqp = !!mud.eqp;
+    if ("upd" in mud) u.upd = !!mud.upd;
     render(); toast(aviso || "Acesso atualizado.");
   } catch (err) { toast(err.message); render(); }
 }
@@ -3091,6 +3092,7 @@ document.addEventListener("change", e => {
   const t = e.target; if (!t || !t.dataset) return;
   if (t.dataset.sw) { const a = AMB_ACESSO.find(x => x.k === t.dataset.sw); salvarAcesso(t.dataset.id, { [a.k]: t.checked ? a.padrao : "" }, t.checked ? `${a.nome}: acesso liberado como ${a.niveis[a.padrao]}.` : `${a.nome}: acesso removido.`); }
   else if (t.dataset.nv) salvarAcesso(t.dataset.id, { [t.dataset.nv]: t.value });
+  else if (t.dataset.upd) salvarAcesso(t.dataset.id, { upd: t.checked }, t.checked ? "Pode atualizar as bases no Banco de atualizações." : "Não atualiza mais as bases.");
   else if (t.dataset.eqp) salvarAcesso(t.dataset.id, { eqp: t.checked }, t.checked ? "Produtividade da equipe liberada." : "Produtividade da equipe bloqueada.");
   else if (t.dataset.adm) {
     const u = state.usu.usuarios.find(x => x.id === t.dataset.id); if (!u) return;
