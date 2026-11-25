@@ -2843,9 +2843,11 @@ let LCF={mes:'',st:'pend',q:''},LCE2=null;
 const L_STS={ens:['LANÇADO','LANÇAR','NÃO SAIU','PRYSCILLA','CON. PROPRIO','PG MORADOR','NÃO SE APLICA','DISTRATADO'],ags:['LANÇADO','LANÇAR','NÃO SAIU','PRYSCILLA','PAGA PELO MORADOR','POÇO ARTESIANO','NÃO SE APLICA','DISTRATADO']};
 const lMesesEd=()=>{const a=[];for(let y=2026;y<=2027;y++)for(let m=1;m<=12;m++){const k=y+'-'+String(m).padStart(2,'0');if(k<='2027-03')a.push(k)}return a};
 const lMN=m=>MES3[+m.slice(5)-1].toLowerCase()+'/'+m.slice(2,4);
+/* UC de energia: mostra a nova e a antiga */
+function lUC2(i){const n=String(i.ucn||'').trim(),a=String(i.uca||'').trim();if(!n&&!a)return '–';return (n?'<span class="lucn">'+esc(n)+'</span>':'')+(n&&a?'<br>':'')+(a?'<small class="muted">antiga: '+esc(a)+'</small>':'')}
 function lContasHTML(at,st,ki,nome){const sk=st==='ag'?'ags':'ens',ag=sk==='ags';if(!LCF.mes)LCF.mes=L_M3[2];const mes=LCF.mes,pode=true;
   const stOf=i=>((i[sk]||{})[mes]||'').trim();const vOf=i=>(i.cons[mes]||[0,0])[ki]||0;
-  const ucOf=i=>ag?(i.ucag||''):(i.ucn||i.uca||'');
+  const ucOf=i=>ag?(i.ucag||''):((i.ucn||'')+' '+(i.uca||''));
   const cont={};at.forEach(i=>{const k=stOf(i)||'(sem situação)';cont[k]=(cont[k]||0)+1});
   const nPend=at.filter(i=>/^(N[ÃA]O SAIU|LAN[ÇC]AR)$/.test(stOf(i))).length;
   const ops=[...new Set(L_STS[sk].concat(Object.keys(cont).filter(x=>x!=='(sem situação)')))];
@@ -2857,7 +2859,7 @@ function lContasHTML(at,st,ki,nome){const sk=st==='ag'?'ags':'ens',ag=sk==='ags'
   const chips='<div class="chips lcfchips">'+chip('pend','Pendentes (não saiu + lançar)',nPend)+Object.entries(cont).sort((a,b)=>b[1]-a[1]).map(([k,n])=>chip(k,k,n)).join('')+chip('todos','Todos',at.length)+'</div>';
   const ult=i=>{const m=Object.keys(i.cons).filter(x=>x<mes&&(i.cons[x]||[0,0])[ki]>0).sort().pop();return m?R(i.cons[m][ki])+' <small class="muted">('+lMN(m)+')</small>':'–'};
   const sel=(i)=>'<select class="lcsel" data-lcst="'+i.id+'" aria-label="Situação">'+['',...ops].map(o=>'<option value="'+esc(o)+'"'+(stOf(i)===o?' selected':'')+'>'+esc(o||'—')+'</option>').join('')+'</select>';
-  const tab=tabela([{h:'Imóvel',w:1,f:i=>'<button type="button" class="vfpes" data-lced="'+i.id+'">'+esc(i.im)+'</button><br><small class="muted">'+esc(i.loc)+' · '+esc(i.lo||'')+'</small>'},{h:'Base',f:i=>i.b},{h:'CT',f:i=>i.ct},{h:ag?'UC água':'UC energia',f:i=>esc(ucOf(i)||'–')},{h:'Titular',f:i=>esc(i.tit||'–')},
+  const tab=tabela([{h:'Imóvel',w:1,f:i=>'<button type="button" class="vfpes" data-lced="'+i.id+'">'+esc(i.im)+'</button><br><small class="muted">'+esc(i.loc)+' · '+esc(i.lo||'')+'</small>'},{h:'Base',f:i=>i.b},{h:'CT',f:i=>i.ct},{h:ag?'UC água':'UC energia',f:i=>ag?esc(i.ucag||'–'):lUC2(i)},{h:'Titular',f:i=>esc(i.tit||'–')},
     {h:'Situação · '+lMN(mes),f:i=>sel(i)},{h:'Valor · '+lMN(mes),n:1,f:i=>'<input class="lcval" type="text" inputmode="decimal" data-lcv="'+i.id+'" value="'+(vOf(i)?nf2.format(vOf(i)):'')+'" placeholder="0,00">'},{h:'Último valor',n:1,f:ult},{h:'',f:i=>'<button type="button" class="btn sm" data-lced="'+i.id+'">Editar</button>'}],L,{alto:1});
   let ed='';
   if(LCE2){const e=LCE2,ms=lMesesEd();const inp=(k,lab)=>'<label><small>'+lab+'</small><input type="text" data-lce2="'+k+'" value="'+esc(e[k]==null?'':String(e[k]))+'"></label>';
@@ -3906,7 +3908,7 @@ DT.loc={
     const ev=DT.barras(ms.map(m=>({l:VX.M3[+m.slice(5)-1],v:soma(m),c:m>ref?'vx-fut':''})),VX.brl);
     const tops=com.map(i=>({k:VX.cap(i.im)+' · '+i.b,v:mf.reduce((a,m)=>a+val(i,m),0)})).sort((a,b)=>b.v-a.v);
     const reg=um?'':DT.tab([['Imóvel'],['Base'],['Último valor',1],['Situação · '+VX.M3[10].toLowerCase()]],com.slice().sort((a,b)=>mf.reduce((s,m)=>s+val(b,m),0)-mf.reduce((s,m)=>s+val(a,m),0)).slice(0,10).map(i=>{const m=mf.slice().reverse().find(m=>val(i,m)>0);return [VX.esc(VX.cap(i.im)),i.b,m?VX.brl(val(i,m))+' <small>('+VX.M3[+m.slice(5)-1].toLowerCase()+')</small>':'–',VX.esc((i[st]||[])[2]||'–')]}));
-    let ficha='';if(um)ficha='<dl class="dt-dl"><dt>Imóvel</dt><dd>'+VX.esc(VX.cap(um.im))+' · '+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+(um.st!=='ATIVO'?' · distratado':'')+'</dd><dt>'+(ag?'UC água':'UC energia')+'</dt><dd>'+VX.esc((ag?um.ucag:(um.ucn||um.uca))||'–')+'</dd><dt>Titular</dt><dd>'+VX.esc(um.tit||'–')+'</dd><dt>Situação (set/out/nov)</dt><dd>'+VX.esc(((um[st]||[]).map(x=>x||'–')).join(' · '))+'</dd></dl>';
+    let ficha='';if(um)ficha='<dl class="dt-dl"><dt>Imóvel</dt><dd>'+VX.esc(VX.cap(um.im))+' · '+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+(um.st!=='ATIVO'?' · distratado':'')+'</dd><dt>'+(ag?'UC água':'UC energia')+'</dt><dd>'+(ag?VX.esc(um.ucag||'–'):lUC2(um))+'</dd><dt>Titular</dt><dd>'+VX.esc(um.tit||'–')+'</dd><dt>Situação (set/out/nov)</dt><dd>'+VX.esc(((um[st]||[]).map(x=>x||'–')).join(' · '))+'</dd></dl>';
     const nm=q.c==='tudo'?'No período':DT.rot(DT.loc.NM[q.c]||'Imóvel',q.nm);
     const frase=nm+': <b>'+VX.brl(ano)+'</b> de '+nome.toLowerCase()+' nos meses fechados (planilha de locação)'+(cp!=null?'; na Contas a Pagar foram pagos <b>'+VX.brl(cp)+'</b> no ano':'')+'. '+
       (um?'':'<b>'+com.length+'</b> imóve'+(com.length===1?'l':'is')+' com conta. ')+(ultM?'Último mês com conta: '+DT.MF[+ultM.slice(5)-1].toLowerCase()+', '+VX.brl(ult)+(media&&mCom.length>1?' ('+(ult>=media?'+':'')+VX.pc(ult/media-1)+' vs a média de '+VX.brl(media)+')':'')+'.':'Nenhuma conta lançada na planilha.')+(pend?' <b class="dt-bad">'+pend+'</b> conta'+(pend>1?'s':'')+' de novembro pendente'+(pend>1?'s':'')+'.':'');
@@ -3924,7 +3926,7 @@ DT.loc={
     const ev=DT.barras(mP.map(m=>({l:VX.M3[+m.slice(5)-1],v:pagoM(m)})),VX.brl);
     const um=S.length===1?S[0]:null;
     let ficha='';if(um){const dd=um.fim?Math.round((Date.parse(um.fim)-hoje)/864e5):null;
-      ficha='<dl class="dt-dl"><dt>Locador</dt><dd>'+VX.esc(VX.cap(um.lo)||'–')+'</dd><dt>Endereço</dt><dd>'+VX.esc(VX.cap(um.end)||'–')+'</dd><dt>Localidade</dt><dd>'+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+' · '+DT.dia(um.ini)+' a '+DT.dia(um.fim)+(dd!=null?' <b class="'+(dd<=90?'dt-bad':'')+'">('+(dd>=0?'faltam '+dd+' dias':'vencido')+')</b>':'')+'</dd><dt>UC energia</dt><dd>'+VX.esc(um.ucn||um.uca||'–')+'</dd><dt>UC água</dt><dd>'+VX.esc(um.ucag||'–')+'</dd></dl>'+
+      ficha='<dl class="dt-dl"><dt>Locador</dt><dd>'+VX.esc(VX.cap(um.lo)||'–')+'</dd><dt>Endereço</dt><dd>'+VX.esc(VX.cap(um.end)||'–')+'</dd><dt>Localidade</dt><dd>'+VX.esc(VX.cap(um.loc))+' · '+um.b+'</dd><dt>Contrato</dt><dd>'+VX.esc(um.ct||'–')+' · '+DT.dia(um.ini)+' a '+DT.dia(um.fim)+(dd!=null?' <b class="'+(dd<=90?'dt-bad':'')+'">('+(dd>=0?'faltam '+dd+' dias':'vencido')+')</b>':'')+'</dd><dt>UC energia</dt><dd>'+lUC2(um)+'</dd><dt>UC água</dt><dd>'+VX.esc(um.ucag||'–')+'</dd></dl>'+
         '<div class="dt-sm">'+M.map(m=>{const g=VX.GST[um.sm&&um.sm[m]]||VX.GST.sem;return '<span><i class="'+g[0]+'"></i>'+VX.M3[+m.slice(5)-1]+'<small>'+g[1]+'</small></span>'}).join('')+'</div>'}
     const gs=um?[]:DT.grp(S,i=>q.c==='b'?VX.cap(i.loc):(()=>{try{return bnome(i.b)}catch(e){return i.b}})()).map(g=>({k:VX.cap(g.k),v:DT.sum(g.rows,i=>i.v)})).sort((a,b)=>b.v-a.v);
     const reg=um?'':DT.tab([['Imóvel'],['Base'],['Vence em',1],['Aluguel',1],[VX.M3[+ant.slice(5)-1]]],S.slice().sort((a,b)=>(a.fim||'9')<(b.fim||'9')?-1:1).slice(0,10).map(i=>{const dd=i.fim?Math.round((Date.parse(i.fim)-hoje)/864e5):null,g=VX.GST[i.sm&&i.sm[ant]]||VX.GST.sem;return [VX.esc(VX.cap(i.im)),i.b,dd==null?'–':(dd<0?'vencido':dd+' dias'),VX.brl(i.v),'<span class="dt-st"><i class="'+g[0]+'"></i>'+g[1]+'</span>']}));
