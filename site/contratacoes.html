@@ -3515,6 +3515,43 @@ document.addEventListener("change", e => {
   else if (e.target.matches("[data-vimpf]")) { const id = e.target.dataset.vimpf; e.target.checked ? I.fechar.add(id) : I.fechar.delete(id); render(); }
 });
 
+/* ===================== Cruzar vagas × candidatos em processo =====================
+   Liga (vagaId) cada vaga aberta sem candidato a um candidato em processo sem vaga, do mesmo CT, função e base.
+   Com o vínculo, a vaga fecha sozinha quando a contratação do candidato é concluída. */
+const mesmoSolic = (a, b) => { const x = norm(a).split(" ").filter(Boolean), y = norm(b).split(" ").filter(Boolean); if (!x.length || !y.length) return false; const [c, l] = x.length <= y.length ? [x, y] : [y, x]; return c.every((t, i) => l[i] && l[i].startsWith(t)); };
+function paresCruz() {
+  const vs = VAGAS().filter(v => v.status === "aberta"), ligadas = new Set();
+  ANDAMENTO().forEach(c => { if (c.vagaId && state.vagas.get(c.vagaId)?.status === "aberta") ligadas.add(c.vagaId); });
+  const livresV = vs.filter(v => !ligadas.has(v.id)).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  const livresC = ANDAMENTO().filter(c => !(c.vagaId && state.vagas.get(c.vagaId)?.status === "aberta")).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  const usado = new Set(), pares = [];
+  const casa = (v, c) => !usado.has(c.id) && c.base && norm(c.base) === norm(v.base) && canonF(c.funcao) === canonF(v.funcao) && (!c.ct || !v.ct || String(c.ct) === String(v.ct));
+  [true, false].forEach(mesmoSol => livresV.forEach(v => { if (pares.some(p => p.v.id === v.id)) return;
+    const c = livresC.find(c => casa(v, c) && (!mesmoSol || mesmoSolic(c.solicitante, v.solicitante))); if (c) { usado.add(c.id); pares.push({ v, c }); } }));
+  return { pares: pares.sort((a, b) => a.v.funcao.localeCompare(b.v.funcao) || a.v.base.localeCompare(b.v.base) || (a.v.data || "").localeCompare(b.v.data || "")), semCand: livresV.filter(v => !pares.some(p => p.v.id === v.id)).length, ligadas: ligadas.size };
+}
+function painelCruz() {
+  const X = state.vcruz; if (!X) return "";
+  const n = X.pares.filter(p => !X.fora.has(p.v.id)).length;
+  return `<section class="panel" id="vcruz"><div class="phd"><h3>Cruzar vagas com candidatos em processo</h3></div>
+    <p class="muted sm" style="margin-top:0">Para cada vaga aberta ainda sem candidato, o sistema procura um candidato em processo (sem vaga) com o mesmo CT, função e base, de preferência do mesmo solicitante. Com o vínculo, a vaga fecha sozinha quando a contratação for concluída.</p>
+    <div class="kpis k3" style="margin-bottom:12px"><div class="kpi kpi-static"><span class="kpi-n">${X.pares.length}</span><span class="kpi-rot">Vagas com candidato encontrado</span></div><div class="kpi kpi-static"><span class="kpi-n">${X.semCand}</span><span class="kpi-rot">Vagas abertas sem candidato</span><span class="kpi-sub">ninguém em processo para elas</span></div><div class="kpi kpi-static"><span class="kpi-n">${X.ligadas}</span><span class="kpi-rot">Já estavam vinculadas</span></div></div>
+    ${X.pares.length ? `<div class="table-wrap"><table class="tbl"><thead><tr><th><input type="checkbox" data-cruzall aria-label="Marcar todos"${X.fora.size ? "" : " checked"}></th><th>Vaga (aberta em)</th><th>CT</th><th>Função</th><th>Base</th><th>Solicitante da vaga</th><th>Candidato</th><th>Desde</th><th>Etapa</th></tr></thead><tbody>
+    ${X.pares.map(({ v, c }) => `<tr><td><input type="checkbox" data-cruz="${esc(v.id)}"${X.fora.has(v.id) ? "" : " checked"} aria-label="Vincular"></td><td>${br(v.data)}</td><td>${esc(v.ct)}</td><td>${esc(v.funcao)}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td><button class="link" data-abrir="${esc(c.id)}">${esc(c.nome)}</button>${!mesmoSolic(c.solicitante, v.solicitante) ? `<div class="muted sm">solicitante no candidato: ${esc(c.solicitante || "—")}</div>` : ""}</td><td>${br(c.data)}</td><td>${esc((ETAPAS.find(e => e.k === etapaAtual(c).k) || {}).n || "")}</td></tr>`).join("")}
+    </tbody></table></div>` : `<div class="empty">Nenhum candidato em processo combina com as vagas abertas sem vínculo.</div>`}
+    <div class="actions" style="justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" data-acao="cruz-cancela">Fechar</button>${n ? `<button class="btn primary" data-acao="cruz-ok">Vincular ${n} candidato${n === 1 ? "" : "s"}</button>` : ""}</div></section>`;
+}
+async function confirmarCruz() {
+  const X = state.vcruz; if (!X || X.gravando) return; X.gravando = true; const P = []; let n = 0;
+  X.pares.filter(p => !X.fora.has(p.v.id)).forEach(({ v, c }) => { const a = getCand(c.id); if (!a) return; P.push(salvarCand({ ...a, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante}, aberta em ${br(v.data)})`)); n++; });
+  await Promise.all(P); state.vcruz = null; toast(`${n} candidato(s) vinculado(s) às vagas.`); render();
+}
+document.addEventListener("change", e => {
+  const X = state.vcruz; if (!X) return;
+  if (e.target.matches("[data-cruzall]")) { X.fora = e.target.checked ? new Set() : new Set(X.pares.map(p => p.v.id)); render(); }
+  else if (e.target.matches("[data-cruz]")) { const id = e.target.dataset.cruz; e.target.checked ? X.fora.delete(id) : X.fora.add(id); render(); }
+});
+
 /* ===================== Vagas ===================== */
 function vVagas() {
   const f = state.vf, and = ANDAMENTO();
@@ -3525,12 +3562,13 @@ function vVagas() {
   if (f.base) vs = vs.filter(v => v.base === f.base);
   if (f.q) vs = vs.filter(v => norm(`${v.funcao} ${v.solicitante} ${v.setor} ${v.obs}`).includes(norm(f.q)));
   vs.sort((a, b) => (a.data || "").localeCompare(b.data || ""));
-  const cand = v => and.filter(c => norm(c.funcao) === norm(v.funcao) && norm(c.base) === norm(v.base));
+  const cand = v => and.filter(c => canonF(c.funcao) === canonF(v.funcao) && norm(c.base) === norm(v.base)), lig = v => and.find(c => c.vagaId === v.id);
   const pgV = paginar("vagas", vs, JSON.stringify(f) + state.role + state.pessoa);
   return `
   <div class="vhead"><div><h2>Vagas</h2><p>Vagas solicitadas pelos gestores. Ao concluir uma contratação, a vaga vinculada é fechada automaticamente; sem vínculo, apenas uma vaga do mesmo CT, de preferência do mesmo solicitante.</p></div>
-    <div class="actions">${pode() ? `<label class="btn">${ico("dados")}Importar planilha<input type="file" id="vimp-arq" accept=".xlsx,.xls" hidden></label>` : ""}${podeVaga() ? `<button class="btn primary" data-acao="abrir-vaga">${ico("vagas")}Abrir vaga</button>` : ""}</div></div>
+    <div class="actions">${pode() ? `<button class="btn" data-acao="cruzar">${ico("candidatos")}Cruzar com candidatos</button><label class="btn">${ico("dados")}Importar planilha<input type="file" id="vimp-arq" accept=".xlsx,.xls" hidden></label>` : ""}${podeVaga() ? `<button class="btn primary" data-acao="abrir-vaga">${ico("vagas")}Abrir vaga</button>` : ""}</div></div>
   ${painelImpVagas()}
+  ${painelCruz()}
   ${state.novaVaga ? formVaga() : ""}
   <div class="panel">
     <div class="filtros">
@@ -3540,7 +3578,7 @@ function vVagas() {
     </div>
     ${vs.length ? `<div class="table-wrap"><table><thead><tr><th>Aberta em</th><th>CT</th><th>Função</th><th>Base</th><th>Solicitante</th><th>Setor</th><th class="n">Candidatos</th><th>Situação</th><th></th></tr></thead><tbody>
       ${pgV.itens.map(v => { const cs = cand(v), d = dias(v.data); return `<tr><td>${br(v.data)}${v.status === "aberta" && d != null ? ` <span class="dias ${d > 30 ? "late" : ""}">${d} d</span>` : ""}</td><td>${esc(v.ct)}</td><td><b>${esc(v.funcao)}</b>${v.obs ? `<div class="muted sm">${esc(v.obs)}</div>` : ""}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td>${esc(v.setor)}</td>
-        <td class="n">${v.status === "aberta" ? (cs.length ? `<button class="link" data-candfiltro="${esc(v.funcao)}|${esc(v.base)}">${cs.length}</button>` : `<span class="pill p-crit">0</span>`) : "—"}</td>
+        <td class="n">${v.status === "aberta" && lig(v) ? `<button class="link" data-abrir="${lig(v).id}" title="Candidato vinculado a esta vaga">${esc(lig(v).nome.split(" ")[0])} ✓</button><div class="muted sm">${cs.length} no total</div>` : v.status === "aberta" ? (cs.length ? `<button class="link" data-candfiltro="${esc(v.funcao)}|${esc(v.base)}">${cs.length}</button>` : `<span class="pill p-crit">0</span>`) : "—"}</td>
         <td>${v.status === "aberta" ? `<span class="pill p-acc">Aberta</span>` : `<span class="pill p-ok">Fechada</span>${v.fechadaEm ? ` <span class="muted sm">${br(v.fechadaEm)}</span>` : ""}${v.preenchidaPor && getCand(v.preenchidaPor) ? `<div class="sm"><button class="link" data-abrir="${v.preenchidaPor}">${esc(getCand(v.preenchidaPor).nome)}</button>${v.fechadaAuto ? ` <span class="muted">(automático: ${esc(v.fechadaAuto)})</span>` : ""}</div>` : v.obsFech ? `<div class="muted sm">${esc(v.obsFech)}</div>` : ""}`}</td>
         <td><div class="actions nowrap">${v.status === "aberta" && pode() ? `<button class="btn sm" data-indicar="${v.id}">Indicar</button>` : ""}${maisMenu([
           v.status === "aberta" && cs.length ? `<button role="menuitem" data-candfiltro="${esc(v.funcao)}|${esc(v.base)}">Ver os ${cs.length} candidatos</button>` : "",
@@ -4441,6 +4479,9 @@ document.addEventListener("click", e => {
     case "abrir-vaga": state.novaVaga = true; ir("vagas"); return;
     case "vimp-cancela": state.vimp = null; render(); return;
     case "vimp-ok": confirmarImpVagas(); return;
+    case "cruzar": state.vcruz = { ...paresCruz(), fora: new Set() }; render(); setTimeout(() => document.getElementById("vcruz")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); return;
+    case "cruz-cancela": state.vcruz = null; render(); return;
+    case "cruz-ok": confirmarCruz(); return;
     case "fechar-form-vaga": state.novaVaga = false; render(); return;
     case "limpa-funcao": state.filtro.funcao = ""; render(); return;
     case "marcar-todos": listaFiltrada().forEach(x => state.marcados.add(x.id)); render(); return;

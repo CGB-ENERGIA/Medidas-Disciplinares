@@ -102,6 +102,8 @@ export const POST = rota(async request => {
     const [d] = await consulta("select dados from ca_docs where colecao = 'fc_sol' and id = $1", [prot]);
     const s = d && d.dados;
     if (!s || s.chapa !== chapa) return erro("Não encontramos esse protocolo para essa chapa.", 404);
+    // marca que o colaborador viu (a partir daí a atendente não apaga mais as respostas já vistas)
+    await consulta("update ca_docs set dados = jsonb_set(dados, '{visto_em}', to_jsonb($2::text)) where colecao = 'fc_sol' and id = $1", [prot, new Date().toISOString()]);
     return ok({ protocolo: s.prot, assunto: s.as, mensagem: s.q, situacao: s.st, aberto: s.criado, resposta: s.res || "", respondido: s.resp_em || "", conversa: conversa(s) });
   }
 

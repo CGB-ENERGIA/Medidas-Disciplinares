@@ -3201,6 +3201,7 @@ const fcsNovas=()=>FC_SOL.filter(x=>x.st==='NOVA').length;
 /* conversa do protocolo: pergunta inicial + mensagens (de 'c' colaborador, 'a' atendimento); pedidos antigos só têm "res" */
 const fcsMsgs=s=>Array.isArray(s.msgs)?s.msgs:(s.res?[{de:'a',t:s.res,em:s.resp_em||''}]:[]);
 const fcsUltA=s=>{const a=fcsMsgs(s).filter(m=>m.de==='a');return a.length?a[a.length-1]:null};
+const fcsVisto=(s,m)=>!!(s.visto_em&&m.em&&s.visto_em>=m.em);
 const fcsVoltou=s=>{const m=fcsMsgs(s);return m.length>0&&m[m.length-1].de==='c'};
 /* cada pergunta do site também entra no painel e na lista de atendimentos (nova/em andamento contam como "em andamento") */
 function fcsNoPainel(s){fcAplica({id:'W'+s.prot,d:s.d,nm:s.nm,mat:s.chapa,b:s.b,fn:s.fn,as:s.as,q:s.q,res:(fcsUltA(s)||{}).t||'',st:fcsFechada(s.st)?'RESOLVIDO':'ANDAMENTO',org:'site',prot:s.prot})}
@@ -3217,7 +3218,7 @@ const FCS_CSS='<style>.fcs-k{display:grid;grid-template-columns:repeat(auto-fit,
  '.fcs-f{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}.fcs-f button{border:1.5px solid var(--line,#ddd);background:var(--surface,#fff);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer;color:inherit}.fcs-f button.on{border-color:var(--accent,#711424);color:var(--accent,#711424);background:var(--accent-soft,#f6e9ec)}.fcs-f input{margin-left:auto;min-width:220px;border:1.5px solid var(--line,#ddd);border-radius:10px;padding:8px 10px;background:var(--surface,#fff);color:inherit}'+
  '.fcs-c{border:1px solid var(--line,#ddd);border-radius:12px;padding:12px 14px;margin-top:8px;display:grid;grid-template-columns:1fr auto;gap:6px 14px;background:var(--surface,#fff)}.fcs-c.nova{border-left:4px solid var(--accent,#711424)}.fcs-c .t{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted,#666)}.fcs-c .q{grid-column:1/2;white-space:pre-line;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}.fcs-c .r{grid-column:1/2;font-size:13px;color:var(--muted,#666);white-space:pre-line}.fcs-c .a{grid-row:1/4;grid-column:2;align-self:center}'+
  '.fcs-ed dl{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;margin:0 0 12px}.fcs-ed dt{color:var(--muted,#666);font-size:13px}.fcs-ed dd{margin:0;white-space:pre-line;word-break:break-word}.fcs-ed textarea,.fcs-ed select,.fcq textarea,.fcq input,.fcq select{width:100%;border:1.5px solid var(--line,#ddd);border-radius:10px;padding:9px 10px;background:var(--surface,#fff);color:inherit;font:inherit}.fcs-ed textarea{min-height:140px}'+
- '.fcs-cv{display:flex;flex-direction:column;gap:8px;margin:4px 0 14px}.fcs-b{max-width:80%;padding:9px 12px;border-radius:12px;white-space:pre-line;word-break:break-word}.fcs-b small{display:block;font-size:11px;font-weight:700;opacity:.75;margin-bottom:2px}.fcs-b.c{align-self:flex-start;background:var(--sunken,#eee)}.fcs-b.a{align-self:flex-end;background:var(--accent-soft,#f6e9ec)}.fcs-lk{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}.fcs-lk img{width:170px;height:170px;border:1px solid var(--line,#ddd);border-radius:12px;background:#fff;padding:6px}.fcs-lk code{display:block;padding:8px 10px;border-radius:8px;background:var(--sunken,#eee);word-break:break-all;margin:6px 0 10px}'+
+ '.fcs-cv{display:flex;flex-direction:column;gap:8px;margin:4px 0 14px}.fcs-b{max-width:80%;padding:9px 12px;border-radius:12px;white-space:pre-line;word-break:break-word}.fcs-b small{display:block;font-size:11px;font-weight:700;opacity:.75;margin-bottom:2px}.fcs-b.c{align-self:flex-start;background:var(--sunken,#eee)}.fcs-b.a{align-self:flex-end;background:var(--accent-soft,#f6e9ec)}.fcs-vis{display:block;margin-top:4px;font-size:11px;color:var(--muted,#666)}.fcs-vis button{background:none;border:0;padding:0;color:var(--accent,#711424);font-weight:700;font-size:11px;cursor:pointer;text-decoration:underline}.fcs-lk{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}.fcs-lk img{width:170px;height:170px;border:1px solid var(--line,#ddd);border-radius:12px;background:#fff;padding:6px}.fcs-lk code{display:block;padding:8px 10px;border-radius:8px;background:var(--sunken,#eee);word-break:break-all;margin:6px 0 10px}'+
  '.fcq-i{border:1px solid var(--line,#ddd);border-radius:12px;padding:12px;margin-top:10px;display:grid;grid-template-columns:200px 1fr auto;gap:8px 12px;background:var(--surface,#fff)}.fcq-i.off{opacity:.6}.fcq-i textarea{min-height:70px}.fcq-i .ac{display:flex;flex-direction:column;gap:6px}.fcq-i .ac button{min-width:36px}'+
  '@media(max-width:760px){.fcq-i{grid-template-columns:1fr}.fcs-lk{grid-template-columns:1fr}.fcs-c{grid-template-columns:1fr}.fcs-c .a{grid-row:auto;grid-column:1}.fcs-ed dl{grid-template-columns:1fr}.fcs-f input{margin-left:0;width:100%}}</style>';
 
@@ -3234,7 +3235,8 @@ PG['fc-site']=()=>{
       '<dt>Telefone</dt><dd>'+(tel?esc(s.tel)+' · <a href="tel:'+tel+'">ligar</a> · <a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':'não informou')+'</dd>'+
       '<dt>Assunto</dt><dd><span class="tagi">'+esc(s.as)+'</span></dd></dl>'+
       '<div class="fcs-cv"><div class="fcs-b c"><small>'+esc(s.nm.split(' ')[0])+' · '+esc(fcsData(s.criado))+'</small>'+esc(s.q)+'</div>'+
-        fcsMsgs(s).map(m=>'<div class="fcs-b '+(m.de==='c'?'c':'a')+'"><small>'+(m.de==='c'?esc(s.nm.split(' ')[0]):'Atendimento'+(m.por?' ('+esc(m.por)+')':''))+' · '+esc(fcsData(m.em))+'</small>'+esc(m.t)+'</div>').join('')+'</div>'+
+        fcsMsgs(s).map((m,i)=>'<div class="fcs-b '+(m.de==='c'?'c':'a')+'"><small>'+(m.de==='c'?esc(s.nm.split(' ')[0]):'Atendimento'+(m.por?' ('+esc(m.por)+')':''))+' · '+esc(fcsData(m.em))+'</small>'+esc(m.t)+
+          (m.de==='a'?'<span class="fcs-vis">'+(fcsVisto(s,m)?'✓ visto pelo colaborador em '+esc(fcsData(s.visto_em)):'ainda não visto'+(fcPode()?' · <button type="button" data-fcsapaga="'+i+'" data-em="'+esc(m.em)+'">Apagar</button> · <button type="button" data-fcsapaga="'+i+'" data-em="'+esc(m.em)+'" data-corrige>Corrigir</button>':''))+'</span>':'')+'</div>').join('')+'</div>'+
       '<label><small>'+(fcsUltA(s)?'Nova resposta (deixe em branco para só mudar a situação)':'Resposta para o colaborador (ele vê ao consultar o protocolo)')+'</small><textarea data-fcs="nova" placeholder="Escreva a resposta ou a orientação">'+esc(s.nova||'')+'</textarea></label>'+
       '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-top:10px"><label style="min-width:200px"><small>Situação</small><select data-fcs="st">'+Object.entries(FCS_ST).map(([k,v])=>'<option value="'+k+'"'+(s.st===k?' selected':'')+'>'+v[0]+'</option>').join('')+'</select></label>'+
       '<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" data-fcs="faq"'+(s._faq?' checked':'')+' style="width:auto"> Virar dúvida frequente (pergunta + resposta)</label></div>'+
@@ -3256,10 +3258,25 @@ PG['fc-site']=()=>{
 document.addEventListener('input',e=>{const el=e.target;if(el.matches&&el.matches('[data-fcsq]')){FCS_Q=el.value;clearTimeout(PG._fcst);PG._fcst=setTimeout(()=>{const p=el.selectionStart;render();const n=document.querySelector('[data-fcsq]');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}},200)}
   else if(el.dataset&&el.dataset.fcs&&FCS_ED){const k=el.dataset.fcs;if(k==='faq')FCS_ED._faq=el.checked;else FCS_ED[k]=el.value}});
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.fcs&&FCS_ED){const k=el.dataset.fcs;if(k==='faq')FCS_ED._faq=el.checked;else FCS_ED[k]=el.value}});
-document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcsf],[data-fcsabre],[data-fcsx],[data-fcedita^="W"]');if(!b)return;
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcsf],[data-fcsabre],[data-fcsx],[data-fcsapaga],[data-fcedita^="W"]');if(!b)return;
+  if(b.dataset.fcsapaga!=null&&FCS_ED){const pr=FCS_ED.prot,i=+b.dataset.fcsapaga,em=b.dataset.em,corr=b.hasAttribute('data-corrige');
+    if(!corr&&!confirm('Apagar esta resposta? O colaborador ainda não viu.'))return;
+    let d=null;try{const x=await DBX.doc('fc_sol/'+pr).get();d=x&&x.data?x.data():null}catch(x){}
+    if(!d){toast('Não foi possível conferir o protocolo agora. Tente de novo.');return}
+    const msgs=fcsMsgs(d).slice(),m=msgs[i];
+    if(!m||m.de!=='a'||m.em!==em){toast('A conversa mudou. Abra o protocolo de novo.');return}
+    if(fcsVisto(d,m)){toast('O colaborador já viu esta resposta em '+fcsData(d.visto_em)+'. Não dá mais para apagar: mande uma nova resposta corrigindo.');FCS_ED=Object.assign({},d);render();return}
+    msgs.splice(i,1);d.msgs=msgs;const ua=fcsUltA(d);d.res=ua?ua.t:'';d.resp_em=ua?ua.em:'';if(!ua)delete d.resp_por;
+    if(d.st==='RESOLVIDO'&&(!ua||fcsVoltou(d)))d.st='ANDAMENTO';
+    try{await DBX.doc('fc_sol/'+pr).set(d)}catch(x){toast('Não foi possível apagar ('+(x.message||x.code)+').');return}
+    const k=FC_SOL.findIndex(x=>x.prot===pr);if(k>=0)FC_SOL[k]=d;fcsNoPainel(d);
+    FCS_ED=Object.assign({},d,corr?{nova:m.t}:{});render();toast(corr?'Resposta retirada: corrija o texto e salve de novo.':'Resposta apagada.');
+    if(corr)setTimeout(()=>{const c=document.querySelector('[data-fcs="nova"]');c&&c.focus()},50);return}
   if(b.dataset.fcedita){e.stopImmediatePropagation();const s=FC_SOL.find(x=>'W'+x.prot===b.dataset.fcedita);if(s){FCS_ED=Object.assign({},s);location.hash='fc-site';render();scrollTo({top:0})}return}
   if(b.dataset.fcsf){FCS_F=b.dataset.fcsf;render();return}
-  if(b.dataset.fcsabre){const s=FC_SOL.find(x=>x.prot===b.dataset.fcsabre);if(s){FCS_ED=Object.assign({},s);if(FCS_ED.st==='NOVA'&&fcPode())FCS_ED.st='ANDAMENTO';render();scrollTo({top:0})}return}
+  if(b.dataset.fcsabre){let s=FC_SOL.find(x=>x.prot===b.dataset.fcsabre);
+    try{const x=await DBX.doc('fc_sol/'+b.dataset.fcsabre).get();const d=x&&x.data?x.data():null;if(d&&d.prot){s=d;const k=FC_SOL.findIndex(y=>y.prot===d.prot);if(k>=0)FC_SOL[k]=d;fcsNoPainel(d)}}catch(x){}
+    if(s){FCS_ED=Object.assign({},s);if(FCS_ED.st==='NOVA'&&fcPode())FCS_ED.st='ANDAMENTO';render();scrollTo({top:0})}return}
   if(b.dataset.fcsx==='cancela'){FCS_ED=null;render();return}
   if(b.dataset.fcsx==='exclui'&&FCS_ED){const pr=FCS_ED.prot;if(!confirm('Excluir o protocolo '+pr+'? Ele some da Central, do painel e da consulta do colaborador. Não dá para desfazer.'))return;
     try{if(fcPode())await DBX.doc('fc_sol/'+pr).delete();FC_SOL=FC_SOL.filter(x=>x.prot!==pr);fcAplica({id:'W'+pr,del:true});FCS_ED=null;toast('Protocolo '+pr+' excluído.');render()}
