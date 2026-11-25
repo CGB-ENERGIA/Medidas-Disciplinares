@@ -2272,7 +2272,9 @@ function blocoBancoDet(c) {
 }
 function avisoBanco() {
   const l = paraOBanco(); if (!l.length || !pode()) return "";
-  return `<div class="note info"><span><b>${l.length} processo(s) parados há mais de ${BANCO_DIAS} dias.</b> Mova para o Banco de talentos: saem desta lista, mas nada é apagado e dá para retomar quando surgir vaga.</span><button class="btn sm" data-acao="mover-banco">Mover para o banco</button></div>`;
+  const vendo = state.filtro.chip === "parados", nm = [...state.marcados].filter(id => l.some(c => c.id === id)).length;
+  return `<div class="note info"><span><b>${l.length} processo(s) parados há mais de ${BANCO_DIAS} dias.</b> ${vendo ? "A lista abaixo mostra só eles, do mais parado para o menos. Marque quem deve ir para o banco ou mova todos." : "Mova para o Banco de talentos: saem desta lista, mas nada é apagado e dá para retomar quando surgir vaga."}</span>
+    <span class="actions nowrap">${vendo ? `<button class="btn sm" data-chip="todos">Voltar para todos</button>${nm ? `<button class="btn sm primary" data-acao="mover-banco-marc">Mover os ${nm} marcados</button>` : ""}` : `<button class="btn sm" data-chip="parados">Ver os ${l.length}</button>`}<button class="btn sm" data-acao="mover-banco">Mover ${vendo ? "todos os " + l.length : "para o banco"}</button></span></div>`;
 }
 
 
@@ -3614,16 +3616,17 @@ function listaFiltrada() {
   else if (f.chip === "pronto") cs = cs.filter(c => c.situacao === "andamento" && etapaAtual(c).tipo === "pronto");
   else if (f.chip === "suspenso") cs = cs.filter(c => c.situacao === "suspenso");
   else if (f.chip === "rm") cs = cs.filter(c => admitidoRM(c));
+  else if (f.chip === "parados") { const ids = new Set(paraOBanco().map(c => c.id)); cs = cs.filter(c => ids.has(c.id)); }
   if (f.base) cs = cs.filter(c => c.base === f.base);
   if (f.funcao) cs = cs.filter(c => norm(c.funcao) === norm(f.funcao));
   if (f.etapa) cs = cs.filter(c => { const a = etapaAtual(c); return f.etapa === "nok" ? a.tipo === "nok" : f.etapa === "pronto" ? a.tipo === "pronto" : a.k === f.etapa && a.tipo !== "nok"; });
   if (f.q) cs = cs.filter(c => norm(`${c.nome} ${c.funcao} ${baseNome(c.base)} ${c.solicitante}`).includes(norm(f.q)));
-  return cs.sort((a, b) => (a.data || "").localeCompare(b.data || "") || a.nome.localeCompare(b.nome));
+  return f.chip === "parados" ? cs.sort((a, b) => (paradoHa(b) ?? 0) - (paradoHa(a) ?? 0)) : cs.sort((a, b) => (a.data || "").localeCompare(b.data || "") || a.nome.localeCompare(b.nome));
 }
 function vCandidatos() {
   const f = state.filtro, todos = [...state.cand.values()].filter(visivel);
   const and = todos.filter(c => c.situacao === "andamento");
-  const n = { todos: and.length, atencao: and.filter(urgente).length, pronto: and.filter(c => etapaAtual(c).tipo === "pronto").length, suspenso: todos.filter(c => c.situacao === "suspenso").length, rm: todos.filter(c => admitidoRM(c)).length };
+  const n = { todos: and.length, atencao: and.filter(urgente).length, pronto: and.filter(c => etapaAtual(c).tipo === "pronto").length, suspenso: todos.filter(c => c.situacao === "suspenso").length, rm: todos.filter(c => admitidoRM(c)).length, parados: paraOBanco().filter(visivel).length };
   const cs = listaFiltrada();
   [...state.marcados].forEach(id => { if (!state.cand.has(id)) state.marcados.delete(id); });
   const sel = getCand(state.sel);
@@ -3633,7 +3636,7 @@ function vCandidatos() {
   ${avisoBanco()}
   <div class="dupla">
     <section class="panel">
-      <div class="chips">${[["todos", "Em andamento"], ["atencao", "Pendências"], ["pronto", "Prontos para admissão"], ["suspenso", "Suspensos"], ["rm", "Admitidos no RM"]].filter(([k]) => k !== "rm" || n.rm).map(([k, l]) => `<button class="chip" data-chip="${k}" aria-pressed="${f.chip === k}">${l}<b>${n[k]}</b></button>`).join("")}</div>
+      <div class="chips">${[["todos", "Em andamento"], ["atencao", "Pendências"], ["pronto", "Prontos para admissão"], ["parados", `Parados +${BANCO_DIAS} dias`], ["suspenso", "Suspensos"], ["rm", "Admitidos no RM"]].filter(([k]) => (k !== "rm" || n.rm) && (k !== "parados" || n.parados || state.filtro.chip === "parados")).map(([k, l]) => `<button class="chip" data-chip="${k}" aria-pressed="${f.chip === k}">${l}<b>${n[k]}</b></button>`).join("")}</div>
       <input type="search" id="cf-q" placeholder="Buscar nome, função, base" value="${esc(f.q)}" aria-label="Buscar candidato">
       <div class="filtros">
         <select id="cf-etapa" aria-label="Etapa atual"><option value="">Qualquer etapa</option>${ETAPAS.filter(e => !e.opc).map(e => `<option value="${e.k}" ${f.etapa === e.k ? "selected" : ""}>${e.n}</option>`).join("")}<option value="nok" ${f.etapa === "nok" ? "selected" : ""}>Com reprovação</option><option value="pronto" ${f.etapa === "pronto" ? "selected" : ""}>Pronto para admissão</option></select>
@@ -4517,6 +4520,7 @@ document.addEventListener("click", e => {
     case "abrir-vaga-ini": state.novaVaga = true; ir("vagas"); return;
     case "banco-limpar": state.bancoVaga = null; state.bf = { q: "", funcao: "", base: "", fase: "" }; render(); return;
     case "mover-banco": moverParaBanco(paraOBanco()); return;
+    case "mover-banco-marc": { const l = paraOBanco().filter(c => state.marcados.has(c.id)); moverParaBanco(l); l.forEach(c => state.marcados.delete(c.id)); return; }
     case "fixar-menu": fixarMenu(!document.body.classList.contains("rail-fixo")); return;
     case "cmd-abrir": menuAbrir(false); cmdAbrir(); return;
     case "salvar-cc": salvarNomesCC(); return;
