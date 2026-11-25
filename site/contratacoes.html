@@ -1097,7 +1097,7 @@ async function iniciar() {
   db.collection("rm").onSnapshot(s => { montarRM(s.docs); agendar(); }, erro);
   db.collection("talentos").onSnapshot(s => { montarTal(s.docs); talCache.k = ""; agendar(); }, () => {});
   db.collection("talentosEd").onSnapshot(s => { s.docs.forEach(d => { state.tal.ed[d.id] = d.data(); }); talCache.k = ""; agendar(); }, () => {});
-  db.collection("config").onSnapshot(s => { const d = s.docs.find(x => x.id === "ccustos"); state.ccNomes = (d && d.data().nomes) || {}; const sd = s.docs.find(x => x.id === "solicitantes"); state.solOficiais = (sd && sd.data().nomes) || null; const lk = s.docs.find(x => x.id === "links"); state.linkCadastro = (lk && lk.data().cadastro) || null; listasFeitas = ""; agendar(); }, () => {});
+  db.collection("config").onSnapshot(s => { const d = s.docs.find(x => x.id === "ccustos"); state.ccNomes = (d && d.data().nomes) || {}; const sd = s.docs.find(x => x.id === "solicitantes"); state.solOficiais = (sd && sd.data().nomes) || null; const lk = s.docs.find(x => x.id === "links"); state.linkCadastro = (lk && lk.data().cadastro) || null; const tx = s.docs.find(x => x.id === "talExcl"); state.talExcl = new Set((tx && tx.data().ids) || []); talCache.k = ""; listasFeitas = ""; agendar(); }, () => {});
   if (user) user.canEdit().then(v => { state.podeEditar = !!v; agendar(); }).catch(() => {});
   db.collection("vagas").onSnapshot(s => {
     state.vagas = new Map(s.docs.map(d => [d.id, { id: d.id, ...d.data() }])); state.pronto.v = true; agendar();
@@ -2268,7 +2268,7 @@ function blocoBancoDet(c) {
   const vs = VAGAS().filter(v => v.status === "aberta" && bancoPara(v).some(x => x.id === c.id));
   return `<div class="note info"><span><b>No Banco de talentos desde ${br(c.dataBanco)}.</b> ${u ? `Aprovado até ${esc(u.n)} (fase ${f.n}).` : "Nenhuma etapa aprovada ainda."} Tudo o que foi feito continua abaixo.</span></div>
     ${vs.length ? `<div class="sub-form"><h3>Vagas abertas em que esta pessoa serve</h3><div class="ini-lista">${vs.map(v => `<div class="ini-it"><span class="ini-av v">${ico("vagas")}</span><span class="ini-tx"><b>${esc(v.funcao)} · ${esc(baseNome(v.base))}</b><small>CT ${esc(v.ct)} · ${esc(v.solicitante || "—")} · aberta há ${dias(v.data) ?? "—"} dias</small></span>${pode() ? `<button class="btn sm primary" data-retvaga="${v.id}">Retomar para esta vaga</button>` : ""}</div>`).join("")}</div></div>` : ""}
-    ${pode() ? `<div class="actions"><button class="btn primary" data-acao="retomar-banco">Retomar processo</button><span class="muted sm">Volta para Em processo, do ponto onde parou.</span></div>` : ""}`;
+    ${pode() ? `<div class="actions"><button class="btn primary" data-acao="retomar-banco">Retomar processo</button><button class="btn danger" data-acao="excluir-proc">Excluir processo</button><span class="muted sm">Retomar: volta para Em processo, do ponto onde parou.</span></div>` : ""}`;
 }
 function avisoBanco() {
   const l = paraOBanco(); if (!l.length || !pode()) return "";
@@ -2281,7 +2281,7 @@ function avisoBanco() {
 /* ===================== Banco de talentos: inscritos das planilhas do RH ===================== */
 // Base importada das planilhas (BANCO RH 2025, Triagens 2024/2025, Bancos de talentos, PCD, Admissões).
 // Fica em "talentos" (partes p1..pN) e as marcações feitas no site ficam em "talentosEd/<id>".
-state.tal = { pronto: false, lista: [], partes: {}, cad: {}, ed: {}, meta: null }; state.talNovo = null;
+state.tal = { pronto: false, lista: [], partes: {}, cad: {}, ed: {}, meta: null }; state.talNovo = null; state.talExcl = new Set(); state.talLimpa = null;
 state.tf = { cat: "disp", q: "", base: "", ano: "", sit: "", todos: false, modo: (() => { try { return localStorage.getItem("ct-tal-modo") || "tabela"; } catch { return "tabela"; } })() };
 state.talRow = null; state.talRowV = null;
 state.bancoAba = "inscritos";
@@ -2350,10 +2350,10 @@ function tagsTal(p) {
 const sugereEscola = (p, area) => (area === "eletaval" && /INAPTO|N\/A/.test(norm(p.hist.map(x => x.cert || "").join(" ")))) || /AUX(ILIAR|\.)? (DE )?ELETRI/.test(norm(p.hist.map(x => x.funcao || "").join(" ")));
 let talCache = { k: "", l: [] };
 function talentos() {
-  const k = state.tal.lista.length + ":" + Object.keys(state.tal.cad).join(",").length + ":" + JSON.stringify(state.tal.ed).length + ":" + (state.rm.pronto ? state.rm.recs.length : 0) + ":" + state.cand.size + ":" + ANDAMENTO().length;
+  const k = state.talExcl.size + ":" + state.tal.lista.length + ":" + Object.keys(state.tal.cad).join(",").length + ":" + JSON.stringify(state.tal.ed).length + ":" + (state.rm.pronto ? state.rm.recs.length : 0) + ":" + state.cand.size + ":" + ANDAMENTO().length;
   if (talCache.k === k) return talCache.l;
   const emProc = new Set([...state.cand.values()].filter(c => c.situacao === "andamento" || c.situacao === "suspenso").map(c => norm(nomeBusca(c.nome))));
-  const l = state.tal.lista.map(p0 => {
+  const l = state.tal.lista.filter(p0 => !state.talExcl.has(p0.id)).map(p0 => {
     const ed = state.tal.ed[p0.id] || {};
     const fx = ed.fix || {};
     let p = ed.hist || ed.tel || ed.email || ed.cidade || ed.cnh || ed.def
@@ -2403,6 +2403,25 @@ function itemTal(p) {
       <span>${[...p.tags].map(t => `<span class="pill p-acc">${esc(PROGRAMAS.find(x => x.k === t)?.n || t)}</span>`).join(" ")} <span class="pill ${sitCls(p.sit)}">${SIT_ROT[p.sit]}</span>${p.escola ? ` <span class="tag">Sugerido p/ Escola</span>` : ""}</span>
     </div></div>`;
 }
+/* Excluir do Banco de talentos: o nome sai da lista (fica guardado em config/talExcl e dá para restaurar) */
+async function salvarExcl(ids, msg) {
+  const quem = (window.CT_ACESSO && window.CT_ACESSO.nome) || "";
+  try { await db.collection("config").doc("talExcl").set({ ids: [...ids], em: HOJE, por: quem }); state.talExcl = new Set(ids); talCache.k = ""; state.selTal = null; toast(msg); render(); }
+  catch { toast("Não consegui salvar agora. Tente de novo."); }
+}
+// Pessoas cujos registros são todos de antes de 2026 (e, à parte, as sem data)
+function talAntigos(ano) { const T = talentos(); return { antes: T.filter(p => p.anos.every(a => a !== "sem" && +a < ano)), sem: T.filter(p => p.anos.length === 1 && p.anos[0] === "sem") }; }
+function painelLimpaTal() {
+  const L = state.talLimpa; if (!L) return "";
+  const a = talAntigos(2026), n = a.antes.length + (L.sem ? a.sem.length : 0);
+  return `<section class="panel"><div class="phd"><h3>Manter só inscrições de 2026 em diante</h3><button class="link" data-acao="tal-limpa-fecha">Cancelar</button></div>
+    <p class="muted sm" style="margin-top:0">Saem da lista as pessoas cujos registros (inscrição, triagem, seletivo ou admissão) são <b>todos de antes de 2026</b>. Quem tem pelo menos um registro de 2026 continua. Quem está em processo em Candidatos não é afetado. Dá para restaurar depois.</p>
+    <div class="kpis k3" style="margin-bottom:12px"><div class="kpi kpi-static"><span class="kpi-n">${a.antes.length}</span><span class="kpi-rot">Só registros antes de 2026</span><span class="kpi-sub">saem da lista</span></div>
+      <div class="kpi kpi-static"><span class="kpi-n">${a.sem.length}</span><span class="kpi-rot">Sem data informada</span><span class="kpi-sub">${L.sem ? "também saem" : "continuam"}</span></div>
+      <div class="kpi kpi-static"><span class="kpi-n">${talentos().length - n}</span><span class="kpi-rot">Ficam na lista</span></div></div>
+    <label class="muted sm" style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-tallimpasem ${L.sem ? "checked" : ""}> Tirar também quem está sem data informada</label>
+    <div class="actions" style="justify-content:flex-end"><button class="btn" data-acao="tal-limpa-fecha">Cancelar</button><button class="btn danger" data-acao="tal-limpa-ok" ${n ? "" : "disabled"}>Tirar ${n} pessoa(s) da lista</button></div></section>`;
+}
 function detalheTal(p) {
   const rm = state.rm.pronto ? rmDe(p).filter(r => r.adm) : [];
   const edita = podeEscrever && state.role === "rh";
@@ -2415,7 +2434,7 @@ function detalheTal(p) {
     ${rm.length ? `<div class="note ${rm.some(r => r.sit !== "demitido") ? "info" : "warn"}"><span>${rm.map(r => `<b>${r.sit === "demitido" ? "Trabalhou na CGB" : "Trabalha na CGB"}:</b> ${esc(r.funcao)} · CT ${esc(r.ct)} · ${esc(baseNome(r.base))}, desde ${br(r.adm)}${r.dem ? ` até ${br(r.dem)} (${esc(motRM(r).toLowerCase())})` : ""}`).join("<br>")}</span></div>` : ""}
     ${p.escola ? `<div class="note info"><span><b>Sugerido para a Escola de Eletricista:</b> quer trabalhar como eletricista e ainda não tem certificação válida.</span>${edita ? `<button class="btn sm" data-taltag="escola">Incluir na Escola</button>` : ""}</div>` : ""}
     <div class="sub-form"><h3>Programas</h3><div class="chips">${PROGRAMAS.map(x => `<button class="chip" ${edita ? `data-taltag="${x.k}"` : "disabled"} aria-pressed="${p.tags.has(x.k)}" title="${esc(x.d)}">${x.n}</button>`).join("")}</div><p class="muted sm" style="margin:0">Clique para incluir ou tirar a pessoa de um programa.</p></div>
-    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button><button class="btn" data-taledit="${p.id}">Editar dados</button></div>
+    ${edita ? `<div class="actions"><button class="btn primary" data-talchamar="${p.id}">${ico("novo")}Chamar para processo</button><button class="btn" data-taledit="${p.id}">Editar dados</button><button class="btn danger" data-talexcl="${p.id}" title="Tira a pessoa da lista do Banco de talentos">Excluir do banco</button></div>
     <label class="tal-sit">Situação<select data-talsit="${p.id}">${SIT_TAL.map(([k]) => `<option value="${k}" ${p.sit === k ? "selected" : ""}>${SIT_ROT[k]}</option>`).join("")}</select>
       <small class="muted">${p.ed.statusEm ? `Alterada em ${br(p.ed.statusEm)}${p.ed.statusPor ? ` por ${esc(titulo(p.ed.statusPor))}` : ""}.` : "Todos começam como Disponível. Escolha outra situação quando precisar."}</small></label>` : ""}
     <div class="sub-form"><h3>Registros nas planilhas (${p.hist.length})</h3><ol class="timeline">${p.hist.map(h => { const k = hKey(h._orig || h);
@@ -2491,7 +2510,10 @@ function vInscritos() {
   const cat = (k, n, sub, nn) => `<button class="cat" data-tcat="${k}" aria-pressed="${f.cat === k}"><span><b>${n}</b>${sub ? `<small>${sub}</small>` : ""}</span><span class="count">${nn}</span></button>`;
   const progs = PROGRAMAS.map(x => ({ x, n: cnt(p => p.tags.has(x.k)) }));
   const nSug = cnt(p => p.escola);
+  const edTal = podeEscrever && state.role === "rh";
   return `
+  ${edTal ? `<div class="actions" style="justify-content:flex-end;margin-bottom:10px">${state.talExcl.size ? `<span class="muted sm">${state.talExcl.size} pessoa(s) fora da lista · <button class="link" data-acao="tal-restaura">Restaurar todas</button></span>` : ""}<button class="btn sm" data-acao="tal-limpa">Manter só 2026 em diante</button></div>` : ""}
+  ${painelLimpaTal()}
   <div class="kpis k4">
     <button class="kpi acao" data-tcat="disp"><span class="kpi-n">${disp.length}</span><span class="kpi-rot">Disponíveis</span><span class="kpi-sub">de ${T.length} pessoas${f.ano ? ` com registro em ${f.ano === "sem" ? "data não informada" : f.ano}` : " nas planilhas"}</span></button>
     ${progs.map(({ x, n }) => `<button class="kpi" data-tcat="prog:${x.k}"><span class="kpi-n">${n}</span><span class="kpi-rot">${x.n}</span><span class="kpi-sub">${x.k === "escola" ? `${nSug} sugeridos para a turma` : x.d}</span></button>`).join("")}
@@ -3510,6 +3532,7 @@ async function confirmarImpVagas() {
   await Promise.all(P);
   state.vimp = null; state.vf.st = "aberta"; toast([n ? `${n} vaga(s) importada(s)` : "", f ? `${f} fechada(s)` : ""].filter(Boolean).join(" e ") + "."); render();
 }
+document.addEventListener("change", e => { if (e.target.matches("[data-tallimpasem]") && state.talLimpa) { state.talLimpa.sem = e.target.checked; render(); } });
 document.addEventListener("change", e => {
   if (e.target.id === "vimp-arq" && e.target.files[0]) { lerPlanilhaVagas(e.target.files[0]); e.target.value = ""; return; }
   const I = state.vimp; if (!I) return;
@@ -4414,6 +4437,7 @@ document.addEventListener("click", e => {
   if (d.taltag) { const p = talentos().find(x => x.id === state.selTal); if (p) alternarTagTal(p, d.taltag); return; }
   if (d.talindisp !== undefined) { const p = talentos().find(x => x.id === state.selTal); if (p) { salvarEdTal(p.id, { indisp: d.talindisp === "1" }); toast(d.talindisp === "1" ? "Marcado como indisponível." : "Voltou a ficar disponível."); } return; }
   if (d.taledit) { editarTal(d.taledit); return; }
+  if (d.talexcl) { const p = talentos().find(x => x.id === d.talexcl); if (!p || !confirm(`Excluir ${p.nome} do Banco de talentos? A pessoa sai da lista (dá para restaurar depois).`)) return; salvarExcl([...state.talExcl, p.id], `${p.nome} saiu do Banco de talentos.`); return; }
   if (d.histed !== undefined) { state.talHist = d.histed || null; render(); return; }
   if (d.histsalvar) {
     const box = document.querySelector(".tal-hed"); if (!box) return;
@@ -4520,6 +4544,12 @@ document.addEventListener("click", e => {
     case "abrir-vaga-ini": state.novaVaga = true; ir("vagas"); return;
     case "banco-limpar": state.bancoVaga = null; state.bf = { q: "", funcao: "", base: "", fase: "" }; render(); return;
     case "mover-banco": moverParaBanco(paraOBanco()); return;
+    case "tal-limpa": state.talLimpa = { sem: false }; render(); return;
+    case "tal-limpa-fecha": state.talLimpa = null; render(); return;
+    case "tal-limpa-ok": { const a = talAntigos(2026), ids = [...a.antes, ...(state.talLimpa && state.talLimpa.sem ? a.sem : [])].map(p => p.id); if (!ids.length || !confirm(`Tirar ${ids.length} pessoa(s) do Banco de talentos?`)) return; state.talLimpa = null; salvarExcl([...state.talExcl, ...ids], `${ids.length} pessoa(s) saíram do Banco de talentos. Ficaram só as inscrições de 2026 em diante.`); return; }
+    case "tal-restaura": if (!confirm(`Restaurar ${state.talExcl.size} pessoa(s) na lista do Banco de talentos?`)) return; salvarExcl([], "Pessoas restauradas no Banco de talentos."); return;
+    case "excluir-proc": { const c = getCand(state.sel); if (!c || !confirm(`Excluir o processo de ${c.nome}? Some de Processos guardados e não dá para desfazer pelo site.`)) return;
+      db.collection("candidatos").doc(c.id).delete().then(() => { state.cand.delete(c.id); state.fin.delete(c.id); state.sel = null; toast(`Processo de ${c.nome} excluído.`); render(); }).catch(() => toast("Não consegui excluir agora. Tente de novo.")); return; }
     case "mover-banco-marc": { const l = paraOBanco().filter(c => state.marcados.has(c.id)); moverParaBanco(l); l.forEach(c => state.marcados.delete(c.id)); return; }
     case "fixar-menu": fixarMenu(!document.body.classList.contains("rail-fixo")); return;
     case "cmd-abrir": menuAbrir(false); cmdAbrir(); return;
