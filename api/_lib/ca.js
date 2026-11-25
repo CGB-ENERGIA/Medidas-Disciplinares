@@ -4,7 +4,7 @@ export const AREAS_CA = ["financeiro", "patrimonio", "atendimento", "ti"];
 // Coleção do banco → área dona dela. "admin" = só o administrador; "comum" = qualquer pessoa com acesso à Central.
 const DONO = {
   hlan: "financeiro", loc_imv: "financeiro", loc_link: "financeiro", cfg: "financeiro", partes: "financeiro",
-  fc_at: "atendimento",
+  fc_at: "atendimento", fc_sol: "atendimento", fc_faq: "atendimento",   // fc_sol: pedidos da página pública; fc_faq: dúvidas frequentes dela
   ti_notas: "ti", ti_cfg: "ti", ti_aquis: "ti",
   eqp: "financeiro",   // Produtividade da equipe: só o administrador e quem tem a chave em Usuários (u.eqp, ver abaixo)
   sug: "comum", faq: "comum"
