@@ -3417,6 +3417,104 @@ function grafMes(fin) {
   return s + `</svg></div>`;
 }
 
+/* ===================== Importar vagas da planilha (CONTROLE DE VAGAS) =====================
+   A planilha é a lista atual de vagas abertas. Para cada CT + função + base compara com as vagas abertas do sistema:
+   entra só a diferença (não duplica) e as abertas no sistema que sumiram da planilha aparecem para você decidir se fecha. */
+const SETOR_IMP = { "ALMOX": "ALMOXARIFADO", "PROJETO E MEDICAO": "PROJETO", "PROJETOS": "PROJETO" };
+const ABREV_IMP = [[/\bAUX\.?(?=\s|$)/g, "AUXILIAR"], [/\bADM\.?(?=\s|$)/g, "ADMINISTRATIVO"], [/\bTEC\.?(?=\s|$)/g, "TECNICO"], [/\bOP\.?(?=\s|$)/g, "OPERADOR"], [/\bSERV\.?(?=\s|$)/g, "SERVICOS"], [/\bALMOXARIFE\b/g, "ALMOXARIFADO"]];
+const canonF = f => { let e = norm(f); ABREV_IMP.forEach(([r, t]) => { e = e.replace(r, t); }); return e.replace(/[.,]/g, " ").split(/\s+/).filter(w => w && !["DE", "DA", "DO", "DOS", "DAS", "EM", "E"].includes(w)).join(" "); };
+function funcImp(f) {
+  const F = UP(f), c = canonF(F), of = funcOficiais();
+  const o = of.find(x => canonF(x) === c); if (o) return { f: o, ok: true };
+  const v = VAGAS().find(x => canonF(x.funcao) === c); if (v) return { f: v.funcao, ok: !of.length || ehFuncOficial(v.funcao) };
+  return { f: F, ok: !of.length };
+}
+function solImp(s) {
+  const t = norm(s).split(" ").filter(Boolean); if (!t.length) return { s: "", ok: true };
+  const m = solOficiais().filter(o => { const ot = norm(o).split(" "); return t.every((x, i) => ot[i] && ot[i].startsWith(x)); });
+  return m.length === 1 ? { s: m[0], ok: true } : { s: UP(s), ok: false };
+}
+function baseImp(b) { const k = norm(b); const o = BASES.find(x => norm(x) === k || norm(x) === k.replace(/ MIRIM$/, "")); return o ? { b: o, ok: true } : { b: UP(b), ok: false }; }
+function dataImp(v) {
+  if (v instanceof Date && !isNaN(v)) return { d: iso(v), ok: true };
+  const m = String(v || "").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (!m) return { d: HOJE, ok: false };
+  const a = m[3].length === 4 ? m[3] : String(d0.getFullYear());   // "05/10/202" → ano atual
+  return { d: `${a}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`, ok: m[3].length === 4 };
+}
+const chaveImp = v => [String(v.ct || ""), canonF(v.funcao), norm(v.base)].join("|");
+async function lerPlanilhaVagas(file) {
+  if (!window.XLSX) { toast("A leitura de planilhas não carregou. Recarregue a página."); return; }
+  try {
+    const wb = XLSX.read(await file.arrayBuffer(), { cellDates: true });
+    const ws = wb.Sheets[wb.SheetNames[0]], aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
+    const hi = aoa.findIndex(r => r.some(c => norm(c) === "FUNCAO") && r.some(c => norm(c) === "BASE"));
+    if (hi < 0) { toast("Não achei as colunas FUNÇÃO e BASE na primeira aba da planilha."); return; }
+    const cab = aoa[hi].map(c => norm(c).replace(/:$/, "").trim()), ix = n => cab.findIndex(c => c === n || c.startsWith(n));
+    const C = { ct: ix("CT"), data: ix("DATA"), f: ix("FUNCAO"), sol: ix("SOLICITADA POR"), setor: ix("SETOR"), cc: ix("C.CUSTO"), base: ix("BASE"), st: ix("STATUS"), obs: ix("OBSERVACAO") };
+    const lin = [];
+    aoa.slice(hi + 1).forEach(r => {
+      const g = k => C[k] >= 0 ? r[C[k]] : "";
+      if (!String(g("f")).trim() || !String(g("base")).trim()) return;
+      const st = norm(g("st")); if (st && !/ABERT/.test(st)) return;            // só vagas abertas
+      const fu = funcImp(g("f")), so = solImp(g("sol")), ba = baseImp(g("base")), da = dataImp(g("data"));
+      const ct = String(g("ct")).replace(/\D/g, ""), setor = SETOR_IMP[norm(g("setor"))] || UP(g("setor"));
+      const av = [];
+      if (!fu.ok) av.push("função fora da lista do RM");
+      if (!so.ok) av.push("solicitante fora da lista");
+      if (!ba.ok) av.push("base fora da lista");
+      else if (!baseValida(ct, ba.b)) av.push(`CT ${ct || "?"} não atua nessa base`);
+      if (!da.ok) av.push(`data incompleta (${g("data")})`);
+      lin.push({ v: { ct, data: da.d, funcao: fu.f, solicitante: so.s, setor, ccusto: UP(g("cc")), base: ba.b, motivo: "", status: "aberta", obs: String(g("obs") || "").trim(), origem: "planilha" }, av, orig: UP(g("f")) });
+    });
+    // casa cada linha da planilha com uma vaga aberta do sistema: 1º igual (CT, função, base); 2º parecida (mesmo CT, função que começa igual, base igual ou vazia no sistema)
+    const comCand = new Set([...state.cand.values()].filter(c => c.vagaId).map(c => c.vagaId));
+    const livres = VAGAS().filter(v => v.status === "aberta").sort((a, b) => (comCand.has(b.id) - comCand.has(a.id)) || (b.data || "").localeCompare(a.data || ""));
+    const usado = new Set(), par = (l, ok) => { const v = livres.find(x => !usado.has(x.id) && ok(x)); if (v) { usado.add(v.id); l.par = v; } };
+    lin.forEach(l => par(l, x => chaveImp(x) === chaveImp(l.v)));
+    lin.filter(l => !l.par).forEach(l => { const f = canonF(l.v.funcao); par(l, x => String(x.ct) === l.v.ct && (norm(x.base) === norm(l.v.base) || !x.base) && (canonF(x.funcao).startsWith(f) || f.startsWith(canonF(x.funcao)))); });
+    const grupos = new Map();
+    lin.forEach(l => { const k = chaveImp(l.v); if (!grupos.has(k)) grupos.set(k, { k, v: l.v, linhas: [], av: new Set(), orig: new Set(), sis: 0, entra: 0, novas: [] }); const g = grupos.get(k); g.linhas.push(l); l.av.forEach(a => g.av.add(a)); g.orig.add(l.orig); if (l.par) g.sis++; else { g.entra++; g.novas.push(l.v); } });
+    grupos.forEach(g => g.linhas.sort((a, b) => b.v.data.localeCompare(a.v.data)));
+    const sobra = livres.filter(v => !usado.has(v.id)).map(v => ({ v, cand: comCand.has(v.id) })).sort((a, b) => (a.v.data || "").localeCompare(b.v.data || ""));
+    state.vimp = { arq: file.name, grupos: [...grupos.values()].sort((a, b) => a.v.funcao.localeCompare(b.v.funcao) || a.v.base.localeCompare(b.v.base)), n: lin.length, sobra, fechar: new Set() };
+    render(); setTimeout(() => document.getElementById("vimp")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  } catch (x) { console.error(x); toast("Não consegui ler a planilha: " + (x.message || x)); }
+}
+function painelImpVagas() {
+  const I = state.vimp; if (!I) return "";
+  const entra = I.grupos.reduce((a, g) => a + g.entra, 0), iguais = I.grupos.reduce((a, g) => a + Math.min(g.sis, g.linhas.length), 0), nf = I.fechar.size;
+  const kpi = (n, r, sub) => `<div class="kpi kpi-static"><span class="kpi-n">${n}</span><span class="kpi-rot">${r}</span>${sub ? `<span class="kpi-sub">${sub}</span>` : ""}</div>`;
+  return `<section class="panel" id="vimp"><div class="phd"><h3>Prévia da planilha · ${esc(I.arq)}</h3></div>
+    <p class="muted sm" style="margin-top:0">A planilha é tratada como a lista atual de vagas abertas. Para cada CT, função e base: o que a planilha tem a mais entra no sistema; o que já está aberto no sistema não é duplicado.</p>
+    <div class="kpis k4" style="margin-bottom:12px">${kpi(I.n, "Vagas abertas na planilha")}${kpi(iguais, "Já abertas no sistema", "não duplica")}${kpi(entra, "Vão entrar", "vagas novas")}${kpi(I.sobra.length, "Abertas só no sistema", "não estão na planilha")}</div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>CT</th><th>Função</th><th>Base</th><th>Solicitante</th><th>Data mais recente</th><th style="text-align:right">Planilha</th><th style="text-align:right">Abertas no sistema</th><th style="text-align:right">Vão entrar</th><th>Aviso</th></tr></thead><tbody>
+    ${I.grupos.map(g => `<tr${g.entra ? "" : ' style="opacity:.6"'}><td>${esc(g.v.ct)}</td><td>${esc(g.v.funcao)}${[...g.orig].some(o => norm(o) !== norm(g.v.funcao)) ? `<br><small class="muted">planilha: ${esc([...g.orig].join(" / "))}</small>` : ""}</td><td>${esc(g.v.base)}</td><td>${esc([...new Set(g.linhas.map(l => l.v.solicitante))].join(" / "))}</td><td>${br(g.linhas[0].v.data)}</td>
+      <td style="text-align:right">${g.linhas.length}</td><td style="text-align:right">${g.sis}</td><td style="text-align:right"><b>${g.entra}</b></td><td>${[...g.av].map(a => `<span class="pill p-warn">${esc(a)}</span>`).join(" ")}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${I.sobra.length ? `<div class="sub-form" style="margin-top:14px"><h3>Abertas no sistema que não estão na planilha (${I.sobra.length})</h3>
+      <p class="muted sm" style="margin-top:0">Podem ter sido preenchidas ou canceladas. Marque as que devem ser <b>fechadas</b>; as não marcadas continuam abertas.</p>
+      <div class="table-wrap"><table class="tbl"><thead><tr><th><input type="checkbox" data-vimpall aria-label="Marcar todas"${nf === I.sobra.length ? " checked" : ""}></th><th>Data</th><th>CT</th><th>Função</th><th>Base</th><th>Solicitante</th><th></th></tr></thead><tbody>
+      ${I.sobra.map(({ v, cand }) => `<tr><td><input type="checkbox" data-vimpf="${esc(v.id)}"${I.fechar.has(v.id) ? " checked" : ""} aria-label="Fechar esta vaga"></td><td>${br(v.data)}</td><td>${esc(v.ct)}</td><td>${esc(v.funcao)}</td><td>${esc(v.base || "—")}</td><td>${esc(v.solicitante)}</td><td>${cand ? '<span class="pill p-acc">tem candidato vinculado</span>' : ""}</td></tr>`).join("")}
+      </tbody></table></div></div>` : ""}
+    <p class="muted sm">Avisos não impedem a entrada: a vaga aparece em <b>Cadastros a corrigir</b> e nas ferramentas de padronizar função e solicitante.</p>
+    <div class="actions" style="justify-content:flex-end;gap:8px"><button class="btn" data-acao="vimp-cancela">Cancelar</button>${entra || nf ? `<button class="btn primary" data-acao="vimp-ok">${[entra ? `Importar ${entra} vaga${entra === 1 ? "" : "s"}` : "", nf ? `fechar ${nf}` : ""].filter(Boolean).join(" e ")}</button>` : ""}</div></section>`;
+}
+async function confirmarImpVagas() {
+  const I = state.vimp; if (!I || I.gravando) return; let n = 0, f = 0; const P = [];
+  I.gravando = true; toast("Gravando as vagas… não feche a página.");
+  for (const g of I.grupos) for (const nv of g.novas) { const v = { id: novoId("v"), ...nv }; if (!v.obs) delete v.obs; P.push(salvarVaga(v)); n++; }
+  for (const { v } of I.sobra) if (I.fechar.has(v.id)) { const a = state.vagas.get(v.id); if (a && a.status === "aberta") { P.push(salvarVaga({ ...a, status: "fechada", fechadaEm: HOJE, obsFech: `Fechada na importação: não consta na planilha ${I.arq}` })); f++; } }
+  await Promise.all(P);
+  state.vimp = null; state.vf.st = "aberta"; toast([n ? `${n} vaga(s) importada(s)` : "", f ? `${f} fechada(s)` : ""].filter(Boolean).join(" e ") + "."); render();
+}
+document.addEventListener("change", e => {
+  if (e.target.id === "vimp-arq" && e.target.files[0]) { lerPlanilhaVagas(e.target.files[0]); e.target.value = ""; return; }
+  const I = state.vimp; if (!I) return;
+  if (e.target.matches("[data-vimpall]")) { I.fechar = e.target.checked ? new Set(I.sobra.map(x => x.v.id)) : new Set(); render(); }
+  else if (e.target.matches("[data-vimpf]")) { const id = e.target.dataset.vimpf; e.target.checked ? I.fechar.add(id) : I.fechar.delete(id); render(); }
+});
+
 /* ===================== Vagas ===================== */
 function vVagas() {
   const f = state.vf, and = ANDAMENTO();
@@ -3431,7 +3529,8 @@ function vVagas() {
   const pgV = paginar("vagas", vs, JSON.stringify(f) + state.role + state.pessoa);
   return `
   <div class="vhead"><div><h2>Vagas</h2><p>Vagas solicitadas pelos gestores. Ao concluir uma contratação, a vaga vinculada é fechada automaticamente; sem vínculo, apenas uma vaga do mesmo CT, de preferência do mesmo solicitante.</p></div>
-    ${podeVaga() ? `<button class="btn primary" data-acao="abrir-vaga">${ico("vagas")}Abrir vaga</button>` : ""}</div>
+    <div class="actions">${pode() ? `<label class="btn">${ico("dados")}Importar planilha<input type="file" id="vimp-arq" accept=".xlsx,.xls" hidden></label>` : ""}${podeVaga() ? `<button class="btn primary" data-acao="abrir-vaga">${ico("vagas")}Abrir vaga</button>` : ""}</div></div>
+  ${painelImpVagas()}
   ${state.novaVaga ? formVaga() : ""}
   <div class="panel">
     <div class="filtros">
@@ -4340,6 +4439,8 @@ document.addEventListener("click", e => {
   const c = getCand(state.sel);
   switch (d.acao) {
     case "abrir-vaga": state.novaVaga = true; ir("vagas"); return;
+    case "vimp-cancela": state.vimp = null; render(); return;
+    case "vimp-ok": confirmarImpVagas(); return;
     case "fechar-form-vaga": state.novaVaga = false; render(); return;
     case "limpa-funcao": state.filtro.funcao = ""; render(); return;
     case "marcar-todos": listaFiltrada().forEach(x => state.marcados.add(x.id)); render(); return;
