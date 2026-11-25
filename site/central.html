@@ -27,6 +27,8 @@ td.fced-td{width:46px;text-align:center}
 .fcst{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}
 .fcst-c{--c:#3C9E18;display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"i t n" "s s s" "e e e";gap:6px 12px;align-items:center;text-align:left;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:inherit;font:inherit;cursor:pointer;border-top:4px solid var(--c)}
 .fcst-c.par{--c:#d98a00}.fcst-c.ver{--c:#2f6fb3}.fcst-c.roxo{--c:#7a4fb3}.fcst-c.teal{--c:#1f8a8a}.fcst-c.nd{--c:#8a8584}.fcst-c.ate{--c:#3C9E18}
+.fcsec{display:flex;gap:12px;align-items:center;margin:26px 0 12px}.fcsec>b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#711424;color:#fff;font-size:14px;flex:none}.fcsec h4{margin:0;font-size:17px;font-weight:800}.fcsec span{display:block;font-size:12.5px;color:var(--muted)}
+#main .fcstp{margin-top:0}
 .fcst3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}@media(max-width:1000px){.fcst3{grid-template-columns:1fr}}
 .fcg{--c:#2f6fb3;border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;background:var(--surface);padding:14px 16px;display:grid;gap:8px;align-content:start}.fcg.par{--c:#d98a00}.fcg.ate{--c:#3C9E18}.fcg.on{box-shadow:0 0 0 2px var(--c)}
 .fcg-h{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}.fcg-h i{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-style:normal;font-weight:800;font-size:17px}.fcg-h span{font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase}.fcg-h span small{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:12.5px;color:var(--muted)}.fcg-h>b{font-size:36px;color:var(--c);line-height:1}
@@ -3409,7 +3411,16 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcnx
       return '<div class="fcg '+g.c+(FF.st==='G:'+g.g?' on':'')+'"><button type="button" class="fcg-h" data-fcst="G:'+g.g+'"><i>'+g.ic+'</i><span>'+g.t+'<small>'+esc(g.d)+'</small></span><b>'+N(n)+'</b></button><em><u style="width:'+(100*n/tot)+'%"></u></em><small class="fcg-p">'+Math.round(100*n/tot)+'% dos atendimentos</small>'+
         FC_SIT.filter(x=>x.g===g.g).map(x=>{const k=gr.filter(r=>r.st===x.k).length;return '<button type="button" class="fcg-s fcp-'+x.c+(FF.st===x.k?' on':'')+'" data-fcst="'+x.k+'"><span><b>'+x.t+'</b><small>'+esc(x.d)+' <strong>O que fazer:</strong> '+esc(x.o)+'</small></span><b class="fcg-n">'+N(k)+'</b></button>'}).join('')+'</div>'}).join('')+'</div>'+
       (pend.length?'<div class="fcpend"><p>Para acompanhar ('+pend.length+') · do mais urgente para o menos</p>'+pend.slice(0,8).map(x=>'<div><span>'+fcSt(x.st)+'</span><b>'+esc(x.nm)+'</b><small>'+esc(x.as)+' · '+dt(x.d)+(x.org==='site'?' · site '+esc(x.prot||''):'')+'</small><button type="button" class="fced" data-fcedita="'+x.id+'" title="Abrir atendimento" aria-label="Abrir atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button></div>').join('')+'</div>':'<p class="fcpend-ok">Nada pendente: todos os atendimentos estão finalizados.</p>');
-    const sec=document.querySelector('#main > section');if(sec)sec.insertBefore(box,sec.firstChild)}
+    const ban=document.querySelector('#main .fcban')||document.querySelector('#main .ubar');if(ban)ban.after(box);else{const sec=document.querySelector('#main > section');if(sec)sec.insertBefore(box,sec.firstChild)}}
+  if(h==='fc-painel')setTimeout(()=>{const sec=document.querySelector('#main > section');if(!sec||sec.querySelector('.fcsec'))return;
+    const put=(el,n,t,sub)=>{if(!el)return;const d=document.createElement('div');d.className='fcsec';d.innerHTML='<b>'+n+'</b><div><h4>'+t+'</h4><span>'+sub+'</span></div>';el.before(d)};
+    const xs=sec.querySelectorAll(':scope > .xg2');
+    put(sec.querySelector(':scope > .fcstp'),'1','Situação agora','o que está pendente, em andamento e finalizado · comece por aqui');
+    put(sec.querySelector(':scope > .resumo')||sec.querySelector(':scope > .k6'),'2','Volume e alcance','quantos atendimentos, quantas pessoas e quanto do quadro já usou o canal');
+    put(sec.querySelector(':scope > .vx'),'3','Do pedido à solução','quanto já foi respondido e finalizado, e os assuntos mês a mês');
+    put(sec.querySelector(':scope > .vg2'),'4','Ao longo do tempo','atendimentos por mês e destaques gerados automaticamente');
+    put(xs[0],'5','O que mais procuram','assuntos e áreas · clique para filtrar');
+    put(xs[1],'6','Onde e quem','bases, coordenadores, dias da semana e funções')},0);
   if(h==='fc-painel'){const pb=[...document.querySelectorAll('#main .panel')].find(p=>(p.querySelector('h3')||{}).textContent==='Por base');
     if(pb&&!pb.parentElement.classList.contains('xcol')){const a=fcRows(),dn=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],c=[0,0,0,0,0,0,0];a.forEach(x=>{if(x.d!=null)c[new Date(x.d*864e5).getUTCDay()]++});
       const ord=[1,2,3,4,5,6,0].filter(i=>c[i]||(i>0&&i<6)),mx=Math.max(1,...c),tot=a.length||1,pico=ord.reduce((p,i)=>c[i]>c[p]?i:p,ord[0]);
@@ -4012,7 +4023,7 @@ VX.paginas={
       '<div class="vx-ptop"><div class="vx-wbig">'+VX.waffle(parts)+'</div>'+lado+evol+'</div>'+meses,
       parts.map(p=>VX.li(p.cls,p.nm)).join('')+'<span>· p.p. = pontos percentuais em relação ao mês anterior</span>')],'.vg2']},
   'fc-painel'(){const a=fcRows(),res=a.filter(x=>x.st==='RESOLVIDO').length,and=a.filter(x=>fcGrupo(x.st)!=='FIM').length;
-    const fun=VX.funil([{nm:'Recebidos',n:a.length,cls:'vx-tm',d:'tudo||Todos os atendimentos'},{nm:'Já tratados',n:res+and,cls:'vx-w2',sub:'em andamento + resolvidos'},{nm:'Resolvidos',n:res,cls:'vx-ok',d:'st|RESOLVIDO|Resolvidos'}]);
+    const fun=VX.funil([{nm:'Recebidos',n:a.length,cls:'vx-tm',d:'tudo||Todos os atendimentos'},{nm:'Já respondidos',n:a.filter(x=>x.st!=='NOVA').length,cls:'vx-w2',sub:'em andamento + finalizados'},{nm:'Finalizados',n:a.filter(x=>fcGrupo(x.st)==='FIM').length,cls:'vx-ok',d:'st|G:FIM|Finalizados'}]);
     const am=fcRows('m'),ms=[...new Set(am.map(x=>ymd(x.d)))].sort().slice(-6),cnt={};am.forEach(x=>{cnt[x.as]=(cnt[x.as]||0)+1});
     const as=Object.keys(cnt).sort((p,q)=>cnt[q]-cnt[p]).slice(0,7);
     const cal=VX.calor(as,ms,(r,c)=>am.filter(x=>x.as===r&&ymd(x.d)===c).length,{cn:m=>VX.M3[+m.slice(5)-1],aria:'Assuntos por mês',dv:(r,c)=>'as|'+r+'|'+VX.cap(r)+' · '+VX.M3[+c.slice(5)-1]+'|'+r+'|'+c});
@@ -4829,10 +4840,10 @@ PG['fc-painel']=()=>{
   const ps=a.filter(x=>x.as==='PLANO DE SAÚDE');if(ps.length)dest.push({c:'at',i:'↑',h:'<b>'+N(ps.length)+'</b> atendimentos sobre plano de saúde, com dúvidas e reclamações sobre a rede credenciada no interior ('+[...new Set(ps.map(x=>fcb(x.b)))].join(', ')+').'});
   const fer=a.filter(x=>x.as==='FÉRIAS');if(fer.length)dest.push({c:'info',i:'i',h:'<b>'+N(fer.length)+'</b> perguntas sobre data de férias. Quase todas foram encaminhadas ao supervisor, o que sugere divulgar a programação de férias às equipes.'});
   if(rein[0])dest.push({c:'at',i:'↑',h:'<b>'+N(rein.length)+'</b> colaboradores procuraram o canal 2 vezes ou mais. O que mais procurou: <b>'+esc(rein[0].rows[0].nm)+'</b> ('+N(rein[0].n)+' vezes).'});
-  if(and)dest.push({c:'mal',i:'!',h:'<a href="#fc-lista">'+N(and)+' atendimento(s)</a> ainda em andamento.'});
+  if(and)dest.push({c:'mal',i:'!',h:'<a href="#fc-lista">'+N(and)+' atendimento(s)</a> ainda em aberto (nova ou em andamento).'});
   return fcUbar('Painel do Fale Conosco',N(a.length)+' atendimentos · '+mesNome(ymd(Math.min(...FC.at.map(x=>x.d))))+' a '+mesNome(ymd(FC_ULT)),'chat')+fcBar()+
    '<div class="k6">'+
-   icard('Atendimentos','no filtro',N(a.length),'<span class="pill '+(res/(a.length||1)>=.9?'ate':'par')+'">'+P(res/(a.length||1))+' resolvidos</span>',[['Resolvidos',N(res)],['Em andamento',N(and)]],'fc-lista',res/(a.length||1)>=.9?'ate':'par')+
+   icard('Atendimentos','no filtro',N(a.length),'<span class="pill '+(res/(a.length||1)>=.9?'ate':'par')+'">'+P(res/(a.length||1))+' resolvidos</span>',[['Finalizados',N(a.filter(x=>fcGrupo(x.st)==='FIM').length)],['Em aberto (nova ou em andamento)',N(and)]],'fc-lista',res/(a.length||1)>=.9?'ate':'par')+
    icard('Colaboradores atendidos','pessoas diferentes',N(col.length),'<span class="pill nd">'+nf1.format(a.length/(col.length||1))+' atendimentos por pessoa</span>',[['Voltaram 2+ vezes',N(rein.length)],['Funções diferentes',N(new Set(a.map(x=>x.fn)).size)]],'fc-lista')+
    icard('Alcance do canal','colaboradores ativos que já usaram',P(col.length/(ativT||1)),'<span class="pill nd">'+N(col.length)+' de '+N(ativT)+' ativos</span>',[['Base com maior alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>q.col/q.at-p.col/p.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()],['Base com menor alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>p.col/p.at-q.col/q.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()]],'fc-painel')+
    '</div>'+
