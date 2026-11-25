@@ -69,7 +69,7 @@ summary .tag{display:block;font-size:11px;font-weight:700;color:var(--accent);le
 .ok .sel svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .prot{font:900 28px/1.1 "Arial Black",Arial,sans-serif;letter-spacing:1px;color:var(--accent);margin:8px 0 2px;user-select:all}
 .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
-.p-NOVA{background:var(--info-soft);color:var(--info)}.p-ANDAMENTO{background:var(--warn-soft);color:var(--warn)}.p-RESOLVIDO{background:var(--ok-soft);color:var(--ok)}.p-ENCERRADO{background:var(--sunken);color:var(--muted)}
+.p-NOVA{background:var(--info-soft);color:var(--info)}.p-ANDAMENTO{background:var(--warn-soft);color:var(--warn)}.p-RESOLVIDO{background:var(--ok-soft);color:var(--ok)}.p-ENCERRADO{background:var(--sunken);color:var(--muted)}.p-SEM_RESPOSTA{background:var(--sunken);color:var(--muted)}
 .lin{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
 .lin:first-of-type{border-top:0}
 .lin .k{width:96px;flex:none;color:var(--muted);font-size:13px;padding-top:2px}
@@ -173,7 +173,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const API='/api/fc-publico';
 let DADOS={assuntos:[],faq:[]},FILTRO='',QUEM=null;
-const ST={NOVA:'Recebida',ANDAMENTO:'Em andamento',RESOLVIDO:'Respondida',ENCERRADO:'Encerrada'};
+const ST={NOVA:'Recebida',ANDAMENTO:'Em andamento',RESOLVIDO:'Respondida',ENCERRADO:'Encerrada',SEM_RESPOSTA:'Encerrada por falta de resposta'};
 const toast=t=>{const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)};
 async function post(corpo){
   let r;try{r=await fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(corpo)})}catch(e){throw new Error('Sem conexão. Verifique a internet e tente de novo.')}
@@ -262,7 +262,7 @@ function desenhaConv(r){
     '<p class="sub" style="margin:4px 0 0">'+esc(r.assunto)+'</p>'+
     '<div class="conv">'+conv.map(m=>'<div class="bal '+(m.de==='voce'?'voce':'atendimento')+'"><small>'+(m.de==='voce'?'Você':'Atendimento')+'</small>'+esc(m.texto)+(m.em?'<span class="q">'+esc(data(m.em))+'</span>':'')+'</div>').join('')+
     (ultimo.de==='voce'?'<div class="esp">'+(r.situacao==='ANDAMENTO'?'O Atendimento está tratando a sua mensagem.':'Aguardando a resposta do Atendimento.')+'</div>':'')+'</div>'+
-    (r.situacao==='ENCERRADO'?'<div class="resp-f"><p class="aviso" style="margin:0">Este atendimento foi encerrado pelo Atendimento. Se ainda precisar de ajuda, <a href="#abrir" data-ir="abrir" style="color:var(--accent);font-weight:700">faça uma nova pergunta</a>.</p></div>':
+    (r.situacao==='ENCERRADO'||r.situacao==='SEM_RESPOSTA'?'<div class="resp-f"><p class="aviso" style="margin:0">'+(r.situacao==='SEM_RESPOSTA'?'Este atendimento foi encerrado porque não recebemos o seu retorno.':'Este atendimento foi encerrado pelo Atendimento.')+' Se ainda precisar de ajuda, <a href="#abrir" data-ir="abrir" style="color:var(--accent);font-weight:700">faça uma nova pergunta</a>.</p></div>':
     '<form class="resp-f" id="f-resp" novalidate><label for="r-msg">'+(ultimo.de==='voce'?'Quer acrescentar algo?':'Ainda tem dúvida sobre isso? Responda aqui')+'</label>'+
     '<textarea id="r-msg" maxlength="2000" placeholder="Escreva a sua mensagem"></textarea><div class="erro" id="e-resp" hidden></div>'+
     '<button class="btn pri full" type="submit" id="b-resp">Enviar mensagem</button>'+

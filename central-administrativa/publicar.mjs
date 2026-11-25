@@ -85,6 +85,7 @@ if (acao === "site") {
     if (existsSync(EXPORTADO)) {
       const { docs } = JSON.parse(readFileSync(EXPORTADO, "utf8")); let n = 0;
       for (const [caminho, obj] of Object.entries(docs)) {
+        if (/^ti_(notas|aquis)\//.test(caminho)) continue;   // Setor de TI começou do zero em 25/11/2026: não volta compra antiga
         const k = caminho.indexOf("/"), col = caminho.slice(0, k), id = caminho.slice(k + 1);
         const r = await db.query(`insert into ca_docs (colecao, id, dados) values ($1, $2, $3::jsonb) on conflict (colecao, id) do nothing`, [col, id, JSON.stringify(obj)]);
         n += r.rowCount;

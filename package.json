@@ -16,7 +16,8 @@
     "central:banco": "node --env-file=.env central-administrativa/publicar.mjs banco",
     "talentos:importar": "node --env-file=.env banco/talentos-importar.mjs",
     "processos:importar": "node --env-file=.env banco/processos-importar.mjs",
-    "colaboradores:atualizar": "node --env-file=.env banco/colaboradores-atualizar.mjs"
+    "colaboradores:atualizar": "node --env-file=.env banco/colaboradores-atualizar.mjs",
+    "ti:zerar": "node --env-file=.env banco/ti-zerar.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.0.2",

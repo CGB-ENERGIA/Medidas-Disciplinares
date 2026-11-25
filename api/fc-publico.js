@@ -83,7 +83,7 @@ export const POST = rota(async request => {
     const iph = hashIp(request);
     const [{ n }] = await consulta("select count(*)::int as n from ca_docs where colecao = 'fc_sol' and dados->>'iph' = $1 and (dados->>'criado')::timestamptz > now() - interval '1 hour'", [iph]);
     if (n >= MAX_ABRIR_HORA) return erro("Muitas solicitações enviadas daqui. Tente de novo daqui a uma hora.", 429);
-    const [{ a }] = await consulta("select count(*)::int as a from ca_docs where colecao = 'fc_sol' and dados->>'chapa' = $1 and dados->>'st' not in ('RESOLVIDO', 'ENCERRADO')", [chapa]);
+    const [{ a }] = await consulta("select count(*)::int as a from ca_docs where colecao = 'fc_sol' and dados->>'chapa' = $1 and dados->>'st' not in ('RESOLVIDO', 'ENCERRADO', 'SEM_RESPOSTA')", [chapa]);
     if (a >= MAX_ABERTOS_CHAPA) return erro("Você já tem " + a + " solicitações em aberto. Acompanhe as que já enviou antes de abrir outra.", 429);
     const dados = { prot: "", chapa, nm: String(p.nome).toUpperCase(), b: p.base || "", fn: p.funcao || "", as: assunto, q: mensagem,
       tel, st: "NOVA", d: diaLocal(), criado: new Date().toISOString(), iph, org: "site" };
@@ -116,7 +116,7 @@ export const POST = rota(async request => {
       const [d] = await consulta("select dados, atualizado_em::text as v from ca_docs where colecao = 'fc_sol' and id = $1", [prot]);
       const s = d && d.dados;
       if (!s || s.chapa !== chapa) return erro("Não encontramos esse protocolo para essa chapa.", 404);
-      if (s.st === "ENCERRADO") return erro("Este atendimento foi encerrado. Se ainda precisar, faça uma nova pergunta.", 409);
+      if (s.st === "ENCERRADO" || s.st === "SEM_RESPOSTA") return erro("Este atendimento foi encerrado. Se ainda precisar, faça uma nova pergunta.", 409);
       const msgs = msgsDe(s);
       if (msgs.length >= MAX_MSGS) return erro("Esta conversa chegou ao limite de mensagens. Faça uma nova pergunta.", 429);
       const novo = { ...s, msgs: [...msgs, { de: "c", t: mensagem, em: new Date().toISOString() }], st: "NOVA", ult_col: new Date().toISOString() };

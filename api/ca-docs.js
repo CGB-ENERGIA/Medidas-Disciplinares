@@ -4,6 +4,7 @@
 //   GET  /api/ca-docs?nomes=uuid,uuid       → { uuid: { name } } (quem mandou cada sugestão)
 //   POST /api/ca-docs { col, id, dados }    → grava (cria ou substitui)
 //   POST /api/ca-docs { col, id, remover: true } → apaga
+//   POST /api/ca-docs { col: "ti_notas", id, receber: true } → o financeiro confirma que a nota do TI chegou (vale também para quem é só consulta no TI)
 // Regras (api/_lib/ca.js): cada coleção pertence a uma área; consulta lê, gestor grava; o administrador faz tudo.
 // Sugestões (sug): cada pessoa lê e grava só a sua; o administrador lê e responde todas. Produtividade (eqp): o administrador e quem tem a chave "Ver Produtividade da equipe" em Usuários.
 import { consulta, rota } from "./_lib/db.js";
@@ -42,6 +43,7 @@ export const POST = rota(comLogin(async (request, _q, u) => {
   const c = await lerJSON(request); if (!c) return erro("Dados inválidos.", 400);
   const { col, id } = c;
   if (!colecaoValida(col) || !idValido(id)) return erro("Coleção ou id inválido.", 400);
+  if (col === "ti_notas" && c.receber === true) return receberNotaTI(u, id);
   const e = erroGravar(u, col, id); if (e) return erro(e, 403);
   if (c.remover) {
     await consulta("delete from ca_docs where colecao = $1 and id = $2", [col, id]);
@@ -56,3 +58,20 @@ export const POST = rota(comLogin(async (request, _q, u) => {
     [col, id, txt, u.id]);
   return ok({ salvo: true });
 }, { modulo: null }));
+
+// Financeiro (TI → Consulta) só pode fazer isto: marcar como "Entregue ao financeiro" uma nota que está "Nota comigo" (com o setor de compras).
+// O servidor muda só a situação; o resto da nota fica como Compras cadastrou.
+async function receberNotaTI(u, id) {
+  if (!u.admin && !(u.modulos && u.modulos.ti)) return erro("Seu acesso não inclui o Setor de TI.", 403);
+  const [r] = await consulta("select dados from ca_docs where colecao = 'ti_notas' and id = $1", [id]);
+  let n = null; try { n = r && r.dados && r.dados.j ? JSON.parse(r.dados.j) : null; } catch { n = null; }
+  if (!n || n.del) return erro("Esta nota ainda não está registrada no sistema pelo setor de compras.", 404);
+  if (n.st === "entregue") return erro("Esta nota já foi confirmada como entregue ao financeiro.", 409);
+  if (n.st !== "comigo") return erro("Só dá para confirmar notas que estão com o setor de compras.", 409);
+  const em = new Date().toISOString();
+  n.st = "entregue"; n.stEm = em; n.recebPor = u.nome;
+  n.hist = (Array.isArray(n.hist) ? n.hist : []).concat([{ st: "entregue", em, por: u.nome, fin: true }]);
+  await consulta("update ca_docs set dados = $2::jsonb, atualizado_por = $3, atualizado_em = now() where colecao = 'ti_notas' and id = $1",
+    [id, JSON.stringify({ j: JSON.stringify(n), em }), u.id]);
+  return ok({ salvo: true, nota: n });
+}

@@ -17,4 +17,4 @@ export const FC_FAQ_PADRAO = [
   { id: "p10", as: "OUTRAS DÚVIDAS", p: "Abri uma solicitação. Como acompanho a resposta?", r: "Use a opção Acompanhar e informe o número do protocolo e a sua chapa. A resposta do Atendimento aparece ali." }
 ].map(x => ({ ...x, pub: true }));
 
-export const FC_ST = ["NOVA", "ANDAMENTO", "RESOLVIDO", "ENCERRADO"];  // ENCERRADO: o Atendimento fechou; o colaborador não responde mais nesse protocolo
+export const FC_ST = ["NOVA", "ANDAMENTO", "RESOLVIDO", "ENCERRADO", "SEM_RESPOSTA"];  // ENCERRADO: o Atendimento fechou; o colaborador não responde mais nesse protocolo
