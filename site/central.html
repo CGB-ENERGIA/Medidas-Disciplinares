@@ -3239,7 +3239,7 @@ PG['fc-site']=()=>{
       '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-top:10px"><label style="min-width:200px"><small>Situação</small><select data-fcs="st">'+Object.entries(FCS_ST).map(([k,v])=>'<option value="'+k+'"'+(s.st===k?' selected':'')+'>'+v[0]+'</option>').join('')+'</select></label>'+
       '<label style="display:flex;gap:6px;align-items:center;font-size:13px"><input type="checkbox" data-fcs="faq"'+(s._faq?' checked':'')+' style="width:auto"> Virar dúvida frequente (pergunta + resposta)</label></div>'+
       '<p class="sml" style="margin-top:8px"><b>Respondida:</b> o colaborador ainda pode responder no mesmo protocolo. <b>Encerrada:</b> o atendimento é fechado e ele precisa abrir uma nova pergunta.</p>'+
-      '<div class="aqbar"><span class="aqtot"></span><button type="button" class="btn" data-fcsx="cancela">Voltar</button>'+(fcPode()?(s.st!=='ENCERRADO'?'<button type="button" class="btn" data-fcsx="encerra">Encerrar atendimento</button>':'')+'<button type="button" class="btn primary" data-fcsx="salva">Salvar resposta</button>':'')+'</div></div>';
+      '<div class="aqbar">'+(fcPode()?'<button type="button" class="btn" data-fcsx="exclui" style="color:var(--crit,#b3261e)">Excluir</button>':'')+'<span class="aqtot"></span><button type="button" class="btn" data-fcsx="cancela">Voltar</button>'+(fcPode()?(s.st!=='ENCERRADO'?'<button type="button" class="btn" data-fcsx="encerra">Encerrar atendimento</button>':'')+'<button type="button" class="btn primary" data-fcsx="salva">Salvar resposta</button>':'')+'</div></div>';
   }
   h+='<div class="fcs-k"><div><span>Novas</span><b>'+N(nv.length)+'</b><span>esperando resposta</span></div><div><span>Em andamento</span><b>'+N(an.length)+'</b><span>sendo tratadas</span></div><div><span>Respondidas</span><b>'+N(rs.length)+'</b><span>'+N(en.length)+' encerradas · '+N(FC_SOL.length)+' recebidas</span></div><div><span>Tempo médio</span><b>'+(med==null?'–':med<1?nf0.format(Math.max(1,Math.round(med*24)))+' h':nf1.format(med)+' d')+'</b><span>até responder</span></div></div>';
   const F=[['abertas','Abertas',nv.length+an.length],['NOVA','Novas',nv.length],['ANDAMENTO','Em andamento',an.length],['RESOLVIDO','Respondidas',rs.length],['ENCERRADO','Encerradas',en.length],['todas','Todas',FC_SOL.length]];
@@ -3261,6 +3261,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcsf
   if(b.dataset.fcsf){FCS_F=b.dataset.fcsf;render();return}
   if(b.dataset.fcsabre){const s=FC_SOL.find(x=>x.prot===b.dataset.fcsabre);if(s){FCS_ED=Object.assign({},s);if(FCS_ED.st==='NOVA'&&fcPode())FCS_ED.st='ANDAMENTO';render();scrollTo({top:0})}return}
   if(b.dataset.fcsx==='cancela'){FCS_ED=null;render();return}
+  if(b.dataset.fcsx==='exclui'&&FCS_ED){const pr=FCS_ED.prot;if(!confirm('Excluir o protocolo '+pr+'? Ele some da Central, do painel e da consulta do colaborador. Não dá para desfazer.'))return;
+    try{if(fcPode())await DBX.doc('fc_sol/'+pr).delete();FC_SOL=FC_SOL.filter(x=>x.prot!==pr);fcAplica({id:'W'+pr,del:true});FCS_ED=null;toast('Protocolo '+pr+' excluído.');render()}
+    catch(x){toast('Não foi possível excluir ('+(x.message||x.code)+').')}return}
   if(b.dataset.fcsx==='encerra'&&FCS_ED){if(!confirm('Encerrar este atendimento? O colaborador não poderá mais responder neste protocolo.'))return;FCS_ED.st='ENCERRADO';b.dataset.fcsx='salva'}
   if(b.dataset.fcsx==='salva'){const s=FCS_ED;if(!s)return;
     const nova=(s.nova||'').trim();
