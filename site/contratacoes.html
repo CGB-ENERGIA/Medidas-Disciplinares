@@ -863,6 +863,11 @@ html.emb[data-tema="escuro"] {
   --ok: #6fcf9a; --ok-soft: #16301f; --ok-line: #2c6b47; --warn: #e8b357; --warn-soft: #37290f; --warn-line: #6a5020;
   --info: #7fb2e5; --info-soft: #162a3b; --info-line: #2f5273; --crit: #f08a82; --crit-soft: #3d1a18; --crit-line: #7a3430;
 }
+.fv-dados{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:4px}.fv-dados>div{background:var(--surface-2,#f6f3f3);border-radius:10px;padding:8px 10px}.fv-dados span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.fv-dados b{font-size:14px}
+.fv-sec{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}.fv-sec h4{margin:0 0 2px;font-size:15px;display:flex;gap:8px;align-items:center}.fv-sec .count{font-size:12px;background:var(--accent,#711424);color:#fff;border-radius:99px;padding:1px 8px}
+.fv-p{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}.fv-pn{display:grid;gap:3px}.fv-pe{display:grid;gap:4px;justify-items:start}.fv-pa{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.fv-q{display:flex;gap:12px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}.fv-q>:nth-child(2){flex:1}.fv-abre{text-align:left}
+@media(max-width:900px){.fv-dados{grid-template-columns:repeat(2,1fr)}.fv-p{grid-template-columns:1fr}}
 </style>
 
 <div class="modo-teste" id="modo-teste" hidden><b>Modo teste</b> · os dados reais estão guardados e ocultos. Tudo o que você cadastrar agora é só para treino.</div>
@@ -3544,11 +3549,12 @@ document.addEventListener("change", e => {
    Liga (vagaId) cada vaga aberta sem candidato a um candidato em processo sem vaga, do mesmo CT, função e base.
    Com o vínculo, a vaga fecha sozinha quando a contratação do candidato é concluída. */
 const mesmoSolic = (a, b) => { const x = norm(a).split(" ").filter(Boolean), y = norm(b).split(" ").filter(Boolean); if (!x.length || !y.length) return false; const [c, l] = x.length <= y.length ? [x, y] : [y, x]; return c.every((t, i) => l[i] && l[i].startsWith(t)); };
+const okN = c => ETAPAS.filter(e => c.etapas?.[e.k]?.s === "ok").length;
 function paresCruz() {
   const vs = VAGAS().filter(v => v.status === "aberta"), ligadas = new Set();
   ANDAMENTO().forEach(c => { if (c.vagaId && state.vagas.get(c.vagaId)?.status === "aberta") ligadas.add(c.vagaId); });
   const livresV = vs.filter(v => !ligadas.has(v.id)).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
-  const livresC = ANDAMENTO().filter(c => !(c.vagaId && state.vagas.get(c.vagaId)?.status === "aberta")).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  const livresC = ANDAMENTO().filter(c => etapaAtual(c).tipo !== "nok" && !(c.vagaId && state.vagas.get(c.vagaId)?.status === "aberta")).sort((a, b) => okN(b) - okN(a) || (a.data || "").localeCompare(b.data || ""));   // o mais adiantado primeiro
   const usado = new Set(), pares = [];
   const casa = (v, c) => !usado.has(c.id) && c.base && norm(c.base) === norm(v.base) && canonF(c.funcao) === canonF(v.funcao) && (!c.ct || !v.ct || String(c.ct) === String(v.ct));
   [true, false].forEach(mesmoSol => livresV.forEach(v => { if (pares.some(p => p.v.id === v.id)) return;
@@ -3568,7 +3574,7 @@ function painelCruz() {
 }
 async function confirmarCruz() {
   const X = state.vcruz; if (!X || X.gravando) return; X.gravando = true; const P = []; let n = 0;
-  X.pares.filter(p => !X.fora.has(p.v.id)).forEach(({ v, c }) => { const a = getCand(c.id); if (!a) return; P.push(salvarCand({ ...a, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante}, aberta em ${br(v.data)})`)); n++; });
+  X.pares.filter(p => !X.fora.has(p.v.id)).forEach(({ v, c }) => { const a = getCand(c.id); if (!a) return; P.push(salvarCand({ ...a, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante}, aberta em ${br(v.data)})`, { atualizadoEm: a.atualizadoEm })); n++; });
   await Promise.all(P); state.vcruz = null; toast(`${n} candidato(s) vinculado(s) às vagas.`); render();
 }
 document.addEventListener("change", e => {
@@ -3576,6 +3582,35 @@ document.addEventListener("change", e => {
   if (e.target.matches("[data-cruzall]")) { X.fora = e.target.checked ? new Set() : new Set(X.pares.map(p => p.v.id)); render(); }
   else if (e.target.matches("[data-cruz]")) { const id = e.target.dataset.cruz; e.target.checked ? X.fora.delete(id) : X.fora.add(id); render(); }
 });
+
+/* ===================== Ficha da vaga: a vaga e todo mundo que está concorrendo a ela ===================== */
+function fichaVaga(v) {
+  if (!v) return "";
+  const and = ANDAMENTO().filter(visivel), lig = [...state.cand.values()].filter(c => c.vagaId === v.id && visivel(c));
+  const conc = and.filter(c => c.vagaId !== v.id && canonF(c.funcao) === canonF(v.funcao) && norm(c.base) === norm(v.base))
+    .sort((a, b) => ETAPAS.filter(e => b.etapas?.[e.k]?.s === "ok").length - ETAPAS.filter(e => a.etapas?.[e.k]?.s === "ok").length);
+  const banco = v.status === "aberta" ? bancoPara(v).slice(0, 8) : [];
+  const insc = v.status === "aberta" && state.tal.pronto ? talentos().filter(p => p.sit === "disp" && canonF(p.funcao) === canonF(v.funcao) && p.base === v.base).slice(0, 8) : [];
+  const d = dias(v.data), ed = pode();
+  const linha = (c, extra) => { const [r, cl] = rotuloAtual(c), pd = paradoHa(c), ok = ETAPAS.filter(e => !e.opc && c.etapas?.[e.k]?.s === "ok").length, tot = ETAPAS.filter(e => !e.opc).length;
+    return `<div class="fv-p"><div class="fv-pn"><button class="link" data-abrir="${c.id}"><b>${esc(c.nome)}</b></button><span class="muted sm">${esc(c.funcao)} · ${esc(baseNome(c.base) || "sem base")}${c.solicitante ? ` · ${esc(c.solicitante)}` : ""}</span>${miniBar(c)}</div>
+      <div class="fv-pe"><span class="pill ${cl}">${esc(r)}</span><span class="muted sm">${ok} de ${tot} etapas · <span class="dias ${pd > PARADO ? "late" : ""}">${diasTxt(pd)} parado</span></span></div>
+      <div class="fv-pa">${extra || ""}</div></div>`; };
+  return `<section class="panel fv" id="fichavaga">
+    <div class="phd"><h3>${esc(v.funcao)} · ${esc(baseNome(v.base))}</h3><button class="link" data-acao="fv-fecha">Fechar ficha</button></div>
+    <div class="fv-dados">${[["CT", v.ct], ["Solicitante", v.solicitante || "—"], ["Setor", v.setor || "—"], ["Aberta em", br(v.data) + (v.status === "aberta" && d != null ? ` · ${d} dias` : "")], ["Situação", v.status === "aberta" ? "Aberta" : "Fechada" + (v.fechadaEm ? " em " + br(v.fechadaEm) : "")]].map(([k, x]) => `<div><span>${k}</span><b>${esc(x)}</b></div>`).join("")}</div>
+    ${v.obs ? `<p class="muted sm" style="margin:6px 0 0"><b>Observação:</b> ${esc(v.obs)}</p>` : ""}
+    <div class="fv-sec"><h4>Vinculado a esta vaga <span class="count">${lig.length}</span></h4><p class="muted sm">Quando a contratação desta pessoa for concluída, a vaga fecha sozinha.</p>
+      ${lig.length ? lig.map(c => linha(c, ed && c.situacao === "andamento" ? `<button class="btn sm" data-fvdesv="${c.id}">Desvincular</button>` : `<span class="pill ${SIT[c.situacao]?.[1] || ""}">${esc(SIT[c.situacao]?.[0] || c.situacao)}</span>`)).join("") : `<div class="empty sm">Ninguém vinculado ainda. Vincule uma das pessoas abaixo ou clique em Indicar.</div>`}</div>
+    <div class="fv-sec"><h4>Também em processo para ${esc(v.funcao)} em ${esc(baseNome(v.base))} <span class="count">${conc.length}</span></h4><p class="muted sm">Mesma função e base, da mais adiantada para a menos. Quem já está ligado a outra vaga aparece indicado.</p>
+      ${conc.length ? conc.map(c => { const ov = c.vagaId && state.vagas.get(c.vagaId); return linha(c, (ov ? `<span class="muted sm">já ligado à vaga de ${br(ov.data)}${ov.solicitante ? " · " + esc(ov.solicitante) : ""}</span>` : "") + (ed && v.status === "aberta" && !lig.length ? `<button class="btn sm primary" data-fvvinc="${c.id}">${ov ? "Trocar para esta vaga" : "Vincular a esta vaga"}</button>` : "")); }).join("") : `<div class="empty sm">Ninguém mais em processo para esta função e base.</div>`}</div>
+    ${v.status === "aberta" ? `<div class="fv-sec"><h4>Quem pode entrar <span class="count">${banco.length + insc.length}</span></h4>
+      ${banco.length ? `<p class="muted sm">Processos guardados no Banco de talentos que servem (mesma função, até 100 km):</p>${banco.map(c => `<div class="fv-q"><button class="link" data-abrir="${c.id}">${esc(c.nome)}</button><span class="muted sm">${(chegouAte(c) || {}).n ? "aprovado até " + esc(chegouAte(c).n) : "nenhuma etapa aprovada"}</span></div>`).join("")}` : ""}
+      ${insc.length ? `<p class="muted sm">Inscritos disponíveis com a mesma função e base mais próxima:</p>${insc.map(p => `<div class="fv-q"><span>${esc(p.nome)}</span><span class="muted sm">${esc(p.cidade ? titulo(p.cidade) : "")}${p.ult ? " · inscrito em " + br(p.ult) : ""}</span>${ed ? `<button class="btn sm" data-talchamar="${p.id}">Chamar para processo</button>` : ""}</div>`).join("")}` : ""}
+      ${!banco.length && !insc.length ? `<div class="empty sm">Ninguém no Banco de talentos com esta função e base.</div>` : ""}</div>` : ""}
+    <div class="actions" style="margin-top:12px">${ed && v.status === "aberta" ? `<button class="btn primary" data-indicar="${v.id}">Indicar alguém novo</button>` : ""}${podeVaga() && v.status === "aberta" ? `<button class="btn" data-fechavaga="${v.id}">Fechar vaga</button>` : ""}<button class="btn" data-acao="fv-fecha">Fechar ficha</button></div>
+  </section>`;
+}
 
 /* ===================== Vagas ===================== */
 function vVagas() {
@@ -3594,6 +3629,7 @@ function vVagas() {
     <div class="actions">${pode() ? `<button class="btn" data-acao="cruzar">${ico("candidatos")}Cruzar com candidatos</button><label class="btn">${ico("dados")}Importar planilha<input type="file" id="vimp-arq" accept=".xlsx,.xls" hidden></label>` : ""}${podeVaga() ? `<button class="btn primary" data-acao="abrir-vaga">${ico("vagas")}Abrir vaga</button>` : ""}</div></div>
   ${painelImpVagas()}
   ${painelCruz()}
+  ${state.vagaSel ? fichaVaga(state.vagas.get(state.vagaSel)) : ""}
   ${state.novaVaga ? formVaga() : ""}
   <div class="panel">
     <div class="filtros">
@@ -3602,7 +3638,7 @@ function vVagas() {
       <input type="search" id="vf-q" placeholder="Buscar função, solicitante, setor" value="${esc(f.q)}" aria-label="Buscar vaga">
     </div>
     ${vs.length ? `<div class="table-wrap"><table><thead><tr><th>Aberta em</th><th>CT</th><th>Função</th><th>Base</th><th>Solicitante</th><th>Setor</th><th class="n">Candidatos</th><th>Situação</th><th></th></tr></thead><tbody>
-      ${pgV.itens.map(v => { const cs = cand(v), d = dias(v.data); return `<tr><td>${br(v.data)}${v.status === "aberta" && d != null ? ` <span class="dias ${d > 30 ? "late" : ""}">${d} d</span>` : ""}</td><td>${esc(v.ct)}</td><td><b>${esc(v.funcao)}</b>${v.obs ? `<div class="muted sm">${esc(v.obs)}</div>` : ""}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td>${esc(v.setor)}</td>
+      ${pgV.itens.map(v => { const cs = cand(v), d = dias(v.data); return `<tr><td>${br(v.data)}${v.status === "aberta" && d != null ? ` <span class="dias ${d > 30 ? "late" : ""}">${d} d</span>` : ""}</td><td>${esc(v.ct)}</td><td><button class="link fv-abre" data-fvabre="${v.id}" title="Ver a vaga e quem está concorrendo"><b>${esc(v.funcao)}</b></button>${v.obs ? `<div class="muted sm">${esc(v.obs)}</div>` : ""}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td>${esc(v.setor)}</td>
         <td class="n">${v.status === "aberta" && lig(v) ? `<button class="link" data-abrir="${lig(v).id}" title="Candidato vinculado a esta vaga">${esc(lig(v).nome.split(" ")[0])} ✓</button><div class="muted sm">${cs.length} no total</div>` : v.status === "aberta" ? (cs.length ? `<button class="link" data-candfiltro="${esc(v.funcao)}|${esc(v.base)}">${cs.length}</button>` : `<span class="pill p-crit">0</span>`) : "—"}</td>
         <td>${v.status === "aberta" ? `<span class="pill p-acc">Aberta</span>` : `<span class="pill p-ok">Fechada</span>${v.fechadaEm ? ` <span class="muted sm">${br(v.fechadaEm)}</span>` : ""}${v.preenchidaPor && getCand(v.preenchidaPor) ? `<div class="sm"><button class="link" data-abrir="${v.preenchidaPor}">${esc(getCand(v.preenchidaPor).nome)}</button>${v.fechadaAuto ? ` <span class="muted">(automático: ${esc(v.fechadaAuto)})</span>` : ""}</div>` : v.obsFech ? `<div class="muted sm">${esc(v.obsFech)}</div>` : ""}`}</td>
         <td><div class="actions nowrap">${v.status === "aberta" && pode() ? `<button class="btn sm" data-indicar="${v.id}">Indicar</button>` : ""}${maisMenu([
@@ -4476,6 +4512,9 @@ document.addEventListener("click", e => {
   if (d.sel) { state.sel = d.sel; state.cancelando = false; state.editando = false; render(); if (innerWidth < 900) document.querySelector(".dupla > section:last-child")?.scrollIntoView({ behavior: "smooth" }); return; }
   if (d.chip) { state.filtro.chip = d.chip; render(); return; }
   if (d.vst !== undefined) { state.vf.st = d.vst; render(); return; }
+  if (d.fvabre) { state.vagaSel = d.fvabre; render(); setTimeout(() => document.getElementById("fichavaga")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); return; }
+  if (d.fvvinc) { const c = getCand(d.fvvinc), v = state.vagas.get(state.vagaSel); if (!c || !v) return; salvarCand({ ...c, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante || "sem solicitante"}, aberta em ${br(v.data)})`, { atualizadoEm: c.atualizadoEm }); toast(`${c.nome} vinculado a esta vaga.`); render(); return; }
+  if (d.fvdesv) { const c = getCand(d.fvdesv), v = state.vagas.get(state.vagaSel); if (!c || !confirm(`Desvincular ${c.nome} desta vaga? A pessoa continua no processo.`)) return; const x = { ...c }; delete x.vagaId; delete x.vagaAuto; salvarCand(x, `Desvinculado da vaga de ${v ? v.funcao + " em " + baseNome(v.base) : "—"}`, { atualizadoEm: c.atualizadoEm }); toast("Desvinculado."); render(); return; }
   if (d.indicar) { const v = state.vagas.get(d.indicar); state.novo = { nome: "", ct: v.ct || "127", funcao: v.funcao, base: v.base, solicitante: v.solicitante, setor: v.setor, ccusto: v.ccusto, motivo: MOTIVOS.includes(v.motivo) ? v.motivo : "SUBSTITUIÇÃO", vagaId: v.id, obs: "", data: HOJE }; return ir("novo"); }
   if (d.fechavaga) { const v = state.vagas.get(d.fechavaga); salvarVaga({ ...v, status: "fechada", fechadaEm: HOJE, obsFech: "Fechada manualmente" }); toast("Vaga fechada."); return; }
   if (d.reabrevaga) { const v = state.vagas.get(d.reabrevaga); const c = v.preenchidaPor && getCand(v.preenchidaPor); if (c && c.vagaId === v.id) { const x = { ...c }; delete x.vagaId; delete x.vagaAuto; salvarCand(x, `Desvinculado da vaga de ${v.funcao} (${v.solicitante}), que foi reaberta`); } reabrirVaga(v); toast("Vaga reaberta."); return; }
@@ -4505,6 +4544,7 @@ document.addEventListener("click", e => {
   switch (d.acao) {
     case "abrir-vaga": state.novaVaga = true; ir("vagas"); return;
     case "vimp-cancela": state.vimp = null; render(); return;
+    case "fv-fecha": state.vagaSel = null; render(); return;
     case "vimp-ok": confirmarImpVagas(); return;
     case "cruzar": state.vcruz = { ...paresCruz(), fora: new Set() }; render(); setTimeout(() => document.getElementById("vcruz")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); return;
     case "cruz-cancela": state.vcruz = null; render(); return;
