@@ -69,7 +69,7 @@ summary .tag{display:block;font-size:11px;font-weight:700;color:var(--accent);le
 .ok .sel svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .prot{font:900 28px/1.1 "Arial Black",Arial,sans-serif;letter-spacing:1px;color:var(--accent);margin:8px 0 2px;user-select:all}
 .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
-.p-NOVA{background:var(--info-soft);color:var(--info)}.p-ANDAMENTO{background:var(--warn-soft);color:var(--warn)}.p-RESOLVIDO{background:var(--ok-soft);color:var(--ok)}
+.p-NOVA{background:var(--info-soft);color:var(--info)}.p-ANDAMENTO{background:var(--warn-soft);color:var(--warn)}.p-RESOLVIDO{background:var(--ok-soft);color:var(--ok)}.p-ENCERRADO{background:var(--sunken);color:var(--muted)}
 .lin{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
 .lin:first-of-type{border-top:0}
 .lin .k{width:96px;flex:none;color:var(--muted);font-size:13px;padding-top:2px}
@@ -77,6 +77,15 @@ summary .tag{display:block;font-size:11px;font-weight:700;color:var(--accent);le
 .meus{margin-top:10px}
 .meus button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;margin-top:6px;cursor:pointer;text-align:left}
 .meus small{color:var(--muted)}
+.conv{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.bal{max-width:88%;padding:10px 12px;border-radius:14px;white-space:pre-line;word-break:break-word}
+.bal small{display:block;font-size:11px;margin-bottom:3px;font-weight:700;opacity:.8}
+.bal .q{display:block;font-size:11px;margin-top:4px;opacity:.7}
+.bal.voce{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.bal.atendimento{align-self:flex-start;background:var(--sunken);border-bottom-left-radius:4px}
+.esp{align-self:center;font-size:13px;color:var(--muted);text-align:center}
+.resp-f{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.resp-f textarea{min-height:90px}
 .rod{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
@@ -164,7 +173,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const norm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const API='/api/fc-publico';
 let DADOS={assuntos:[],faq:[]},FILTRO='',QUEM=null;
-const ST={NOVA:'Recebida',ANDAMENTO:'Em andamento',RESOLVIDO:'Respondida'};
+const ST={NOVA:'Recebida',ANDAMENTO:'Em andamento',RESOLVIDO:'Respondida',ENCERRADO:'Encerrada'};
 const toast=t=>{const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2400)};
 async function post(corpo){
   let r;try{r=await fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(corpo)})}catch(e){throw new Error('Sem conexão. Verifique a internet e tente de novo.')}
@@ -245,17 +254,33 @@ function desenhaMeus(){const l=meus();$('meus').hidden=!l.length;
 $('meus-l').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;$('a-prot').value=b.dataset.p;$('a-chapa').value=b.dataset.c;consulta()});
 $('a-prot').addEventListener('input',e=>{const el=e.target,v=el.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');if(v!==el.value)el.value=v});
 $('f-acomp').addEventListener('submit',e=>{e.preventDefault();consulta()});
-async function consulta(){mostraErro('e-acomp');$('res').hidden=true;
+let ATUAL=null;
+function desenhaConv(r){
+  const conv=r.conversa||[{de:'voce',texto:r.mensagem,em:r.aberto}].concat(r.resposta?[{de:'atendimento',texto:r.resposta,em:r.respondido}]:[]);
+  const ultimo=conv[conv.length-1];
+  $('res').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0">'+esc(r.protocolo)+'</h2><span class="pill p-'+esc(r.situacao)+'">'+esc(ST[r.situacao]||r.situacao)+'</span></div>'+
+    '<p class="sub" style="margin:4px 0 0">'+esc(r.assunto)+'</p>'+
+    '<div class="conv">'+conv.map(m=>'<div class="bal '+(m.de==='voce'?'voce':'atendimento')+'"><small>'+(m.de==='voce'?'Você':'Atendimento')+'</small>'+esc(m.texto)+(m.em?'<span class="q">'+esc(data(m.em))+'</span>':'')+'</div>').join('')+
+    (ultimo.de==='voce'?'<div class="esp">'+(r.situacao==='ANDAMENTO'?'O Atendimento está tratando a sua mensagem.':'Aguardando a resposta do Atendimento.')+'</div>':'')+'</div>'+
+    (r.situacao==='ENCERRADO'?'<div class="resp-f"><p class="aviso" style="margin:0">Este atendimento foi encerrado pelo Atendimento. Se ainda precisar de ajuda, <a href="#abrir" data-ir="abrir" style="color:var(--accent);font-weight:700">faça uma nova pergunta</a>.</p></div>':
+    '<form class="resp-f" id="f-resp" novalidate><label for="r-msg">'+(ultimo.de==='voce'?'Quer acrescentar algo?':'Ainda tem dúvida sobre isso? Responda aqui')+'</label>'+
+    '<textarea id="r-msg" maxlength="2000" placeholder="Escreva a sua mensagem"></textarea><div class="erro" id="e-resp" hidden></div>'+
+    '<button class="btn pri full" type="submit" id="b-resp">Enviar mensagem</button>'+
+    '<p class="aviso">Assunto diferente? <a href="#abrir" data-ir="abrir" style="color:var(--accent);font-weight:700">Faça uma nova pergunta</a>.</p></form>');
+  $('res').hidden=false;
+}
+document.addEventListener('submit',async e=>{if(e.target.id!=='f-resp')return;e.preventDefault();mostraErro('e-resp');
+  const m=$('r-msg').value.trim();if(m.length<2){mostraErro('e-resp','Escreva a sua mensagem.');$('r-msg').focus();return}
+  const b=$('b-resp');b.disabled=true;b.textContent='Enviando…';
+  try{const r=await post({acao:'responder',protocolo:ATUAL.p,chapa:ATUAL.c,mensagem:m});toast('Mensagem enviada.');await consulta(true)}
+  catch(x){mostraErro('e-resp',x.message);b.disabled=false;b.textContent='Enviar mensagem'}});
+async function consulta(semRolar){mostraErro('e-acomp');if(!semRolar)$('res').hidden=true;
   let p=$('a-prot').value.trim().toUpperCase();const c=$('a-chapa').value.trim();
   if(/^FC\d{4}[A-Z0-9]{5}$/.test(p))p=p.slice(0,6)+'-'+p.slice(6);
   if(!p||!c){mostraErro('e-acomp','Informe o protocolo e a chapa.');return}
   try{const r=await post({acao:'acompanhar',protocolo:p,chapa:c});
-    $('res').innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><h2 style="margin:0">'+esc(r.protocolo)+'</h2><span class="pill p-'+esc(r.situacao)+'">'+esc(ST[r.situacao]||r.situacao)+'</span></div>'+
-      '<div class="lin"><div class="k">Enviada em</div><div class="v">'+esc(data(r.aberto))+'</div></div>'+
-      '<div class="lin"><div class="k">Assunto</div><div class="v">'+esc(r.assunto)+'</div></div>'+
-      '<div class="lin"><div class="k">Sua pergunta</div><div class="v">'+esc(r.mensagem)+'</div></div>'+
-      '<div class="lin"><div class="k">Resposta</div><div class="v">'+(r.resposta?esc(r.resposta)+(r.respondido?'<br><small style="color:var(--muted)">'+esc(data(r.respondido))+'</small>':''):'<span style="color:var(--muted)">'+(r.situacao==='NOVA'?'O Atendimento ainda vai analisar a sua pergunta.':'O Atendimento está tratando a sua pergunta.')+'</span>')+'</div></div>';
-    $('res').hidden=false;$('res').scrollIntoView({behavior:'smooth',block:'start'})}
+    ATUAL={p:r.protocolo,c};desenhaConv(r);
+    if(!semRolar)$('res').scrollIntoView({behavior:'smooth',block:'start'})}
   catch(x){mostraErro('e-acomp',x.message)}}
 
 /* ---------- início ---------- */

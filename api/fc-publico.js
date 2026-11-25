@@ -2,7 +2,8 @@
 //   GET  /api/fc-publico                                        → { assuntos, faq } (só as dúvidas publicadas)
 //   POST /api/fc-publico { acao:"chapa", chapa }                 → { nome (abreviado), base } para a pessoa confirmar que é ela
 //   POST /api/fc-publico { acao:"abrir", chapa, assunto, mensagem, telefone? } → { protocolo }
-//   POST /api/fc-publico { acao:"acompanhar", protocolo, chapa } → situação e resposta
+//   POST /api/fc-publico { acao:"acompanhar", protocolo, chapa } → situação, resposta e a conversa
+//   POST /api/fc-publico { acao:"responder", protocolo, chapa, mensagem } → o colaborador continua a conversa no mesmo protocolo (volta como "NOVA")
 // Os pedidos ficam em ca_docs, coleção fc_sol (área Atendimento): a Central lê, responde e muda a situação.
 // Dados mínimos (LGPD): a página nunca recebe o nome completo, função ou telefone de ninguém.
 import { createHash, randomInt } from "node:crypto";
@@ -13,6 +14,7 @@ import { FC_ASSUNTOS, FC_FAQ_PADRAO } from "./_lib/fc.js";
 const MAX_ABRIR_HORA = 5;      // pedidos por hora vindos do mesmo aparelho/rede
 const MAX_ABERTOS_CHAPA = 5;   // pedidos ainda não resolvidos por chapa
 const MAX_CHAPA_10MIN = 30;    // consultas de chapa por aparelho (memória da função)
+const MAX_MSGS = 40;           // mensagens numa mesma conversa
 const tentativas = new Map();
 
 const hashIp = req => createHash("sha256").update("fc|" + (ipDe(req) || "?")).digest("hex").slice(0, 24);
@@ -38,6 +40,12 @@ function limiteChapa(req) {
   if (tentativas.size > 5000) tentativas.clear();
   return l.length > MAX_CHAPA_10MIN;
 }
+// Conversa do protocolo: a pergunta inicial e depois as mensagens (de: "c" colaborador, "a" atendimento).
+// Pedidos antigos, sem "msgs", têm só a resposta única em "res".
+export const msgsDe = s => Array.isArray(s.msgs) ? s.msgs : (s.res ? [{ de: "a", t: s.res, em: s.resp_em || "" }] : []);
+const conversa = s => [{ de: "voce", texto: s.q, em: s.criado }, ...msgsDe(s).map(m => ({ de: m.de === "c" ? "voce" : "atendimento", texto: m.t, em: m.em }))];
+const protOk = p => /^FC\d{4}-[A-Z0-9]{5}$/.test(p);
+const lerProt = c => limpa(c.protocolo, 20).toUpperCase().replace(/\s/g, "");
 async function colaborador(chapa) {
   const [c] = await consulta("select chapa, nome, base, funcao from colaboradores where chapa = $1 and ativo", [chapa]);
   return c || null;
@@ -73,9 +81,9 @@ export const POST = rota(async request => {
     const p = await colaborador(chapa);
     if (!p) return erro("Não encontramos essa chapa entre os colaboradores ativos.", 404);
     const iph = hashIp(request);
-    const [{ n }] = await consulta("select count(*)::int as n from ca_docs where colecao = 'fc_sol' and dados->>'iph' = $1 and atualizado_em > now() - interval '1 hour'", [iph]);
+    const [{ n }] = await consulta("select count(*)::int as n from ca_docs where colecao = 'fc_sol' and dados->>'iph' = $1 and (dados->>'criado')::timestamptz > now() - interval '1 hour'", [iph]);
     if (n >= MAX_ABRIR_HORA) return erro("Muitas solicitações enviadas daqui. Tente de novo daqui a uma hora.", 429);
-    const [{ a }] = await consulta("select count(*)::int as a from ca_docs where colecao = 'fc_sol' and dados->>'chapa' = $1 and dados->>'st' <> 'RESOLVIDO'", [chapa]);
+    const [{ a }] = await consulta("select count(*)::int as a from ca_docs where colecao = 'fc_sol' and dados->>'chapa' = $1 and dados->>'st' not in ('RESOLVIDO', 'ENCERRADO')", [chapa]);
     if (a >= MAX_ABERTOS_CHAPA) return erro("Você já tem " + a + " solicitações em aberto. Acompanhe as que já enviou antes de abrir outra.", 429);
     const dados = { prot: "", chapa, nm: String(p.nome).toUpperCase(), b: p.base || "", fn: p.funcao || "", as: assunto, q: mensagem,
       tel, st: "NOVA", d: diaLocal(), criado: new Date().toISOString(), iph, org: "site" };
@@ -88,13 +96,33 @@ export const POST = rota(async request => {
   }
 
   if (c.acao === "acompanhar") {
-    const prot = limpa(c.protocolo, 20).toUpperCase().replace(/\s/g, "");
-    if (!chapaOk(chapa) || !/^FC\d{4}-[A-Z0-9]{5}$/.test(prot)) return erro("Confira o protocolo (ex.: FC2611-AB3CD) e a chapa.", 400);
+    const prot = lerProt(c);
+    if (!chapaOk(chapa) || !protOk(prot)) return erro("Confira o protocolo (ex.: FC2611-AB3CD) e a chapa.", 400);
     if (limiteChapa(request)) return erro("Muitas consultas seguidas. Espere alguns minutos.", 429);
     const [d] = await consulta("select dados from ca_docs where colecao = 'fc_sol' and id = $1", [prot]);
     const s = d && d.dados;
     if (!s || s.chapa !== chapa) return erro("Não encontramos esse protocolo para essa chapa.", 404);
-    return ok({ protocolo: s.prot, assunto: s.as, mensagem: s.q, situacao: s.st, aberto: s.criado, resposta: s.res || "", respondido: s.resp_em || "" });
+    return ok({ protocolo: s.prot, assunto: s.as, mensagem: s.q, situacao: s.st, aberto: s.criado, resposta: s.res || "", respondido: s.resp_em || "", conversa: conversa(s) });
+  }
+
+  if (c.acao === "responder") {
+    const prot = lerProt(c), mensagem = limpa(c.mensagem, 2000);
+    if (!chapaOk(chapa) || !protOk(prot)) return erro("Confira o protocolo e a chapa.", 400);
+    if (mensagem.length < 2) return erro("Escreva a sua mensagem.", 400);
+    if (limiteChapa(request)) return erro("Muitas mensagens seguidas. Espere alguns minutos.", 429);
+    for (let i = 0; i < 3; i++) {   // grava só se ninguém mexeu no pedido no meio do caminho (o Atendimento pode estar respondendo)
+      const [d] = await consulta("select dados, atualizado_em::text as v from ca_docs where colecao = 'fc_sol' and id = $1", [prot]);
+      const s = d && d.dados;
+      if (!s || s.chapa !== chapa) return erro("Não encontramos esse protocolo para essa chapa.", 404);
+      if (s.st === "ENCERRADO") return erro("Este atendimento foi encerrado. Se ainda precisar, faça uma nova pergunta.", 409);
+      const msgs = msgsDe(s);
+      if (msgs.length >= MAX_MSGS) return erro("Esta conversa chegou ao limite de mensagens. Faça uma nova pergunta.", 429);
+      const novo = { ...s, msgs: [...msgs, { de: "c", t: mensagem, em: new Date().toISOString() }], st: "NOVA", ult_col: new Date().toISOString() };
+      const r = await consulta("update ca_docs set dados = $2::jsonb, atualizado_em = now() where colecao = 'fc_sol' and id = $1 and atualizado_em::text = $3 returning id",
+        [prot, JSON.stringify(novo), d.v]);
+      if (r.length) return ok({ enviado: true, conversa: conversa(novo), situacao: novo.st });
+    }
+    return erro("Não foi possível enviar agora. Tente de novo.", 503);
   }
 
   return erro("Ação inválida.", 400);
