@@ -3,7 +3,7 @@ const TI_SEED=RAW.ti||{notas:[],forn:{},bases:[],contratos:[],gerenciais:[]};
 let TI_DB={},TI_CFG=Object.assign({meta:null,grupos:[],forn:{}},JSON.parse(JSON.stringify(TI_SEED.cfg||{}))),TI_VER=1,TI_CACHE=null,TI_CK='';
 let TIF={mes:'',ct:'',base:'',setor:'',forn:'',st:'',q:'',n:20};
 let TIE=null,TIE_MSG='',TIE_LENDO=false,ASSETS=null,SAMPLE=null;
-const TI_SETORES=['ADMINISTRATIVO','GOMAN','GSTC','GERE','SPOT STI','SPOT BDC'];
+const TI_SETORES=['ADMINISTRATIVO','ALMOXARIFADO','GOMAN','GSTC','GERE','SPOT STI','SPOT BDC'];
 const TI_ST={nd:{t:'Não informado',c:'nd'},aguardando:{t:'Em andamento (sem nota)',c:'par'},comigo:{t:'Nota comigo',c:'info'},entregue:{t:'Entregue ao financeiro',c:'sup'}};
 const TI_ST_ORD=['aguardando','comigo','entregue','nd'];
 const tiFornNome=n=>(n.cnpj&&(TI_CFG.forn[n.cnpj]||TI_SEED.forn[n.cnpj]))||n.forn||n.razao||'Sem fornecedor';

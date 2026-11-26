@@ -4,6 +4,7 @@ node_modules/
 .vercel/
 # dados pessoais reais: não vão para o GitHub
 dados/colaboradores.csv
+dados/colaboradores-demitidos.csv
 dados/gestores.csv
 dados/historico_medidas_importado.csv
 testes/Solicitacoes_de_exemplo_Medidas_Disciplinares.xlsx

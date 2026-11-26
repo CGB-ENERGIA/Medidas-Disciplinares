@@ -3163,7 +3163,31 @@ async function fcGrava(o){fcAplica(o);if(fcPode()){try{await DBX.doc('fc_at/'+o.
 const fcUniq=k=>[...new Set(FC.at.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 const fcHoje=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
 const fcDia=d=>{const x=new Date(d*864e5);return x.toISOString().slice(0,10)};
-PG['fc-novo']=()=>{fcIni();const e=FC_ED||(FC_ED={novo:1,id:'A'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),d:fcHoje(),st:'RESOLVIDO'});
+/* Cadastro de colaboradores ATIVOS (vem de /api/fc-colaboradores, só depois do login): o campo de nome do "Registrar atendimento" sugere todo mundo do cadastro e preenche chapa, base, função e equipe */
+let FC_COL=null,FC_COL_P=null,FC_AUTO={};
+const fcNz=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+function fcColCarregar(){if(FC_COL_P)return FC_COL_P;
+  FC_COL_P=fetch('/api/fc-colaboradores',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(j=>{
+    FC_COL=((j&&j.colaboradores)||[]).map(x=>({ch:String(x.chapa||''),nm:String(x.nome||'').toUpperCase().replace(/\s+/g,' ').trim(),fn:String(x.funcao||'').toUpperCase(),b:x.base||'',ar:x.setor||'',sup:String(x.supervisor||'').toUpperCase(),co:String(x.coordenador||'').toUpperCase()})).filter(x=>x.nm);
+    const dl=document.getElementById('fcdl-nm');if(dl)dl.innerHTML=fcNomesHtml()}).catch(()=>{FC_COL=null;FC_COL_P=null});
+  return FC_COL_P}
+function fcNomesHtml(){const op=(v,l)=>'<option value="'+esc(v)+'"'+(l?' label="'+esc(l)+'"':'')+'>';
+  if(FC_COL&&FC_COL.length){const n={};FC_COL.forEach(x=>{const k=fcNz(x.nm);n[k]=(n[k]||0)+1});
+    return FC_COL.map(x=>op(n[fcNz(x.nm)]>1?x.nm+' — '+x.ch:x.nm,[x.ch,x.fn,x.b?fcb(x.b):''].filter(Boolean).join(' · '))).join('')}
+  return fcUniq('nm').map(x=>op(x)).join('')}
+function fcColAcha(t){if(!FC_COL||!FC_COL.length)return null;const m=/^(.*?)\s+—\s+(\S+)$/.exec(String(t||'').trim());
+  if(m){const h=FC_COL.find(x=>x.ch===m[2]&&fcNz(x.nm)===fcNz(m[1]));if(h)return h}
+  const k=fcNz(t),l=FC_COL.filter(x=>fcNz(x.nm)===k);return l.length===1?l[0]:null}
+function fcColPreenche(el){const h=fcColAcha(el.value);
+  if(!h){if(FC_AUTO.id===FC_ED.id)Object.keys(FC_AUTO).forEach(f=>{if(f!=='id'&&FC_ED[f]===FC_AUTO[f]){FC_ED[f]='';const c=document.querySelector('[data-fce="'+f+'"]');if(c)c.value='';delete FC_AUTO[f]}});return false}
+  if(el.value!==h.nm)el.value=h.nm;FC_ED.nm=h.nm;if(FC_AUTO.id!==FC_ED.id)FC_AUTO={id:FC_ED.id};
+  const sc=document.querySelector('[data-fce="co"]'),kc=fcNz(h.co);
+  const lc=sc&&kc?[...sc.options].map(o=>o.value).filter(v=>v&&(fcNz(v)===kc||fcNz(v).startsWith(kc+' '))):[];
+  const ar=h.ar?(fcUniq('ar').find(a=>fcNz(a)===fcNz(h.ar))||''):'';
+  const v={mat:h.ch,b:h.b,fn:h.fn,ar:ar,co:lc.length===1?lc[0]:'',sup:h.sup};
+  Object.keys(v).forEach(f=>{if(!v[f])return;if(FC_ED[f]&&FC_ED[f]!==FC_AUTO[f])return;FC_ED[f]=v[f];FC_AUTO[f]=v[f];const c=document.querySelector('[data-fce="'+f+'"]');if(c)c.value=v[f]});
+  toast('Dados do colaborador preenchidos pelo cadastro (chapa '+h.ch+').');return true}
+PG['fc-novo']=()=>{fcIni();fcColCarregar();const e=FC_ED||(FC_ED={novo:1,id:'A'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),d:fcHoje(),st:'RESOLVIDO'});
   const op=(arr,v,ph,lab)=>'<option value="">'+ph+'</option>'+arr.map(x=>'<option value="'+esc(x)+'"'+(x===v?' selected':'')+'>'+esc(lab?lab(x):x)+'</option>').join('');
   const inp=(k,lab,t,ph,ex)=>'<label'+(ex&&ex.cls?' class="'+ex.cls+'"':'')+'><small>'+lab+'</small><input type="'+(t||'text')+'" data-fce="'+k+'" value="'+esc(k==='d'?fcDia(e.d||fcHoje()):(e[k]||''))+'" placeholder="'+(ph||'')+'"'+(ex&&ex.list?' list="'+ex.list+'"':'')+'></label>';
   const sel=(k,lab,html)=>'<label><small>'+lab+'</small><select data-fce="'+k+'">'+html+'</select></label>';
@@ -3173,7 +3197,7 @@ PG['fc-novo']=()=>{fcIni();const e=FC_ED||(FC_ED={novo:1,id:'A'+Date.now().toStr
   const recentes=FC.at.slice().sort((a,b)=>(b.d||0)-(a.d||0)).slice(0,8);
   return fcUbar(e.novo?'Registrar atendimento':'Editar atendimento',e.novo?'O que você salvar aqui entra na hora no painel, na lista e nos indicadores':'Altere o que precisar e salve','chat')+
    (fcPode()?'':'<div class="note">Modo de teste: você pode preencher e ver o atendimento nos painéis, mas ele só fica salvo para todos quando quem pode editar o site registra pelo Claude.</div>')+
-   '<div class="panel aqform"><div class="phd"><h3>1. Colaborador</h3><small>comece pelo nome: se ele já usou o canal, o resto se preenche sozinho</small></div><div class="aqgrid">'+
+   '<div class="panel aqform"><div class="phd"><h3>1. Colaborador</h3><small>comece pelo nome e escolha na lista: o resto se preenche sozinho</small></div><div class="aqgrid">'+
     inp('nm','Nome do colaborador *','text','Digite o nome',{list:'fcdl-nm',cls:'aqw2'})+inp('mat','Matrícula (chapa)','text','opcional')+
     sel('b','Base',op(bases,e.b,'Escolha',fcb))+inp('fn','Função','text','ex.: Eletricista',{list:'fcdl-fn'})+inp('ar','Área','text','ex.: STC, ADM, GERE',{list:'fcdl-ar'})+
     sel('co','Coordenador',op(cos,e.co,'Escolha'))+inp('sup','Supervisor','text','opcional',{list:'fcdl-sup'})+'</div></div>'+
@@ -3182,12 +3206,12 @@ PG['fc-novo']=()=>{fcIni();const e=FC_ED||(FC_ED={novo:1,id:'A'+Date.now().toStr
     sel('st','Situação',FC_GRP.map(g=>'<optgroup label="'+g.t+'">'+FC_SIT.filter(x=>x.g===g.g).map(x=>'<option value="'+x.k+'"'+(fcNormSt(e.st)===x.k?' selected':'')+' title="'+esc(x.d)+'">'+x.t+'</option>').join('')+'</optgroup>').join(''))+
     txt('q','Pergunta / solicitação *','O que o colaborador pediu')+txt('res','Tratativa / resolução','O que foi feito e a resposta dada')+'</div>'+
     '<div class="aqbar">'+(!e.novo&&fcPode()?'<button type="button" class="btn" data-fcexclui>Excluir</button>':'')+'<span class="aqtot"></span><button type="button" class="btn" data-fccancela>Cancelar</button><button type="button" class="btn primary" data-fcsalva>'+(e.novo?'Registrar atendimento':'Salvar alterações')+'</button></div></div>'+
-   dl('fcdl-nm',fcUniq('nm'))+dl('fcdl-fn',fcUniq('fn'))+dl('fcdl-ar',fcUniq('ar'))+dl('fcdl-sup',fcUniq('sup'))+dl('fcdl-as',fcUniq('as'))+
+   '<datalist id="fcdl-nm">'+fcNomesHtml()+'</datalist>'+dl('fcdl-fn',fcUniq('fn'))+dl('fcdl-ar',fcUniq('ar'))+dl('fcdl-sup',fcUniq('sup'))+dl('fcdl-as',fcUniq('as'))+
    panel('Últimos registros','os 8 mais recentes',tabela([{h:'Data',f:r=>dt(r.d)},{h:'Colaborador',f:r=>'<b>'+esc(r.nm)+'</b><br><span class="sml">'+fcb(r.b)+'</span>'},{h:'Assunto',f:r=>'<span class="tagi">'+esc(r.as)+'</span>'},{h:'Situação',f:r=>fcSt(r.st)},{h:'',f:r=>'<button type="button" class="fced" data-fcedita="'+r.id+'" title="Editar atendimento" aria-label="Editar atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>'}],recentes,{}))};
 document.addEventListener('input',ev=>{const el=ev.target;if(!el.dataset||el.dataset.fce==null||!FC_ED)return;const k=el.dataset.fce;let v=el.value;
   if(k==='d'){const t=Date.parse(v);FC_ED.d=isNaN(t)?FC_ED.d:Math.floor(t/864e5);return}
   FC_ED[k]=(k==='nm'||k==='as')?v.toUpperCase():v;
-  if(k==='nm'){const ult=FC.at.filter(x=>x.nm===FC_ED.nm).sort((a,b)=>(b.d||0)-(a.d||0))[0];if(ult){['mat','b','fn','ar','co','sup'].forEach(f=>{if(!FC_ED[f]&&ult[f]){FC_ED[f]=ult[f];const c=document.querySelector('[data-fce="'+f+'"]');if(c)c.value=ult[f]}});toast('Dados do colaborador preenchidos pelo último atendimento.')}}});
+  if(k==='nm'){if(fcColPreenche(el))return;const ult=FC.at.filter(x=>x.nm===FC_ED.nm).sort((a,b)=>(b.d||0)-(a.d||0))[0];if(ult){['mat','b','fn','ar','co','sup'].forEach(f=>{if(!FC_ED[f]&&ult[f]){FC_ED[f]=ult[f];const c=document.querySelector('[data-fce="'+f+'"]');if(c)c.value=ult[f]}});toast('Dados do colaborador preenchidos pelo último atendimento.')}}});
 document.addEventListener('change',ev=>{const el=ev.target;if(el.dataset&&el.dataset.fce!=null&&FC_ED&&el.tagName==='SELECT')FC_ED[el.dataset.fce]=el.value});
 document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-fcsalva],[data-fccancela],[data-fcedita],[data-fcnovo],[data-fcexclui]');if(!b)return;
   if(b.hasAttribute('data-fcnovo')){FC_ED=null;if(location.hash==='#fc-novo')render();else location.hash='fc-novo';return}
@@ -4880,7 +4904,7 @@ const TI_SEED=RAW.ti||{notas:[],forn:{},bases:[],contratos:[],gerenciais:[]};
 let TI_DB={},TI_CFG=Object.assign({meta:null,grupos:[],forn:{}},JSON.parse(JSON.stringify(TI_SEED.cfg||{}))),TI_VER=1,TI_CACHE=null,TI_CK='';
 let TIF={mes:'',ct:'',base:'',setor:'',forn:'',st:'',q:'',n:20};
 let TIE=null,TIE_MSG='',TIE_LENDO=false,ASSETS=null,SAMPLE=null;
-const TI_SETORES=['ADMINISTRATIVO','GOMAN','GSTC','GERE','SPOT STI','SPOT BDC'];
+const TI_SETORES=['ADMINISTRATIVO','ALMOXARIFADO','GOMAN','GSTC','GERE','SPOT STI','SPOT BDC'];
 const TI_ST={nd:{t:'Não informado',c:'nd'},aguardando:{t:'Em andamento (sem nota)',c:'par'},comigo:{t:'Nota comigo',c:'info'},entregue:{t:'Entregue ao financeiro',c:'sup'}};
 const TI_ST_ORD=['aguardando','comigo','entregue','nd'];
 const tiFornNome=n=>(n.cnpj&&(TI_CFG.forn[n.cnpj]||TI_SEED.forn[n.cnpj]))||n.forn||n.razao||'Sem fornecedor';

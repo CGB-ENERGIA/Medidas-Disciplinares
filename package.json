@@ -17,6 +17,7 @@
     "talentos:importar": "node --env-file=.env banco/talentos-importar.mjs",
     "processos:importar": "node --env-file=.env banco/processos-importar.mjs",
     "colaboradores:atualizar": "node --env-file=.env banco/colaboradores-atualizar.mjs",
+    "colaboradores:desativar": "node --env-file=.env banco/colaboradores-desativar.mjs",
     "ti:zerar": "node --env-file=.env banco/ti-zerar.mjs"
   },
   "dependencies": {
