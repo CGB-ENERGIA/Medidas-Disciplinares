@@ -1363,6 +1363,86 @@ body.em-hub { overflow-x: clip; }
 @media (prefers-reduced-motion: no-preference) { .hub-topo > *, .hub-card, .hub-nota { animation: hubEntra .5s cubic-bezier(.2,.7,.2,1) both; } .hub-topo > :nth-child(2) { animation-delay: .06s; } .hub-topo > :nth-child(3) { animation-delay: .12s; } .hub-card { animation-delay: calc(.12s + var(--i, 0) * .07s); } .hub-nota { animation-delay: .4s; } }
 @media (prefers-reduced-motion: reduce) { .hub-card, .hub-ico, .hub-ir, .hub-card::before { transition: none; } .hub-card:hover, .hub-card:focus-visible, .hub-card:hover .hub-ico, .hub-card:focus-visible .hub-ico, .hub-card:hover .hub-ir, .hub-card:focus-visible .hub-ir { transform: none; } .hub-card.carregando .hub-ir .hub-spin { animation-duration: 2s; } }
 @media (max-width: 520px) { .hub-card { min-height: 0; padding: 18px; } .hub-grid { gap: 14px; } }
+/* ---------- Ambientes: capa com fotos + lançador (nov/2026) ---------- */
+.hub.hub2 { max-width: none; padding: 0 0 48px; gap: 0; }
+.hub.hub2::before, .hub.hub2::after { display: none; }
+.hcapa { position: relative; width: 100vw; margin-left: calc(50% - 50vw); min-height: min(78vh, 640px); display: grid; place-items: center; text-align: center; overflow: hidden; padding: clamp(40px, 7vw, 80px) 20px 130px; color: var(--fg); }
+.hc-cena { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease; }
+.hc-cena.on { opacity: 1; }
+.hc-cena img, .hc-cena svg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); }
+.hc-cena.on img, .hc-cena.on svg { animation: hcZoom 9s ease-out forwards; }
+@keyframes hcZoom { from { transform: scale(1.04); } to { transform: scale(1.14); } }
+.hc-veu { position: absolute; inset: 0;
+  background: radial-gradient(46% 40% at 50% 46%, color-mix(in srgb, var(--hc-fundo, var(--bg)) 86%, transparent) 0%, color-mix(in srgb, var(--hc-fundo, var(--bg)) 62%, transparent) 55%, transparent 100%),
+              linear-gradient(180deg, color-mix(in srgb, var(--hc-fundo, var(--bg)) 18%, transparent) 0%, color-mix(in srgb, var(--hc-fundo, var(--bg)) 8%, transparent) 40%, color-mix(in srgb, var(--hc-fundo, var(--bg)) 55%, transparent) 78%, var(--hc-fundo, var(--bg)) 100%); }
+.hc-cena img { filter: saturate(1.05) contrast(1.03); }
+.hc-tit { filter: drop-shadow(0 2px 14px color-mix(in srgb, var(--hc-fundo, var(--bg)) 85%, transparent)); }
+.hc-sub { text-shadow: 0 1px 12px color-mix(in srgb, var(--hc-fundo, var(--bg)) 95%, transparent); }
+.hc-cap { position: absolute; z-index: 3; right: 22px; bottom: 120px; margin: 0; font-size: 12px; font-weight: 700; color: #fff; background: rgba(43,10,18,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 999px; opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s; pointer-events: none; }
+.hc-cap::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ff9fb0; margin-right: 7px; vertical-align: 1px; }
+.hc-cap.on { opacity: 1; transform: none; }
+@media (max-width: 600px) { .hc-cap { bottom: auto; top: 14px; right: 12px; font-size: 11px; } }
+:root[data-tema="escuro"] .hc-sub { text-shadow: 0 2px 20px rgba(0,0,0,.5); } :root[data-tema="escuro"] .hc-tit { filter: drop-shadow(0 2px 16px rgba(0,0,0,.45)); }
+:root[data-tema="escuro"] .hc-tit { color: #fff; }
+/* cabeçalho branco limpo, só na tela de ambientes (tema claro) */
+:root:not([data-tema="escuro"]) body.em-hub .top { background: rgba(255,255,255,.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: var(--fg); box-shadow: 0 1px 0 rgba(113,20,36,.12); }
+:root:not([data-tema="escuro"]) body.em-hub .top::after { content: ""; position: absolute; left: 0; right: 0; top: auto; bottom: -1px; width: auto; height: 3px; opacity: 1; transform: none; border: 0; border-radius: 0; background: linear-gradient(90deg, #711424, #b92454 50%, transparent); pointer-events: none; }
+:root:not([data-tema="escuro"]) body.em-hub .top .logo-img { content: url(/img/logo-cor.png); }
+:root:not([data-tema="escuro"]) body.em-hub .top::before { opacity: .05; }
+:root:not([data-tema="escuro"]) body.em-hub .top h1 { color: #2b2a2a; }
+:root:not([data-tema="escuro"]) body.em-hub .top .eyebrow, :root:not([data-tema="escuro"]) body.em-hub .top .marca-sub { color: #9a8f91; }
+:root:not([data-tema="escuro"]) body.em-hub .marca-txt { border-left-color: #ead9dd; }
+:root:not([data-tema="escuro"]) body.em-hub .tema-btn, :root:not([data-tema="escuro"]) body.em-hub .menu-btn { background: #fff; border-color: #ecdfe2; color: #711424; }
+:root:not([data-tema="escuro"]) body.em-hub .perfil-chip { background: #fff; border-color: #ecdfe2; color: #2b2a2a; backdrop-filter: none; }
+:root:not([data-tema="escuro"]) body.em-hub .perfil-txt small { color: #6b6969; }
+:root:not([data-tema="escuro"]) body.em-hub .perfil-chip .avatar { background: linear-gradient(135deg, #8a1a2f, #4a0b18); color: #fff; }
+:root:not([data-tema="escuro"]) body.em-hub .perfil-chip .chev { color: #711424; }
+/* tema escuro: em vez de preto, o vinho listrado do cabeçalho */
+:root[data-tema="escuro"]:has(body.em-hub) { background: #4a0b16; }
+:root[data-tema="escuro"] body.em-hub { --hc-fundo: #4f0c19; background: repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 22px), linear-gradient(180deg, #4f0c19 0%, #5e1020 50%, #4a0b16 100%) fixed; }
+:root[data-tema="escuro"] .hc-sub, :root[data-tema="escuro"] .hub2 .hub-nota { color: rgba(255,255,255,.82); } :root[data-tema="escuro"] .hc-sub b { color: #ffc9d3; }
+:root[data-tema="escuro"] .hub2 .hub-card { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16); backdrop-filter: blur(10px); } :root[data-tema="escuro"] .hub2 .hub-card:hover { background: rgba(255,255,255,.12); }
+:root[data-tema="escuro"] .hub2 .hub-desc { color: rgba(255,255,255,.72); } :root[data-tema="escuro"] .hc-leg button:not(.on) { color: #ffc9d3; }
+.hc-ct { position: relative; z-index: 2; max-width: 900px; display: grid; justify-items: center; }
+.hc-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--accent); font-weight: 700; padding: 9px 18px 9px 8px; border-radius: 999px; box-shadow: 0 10px 30px -14px rgba(113,20,36,.45); font-size: 14px; }
+.hc-pill i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #8a1a2f, #4a0b18); color: #fff; font-style: normal; font-size: 10.5px; font-weight: 800; }
+.hc-pill b { color: var(--fg); }
+.hc-tit { font-size: clamp(34px, 6vw, 68px); line-height: 1.03; letter-spacing: -0.035em; margin: 20px 0 12px; font-weight: 800; text-wrap: balance; }
+.hc-tit span { background: linear-gradient(90deg, #711424, #b92454); -webkit-background-clip: text; background-clip: text; color: transparent; }
+[data-tema="escuro"] .hc-tit span { background: linear-gradient(90deg, #ff9fb0, #ffc9d3); -webkit-background-clip: text; background-clip: text; }
+.hc-sub { font-size: clamp(15.5px, 1.6vw, 19px); color: var(--muted); margin: 0 auto 24px; max-width: 640px; }
+.hc-sub b { display: block; color: var(--accent); }
+.hc-busca { display: flex; align-items: center; gap: 12px; width: min(680px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 7px 7px 7px 18px; box-shadow: 0 20px 50px -22px rgba(113,20,36,.5); }
+.hc-busca svg { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; }
+.hc-busca input { flex: 1; border: 0; background: transparent; color: var(--fg); font: inherit; font-size: 16px; padding: 10px 0; outline: 0; min-width: 0; }
+.hc-busca:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hc-leg { position: absolute; z-index: 3; left: 0; right: 0; bottom: 118px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 0 16px; }
+.hc-leg button { position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 14px 6px 7px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--accent); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; backdrop-filter: blur(8px); }
+.hc-leg button span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); font-size: 10.5px; }
+.hc-leg button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.hc-leg button.on span { background: #fff; color: var(--accent); }
+.hc-leg button i { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: #ffb3c2; }
+.hc-leg button.on i { animation: hcBarra 7s linear forwards; }
+@keyframes hcBarra { to { width: 100%; } }
+.hub2 .hub-corpo { position: relative; z-index: 4; width: min(1180px, 100% - 32px); margin: -96px auto 0; display: grid; gap: 22px; }
+.hub2 .hub-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.hub2 .hub-card { grid-template-rows: auto auto 1fr; justify-items: center; text-align: center; gap: 10px; min-height: 0; padding: 24px 12px 20px; border-radius: 22px; background: var(--surface); border-color: var(--line); box-shadow: 0 14px 30px -22px rgba(113,20,36,.45); transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s, border-color .3s; }
+.hub2 .hub-card::before { display: none; }
+.hub2 .hub-card:hover, .hub2 .hub-card:focus-visible { transform: translateY(-8px) scale(1.03); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); box-shadow: 0 26px 40px -22px rgba(113,20,36,.6); }
+.hub2 .hub-ico { width: 64px; height: 64px; border-radius: 0; background: none; box-shadow: none; }
+.hub2 .hub-ico::before { content: ""; position: absolute; inset: 7px; border-radius: 14px; background: linear-gradient(145deg, #b92454, #711424 60%, #4a0b16); transform: rotate(45deg); transition: transform .45s cubic-bezier(.2,.8,.2,1); box-shadow: 0 10px 20px -10px rgba(113,20,36,.8); }
+.hub2 .hub-ico svg { position: relative; width: 24px; height: 24px; }
+.hub2 .hub-card:hover .hub-ico, .hub2 .hub-card:focus-visible .hub-ico { transform: none; }
+.hub2 .hub-card:hover .hub-ico::before, .hub2 .hub-card:focus-visible .hub-ico::before { transform: rotate(135deg); }
+.hub2 .hub-nome { font-size: 15px; line-height: 1.25; margin-top: 4px; }
+.hub2 .hub-desc { font-size: 12px; line-height: 1.4; }
+.hub2 .hub-rodape { display: none; }
+.hub2 .hub-card.carregando .hub-ico::before { animation: hcGira 1s linear infinite; }
+@keyframes hcGira { from { transform: rotate(45deg); } to { transform: rotate(405deg); } }
+.hub2 .hub-nota, .hub2 .hub-pend { justify-self: center; }
+@media (max-width: 600px) { .hcapa { padding-bottom: 120px; min-height: 0; } .hc-leg { bottom: 98px; } .hc-leg button { font-size: 0; gap: 0; padding: 6px; } .hc-leg button span { font-size: 10.5px; } .hub2 .hub-grid { grid-template-columns: 1fr 1fr; } .hub2 .hub-corpo { margin-top: -80px; } }
+@media (prefers-reduced-motion: reduce) { .hc-cena { transition: none; } .hc-cena.on img, .hc-cena.on svg, .hc-leg button.on i, .hub2 .hub-card.carregando .hub-ico::before { animation: none; } .hub2 .hub-card, .hub2 .hub-ico::before { transition: none; } .hub2 .hub-card:hover { transform: none; } }
+
 .mod-op .mod-ok { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.4; }
 .ct-host { min-width: 0; }
 .ct-host iframe { display: block; width: 100%; height: calc(100vh - var(--top-h, 72px) - 56px); height: calc(100dvh - var(--top-h, 72px) - 56px); min-height: 420px; border: 0; background: transparent; border-radius: var(--r-md); }
@@ -2754,18 +2834,42 @@ function viewAmbientes() {
       <span class="hub-rodape"><span class="hub-papel" title="Seu nível de acesso neste ambiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span>${esc(acessoTxt(k))}</span></span>
       <span class="hub-ir" aria-hidden="true"><svg class="seta" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><svg class="hub-spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span></span>
     </button>`; };
-  return `<div class="hub">
-    <div class="hub-topo">
-      <span class="hub-ola"><i>${esc(ini)}</i>Olá, <b>${primeiro}</b></span>
-      <h2 class="hub-titulo">Onde vamos <span>trabalhar hoje?</span></h2>
-      <p class="hub-sub">Selecione um ambiente para acessar suas ferramentas de trabalho.</p>
-      ${mods.length > 6 ? `<label class="hub-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="hub-busca" type="search" placeholder="Buscar ambiente" aria-label="Buscar ambiente" autocomplete="off"></label>` : ""}
+  const hora = new Date().getHours(), sauda = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+  const CENAS = [["Equipe na subestação", `<img srcset="/img/f1-selfie-subestacao-m.webp 1080w, /img/f1-selfie-subestacao.webp 1920w" sizes="100vw" src="/img/f1-selfie-subestacao.webp" alt="" style="object-position:50% 30%" fetchpriority="high">`], ["Base CGB vista de cima", `<img data-srcset="/img/f2-base-cgb-m.webp 1080w, /img/f2-base-cgb.webp 1920w" sizes="100vw" alt="" style="object-position:50% 45%">`], ["Equipe na sala", `<img data-srcset="/img/f3-equipe-sala-m.webp 1080w, /img/f3-equipe-sala.webp 1920w" sizes="100vw" alt="" style="object-position:50% 45%">`], ["Obra na subestação", `<img data-srcset="/img/f4-obra-subestacao-m.webp 1080w, /img/f4-obra-subestacao.webp 1920w" sizes="100vw" alt="" style="object-position:50% 40%">`], ["Turma em treinamento", `<img data-srcset="/img/f5-treinamento-m.webp 1080w, /img/f5-treinamento.webp 1920w" sizes="100vw" alt="" style="object-position:50% 35%">`], ["Frota CGB", `<img data-srcset="/img/f6-caminhoes-ceu-m.webp 1080w, /img/f6-caminhoes-ceu.webp 1920w" sizes="100vw" alt="" style="object-position:50% 60%">`], ["Diálogo de segurança", `<img data-srcset="/img/f7-roda-entardecer-m.webp 1080w, /img/f7-roda-entardecer.webp 1920w" sizes="100vw" alt="" style="object-position:50% 55%">`], ["Equipe e frota em campo", `<img data-srcset="/img/f8-drone-caminhoes-m.webp 1080w, /img/f8-drone-caminhoes.webp 1920w" sizes="100vw" alt="" style="object-position:50% 40%">`]];
+  return `<div class="hub hub2">
+    <section class="hcapa" aria-label="Boas-vindas">
+      ${CENAS.map((c, n) => `<div class="hc-cena${n ? "" : " on"}" aria-hidden="true">${c[1]}</div>`).join("")}
+      <div class="hc-veu"></div>
+      <p class="hc-cap" id="hc-cap" data-nomes="${esc(CENAS.map(c => c[0]).join("|"))}"></p>
+      <div class="hc-ct">
+        <span class="hc-pill"><i>${esc(ini)}</i>${sauda}, <b>${primeiro}</b></span>
+        <h2 class="hc-tit">Onde vamos <span>trabalhar hoje?</span></h2>
+        <p class="hc-sub">Tudo o que você precisa do Grupo CGB está em um só lugar.<b>Escolha um ambiente para começar.</b></p>
+        <label class="hc-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="hub-busca" type="search" placeholder="Buscar ambiente" aria-label="Buscar ambiente" autocomplete="off"></label>
+      </div>
+          </section>
+    <div class="hub-corpo">
+      <div class="hub-grid" role="list">${mods.map(cartao).join("")}</div>
+      ${u.admin && state.pendentes ? `<button type="button" class="hub-pend" data-act="ver-pedidos"><b>${state.pendentes}</b> pedido${state.pendentes === 1 ? "" : "s"} de acesso aguardando a sua decisão<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>` : ""}
+      <p class="hub-nota"><i></i>Você pode trocar de ambiente a qualquer momento pelo menu do seu nome.</p>
     </div>
-    <div class="hub-grid" role="list">${mods.map(cartao).join("")}</div>
-    ${u.admin && state.pendentes ? `<button type="button" class="hub-pend" data-act="ver-pedidos"><b>${state.pendentes}</b> pedido${state.pendentes === 1 ? "" : "s"} de acesso aguardando a sua decisão<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>` : ""}
-    <p class="hub-nota"><i></i>Você pode trocar de ambiente a qualquer momento pelo menu do seu nome.</p>
   </div>`;
 }
+// Capa da tela de ambientes: fotos da equipe trocando a cada 7 s
+let hcAt = 0, hcTm = null;
+function hcIr(n) {
+  const cs = document.querySelectorAll(".hc-cena"), bs = document.querySelectorAll(".hc-leg button");
+  clearTimeout(hcTm); if (!cs.length) return;
+  hcAt = n % cs.length;
+  [hcAt, (hcAt + 1) % cs.length].forEach(k => { const im = cs[k].querySelector("img[data-srcset]"); if (im) { im.srcset = im.dataset.srcset; im.removeAttribute("data-srcset"); } });
+  cs.forEach((c, k) => c.classList.toggle("on", k === hcAt));
+  const cap = document.getElementById("hc-cap");
+  if (cap) { const nomes = (cap.dataset.nomes || "").split("|"); cap.classList.remove("on"); setTimeout(() => { cap.textContent = nomes[hcAt] || ""; cap.classList.add("on"); }, 350); }
+  bs.forEach((b, k) => { b.classList.remove("on"); void b.offsetWidth; b.classList.toggle("on", k === hcAt); b.setAttribute("aria-selected", k === hcAt); });
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) hcTm = setTimeout(() => hcIr(hcAt + 1), 7000);
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest(".hc-leg button"); if (b) hcIr(+b.dataset.hc); });
+new MutationObserver(() => { const c = document.querySelector(".hcapa"); if (c && !c.dataset.ok) { c.dataset.ok = "1"; hcIr(0); } else if (!c) clearTimeout(hcTm); }).observe(document.getElementById("view") || document.body, { childList: true });
 function trocarModulo(m) {
   document.getElementById("perfil-pop").hidden = true; document.getElementById("perfil-btn").setAttribute("aria-expanded", "false");
   if (!state.user || !state.user.modulos[m] || moduloAtual() === m) return;
@@ -4930,7 +5034,7 @@ document.addEventListener("change", e => {
   if (r && t.id === "dp-inicio") { r.inicio = t.value; refreshDoc(r); }
 });
 
-document.addEventListener("input", e => { // busca na tela de ambientes (só aparece com mais de 6)
+document.addEventListener("input", e => { // busca na tela de ambientes
   if (!e.target || e.target.id !== "hub-busca") return;
   const q = e.target.value.trim().toLowerCase(); let n = 0;
   document.querySelectorAll(".hub-card").forEach(c => { const ok = !q || c.dataset.busca.includes(q); c.hidden = !ok; if (ok) n++; });
