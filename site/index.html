@@ -1127,6 +1127,7 @@ body::before { content: ""; position: fixed; z-index: 0; pointer-events: none;
   background: var(--accent); opacity: 0.05;
   -webkit-mask: var(--simbolo) center / contain no-repeat; mask: var(--simbolo) center / contain no-repeat; }
 :root[data-tema="escuro"] body::before { background: #ffffff; opacity: 0.035; }
+body.em-hub::before { display: none; }
 .wrap { position: relative; z-index: 1; }
 body.tela-login::before { display: none; }
 /* no cabeçalho, símbolo pequeno e discreto atrás do perfil */
@@ -1441,6 +1442,23 @@ body.em-hub { overflow-x: clip; }
 @keyframes hcGira { from { transform: rotate(45deg); } to { transform: rotate(405deg); } }
 .hub2 .hub-nota, .hub2 .hub-pend { justify-self: center; }
 @media (max-width: 600px) { .hcapa { padding-bottom: 120px; min-height: 0; } .hc-leg { bottom: 98px; } .hc-leg button { font-size: 0; gap: 0; padding: 6px; } .hc-leg button span { font-size: 10.5px; } .hub2 .hub-grid { grid-template-columns: 1fr 1fr; } .hub2 .hub-corpo { margin-top: -80px; } }
+
+/* ajuste de escala para telas grandes (capa ocupa a tela, tudo maior) */
+.hcapa { min-height: max(560px, calc(100vh - 260px)); padding-top: clamp(40px, 6vh, 90px); padding-bottom: clamp(190px, 24vh, 260px); }
+.hc-pill { font-size: 15px; padding: 10px 20px 10px 9px; }
+.hc-pill i { width: 30px; height: 30px; font-size: 11.5px; }
+.hc-tit { font-size: clamp(40px, 5.2vw, 88px); margin: 22px 0 14px; }
+.hc-sub { font-size: clamp(16px, 1.25vw, 22px); max-width: 760px; margin-bottom: 30px; }
+.hc-busca { width: min(760px, 100%); padding: 9px 9px 9px 22px; border-radius: 18px; }
+.hc-busca input { font-size: 17px; padding: 12px 0; }
+.hc-cap { bottom: clamp(200px, 26vh, 270px); }
+.hub2 .hub-corpo { width: min(1360px, 100% - 48px); margin-top: clamp(-200px, -20vh, -130px); }
+.hub2 .hub-grid { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px; }
+.hub2 .hub-card { padding: 30px 14px 24px; }
+.hub2 .hub-ico { width: 72px; height: 72px; }
+.hub2 .hub-nome { font-size: 16.5px; }
+.hub2 .hub-desc { font-size: 13px; }
+@media (max-width: 600px) { .hcapa { min-height: 0; padding-bottom: 130px; } .hc-cap { bottom: auto; } .hub2 .hub-corpo { width: calc(100% - 32px); margin-top: -90px; } .hub2 .hub-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .hub2 .hub-card { padding: 22px 10px 18px; } }
 @media (prefers-reduced-motion: reduce) { .hc-cena { transition: none; } .hc-cena.on img, .hc-cena.on svg, .hc-leg button.on i, .hub2 .hub-card.carregando .hub-ico::before { animation: none; } .hub2 .hub-card, .hub2 .hub-ico::before { transition: none; } .hub2 .hub-card:hover { transform: none; } }
 
 .mod-op .mod-ok { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.4; }
@@ -2826,7 +2844,7 @@ const HUB_ICO = {
 const HUB_PADRAO = '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>';
 function viewAmbientes() {
   const u = state.user, mods = modulosDoUsuario(), partes = (u.nome || "").split(" ").filter(Boolean);
-  const ini = partes.slice(0, 2).map(w => w[0].toUpperCase()).join(""), primeiro = esc(partes[0] || "");
+  const ini = partes.slice(0, 2).map(w => w[0].toUpperCase()).join(""), primeiro = esc(nomeBonito(partes[0] || ""));
   const cartao = (k, i) => { const M = MODULOS[k]; return `<button type="button" class="hub-card" role="listitem" data-act="entrar-modulo" data-m="${k}" data-busca="${esc((M.nome + " " + M.desc).toLowerCase())}" style="--i:${i}">
       <span class="hub-ico"><svg viewBox="0 0 24 24" aria-hidden="true">${HUB_ICO[k] || HUB_PADRAO}</svg></span>
       <span class="hub-nome">${M.nome}</span>
@@ -2870,6 +2888,8 @@ function hcIr(n) {
 }
 document.addEventListener("click", e => { const b = e.target.closest && e.target.closest(".hc-leg button"); if (b) hcIr(+b.dataset.hc); });
 new MutationObserver(() => { const c = document.querySelector(".hcapa"); if (c && !c.dataset.ok) { c.dataset.ok = "1"; hcIr(0); } else if (!c) clearTimeout(hcTm); }).observe(document.getElementById("view") || document.body, { childList: true });
+// "JOAO VICTOR DA SILVA" -> "Joao Victor da Silva"
+function nomeBonito(t) { return String(t || "").toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/ (Da|De|Do|Das|Dos|E) /g, m => m.toLowerCase()); }
 function trocarModulo(m) {
   document.getElementById("perfil-pop").hidden = true; document.getElementById("perfil-btn").setAttribute("aria-expanded", "false");
   if (!state.user || !state.user.modulos[m] || moduloAtual() === m) return;
@@ -3323,7 +3343,7 @@ function render() {
   document.getElementById("pop-conta").hidden = !(LOGIN_ATIVO && state.user);
   if (LOGIN_ATIVO && state.user && state.user.modulos) { const u = state.user, MOD0 = moduloAtual(), M = MODULOS[MOD0];
     document.getElementById("perfil-role").textContent = acessoTxt(MOD0);
-    document.getElementById("perfil-nome").textContent = u.nome;
+    document.getElementById("perfil-nome").textContent = nomeBonito(u.nome);
     document.getElementById("perfil-av").textContent = u.nome.split(" ").filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
     document.getElementById("perfil-nota").textContent = u.admin ? "Administrador: controle total dos dois módulos e dos usuários."
       : ehCentral(MOD0) ? ({ usuario: "Você consulta os indicadores desta área.", gestor: "Você consulta, lança e atualiza os dados desta área." })[u.modulos[MOD0].nivel]
