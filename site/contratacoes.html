@@ -962,6 +962,7 @@ const ETAPAS = [
   { k: "jur", n: "Análise interna", res: ["Favorável", "Desfavorável"] },
   { k: "req", n: "Requisição de pessoal (RP)", res: ["Aprovada", "Recusada"] },
   { k: "doc", n: "Documentação pessoal", dica: "Lista de documentos do link do DP", res: ["Completa", "Incompleta"] },
+  { k: "exc", ag: true, n: "Exames complementares", dica: "Solicitados antes do ASO, conforme a função", res: ["Realizados", "Não realizados"] },
   { k: "aso", ag: true, n: "ASO admissional", dica: "Fernanda solicita através do DP", res: ["Apto", "Inapto"] },
   { k: "icgb", ag: true, n: "Integração CGB", res: ["Realizada", "Não realizada"] },
   { k: "ieqtl", ag: true, n: "Integração EQTL", opc: true, res: ["Realizada", "Não realizada"] },
@@ -2052,7 +2053,7 @@ function paginar(chave, arr, assinatura, por = 25) {
 const FASES = [
   { k: "tri", n: "Triagem", d: "Certificados e link de cadastro", e: ["cv", "link"] },
   { k: "ava", n: "Avaliações", d: "CNH, entrevista, testes e análises", e: ["cnh", "ent", "ta", "dd", "bern", "jur"] },
-  { k: "adm", n: "Admissão", d: "Requisição, documentos e ASO", e: ["req", "doc", "aso"] },
+  { k: "adm", n: "Admissão", d: "Requisição, documentos, exames e ASO", e: ["req", "doc", "exc", "aso"] },
   { k: "int", n: "Integração", d: "Integração CGB e EQTL", e: ["icgb", "ieqtl"] },
 ];
 const faseDe = k => FASES.find(f => f.e.includes(k));
@@ -3789,7 +3790,8 @@ function detalhe(c) {
       <button class="btn danger" data-acao="cancelar">Encerrar processo</button>
       ${c.situacao === "suspenso" ? `<button class="btn" data-acao="retomar">Retomar</button>` : `<button class="btn" data-acao="suspender">Suspender</button>`}
       <button class="btn" data-acao="banco-um" title="Guarda o processo no Banco de talentos sem apagar nada">Mover para o banco</button>
-      <button class="btn" data-acao="editar">Editar dados</button></div>` : ""}
+      <button class="btn" data-acao="editar">Editar dados</button>
+      ${pode() ? `<button class="btn danger" data-acao="excluir-proc" title="Tira a pessoa de todo o site, sem deixar histórico">Excluir</button>` : ""}</div>` : ""}
     ${c.situacao === "banco" ? blocoBancoDet(c) : ""}
     ${!ativo && c.situacao !== "banco" && pode() ? `<div class="actions"><button class="btn" data-acao="reabrir">Reabrir processo</button></div>` : ""}
     ${blocoCV(c, ed || (pode() && !ativo))}
@@ -4769,8 +4771,13 @@ document.addEventListener("click", e => {
     case "tal-limpa-fecha": state.talLimpa = null; render(); return;
     case "tal-limpa-ok": { const a = talAntigos(2026), ids = [...a.antes, ...(state.talLimpa && state.talLimpa.sem ? a.sem : [])].map(p => p.id); if (!ids.length || !confirm(`Tirar ${ids.length} pessoa(s) do Banco de talentos?`)) return; state.talLimpa = null; salvarExcl([...state.talExcl, ...ids], `${ids.length} pessoa(s) saíram do Banco de talentos. Ficaram só as inscrições de 2026 em diante.`); return; }
     case "tal-restaura": if (!confirm(`Restaurar ${state.talExcl.size} pessoa(s) na lista do Banco de talentos?`)) return; salvarExcl([], "Pessoas restauradas no Banco de talentos."); return;
-    case "excluir-proc": { const c = getCand(state.sel); if (!c || !confirm(`Excluir o processo de ${c.nome}? Some de Processos guardados e não dá para desfazer pelo site.`)) return;
-      db.collection("candidatos").doc(c.id).delete().then(() => { state.cand.delete(c.id); state.fin.delete(c.id); state.sel = null; toast(`Processo de ${c.nome} excluído.`); render(); }).catch(() => toast("Não consegui excluir agora. Tente de novo.")); return; }
+    case "excluir-proc": { const c = getCand(state.sel); if (!c || !confirm(`Excluir ${c.nome} do site?\n\nO processo e o nome saem de tudo: Processos, guardados, Banco de talentos e histórico. Não dá para desfazer pelo site.`)) return;
+      const nk = nomeBusca(c.nome), ids = state.tal.lista.filter(x => nomeBusca(x.nome) === nk && !state.talExcl.has(x.id)).map(x => x.id);
+      db.collection("candidatos").doc(c.id).delete().then(async () => {
+        state.cand.delete(c.id); state.fin.delete(c.id); state.sel = null; state.marcados && state.marcados.delete(c.id);
+        if (ids.length) await salvarExcl([...state.talExcl, ...ids], `${c.nome} foi excluído do site, inclusive do Banco de talentos.`);
+        else { toast(`${c.nome} foi excluído do site.`); render(); }
+      }).catch(() => toast("Não consegui excluir agora. Tente de novo.")); return; }
     case "mover-banco-marc": { const l = paraOBanco().filter(c => state.marcados.has(c.id)); moverParaBanco(l); l.forEach(c => state.marcados.delete(c.id)); return; }
     case "fixar-menu": fixarMenu(!document.body.classList.contains("rail-fixo")); return;
     case "cmd-abrir": menuAbrir(false); cmdAbrir(); return;

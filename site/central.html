@@ -30,6 +30,22 @@ td.fced-td{width:46px;text-align:center}
 .fcsec{display:flex;gap:12px;align-items:center;margin:26px 0 12px}.fcsec>b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#711424;color:#fff;font-size:14px;flex:none}.fcsec h4{margin:0;font-size:17px;font-weight:800}.fcsec span{display:block;font-size:12.5px;color:var(--muted)}
 #main .fcstp{margin-top:0}
 .fcst3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}@media(max-width:1000px){.fcst3{grid-template-columns:1fr}}
+.fctm{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:750;white-space:nowrap;vertical-align:middle}.fctm::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.fctm.ok{background:#e3f4dc;color:#2f7d12}.fctm.warn{background:#fdf0d9;color:#9a5d00}.fctm.crit{background:#fbe3df;color:#b3261e}
+html[data-tema="escuro"] .fctm.ok{background:#17301c;color:#4cc764}html[data-tema="escuro"] .fctm.warn{background:#3a2d12;color:#f0b43c}html[data-tema="escuro"] .fctm.crit{background:#3d1a17;color:#ff7a6e}
+.fchero{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:2px 0 16px}
+.fchero>div{border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:linear-gradient(160deg,var(--surface),var(--bg2,var(--surface)));display:grid;gap:2px;position:relative;overflow:hidden}
+.fchero>div::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--vinho,#8d1d31)}.fchero>div.crit::before{background:#c0392b}.fchero>div.ok::before{background:#2e8b3e}
+.fchero small{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.fchero b{font-size:34px;line-height:1.1;font-weight:800}.fchero .crit b{color:#c0392b}.fchero span{color:var(--muted);font-size:12.5px}
+.fcg-t{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0}.fcg-t span{background:var(--bg2,rgba(0,0,0,.04));border-radius:10px;padding:6px 9px;font-size:11.5px;color:var(--muted);display:grid}.fcg-t b{font-size:16px;color:var(--ink,inherit)}.fcg-t b.crit{color:#c0392b}
+.fcidade{margin:14px 0 4px;border:1px solid var(--line);border-radius:14px;padding:12px 14px}.fcidade p{margin:0 0 8px;font-weight:700;font-size:13px}.fcidade p small{font-weight:400;color:var(--muted);margin-left:6px}
+.fcid-b{display:flex;gap:3px;height:12px;border-radius:99px;overflow:hidden;background:var(--line)}.fcid-b u{display:block;height:100%}.fcid-b u.ok{background:#2e8b3e}.fcid-b u.warn{background:#d99a1e}.fcid-b u.crit{background:#c0392b}
+.fcid-l{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12.5px}.fcid-l span{display:inline-flex;align-items:center;gap:6px}.fcid-l i{width:9px;height:9px;border-radius:50%;display:inline-block}.fcid-l .ok i{background:#2e8b3e}.fcid-l .warn i{background:#d99a1e}.fcid-l .crit i{background:#c0392b}
+.fcchips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.fcchips button{border:1px solid var(--line);background:var(--surface);color:inherit;border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;font-weight:650;cursor:pointer}.fcchips button b{margin-left:4px;color:var(--muted)}.fcchips button.on{background:var(--vinho,#8d1d31);border-color:var(--vinho,#8d1d31);color:#fff}.fcchips button.on b{color:#fff}
+.fcpend>p a.btn{text-transform:none;letter-spacing:0;text-decoration:none;color:var(--vinho,#8d1d31);font-weight:700;font-size:12.5px}.fcpend>p{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fcalerta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fdeceb;border:1px solid #f1b9b4;border-left:5px solid #c0392b;border-radius:12px;padding:12px 16px;margin:0 0 14px;font-size:13.5px}.fcalerta b{color:#8c1d14;font-size:14.5px}.fcalerta span{flex:1;min-width:200px;color:#5b2d29}.fcalerta.ok{background:#eaf6ec;border-color:#b9dfc0;border-left-color:#2e8b3e}.fcalerta.ok b{color:#1d6b2c}.fcalerta.ok span{color:#2c5a35}
+.fcat{color:#c0392b}.fcrs{font-size:12px;font-weight:650;color:var(--muted,#666)}.fcrs-sem{color:#b26a00}.fcassume{border:1.5px solid var(--vinho,#8d1d31);background:transparent;color:var(--vinho,#8d1d31);border-radius:99px;padding:1px 10px;font:inherit;font-size:11.5px;font-weight:750;cursor:pointer}.fcassume:hover{background:var(--vinho,#8d1d31);color:#fff}
+.fck3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.fck3>div{background:var(--surface,#fff);border:1px solid var(--line,#ddd);border-radius:12px;padding:10px 12px}.fck3 b{display:block;font-size:22px;line-height:1.15}.fck3 span{font-size:11.5px;color:var(--muted,#666)}.fcnota{margin:8px 0 0}.fccf{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--line,#e5e5e5)}.fccf b{flex:1 1 100%;font-size:13.5px}.fccf label{font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--muted,#666)}.fccf input{width:58px;min-height:34px;border:1px solid var(--line,#ccc);border-radius:8px;padding:2px 8px;font:inherit}.fccf-b{display:flex;gap:8px;margin-top:12px}.fcgest .xg2{margin-bottom:14px}
 .fcg{--c:#2f6fb3;border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;background:var(--surface);padding:14px 16px;display:grid;gap:8px;align-content:start}.fcg.par{--c:#d98a00}.fcg.ate{--c:#3C9E18}.fcg.on{box-shadow:0 0 0 2px var(--c)}
 .fcg-h{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}.fcg-h i{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-style:normal;font-weight:800;font-size:17px}.fcg-h span{font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase}.fcg-h span small{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:12.5px;color:var(--muted)}.fcg-h>b{font-size:36px;color:var(--c);line-height:1}
 .fcg>em{height:6px;border-radius:99px;background:var(--line);overflow:hidden;display:block}.fcg>em u{display:block;height:100%;background:var(--c)}.fcg-p{color:var(--muted);font-size:12px}
@@ -3155,11 +3171,68 @@ const FC_BAN='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFBAc
 /* ===== Fale Conosco: registro de atendimentos no próprio sistema ===== */
 let FC_ED=null,FC_INI=false;
 const fcPode=()=>!!(DBX&&CAN_EDIT);
-function fcIni(){if(FC_INI)return;FC_INI=true;FC.at.forEach((x,i)=>{if(!x.id)x.id='S'+i})}
+function fcIni(){if(FC_INI)return;FC_INI=true;FC.at.forEach((x,i)=>{if(!x.id)x.id='S'+i;if(x.ar)x.ar=fcAreaN(x.ar)})}
 function fcRecalc(){FC_ULT=Math.max(...FC.at.map(x=>x.d||0))}
-function fcAplica(o){fcIni();if(o&&o.st)o.st=fcNormSt(o.st);const i=FC.at.findIndex(x=>x.id===o.id);if(o.del){if(i>=0)FC.at.splice(i,1)}else if(i>=0)FC.at[i]=o;else FC.at.push(o);fcRecalc()}
+
+/* ===== Fale Conosco 3: responsável, atraso, 1ª resposta, retrabalho, área padronizada e prazos ajustáveis ===== */
+const FC_AREA_ALIAS={'STC':'GSTC','GSTC':'GSTC','G STC':'GSTC','GSTC/GOMAN':'GSTC/GOMAN','GOMAN/GSTC':'GSTC/GOMAN','GOMAN':'GOMAN','MANUTENCAO':'GOMAN','MANUTENCAO E OPERACAO':'GOMAN','ADM':'ADMINISTRATIVO','ADMINISTRATIVO':'ADMINISTRATIVO','ALMOX':'ALMOXARIFADO','ALMOXARIFADO':'ALMOXARIFADO','CONSTRUCAO':'CONSTRUÇÃO','GERE':'GERE','SPOT':'SPOT'};
+function fcAreaN(v){const t=String(v||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s*[\/\-]\s*/g,'/').replace(/\s+/g,' ').trim();if(!t)return '';if(FC_AREA_ALIAS[t])return FC_AREA_ALIAS[t];const o=String(v).toUpperCase().replace(/\s+/g,' ').trim();return o}
+let FC_META1=2,FC_CFG_OK=false,FC_CFG_ED=null;
+const FC_LIM0=JSON.stringify({NOVA:[2,5],VERIFICANDO:[3,7],AGUARDANDO:[7,14]});
+function fcCfgAplica(c){if(!c)return;const l=c.lim||{};['NOVA','VERIFICANDO','AGUARDANDO'].forEach(k=>{const v=l[k];if(Array.isArray(v)&&v[0]>0&&v[1]>=v[0])FC_LIM[k]=[+v[0],+v[1]]});
+  FCS_LIM.NOVA=FC_LIM.NOVA;FCS_LIM.ANDAMENTO=FC_LIM.VERIFICANDO;FCS_LIM.RESOLVIDO=FC_LIM.AGUARDANDO;if(c.meta1>0)FC_META1=+c.meta1}
+async function fcCfgCarrega(){if(FC_CFG_OK||!DBX)return;FC_CFG_OK=true;
+  try{const x=await DBX.doc('fc_faq/config').get();const d=x&&x.data?x.data():x;if(d&&d.j){fcCfgAplica(JSON.parse(d.j));if(/^fc-painel/.test((location.hash||'').slice(1))&&!FC_CFG_ED)render()}}catch(e){}}
+const fcResps=()=>{const A=window.CA_ACESSO||{};return [...new Set(FC.at.map(x=>x.rs).filter(Boolean).concat(A.nome?[A.nome]:[]))].sort((a,b)=>a.localeCompare(b))};
+const fcMeuNome=()=>(window.CA_ACESSO||{}).nome||'';
+const fcRsTag=x=>x.rs?'<span class="fcrs" title="Responsável pelo atendimento">Resp.: '+esc(x.rs)+'</span>':(fcPode()?'<button type="button" class="fcassume" data-fcassume="'+esc(x.id)+'">Assumir</button>':'<span class="fcrs fcrs-sem">sem responsável</span>');
+const fcCoDe=x=>x.co||((FC_COL||[]).find(c=>(x.mat&&c.ch===String(x.mat))||c.nm===fcNz(x.nm))||{}).co||'';
+const fcLimDe=r=>FC_LIM[fcNormSt(r.st)]||[3,7];
+const fcAtrasados=()=>FC.at.filter(x=>fcAberto(x.st)&&fcDiasSt(x)>fcLimDe(x)[1]).sort((p,q)=>fcDesde(p)-fcDesde(q));
+const fcFmtD=d=>d==null?'–':d<1?Math.max(1,Math.round(d*24))+' h':(Math.round(d*10)/10).toString().replace('.',',')+' d';
+const fcMed=a=>{if(!a.length)return null;const b=a.slice().sort((x,y)=>x-y),m=b.length>>1;return b.length%2?b[m]:(b[m-1]+b[m])/2};
+async function fcsAssume(prot,nome){let base=FC_SOL.find(x=>x.prot===prot)||{};
+  if(fcPode()){try{const x=await DBX.doc('fc_sol/'+prot).get();const d=x&&x.data?x.data():null;if(d&&d.prot)base=d}catch(e){}}
+  const s=Object.assign({},base,{rs:nome});const i=FC_SOL.findIndex(x=>x.prot===prot);if(i>=0)FC_SOL[i]=s;fcsNoPainel(s);
+  if(!fcPode())return 'teste';try{await DBX.doc('fc_sol/'+prot).set(s);return 'ok'}catch(x){toast('Não foi possível salvar ('+(x.message||x.code)+').');return 'erro'}}
+function fcAtrasoAviso(){const L=fcAtrasados();if(!L.length)return;const hoje=new Date().toISOString().slice(0,10),k=hoje+'|'+L.length;if(fcnLS('fc_atraso_dia')===k)return;fcnLS('fc_atraso_dia',k);
+  const ve=Math.floor(fcDiasSt(L[0]));FCN_AV=FCN_AV.filter(a=>a.prot!=='');FCN_AV.unshift({k:'atraso'+k,txt:N(L.length)+' atendimento(s) em atraso · o mais parado está há '+ve+' dia(s) no mesmo status',prot:'',t:new Date().toISOString()});FCN_AV=FCN_AV.slice(0,8);fcnDesenha('Atendimento em atraso');
+  try{if(window.Notification&&Notification.permission==='granted'&&document.visibilityState!=='visible'){const n=new Notification('Fale Conosco · CGB',{body:L.length+' atendimento(s) em atraso',tag:'fc-atraso'});n.onclick=()=>{window.focus();FF.st='PEND';location.hash='fc-lista';n.close()}}}catch(x){}}
+/* blocos de gestão do painel */
+function fcGestHtml(){
+  if(!FC_COL&&fcPode()){fcColCarregar().then(()=>{if(FC_COL&&location.hash==='#fc-painel')render()})}
+  const pend=FC.at.filter(x=>fcAberto(x.st)),atr=pend.filter(x=>fcDiasSt(x)>fcLimDe(x)[1]);
+  const lin=(g,pre,raw)=>g.map(q=>{const r=q.rows;return {k:q.k,n:r.length,at:r.filter(x=>fcDiasSt(x)>fcLimDe(x)[1]).length,vel:Math.max(...r.map(fcDiasSt)),sr:r.filter(x=>!x.rs).length,_tr:' data-'+pre+'="'+esc(raw?(q.rows[0].b||''):q.k)+'" style="cursor:pointer"'}}).sort((p,q)=>q.at-p.at||q.vel-p.vel);
+  const cs=(t,k)=>({h:t,n:1,f:r=>k==='at'?(r.at?'<b class="fcat">'+N(r.at)+'</b>':'0'):k==='vel'?fcFmtD(r.vel):N(r[k])});
+  const gCo=lin(grp(pend,x=>fcCoDe(x)||'(sem coordenador)'),'fcgco'),gBa=lin(grp(pend,x=>x.b?fcb(x.b):''),'fcgb',1),gRs=lin(grp(pend,x=>x.rs||'(sem responsável)'),'fcgrs');
+  const tCo=tabela([{h:'Coordenador',f:r=>'<b>'+esc(r.k)+'</b>'},cs('Pendentes','n'),cs('Em atraso','at'),cs('Mais parado','vel'),cs('Sem responsável','sr')],gCo);
+  const tBa=tabela([{h:'Base',f:r=>'<b>'+(r.k?esc(fcb(r.k)):'(sem base)')+'</b>'},cs('Pendentes','n'),cs('Em atraso','at'),cs('Mais parado','vel'),cs('Sem responsável','sr')],gBa);
+  const tRs=tabela([{h:'Responsável',f:r=>'<b>'+esc(r.k)+'</b>'},cs('Pendentes','n'),cs('Em atraso','at'),cs('Mais parado','vel')],gRs);
+  const ban=atr.length?'<div class="fcalerta"><b>'+N(atr.length)+' atendimento(s) em atraso</b><span>passaram do prazo do status: '+atr.slice(0,3).map(x=>esc(x.nm.split(' ')[0])+' ('+Math.floor(fcDiasSt(x))+' d)').join(', ')+(atr.length>3?' e outros':'')+'</span><button type="button" class="btn sm" data-fcatraso>Ver na lista</button></div>':'<div class="fcalerta ok"><b>Nenhum atendimento em atraso</b><span>todos os pendentes estão dentro do prazo de cada status</span></div>';
+  /* 1ª resposta (perguntas do site) */
+  const S=FC_SOL.filter(x=>x.criado).map(s=>{const m=fcsMsgs(s).find(m=>m.de==='a'&&m.em),t0=Date.parse(s.criado),t1=m?Date.parse(m.em):NaN;return {as:s.as||'(sem assunto)',b:s.b||'',dias:isFinite(t1)&&isFinite(t0)?Math.max(0,(t1-t0)/864e5):null,esp:!m&&(s.st==='NOVA'||s.st==='ANDAMENTO')}});
+  const resp=S.filter(x=>x.dias!=null),dentro=resp.filter(x=>x.dias<=FC_META1).length,esp=S.filter(x=>x.esp).length;
+  const tr1=(g,lab)=>tabela([{h:lab,f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Respondidos',n:1,f:r=>N(r.n)},{h:'Mediana',n:1,f:r=>fcFmtD(r.med)},{h:'Dentro da meta',n:1,f:r=>'<span class="pill '+(r.ok>=.8?'ate':r.ok>=.5?'par':'nao')+'">'+P(r.ok)+'</span>'},{h:'Aguardando',n:1,f:r=>r.esp?'<b class="fcat">'+N(r.esp)+'</b>':'0'}],g);
+  const mk=kf=>grp(S,kf).map(q=>{const r=q.rows.filter(x=>x.dias!=null);return {k:q.k,n:r.length,med:fcMed(r.map(x=>x.dias)),ok:r.length?r.filter(x=>x.dias<=FC_META1).length/r.length:null,esp:q.rows.filter(x=>x.esp).length}}).filter(x=>x.n||x.esp).sort((p,q)=>(q.med||0)-(p.med||0));
+  const pr=S.length?'<div class="fcs-k fck3"><div><b>'+fcFmtD(fcMed(resp.map(x=>x.dias)))+'</b><span>mediana até a 1ª resposta</span></div><div><b>'+(resp.length?P(dentro/resp.length):'–')+'</b><span>respondidos em até '+FC_META1+' dia(s) (meta)</span></div><div><b>'+N(esp)+'</b><span>ainda sem 1ª resposta</span></div></div>'+tr1(mk(x=>x.as),'Assunto')+'<p class="sml fcnota">Por base</p>'+tr1(mk(x=>x.b?fcb(x.b):'(sem base)'),'Base')+'<p class="sml fcnota">Conta só as perguntas feitas pela página do site, que têm hora de chegada e hora da resposta.</p>':'<p class="sml">Ainda não há perguntas do site para medir.</p>';
+  /* retrabalho */
+  const R=new Map(),g=k=>{k=k||'(sem assunto)';let x=R.get(k);if(!x)R.set(k,x={k,tot:0,rt:0,q:'',r:'',t:0});return x};
+  FC_SOL.forEach(s=>{const x=g(s.as);x.tot++;if(fcsMsgs(s).some(m=>m.de==='c'))x.rt++;const u=fcsUltA(s);if(u&&u.t&&String(s.criado||'')>=String(x.t||'')){x.t=s.criado;x.q=s.q||x.q;x.r=u.t}});
+  const mp=new Map();FC.at.filter(x=>x.org!=='site').forEach(r=>{const k=(r.mat||r.nm)+'|'+r.as;mp.set(k,(mp.get(k)||0)+1);const x=g(r.as);x.tot++;if(mp.get(k)>1)x.rt++;if(r.res&&(r.d||0)*864e5>=(x.t?Date.parse(x.t)||0:0)){x.t=new Date((r.d||0)*864e5).toISOString();x.q=r.q||x.q;x.r=r.res}});
+  const RT=[...R.values()].filter(x=>x.rt>0).sort((p,q)=>q.rt/q.tot-p.rt/p.tot||q.rt-p.rt).slice(0,8);
+  const trt=RT.length?tabela([{h:'Assunto',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Atendimentos',n:1,f:r=>N(r.tot)},{h:'Com retrabalho',n:1,f:r=>N(r.rt)},{h:'Taxa',n:1,f:r=>'<span class="pill '+(r.rt/r.tot>=.3?'nao':r.rt/r.tot>=.15?'par':'nd')+'">'+P(r.rt/r.tot)+'</span>'},{h:'',f:r=>fcPode()&&r.r?'<button type="button" class="btn sm" data-fcfaqnovo="'+esc(r.k)+'" title="Cria um rascunho de dúvida frequente com a última resposta">Virar dúvida frequente</button>':''}],RT)+'<p class="sml fcnota">Retrabalho = o colaborador voltou no mesmo protocolo do site, ou procurou o canal de novo pelo mesmo assunto. Assunto que se repete costuma pedir uma resposta pronta ou um aviso às equipes.</p>':'<p class="sml">Nenhum retorno ou repetição de assunto até agora.</p>';
+  /* prazos */
+  const ed=FC_CFG_ED||(FC_CFG_ED={lim:JSON.parse(JSON.stringify(FC_LIM)),meta1:FC_META1}),dis=fcPode()?'':' disabled';
+  const cf=(k,t)=>'<div class="fccf"><b>'+t+'</b><label>Atenção após<input type="number" min="1" max="60" data-fccfg="'+k+'.0" value="'+ed.lim[k][0]+'"'+dis+'> dia(s)</label><label>Atraso após<input type="number" min="1" max="90" data-fccfg="'+k+'.1" value="'+ed.lim[k][1]+'"'+dis+'> dia(s)</label></div>';
+  const cfg=cf('NOVA','Pendente resposta')+cf('VERIFICANDO','Pendente informação · verificando')+cf('AGUARDANDO','Pendente informação · aguardando colaborador')+'<div class="fccf"><b>Meta da 1ª resposta</b><label>Responder em até<input type="number" min="1" max="30" data-fccfg="meta1" value="'+ed.meta1+'"'+dis+'> dia(s)</label></div>'+
+    (fcPode()?'<div class="fccf-b"><button type="button" class="btn primary sm" data-fccfgx="salva">Salvar prazos</button><button type="button" class="btn sm" data-fccfgx="padrao">Voltar ao padrão</button></div>':'<p class="sml">Só quem edita o site altera os prazos.</p>')+'<p class="sml fcnota">Atenção deixa a etiqueta amarela; atraso deixa vermelha e dispara o aviso do dia. O prazo vale para todos.</p>';
+  return '<div class="fcgest">'+ban+
+   '<div class="xg2">'+panel('Pendentes por coordenador','clique para filtrar a lista',tCo)+panel('Pendentes por base','clique para filtrar a lista',tBa)+'</div>'+
+   '<div class="xg2">'+panel('Carga por responsável','quem está cuidando dos pendentes',tRs)+panel('Tempo até a 1ª resposta','meta: '+FC_META1+' dia(s)',pr)+'</div>'+
+   '<div class="xg2">'+panel('Assuntos que geram retrabalho','os que mais voltam ou se repetem',trt)+panel('Prazos do painel','quando o chamado fica amarelo e vermelho',cfg)+'</div></div>'}
+function fcAplica(o){fcIni();if(o&&o.st)o.st=fcNormSt(o.st);if(o&&o.ar)o.ar=fcAreaN(o.ar);const i=FC.at.findIndex(x=>x.id===o.id);if(o.del){if(i>=0)FC.at.splice(i,1)}else if(i>=0)FC.at[i]=o;else FC.at.push(o);fcRecalc()}
 async function fcCarregar(db){let m=false;try{const s=await db.collection('fc_at').get();const docs=s.docs||s;(docs||[]).forEach(d=>{const v=d.data?d.data():d;if(v&&v.j){fcAplica(JSON.parse(v.j));m=true}})}catch(e){}return m}
-async function fcGrava(o){fcAplica(o);if(fcPode()){try{await DBX.doc('fc_at/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
+async function fcGrava(o){fcIni();if(!o.del){const cur=FC.at.find(x=>x.id===o.id);if(!cur||fcNormSt(cur.st)!==fcNormSt(o.st))o.se=new Date().toISOString();else if(cur.se&&!o.se)o.se=cur.se}fcAplica(o);if(fcPode()){try{await DBX.doc('fc_at/'+o.id).set({j:JSON.stringify(o),em:new Date().toISOString()});return 'ok'}catch(x){toast('Não foi possível salvar para todos ('+(x.message||x.code)+').');return 'erro'}}return 'teste'}
 const fcUniq=k=>[...new Set(FC.at.map(x=>x[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
 const fcHoje=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
 const fcDia=d=>{const x=new Date(d*864e5);return x.toISOString().slice(0,10)};
@@ -3168,7 +3241,7 @@ let FC_COL=null,FC_COL_P=null,FC_AUTO={};
 const fcNz=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 function fcColCarregar(){if(FC_COL_P)return FC_COL_P;
   FC_COL_P=fetch('/api/fc-colaboradores',{cache:'no-store',credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(j=>{
-    FC_COL=((j&&j.colaboradores)||[]).map(x=>({ch:String(x.chapa||''),nm:String(x.nome||'').toUpperCase().replace(/\s+/g,' ').trim(),fn:String(x.funcao||'').toUpperCase(),b:x.base||'',ar:x.setor||'',sup:String(x.supervisor||'').toUpperCase(),co:String(x.coordenador||'').toUpperCase()})).filter(x=>x.nm);
+    FC_COL=((j&&j.colaboradores)||[]).map(x=>({ch:String(x.chapa||''),nm:String(x.nome||'').toUpperCase().replace(/\s+/g,' ').trim(),fn:String(x.funcao||'').toUpperCase(),b:x.base||'',ar:fcAreaN(x.setor),sup:String(x.supervisor||'').toUpperCase(),co:String(x.coordenador||'').toUpperCase()})).filter(x=>x.nm);
     const dl=document.getElementById('fcdl-nm');if(dl)dl.innerHTML=fcNomesHtml()}).catch(()=>{FC_COL=null;FC_COL_P=null});
   return FC_COL_P}
 function fcNomesHtml(){const op=(v,l)=>'<option value="'+esc(v)+'"'+(l?' label="'+esc(l)+'"':'')+'>';
@@ -3200,13 +3273,13 @@ PG['fc-novo']=()=>{fcIni();fcColCarregar();const e=FC_ED||(FC_ED={novo:1,id:'A'+
    '<div class="panel aqform"><div class="phd"><h3>1. Colaborador</h3><small>comece pelo nome e escolha na lista: o resto se preenche sozinho</small></div><div class="aqgrid">'+
     inp('nm','Nome do colaborador *','text','Digite o nome',{list:'fcdl-nm',cls:'aqw2'})+inp('mat','Matrícula (chapa)','text','opcional')+
     sel('b','Base',op(bases,e.b,'Escolha',fcb))+inp('fn','Função','text','ex.: Eletricista',{list:'fcdl-fn'})+inp('ar','Área','text','ex.: STC, ADM, GERE',{list:'fcdl-ar'})+
-    sel('co','Coordenador',op(cos,e.co,'Escolha'))+inp('sup','Supervisor','text','opcional',{list:'fcdl-sup'})+'</div></div>'+
+    sel('co','Coordenador',op(cos,e.co,'Escolha'))+inp('sup','Supervisor','text','opcional',{list:'fcdl-sup'})+inp('rs','Responsável pelo atendimento','text','quem está cuidando',{list:'fcdl-rs'})+'</div></div>'+
    '<div class="panel aqform"><div class="phd"><h3>2. Atendimento</h3><small>o que a pessoa pediu e como foi tratado</small></div><div class="aqgrid">'+
     inp('d','Data','date')+inp('as','Assunto *','text','Escolha ou digite um novo',{list:'fcdl-as'})+
     sel('st','Situação',FC_GRP.map(g=>'<optgroup label="'+g.t+'">'+FC_SIT.filter(x=>x.g===g.g).map(x=>'<option value="'+x.k+'"'+(fcNormSt(e.st)===x.k?' selected':'')+' title="'+esc(x.d)+'">'+x.t+'</option>').join('')+'</optgroup>').join(''))+
     txt('q','Pergunta / solicitação *','O que o colaborador pediu')+txt('res','Tratativa / resolução','O que foi feito e a resposta dada')+'</div>'+
     '<div class="aqbar">'+(!e.novo&&fcPode()?'<button type="button" class="btn" data-fcexclui>Excluir</button>':'')+'<span class="aqtot"></span><button type="button" class="btn" data-fccancela>Cancelar</button><button type="button" class="btn primary" data-fcsalva>'+(e.novo?'Registrar atendimento':'Salvar alterações')+'</button></div></div>'+
-   '<datalist id="fcdl-nm">'+fcNomesHtml()+'</datalist>'+dl('fcdl-fn',fcUniq('fn'))+dl('fcdl-ar',fcUniq('ar'))+dl('fcdl-sup',fcUniq('sup'))+dl('fcdl-as',fcUniq('as'))+
+   '<datalist id="fcdl-nm">'+fcNomesHtml()+'</datalist>'+dl('fcdl-fn',fcUniq('fn'))+dl('fcdl-ar',fcUniq('ar'))+dl('fcdl-sup',fcUniq('sup'))+dl('fcdl-rs',fcResps())+dl('fcdl-as',fcUniq('as'))+
    panel('Últimos registros','os 8 mais recentes',tabela([{h:'Data',f:r=>dt(r.d)},{h:'Colaborador',f:r=>'<b>'+esc(r.nm)+'</b><br><span class="sml">'+fcb(r.b)+'</span>'},{h:'Assunto',f:r=>'<span class="tagi">'+esc(r.as)+'</span>'},{h:'Situação',f:r=>fcSt(r.st)},{h:'',f:r=>'<button type="button" class="fced" data-fcedita="'+r.id+'" title="Editar atendimento" aria-label="Editar atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>'}],recentes,{}))};
 document.addEventListener('input',ev=>{const el=ev.target;if(!el.dataset||el.dataset.fce==null||!FC_ED)return;const k=el.dataset.fce;let v=el.value;
   if(k==='d'){const t=Date.parse(v);FC_ED.d=isNaN(t)?FC_ED.d:Math.floor(t/864e5);return}
@@ -3220,7 +3293,7 @@ document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-fc
   if(b.hasAttribute('data-fcexclui')){if(!confirm('Excluir este atendimento?'))return;await fcGrava({id:FC_ED.id,del:true});FC_ED=null;toast('Atendimento excluído.');location.hash='fc-lista';return}
   const e=FC_ED;if(!e)return;const falta=[['nm','o nome do colaborador'],['as','o assunto'],['q','a pergunta']].find(([k])=>!(e[k]||'').trim());
   if(falta){toast('Preencha '+falta[1]+'.');const c=document.querySelector('[data-fce="'+falta[0]+'"]');c&&c.focus();return}
-  const o=Object.assign({},e);delete o.novo;o.em=new Date().toISOString();if(!o.d)o.d=fcHoje();
+  const o=Object.assign({},e);delete o.novo;o.em=new Date().toISOString();if(!o.d)o.d=fcHoje();if(!o.rs&&fcAberto(o.st)&&fcMeuNome())o.rs=fcMeuNome();
   const r=await fcGrava(o);FC_ED=null;toast(r==='ok'?'Atendimento registrado. Já aparece no painel.':r==='teste'?'Atendimento registrado nesta tela (modo de teste: não fica salvo).':'Ficou só nesta tela.');location.hash='fc-lista'});
 
 /* ===== Fale Conosco pelo site: perguntas da página pública (fc_sol) e dúvidas frequentes dela (fc_faq) ===== */
@@ -3229,9 +3302,9 @@ const FCS_QR='<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 41 41" shap
 let FC_SOL=[],FCS_F='abertas',FCS_Q='',FCS_ED=null,FCS_OK=false,FCQ=null,FCQ_SUJO=false;
 /* Situações do atendimento (painel, lista, registro e perguntas do site) — o que cada uma significa e o que fazer */
 /* 3 situações (Nova, Em andamento, Finalizada), cada uma com o detalhe do porquê */
-const FC_GRP=[{g:'NOVA',t:'Nova',c:'ver',ic:'!',d:'Tudo o que ainda não foi respondido.'},{g:'AND',t:'Em andamento',c:'par',ic:'…',d:'Alguém está cuidando ou esperamos o colaborador.'},{g:'FIM',t:'Finalizada',c:'ate',ic:'✓',d:'Atendimento encerrado.'}];
+const FC_GRP=[{g:'NOVA',t:'Pendente resposta',c:'ver',ic:'!',d:'O colaborador está esperando a nossa resposta.'},{g:'AND',t:'Pendente informação',c:'par',ic:'…',d:'Esperamos uma informação (DP, outra área ou o colaborador) para responder.'},{g:'FIM',t:'Resolvidos',c:'ate',ic:'✓',d:'Atendimento encerrado: respondido ou sem retorno do colaborador.'}];
 const FC_SIT=[
-  {k:'NOVA',g:'NOVA',t:'Resposta pendente',c:'ver',d:'Chegou e ainda não foi respondida.',o:'Responda ou passe para Verificando resposta.'},
+  {k:'NOVA',g:'NOVA',t:'Aguardando a nossa resposta',c:'ver',d:'Chegou e ainda não foi respondida.',o:'Responda ou passe para Verificando resposta.'},
   {k:'VERIFICANDO',g:'AND',t:'Verificando resposta',c:'par',d:'Estamos conferindo a informação (DP, outra área, documento).',o:'Responda assim que tiver o retorno.'},
   {k:'AGUARDANDO',g:'AND',t:'Aguardando resposta do colaborador',c:'teal',d:'Já respondemos e pedimos retorno, documento ou confirmação.',o:'Sem retorno em 7 dias: finalize por falta de resposta.'},
   {k:'RESOLVIDO',g:'FIM',t:'Resolvida',c:'ate',d:'A dúvida foi respondida ou o pedido foi atendido.',o:'Nada a fazer.'},
@@ -3240,14 +3313,42 @@ const FC_SITK=Object.fromEntries(FC_SIT.map(x=>[x.k,x])),FC_AGUARDA_DIAS=7;
 const fcNormSt=st=>({ANDAMENTO:'VERIFICANDO',VERIFICAR:'VERIFICANDO'})[st]||st;   // situações antigas
 const fcGrupo=st=>(FC_SITK[fcNormSt(st)]||{}).g||'AND';
 const fcAberto=st=>fcGrupo(st)!=='FIM';
-const fcStOk=(st,f)=>!f||(f.startsWith('G:')?fcGrupo(st)===f.slice(2):fcNormSt(st)===f);
+const fcStOk=(st,f)=>!f||(f==='PEND'?fcAberto(st):f.startsWith('G:')?fcGrupo(st)===f.slice(2):fcNormSt(st)===f);
 const fcSt=s=>{const x=FC_SITK[fcNormSt(s)];if(!x)return '<span class="pill nao">'+esc(s)+'</span>';const g=FC_GRP.find(y=>y.g===x.g);return '<span class="pill fcp-'+x.c+'" title="'+esc(x.d)+'">'+g.t+' · '+x.t+'</span>'};
+
+/* ===== Tempo no status: quanto tempo cada chamado pendente está parado no status atual ===== */
+const FC_LIM={NOVA:[2,5],VERIFICANDO:[3,7],AGUARDANDO:[FC_AGUARDA_DIAS,FC_AGUARDA_DIAS*2]};
+const fcDesde=r=>{if(r.se){const t=Date.parse(r.se);if(!isNaN(t))return t}return r.d?r.d*864e5:Date.now()};
+const fcDiasSt=r=>Math.max(0,(Date.now()-fcDesde(r))/864e5);
+const fcTxtTempo=d=>d<1/24?'agora':d<1?Math.floor(d*24)+' h':Math.floor(d)+' d';
+const fcCls=(d,L)=>d>=L[1]?'crit':d>=L[0]?'warn':'ok';
+const fcTmHtml=(d,L,ms,exato)=>{const t=new Date(ms);return '<span class="fctm '+fcCls(d,L)+'" title="Neste status desde '+t.toLocaleDateString('pt-BR')+(exato?' '+t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):' (data do registro; a hora exata passa a contar a partir da próxima mudança de situação)')+'. Atenção a partir de '+L[0]+' d, atrasado a partir de '+L[1]+' d.">'+fcTxtTempo(d)+' no status</span>'};
+const fcTm=r=>{const s=fcNormSt(r.st);if(!fcAberto(s))return '';return fcTmHtml(fcDiasSt(r),FC_LIM[s]||[3,7],fcDesde(r),!!r.se)};
+const fcTmCls=r=>fcCls(fcDiasSt(r),FC_LIM[fcNormSt(r.st)]||[3,7]);
+function fcGrpInfo(g,gr){if(g.g==='FIM')return '';const p=gr.filter(r=>fcAberto(r.st));if(!p.length)return '<div class="fcg-t"><span>Nada parado aqui</span></div>';
+  const ds=p.map(fcDiasSt),mx=Math.max(...ds),md=ds.reduce((a,b)=>a+b,0)/ds.length,at=p.filter(r=>fcTmCls(r)==='crit').length;
+  return '<div class="fcg-t"><span>Mais antigo<b>'+fcTxtTempo(mx)+'</b></span><span>Média parada<b>'+fcTxtTempo(md)+'</b></span><span>Atrasados<b class="'+(at?'crit':'')+'">'+N(at)+'</b></span></div>'}
+function fcIdade(p){const c={ok:0,warn:0,crit:0};p.forEach(r=>c[fcTmCls(r)]++);const t=p.length||1;
+  return '<div class="fcidade"><p>Há quanto tempo os pendentes estão no status atual <small>prazos: resposta 2 d (atenção) e 5 d (atrasado) · informação 3 d e 7 d</small></p><div class="fcid-b">'+['ok','warn','crit'].map(k=>c[k]?'<u class="'+k+'" style="flex:'+c[k]+'"></u>':'').join('')+'</div><div class="fcid-l"><span class="ok"><i></i>No prazo <b>'+N(c.ok)+'</b></span><span class="warn"><i></i>Atenção <b>'+N(c.warn)+'</b></span><span class="crit"><i></i>Atrasados <b>'+N(c.crit)+'</b></span></div></div>'}
+function fcResumo(a){const p=a.filter(r=>fcAberto(r.st)),fim=a.length-p.length,mx=p.length?Math.max(...p.map(fcDiasSt)):0,at=p.filter(r=>fcTmCls(r)==='crit').length;
+  return '<div class="fchero"><div><small>Pendentes agora</small><b>'+N(p.length)+'</b><span>'+N(a.filter(r=>fcGrupo(r.st)==='NOVA').length)+' esperam resposta · '+N(a.filter(r=>fcGrupo(r.st)==='AND').length)+' esperam informação</span></div>'+
+   '<div class="'+(at?'crit':'')+'"><small>Atrasados</small><b>'+N(at)+'</b><span>passaram do prazo no status atual</span></div>'+
+   '<div><small>Mais antigo</small><b>'+(p.length?fcTxtTempo(mx):'–')+'</b><span>parado no mesmo status</span></div>'+
+   '<div class="ok"><small>Resolvidos</small><b>'+P(fim/(a.length||1))+'</b><span>'+N(fim)+' de '+N(a.length)+' no filtro</span></div></div>'}
+function fcChips(){const a=fcRows('st'),n=g=>a.filter(r=>fcGrupo(r.st)===g).length;
+  const L=[['','Todos',a.length],['PEND','Pendentes',a.filter(r=>fcAberto(r.st)).length],['G:NOVA','Pendente resposta',n('NOVA')],['G:AND','Pendente informação',n('AND')],['G:FIM','Resolvidos',n('FIM')]];
+  return '<div class="fcchips">'+L.map(([k,t,c])=>'<button type="button" class="'+((FF.st||'')===k?'on':'')+'" data-fcst="'+k+'">'+t+' <b>'+N(c)+'</b></button>').join('')+'</div>'}
+/* data em que o protocolo do site entrou no status atual */
+const fcsDesde=x=>{const ts=[Date.parse(x.criado),Date.parse(x.se)].filter(t=>!isNaN(t));fcsMsgs(x).forEach(m=>{const t=Date.parse(m.em);if(!isNaN(t))ts.push(t)});return ts.length?Math.max(...ts):Date.now()};
+const FCS_LIM={NOVA:[2,5],ANDAMENTO:[3,7],RESOLVIDO:[FC_AGUARDA_DIAS,FC_AGUARDA_DIAS*2]};
+const fcsTm=x=>{if(!FCS_LIM[x.st])return '';const ms=fcsDesde(x);return fcTmHtml(Math.max(0,(Date.now()-ms)/864e5),FCS_LIM[x.st],ms,true)};
+
 /* situações do protocolo do site: [nome, cor, o que significa] */
-const FCS_ST={NOVA:['Nova · resposta pendente','ver','Chegou (ou o colaborador respondeu) e ainda não foi respondida.'],
-  ANDAMENTO:['Em andamento · verificando resposta','par','Você está conferindo a informação (DP, outra área, documento). O colaborador vê "Em andamento".'],
-  RESOLVIDO:['Em andamento · aguardando resposta do colaborador','teal','Já respondemos e pedimos retorno. Ele pode responder no mesmo protocolo; se responder, volta como Nova.'],
-  ENCERRADO:['Finalizada · resolvida','ate','Concluída. O colaborador vê a conversa, mas não responde mais neste protocolo.'],
-  SEM_RESPOSTA:['Finalizada por falta de resposta','nd','Pedimos retorno e ele não respondeu em '+FC_AGUARDA_DIAS+' dias. Se voltar, abre uma nova pergunta.']};
+const FCS_ST={NOVA:['Pendente resposta · nova','ver','Chegou (ou o colaborador respondeu) e ainda não foi respondida.'],
+  ANDAMENTO:['Pendente informação · verificando','par','Você está conferindo a informação (DP, outra área, documento). O colaborador vê "Em andamento".'],
+  RESOLVIDO:['Pendente informação · aguardando o colaborador','teal','Já respondemos e pedimos retorno. Ele pode responder no mesmo protocolo; se responder, volta como Nova.'],
+  ENCERRADO:['Resolvido','ate','Concluída. O colaborador vê a conversa, mas não responde mais neste protocolo.'],
+  SEM_RESPOSTA:['Resolvido · sem resposta do colaborador','nd','Pedimos retorno e ele não respondeu em '+FC_AGUARDA_DIAS+' dias. Se voltar, abre uma nova pergunta.']};
 const fcsFechada=st=>st==='RESOLVIDO'||st==='ENCERRADO'||st==='SEM_RESPOSTA';
 const fcsPill=s=>{const x=FCS_ST[s]||[s,'nd'];return '<span class="pill fcp-'+x[1]+'" title="'+esc(x[2]||'')+'">'+x[0]+'</span>'};
 const fcsDiasSemRetorno=x=>{if(x.st!=='RESOLVIDO'||fcsVoltou(x))return 0;const u=fcsUltA(x);return u&&u.em?Math.floor((Date.now()-new Date(u.em))/864e5):0};
@@ -3260,14 +3361,14 @@ const fcsUltA=s=>{const a=fcsMsgs(s).filter(m=>m.de==='a');return a.length?a[a.l
 const fcsVisto=(s,m)=>!!(s.visto_em&&m.em&&s.visto_em>=m.em);
 const fcsVoltou=s=>{const m=fcsMsgs(s);return m.length>0&&m[m.length-1].de==='c'};
 /* cada pergunta do site também entra no painel e na lista de atendimentos (nova/em andamento contam como "em andamento") */
-function fcsNoPainel(s){fcAplica({id:'W'+s.prot,d:s.d,nm:s.nm,mat:s.chapa,b:s.b,fn:s.fn,as:s.as,q:s.q,res:(fcsUltA(s)||{}).t||'',st:{NOVA:'NOVA',ANDAMENTO:'VERIFICANDO',RESOLVIDO:'AGUARDANDO',ENCERRADO:'RESOLVIDO',SEM_RESPOSTA:'SEM_RESPOSTA'}[s.st]||'VERIFICANDO',org:'site',prot:s.prot})}
-async function fcsCarregar(db){try{const s=await db.collection('fc_sol').get();const docs=s.docs||s;FC_SOL=(docs||[]).map(d=>d.data?d.data():d).filter(v=>v&&v.prot);FCS_OK=true;
+function fcsNoPainel(s){fcAplica({id:'W'+s.prot,d:s.d,nm:s.nm,mat:s.chapa,b:s.b,fn:s.fn,as:s.as,q:s.q,res:(fcsUltA(s)||{}).t||'',st:{NOVA:'NOVA',ANDAMENTO:'VERIFICANDO',RESOLVIDO:'AGUARDANDO',ENCERRADO:'RESOLVIDO',SEM_RESPOSTA:'SEM_RESPOSTA'}[s.st]||'VERIFICANDO',org:'site',prot:s.prot,rs:s.rs||s.resp_por||'',se:new Date(fcsDesde(s)).toISOString()})}
+async function fcsCarregar(db){try{const s=await db.collection('fc_sol').get();const docs=s.docs||s;FC_SOL=(docs||[]).map(d=>d.data?d.data():d).filter(v=>v&&v.prot);FCS_OK=true;fcCfgCarrega();
   FC_SOL.sort((a,b)=>String(b.criado).localeCompare(String(a.criado)));FC_SOL.forEach(fcsNoPainel);return FC_SOL.length>0}catch(e){return false}}
 async function fcsGrava(prot,nova,st,por){let base=FC_SOL.find(x=>x.prot===prot)||{};
   if(fcPode()){try{const x=await DBX.doc('fc_sol/'+prot).get();const d=x&&x.data?x.data():null;if(d&&d.prot)base=d}catch(e){}}
   const s=Object.assign({},base),agora=new Date().toISOString(),msgs=fcsMsgs(base).slice();
   if(nova){msgs.push(Object.assign({de:'a',t:nova,em:agora},por?{por}:{}));s.res=nova;s.resp_em=agora;if(por)s.resp_por=por}
-  s.msgs=msgs;s.st=st;
+  s.msgs=msgs;if(base.st!==st||nova)s.se=agora;s.st=st;
   const i=FC_SOL.findIndex(x=>x.prot===prot);if(i>=0)FC_SOL[i]=s;else FC_SOL.unshift(s);fcsNoPainel(s);
   if(!fcPode())return ['teste',s];try{await DBX.doc('fc_sol/'+prot).set(s);return ['ok',s]}catch(x){toast('Não foi possível salvar ('+(x.message||x.code)+').');return ['erro',s]}}
 const FCS_CSS='<style>.fcs-k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}.fcs-k>div{background:var(--surface,#fff);border:1px solid var(--line,#ddd);border-radius:12px;padding:12px 14px}.fcs-k b{display:block;font-size:26px;line-height:1.1}.fcs-k span{font-size:12px;color:var(--muted,#666)}'+
@@ -3300,15 +3401,15 @@ PG['fc-site']=()=>{
       '<ul class="fcs-leg">'+Object.entries(FCS_ST).map(([k,v])=>'<li'+(s.st===k?' class="on"':'')+'>'+fcsPill(k)+'<span>'+esc(v[2])+'</span></li>').join('')+'</ul>'+
       '<div class="aqbar">'+(fcPode()?'<button type="button" class="btn" data-fcsx="exclui" style="color:var(--crit,#b3261e)">Excluir</button>':'')+'<span class="aqtot"></span><button type="button" class="btn" data-fcsx="cancela">Voltar</button>'+(fcPode()?(!['ENCERRADO','SEM_RESPOSTA'].includes(s.st)?'<button type="button" class="btn" data-fcsx="semresp" title="'+esc(FCS_ST.SEM_RESPOSTA[2])+'">Finalizar por falta de resposta</button><button type="button" class="btn" data-fcsx="encerra" title="'+esc(FCS_ST.ENCERRADO[2])+'">Finalizar · resolvida</button>':'')+'<button type="button" class="btn primary" data-fcsx="salva">Salvar resposta</button>':'')+'</div></div>';
   }
-  h+='<div class="fcs-k"><div><span>Nova</span><b>'+N(nv.length)+'</b><span>resposta pendente</span></div><div><span>Em andamento</span><b>'+N(an.length+rs.length)+'</b><span>'+N(an.length)+' verificando · '+N(rs.length)+' aguardando o colaborador'+(velhas.length?' ('+N(velhas.length)+' há '+FC_AGUARDA_DIAS+'+ dias)':'')+'</span></div><div><span>Finalizada</span><b>'+N(en.length+sr.length)+'</b><span>'+N(en.length)+' resolvidas · '+N(sr.length)+' por falta de resposta</span></div><div><span>Tempo médio</span><b>'+(med==null?'–':med<1?nf0.format(Math.max(1,Math.round(med*24)))+' h':nf1.format(med)+' d')+'</b><span>até responder</span></div></div>';
-  const F=[['abertas','Precisam de ação',nv.length+an.length],['NOVA','Resposta pendente',nv.length],['ANDAMENTO','Verificando resposta',an.length],['RESOLVIDO','Aguardando o colaborador',rs.length],['ENCERRADO','Resolvidas',en.length],['SEM_RESPOSTA','Por falta de resposta',sr.length],['todas','Todas',FC_SOL.length]];
+  h+='<div class="fcs-k"><div><span>Pendente resposta</span><b>'+N(nv.length)+'</b><span>esperam a nossa resposta</span></div><div><span>Pendente informação</span><b>'+N(an.length+rs.length)+'</b><span>'+N(an.length)+' verificando · '+N(rs.length)+' aguardando o colaborador'+(velhas.length?' ('+N(velhas.length)+' há '+FC_AGUARDA_DIAS+'+ dias)':'')+'</span></div><div><span>Resolvidos</span><b>'+N(en.length+sr.length)+'</b><span>'+N(en.length)+' resolvidas · '+N(sr.length)+' por falta de resposta</span></div><div><span>Tempo médio</span><b>'+(med==null?'–':med<1?nf0.format(Math.max(1,Math.round(med*24)))+' h':nf1.format(med)+' d')+'</b><span>até responder</span></div></div>';
+  const F=[['abertas','Precisam de ação',nv.length+an.length],['NOVA','Pendente resposta',nv.length],['ANDAMENTO','Pendente informação · verificando',an.length],['RESOLVIDO','Pendente informação · aguardando o colaborador',rs.length],['ENCERRADO','Resolvidas',en.length],['SEM_RESPOSTA','Por falta de resposta',sr.length],['todas','Todas',FC_SOL.length]];
   if(velhas.length&&fcPode())h+='<div class="note fcs-velhas"><span><b>'+N(velhas.length)+' pergunta(s) respondida(s) há '+FC_AGUARDA_DIAS+' dias ou mais, sem retorno do colaborador.</b> '+velhas.slice(0,5).map(x=>esc(x.prot)+' ('+esc(x.nm.split(' ')[0])+', '+fcsDiasSemRetorno(x)+' d)').join(' · ')+(velhas.length>5?' …':'')+'</span><button type="button" class="btn sm" data-fcsvelhas>Finalizar as '+N(velhas.length)+' por falta de resposta</button></div>';
   const t=fcsNorm(FCS_Q);
   const L=FC_SOL.filter(x=>(FCS_F==='todas'||(FCS_F==='abertas'?!fcsFechada(x.st):x.st===FCS_F))&&(!t||fcsNorm([x.prot,x.nm,x.chapa,x.as,x.q,x.b].join(' ')).includes(t)));
   h+='<div class="fcs-f">'+F.map(([k,n,c])=>'<button type="button" data-fcsf="'+k+'" class="'+(FCS_F===k?'on':'')+'">'+n+' ('+c+')</button>').join('')+'<input type="search" data-fcsq placeholder="Buscar nome, chapa, protocolo…" value="'+esc(FCS_Q)+'"></div>';
   if(!FCS_OK&&!FC_SOL.length)h+=panel('Ainda sem perguntas','','<p class="sml">As perguntas enviadas pela página pública aparecem aqui assim que chegam (abra esta tela de novo para atualizar). O link e o QR Code para divulgar estão em <a href="#fc-faq">Dúvidas e link do site</a>.</p>');
   else if(!L.length)h+='<p class="sml" style="padding:14px 2px">Nenhuma pergunta neste filtro.</p>';
-  else h+=L.slice(0,300).map(x=>'<div class="fcs-c'+(x.st==='NOVA'?' nova':'')+'"><div class="t">'+fcsPill(x.st)+(fcsDiasSemRetorno(x)?'<span class="pill fcp-nd">sem retorno há '+fcsDiasSemRetorno(x)+' d</span>':'')+'<b>'+esc(x.prot)+'</b><span>'+esc(fcsData(x.criado))+'</span><span class="tagi">'+esc(x.as)+'</span></div>'+
+  else h+=L.slice(0,300).map(x=>'<div class="fcs-c'+(x.st==='NOVA'?' nova':'')+'"><div class="t">'+fcsPill(x.st)+fcsTm(x)+(fcsDiasSemRetorno(x)?'<span class="pill fcp-nd">sem retorno há '+fcsDiasSemRetorno(x)+' d</span>':'')+'<b>'+esc(x.prot)+'</b><span>'+esc(fcsData(x.criado))+'</span><span class="tagi">'+esc(x.as)+'</span></div>'+
     '<div><b>'+esc(x.nm)+'</b> <span class="sml">· chapa '+esc(x.chapa)+' · '+esc(fcb(x.b)||x.b||'')+(x.tel?' · tel. '+esc(x.tel):'')+'</span></div>'+
     '<div class="q">'+esc(x.q)+'</div>'+(()=>{const m=fcsMsgs(x),u=m[m.length-1];if(!u)return '';return '<div class="r"><b>'+(u.de==='c'?'Nova mensagem do colaborador':'Última resposta')+(m.length>1?' ('+m.length+' mensagens)':'')+':</b> '+esc(u.t)+'</div>'})()+
     '<div class="a"><button type="button" class="btn '+(fcsFechada(x.st)?'':'primary')+' sm" data-fcsabre="'+esc(x.prot)+'">'+(fcsFechada(x.st)?'Ver / editar':'Responder')+'</button></div></div>').join('');
@@ -3419,27 +3520,47 @@ async function fcnConfere(primeira){if(!DBX||!FCS_OK&&!primeira)return;
     const h=(location.hash||'').slice(1),ocupado=FCS_ED||FCQ_SUJO||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
     if(novos.length&&/^fc-/.test(h)&&!ocupado)render()}
   if(novos.length)fcnMostra(novos.sort((a,b)=>String(b.t).localeCompare(String(a.t))),primeira?'Desde a sua última visita':'Novidade no Fale Conosco');
+  try{fcAtrasoAviso()}catch(e){}
   fcnLS('fc_ult_visto',new Date().toISOString())}
-function fcnInicia(){if(FCN_T||!DBX)return;fcnConfere(true);FCN_T=setInterval(()=>fcnConfere(false),60000)}
+function fcnInicia(){if(FCN_T||!DBX)return;fcCfgCarrega();fcnConfere(true);FCN_T=setInterval(()=>fcnConfere(false),60000)}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcnx],[data-fcnabre],[data-fcnperm]');if(!b)return;
   if(b.hasAttribute('data-fcnx')){FCN_AV=[];fcnDesenha();return}
   if(b.hasAttribute('data-fcnperm')){try{await Notification.requestPermission()}catch(x){}fcnDesenha();toast(window.Notification&&Notification.permission==='granted'?'Pronto: o computador vai avisar quando chegar pergunta ou resposta.':'O navegador não liberou os avisos.');return}
-  const pr=b.dataset.fcnabre;FCN_AV=FCN_AV.filter(a=>a.prot!==pr);fcnDesenha();location.hash='fc-site';const sb=FC_SOL.find(x=>x.prot===pr);if(sb){FCS_ED=Object.assign({},sb);render();scrollTo({top:0})}});
+  const pr=b.dataset.fcnabre;FCN_AV=FCN_AV.filter(a=>a.prot!==pr);fcnDesenha();if(!pr){FF.st='PEND';if(location.hash==='#fc-lista')render();else location.hash='fc-lista';return}location.hash='fc-site';const sb=FC_SOL.find(x=>x.prot===pr);if(sb){FCS_ED=Object.assign({},sb);render();scrollTo({top:0})}});
+
+document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||el.dataset.fccfg==null||!FC_CFG_ED)return;const k=el.dataset.fccfg,v=Math.max(1,Math.round(+el.value)||1);
+  if(k==='meta1')FC_CFG_ED.meta1=v;else{const [n,i]=k.split('.');FC_CFG_ED.lim[n][+i]=v}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcassume],[data-fcatraso],[data-fcgco],[data-fcgb],[data-fcgrs],[data-fcfaqnovo],[data-fccfgx]');if(!b)return;
+  if(b.dataset.fcassume){const id=b.dataset.fcassume,r=FC.at.find(x=>x.id===id),n=fcMeuNome();if(!r)return;if(!n){toast('Não consegui identificar o seu nome para assumir.');return}
+    if(id[0]==='W'&&r.org==='site')await fcsAssume(r.prot,n);else await fcGrava(Object.assign({},r,{rs:n}));toast('Atendimento assumido por '+n+'.');render();return}
+  if(b.hasAttribute('data-fcatraso')){FF.st='PEND';location.hash='fc-lista';if(location.hash==='#fc-lista')render();return}
+  if(b.dataset.fcgco||b.dataset.fcgb){if(b.dataset.fcgco){FF.co=b.dataset.fcgco==='(sem coordenador)'?'':b.dataset.fcgco}if(b.dataset.fcgb)FF.b=b.dataset.fcgb;FF.st='PEND';location.hash='fc-lista';render();return}
+  if(b.dataset.fcgrs){FF.q=b.dataset.fcgrs==='(sem responsável)'?'':b.dataset.fcgrs;FF.st='PEND';location.hash='fc-lista';render();return}
+  if(b.dataset.fcfaqnovo){const as=b.dataset.fcfaqnovo;let q='',r='',t='';
+    FC_SOL.forEach(s=>{if((s.as||'(sem assunto)')!==as)return;const u=fcsUltA(s);if(u&&u.t&&String(s.criado||'')>=t){t=String(s.criado||'');q=s.q||q;r=u.t}});
+    if(!r)FC.at.filter(x=>(x.as||'(sem assunto)')===as&&x.res).sort((p,q2)=>(q2.d||0)-(p.d||0)).slice(0,1).forEach(x=>{q=x.q;r=x.res});
+    if(!r){toast('Não há resposta registrada para este assunto.');return}
+    await fcqCarregar();FCQ.itens.unshift({id:'q'+Date.now().toString(36),as:as==='(sem assunto)'?'':as,p:q,r,pub:false});FCQ_SUJO=true;toast('Rascunho criado: revise a pergunta e a resposta e salve.');location.hash='fc-faq';return}
+  if(b.dataset.fccfgx){if(b.dataset.fccfgx==='padrao'){FC_CFG_ED={lim:JSON.parse(FC_LIM0),meta1:2};render();return}
+    const c=FC_CFG_ED;if(!c||!fcPode())return;const bad=['NOVA','VERIFICANDO','AGUARDANDO'].find(k=>c.lim[k][1]<c.lim[k][0]);if(bad){toast('O prazo de atraso precisa ser igual ou maior que o de atenção.');return}
+    fcCfgAplica(c);try{await DBX.doc('fc_faq/config').set({j:JSON.stringify({lim:c.lim,meta1:c.meta1}),em:new Date().toISOString()});toast('Prazos salvos para todos.')}catch(x){toast('Não foi possível salvar ('+(x.message||x.code)+').')}FC_CFG_ED=null;render()}});
 /* botão "Novo atendimento" e coluna Editar nas telas do Fale Conosco */
 {const _r=render;render=function(){const r=_r.apply(this,arguments);try{const h=(location.hash||'').slice(1);
   if(h==='fc-painel'||h==='fc-lista'){const m=$('main'),u=m&&m.querySelector('.ubar');if(u&&!u.querySelector('[data-fcnovo]')){let rr=u.querySelector(':scope > .ubar-r');if(!rr){rr=document.createElement('div');rr.className='ubar-r';u.appendChild(rr)}const bt=document.createElement('button');bt.type='button';bt.className='btn primary fcnbtn';bt.setAttribute('data-fcnovo','');bt.textContent='+ Novo atendimento';rr.insertBefore(bt,rr.firstChild)}}
   if(h==='fc-painel'&&!document.querySelector('#main .fcstp')){const a=fcRows('st'),tot=a.length||1;
-    const pri=['NOVA','VERIFICANDO','AGUARDANDO'],pend=a.filter(x=>fcAberto(x.st)).sort((p,q)=>(pri.indexOf(p.st)-pri.indexOf(q.st))||((q.d||0)-(p.d||0)));
+    const pri=['NOVA','VERIFICANDO','AGUARDANDO'],pend=a.filter(x=>fcAberto(x.st)).sort((p,q)=>fcDesde(p)-fcDesde(q)||(pri.indexOf(p.st)-pri.indexOf(q.st)));
     const box=document.createElement('div');box.className='panel fcstp';
-    box.innerHTML='<div class="phd"><h3>Situação dos atendimentos</h3><small>clique na situação ou no detalhe para filtrar</small></div><div class="fcst3">'+FC_GRP.map(g=>{const gr=a.filter(r=>fcGrupo(r.st)===g.g),n=gr.length;
-      return '<div class="fcg '+g.c+(FF.st==='G:'+g.g?' on':'')+'"><button type="button" class="fcg-h" data-fcst="G:'+g.g+'"><i>'+g.ic+'</i><span>'+g.t+'<small>'+esc(g.d)+'</small></span><b>'+N(n)+'</b></button><em><u style="width:'+(100*n/tot)+'%"></u></em><small class="fcg-p">'+Math.round(100*n/tot)+'% dos atendimentos</small>'+
+    box.innerHTML='<div class="phd"><h3>Fila de atendimento</h3><small>clique na categoria ou no detalhe para filtrar</small></div>'+fcResumo(a)+'<div class="fcst3">'+FC_GRP.map(g=>{const gr=a.filter(r=>fcGrupo(r.st)===g.g),n=gr.length;
+      return '<div class="fcg '+g.c+(FF.st==='G:'+g.g?' on':'')+'"><button type="button" class="fcg-h" data-fcst="G:'+g.g+'"><i>'+g.ic+'</i><span>'+g.t+'<small>'+esc(g.d)+'</small></span><b>'+N(n)+'</b></button><em><u style="width:'+(100*n/tot)+'%"></u></em><small class="fcg-p">'+Math.round(100*n/tot)+'% dos atendimentos</small>'+fcGrpInfo(g,gr)+
         FC_SIT.filter(x=>x.g===g.g).map(x=>{const k=gr.filter(r=>r.st===x.k).length;return '<button type="button" class="fcg-s fcp-'+x.c+(FF.st===x.k?' on':'')+'" data-fcst="'+x.k+'"><span><b>'+x.t+'</b><small>'+esc(x.d)+' <strong>O que fazer:</strong> '+esc(x.o)+'</small></span><b class="fcg-n">'+N(k)+'</b></button>'}).join('')+'</div>'}).join('')+'</div>'+
-      (pend.length?'<div class="fcpend"><p>Para acompanhar ('+pend.length+') · do mais urgente para o menos</p>'+pend.slice(0,8).map(x=>'<div><span>'+fcSt(x.st)+'</span><b>'+esc(x.nm)+'</b><small>'+esc(x.as)+' · '+dt(x.d)+(x.org==='site'?' · site '+esc(x.prot||''):'')+'</small><button type="button" class="fced" data-fcedita="'+x.id+'" title="Abrir atendimento" aria-label="Abrir atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button></div>').join('')+'</div>':'<p class="fcpend-ok">Nada pendente: todos os atendimentos estão finalizados.</p>');
+      (pend.length?fcIdade(pend)+'<div class="fcpend"><p>Para acompanhar ('+pend.length+') · do mais parado para o menos <a class="btn sm" href="#fc-lista" data-fcst="PEND">Ver pendentes na lista</a></p>'+pend.slice(0,10).map(x=>'<div><span>'+fcSt(x.st)+' '+fcTm(x)+'</span><b>'+esc(x.nm)+'</b><small>'+esc(x.as)+' · '+dt(x.d)+(x.org==='site'?' · site '+esc(x.prot||''):'')+' · '+fcRsTag(x)+'</small><button type="button" class="fced" data-fcedita="'+x.id+'" title="Abrir atendimento" aria-label="Abrir atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button></div>').join('')+'</div>':'<p class="fcpend-ok">Nada pendente: todos os atendimentos estão finalizados.</p>');
     const ban=document.querySelector('#main .fcban')||document.querySelector('#main .ubar');if(ban)ban.after(box);else{const sec=document.querySelector('#main > section');if(sec)sec.insertBefore(box,sec.firstChild)}}
+  if(h==='fc-painel'&&!document.querySelector('#main .fcgest')){const bx=document.querySelector('#main .fcstp');if(bx){const gd=document.createElement('div');gd.innerHTML=fcGestHtml();bx.after(gd.firstChild)}}
   if(h==='fc-painel')setTimeout(()=>{const sec=document.querySelector('#main > section');if(!sec||sec.querySelector('.fcsec'))return;
     const put=(el,n,t,sub)=>{if(!el)return;const d=document.createElement('div');d.className='fcsec';d.innerHTML='<b>'+n+'</b><div><h4>'+t+'</h4><span>'+sub+'</span></div>';el.before(d)};
     const xs=sec.querySelectorAll(':scope > .xg2');
     put(sec.querySelector(':scope > .fcstp'),'1','Situação agora','o que está pendente, em andamento e finalizado · comece por aqui');
+    put(sec.querySelector(':scope > .fcgest'),'·','Gestão do atendimento','atrasos, quem cuida de quê, tempo de 1ª resposta, retrabalho e prazos');
     put(sec.querySelector(':scope > .resumo')||sec.querySelector(':scope > .k6'),'2','Volume e alcance','quantos atendimentos, quantas pessoas e quanto do quadro já usou o canal');
     put(sec.querySelector(':scope > .vx'),'3','Do pedido à solução','quanto já foi respondido e finalizado, e os assuntos mês a mês');
     put(sec.querySelector(':scope > .vg2'),'4','Ao longo do tempo','atendimentos por mês e destaques gerados automaticamente');
@@ -3452,7 +3573,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcnx
       const col=document.createElement('div');col.className='xcol';pb.replaceWith(col);col.appendChild(pb);const np=document.createElement('div');np.className='panel';np.innerHTML=html;col.appendChild(np);
       const pc=[...document.querySelectorAll('#main .panel')].find(p=>(p.querySelector('h3')||{}).textContent==='Por coordenador'),pf=[...document.querySelectorAll('#main .panel')].find(p=>(p.querySelector('h3')||{}).textContent==='Funções que mais procuram');
       if(pc&&pf){const c2=document.createElement('div');c2.className='xcol';pc.replaceWith(c2);c2.appendChild(pc);c2.appendChild(pf)}try{gfEquilibra()}catch(e){}}}
-  if(h==='fc-lista'){const t=[...document.querySelectorAll('#main .panel')].find(p=>(p.querySelector('h3')||{}).textContent==='Lista de atendimentos');const tb=t&&t.querySelector('table');if(tb&&!tb.dataset.fced){tb.dataset.fced=1;const L=fcRows().filter(x=>!FF.q.trim()||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn).toUpperCase().includes(FF.q.trim().toUpperCase())).sort((p,q)=>(q.d||0)-(p.d||0));
+  if(h==='fc-lista'){const t=[...document.querySelectorAll('#main .panel')].find(p=>(p.querySelector('h3')||{}).textContent==='Lista de atendimentos');const tb=t&&t.querySelector('table');if(tb&&!tb.dataset.fced){tb.dataset.fced=1;const L=fcRows().filter(x=>!FF.q.trim()||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn+' '+(x.rs||'')).toUpperCase().includes(FF.q.trim().toUpperCase())).sort((p,q)=>(q.d||0)-(p.d||0));
     const th=document.createElement('th');tb.querySelector('thead tr').appendChild(th);[...tb.querySelectorAll('tbody tr')].forEach((tr,i)=>{const td=document.createElement('td');const x=L[i];if(x)td.className='fced-td';td.innerHTML='<button type="button" class="fced" data-fcedita="'+x.id+'" title="Editar atendimento" aria-label="Editar atendimento"><svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>';tr.appendChild(td)})}}
  }catch(e){console.error(e)}return r}}
 
@@ -4841,12 +4962,12 @@ const FC=RAW.fc;FC.at.forEach(x=>{x.st=fcNormSt(x.st)});let FC_ULT=Math.max(...F
 const FCB={BCB:'Bacabal',STI:'Santa Inês',PDT:'Presidente Dutra',PDS:'Pedreiras',ITM:'Itapecuru',BDC:'Barra do Corda'};const fcb=b=>FCB[b]||b||'–';
 const FF={m:'',b:'',co:'',as:'',st:'',q:''};
 const ymd=d=>{const x=new Date(d*864e5);return x.getUTCFullYear()+'-'+String(x.getUTCMonth()+1).padStart(2,'0')};
-const fcRows=(ign)=>FC.at.filter(x=>(ign==='m'||!FF.m||ymd(x.d)===FF.m)&&(!FF.b||x.b===FF.b)&&(!FF.co||x.co===FF.co)&&(!FF.as||x.as===FF.as)&&(ign==='st'||fcStOk(x.st,FF.st)));
+const fcRows=(ign)=>(fcIni(),FC.at).filter(x=>(ign==='m'||!FF.m||ymd(x.d)===FF.m)&&(!FF.b||x.b===FF.b)&&(!FF.co||x.co===FF.co)&&(!FF.as||x.as===FF.as)&&(ign==='st'||fcStOk(x.st,FF.st)));
 function fcBar(extra){
   const uniq=k=>[...new Set(FC.at.map(x=>x[k]).filter(Boolean))].sort();
   const sel=(k,lab,opts)=>'<label>'+lab+'<select data-ff="'+k+'" class="'+(FF[k]?'on':'')+'">'+opts.map(([v,t])=>'<option value="'+esc(v)+'"'+(FF[k]===v?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>';
   const ms=[...new Set(FC.at.map(x=>ymd(x.d)))].sort();
-  return '<div class="pfbar">'+sel('m','Mês',[['','Todos']].concat(ms.map(m=>[m,mesNome(m)])))+sel('b','Base',[['','Todas']].concat(uniq('b').map(b=>[b,fcb(b)])))+sel('co','Coordenador',[['','Todos']].concat(uniq('co').map(c=>[c,c])))+sel('as','Assunto',[['','Todos']].concat(uniq('as').map(c=>[c,c])))+sel('st','Situação',[['','Todas']].concat(FC_GRP.flatMap(g=>[['G:'+g.g,g.t+' (todas)']].concat(FC_SIT.filter(x=>x.g===g.g).map(x=>[x.k,'   '+g.t+' · '+x.t])))))+(extra||'')+(['m','b','co','as','st'].some(k=>FF[k])?'<button class="btn sm" type="button" data-fflimpa>Limpar</button>':'')+'</div>'}
+  return '<div class="pfbar">'+sel('m','Mês',[['','Todos']].concat(ms.map(m=>[m,mesNome(m)])))+sel('b','Base',[['','Todas']].concat(uniq('b').map(b=>[b,fcb(b)])))+sel('co','Coordenador',[['','Todos']].concat(uniq('co').map(c=>[c,c])))+sel('as','Assunto',[['','Todos']].concat(uniq('as').map(c=>[c,c])))+sel('st','Situação',[['','Todas'],['PEND','Pendentes (resposta + informação)']].concat(FC_GRP.flatMap(g=>[['G:'+g.g,g.t+' (todas)']].concat(FC_SIT.filter(x=>x.g===g.g).map(x=>[x.k,'   '+g.t+' · '+x.t])))))+(extra||'')+(['m','b','co','as','st'].some(k=>FF[k])?'<button class="btn sm" type="button" data-fflimpa>Limpar</button>':'')+'</div>'}
 const fcUbar=(t,sub,ic)=>'<div class="ubar"><div class="ubar-l"><span class="ubar-ic">'+ico(ic)+'</span><div class="ubar-t"><span class="ubar-tag">Central do Fale Conosco · CGB</span><h2>'+t+'</h2><span>'+sub+'</span></div></div></div>';
 PG['fc-painel']=()=>{
   const a=fcRows(),res=a.filter(x=>x.st==='RESOLVIDO').length,and=a.filter(x=>fcAberto(x.st)).length,out=a.length-res-and;
@@ -4864,10 +4985,10 @@ PG['fc-painel']=()=>{
   const ps=a.filter(x=>x.as==='PLANO DE SAÚDE');if(ps.length)dest.push({c:'at',i:'↑',h:'<b>'+N(ps.length)+'</b> atendimentos sobre plano de saúde, com dúvidas e reclamações sobre a rede credenciada no interior ('+[...new Set(ps.map(x=>fcb(x.b)))].join(', ')+').'});
   const fer=a.filter(x=>x.as==='FÉRIAS');if(fer.length)dest.push({c:'info',i:'i',h:'<b>'+N(fer.length)+'</b> perguntas sobre data de férias. Quase todas foram encaminhadas ao supervisor, o que sugere divulgar a programação de férias às equipes.'});
   if(rein[0])dest.push({c:'at',i:'↑',h:'<b>'+N(rein.length)+'</b> colaboradores procuraram o canal 2 vezes ou mais. O que mais procurou: <b>'+esc(rein[0].rows[0].nm)+'</b> ('+N(rein[0].n)+' vezes).'});
-  if(and)dest.push({c:'mal',i:'!',h:'<a href="#fc-lista">'+N(and)+' atendimento(s)</a> ainda em aberto (nova ou em andamento).'});
+  if(and)dest.push({c:'mal',i:'!',h:'<a href="#fc-lista">'+N(and)+' atendimento(s)</a> ainda pendente(s) (resposta ou informação).'});
   return fcUbar('Painel do Fale Conosco',N(a.length)+' atendimentos · '+mesNome(ymd(Math.min(...FC.at.map(x=>x.d))))+' a '+mesNome(ymd(FC_ULT)),'chat')+fcBar()+
    '<div class="k6">'+
-   icard('Atendimentos','no filtro',N(a.length),'<span class="pill '+(res/(a.length||1)>=.9?'ate':'par')+'">'+P(res/(a.length||1))+' resolvidos</span>',[['Finalizados',N(a.filter(x=>fcGrupo(x.st)==='FIM').length)],['Em aberto (nova ou em andamento)',N(and)]],'fc-lista',res/(a.length||1)>=.9?'ate':'par')+
+   icard('Atendimentos','no filtro',N(a.length),'<span class="pill '+(res/(a.length||1)>=.9?'ate':'par')+'">'+P(res/(a.length||1))+' resolvidos</span>',[['Finalizados',N(a.filter(x=>fcGrupo(x.st)==='FIM').length)],['Pendentes (resposta ou informação)',N(and)]],'fc-lista',res/(a.length||1)>=.9?'ate':'par')+
    icard('Colaboradores atendidos','pessoas diferentes',N(col.length),'<span class="pill nd">'+nf1.format(a.length/(col.length||1))+' atendimentos por pessoa</span>',[['Voltaram 2+ vezes',N(rein.length)],['Funções diferentes',N(new Set(a.map(x=>x.fn)).size)]],'fc-lista')+
    icard('Alcance do canal','colaboradores ativos que já usaram',P(col.length/(ativT||1)),'<span class="pill nd">'+N(col.length)+' de '+N(ativT)+' ativos</span>',[['Base com maior alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>q.col/q.at-p.col/p.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()],['Base com menor alcance',(()=>{const x=bases.filter(b=>b.at).sort((p,q)=>p.col/p.at-q.col/q.at)[0];return x?fcb(x.b)+' ('+P(x.col/x.at)+')':'–'})()]],'fc-painel')+
    '</div>'+
@@ -4879,11 +5000,12 @@ PG['fc-painel']=()=>{
    panel('Por coordenador','',tabela([{h:'Coordenador',f:r=>'<b>'+esc(r.k)+'</b>'},{h:'Atendimentos',n:1,f:r=>N(r.n)},{h:'Colaboradores',n:1,f:r=>N(r.col)},{h:'Assunto principal',w:1,f:r=>r.top?'<span class="sml">'+esc(r.top.k)+' ('+N(r.top.n)+')</span>':''}],coord.map(r=>Object.assign(r,{_tr:' data-fco="'+esc(r.k)+'" style="cursor:pointer"'+(FF.co===r.k?' class="sel"':'')}))))+'</div>'+
    panel('Funções que mais procuram','',metaBars(grp(a,x=>x.fn).sort((p,q)=>q.n-p.n).slice(0,10).map(g=>({k:g.k||'(sem função)',v:g.n,rt:N(new Set(g.rows.map(r=>r.mat||r.nm)).size)+' pessoas'})),{fmt:N}))};
 PG['fc-lista']=()=>{
-  const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn).toUpperCase().includes(q)).sort((p,r)=>(r.d||0)-(p.d||0));
+  const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn+' '+(x.rs||'')).toUpperCase().includes(q)).sort((p,r)=>(r.d||0)-(p.d||0));
   const rein=grp(fcRows(),x=>x.mat||x.nm).filter(g=>g.n>=2).sort((p,r)=>r.n-p.n);
-  return fcUbar('Atendimentos',N(a.length)+' atendimentos no filtro','lista')+fcBar('<label>Buscar<input type="search" id="fq" placeholder="Nome, pergunta, resolução…" value="'+esc(FF.q)+'" style="min-height:36px;border:1px solid var(--line);border-radius:9px;padding:4px 10px;min-width:220px"></label>')+
+  if(a.length&&a.every(x=>fcAberto(x.st)))a.sort((p,r)=>fcDesde(p)-fcDesde(r));
+  return fcUbar('Atendimentos',N(a.length)+' atendimentos no filtro','lista')+fcChips()+fcBar('<label>Buscar<input type="search" id="fq" placeholder="Nome, pergunta, resolução…" value="'+esc(FF.q)+'" style="min-height:36px;border:1px solid var(--line);border-radius:9px;padding:4px 10px;min-width:220px"></label>')+
    '<div class="panel"><div class="phd"><h3>Lista de atendimentos</h3><button class="btn primary" type="button" id="b-fxlsx">Baixar Excel</button></div>'+
-   tabela([{h:'Data',f:r=>dt(r.d)},{h:'Colaborador',f:r=>'<b>'+esc(r.nm)+'</b><br><span class="sml">'+esc(r.fn)+' · '+fcb(r.b)+'</span>'},{h:'Área',f:r=>esc(r.ar)},{h:'Coordenador',f:r=>esc(r.co)},{h:'Assunto',f:r=>'<span class="tagi">'+esc(r.as)+'</span>'},{h:'Pergunta',w:1,f:r=>esc(r.q)},{h:'Resolução',w:1,f:r=>'<span class="sml">'+esc(r.res)+'</span>'},{h:'Status',f:r=>fcSt(r.st)}],a,{alto:1})+'</div>'+
+   tabela([{h:'Data',f:r=>dt(r.d)},{h:'Colaborador',f:r=>'<b>'+esc(r.nm)+'</b><br><span class="sml">'+esc(r.fn)+' · '+fcb(r.b)+'</span>'},{h:'Área',f:r=>esc(r.ar)},{h:'Coordenador',f:r=>esc(r.co)},{h:'Responsável',f:r=>r.rs?esc(r.rs):'<span class="sml">—</span>'},{h:'Assunto',f:r=>'<span class="tagi">'+esc(r.as)+'</span>'},{h:'Pergunta',w:1,f:r=>esc(r.q)},{h:'Resolução',w:1,f:r=>'<span class="sml">'+esc(r.res)+'</span>'},{h:'Status',f:r=>fcSt(r.st)},{h:'Tempo no status',f:r=>fcTm(r)||'<span class="sml">–</span>'}],a,{alto:1})+'</div>'+
    panel('Colaboradores que voltaram ao canal','2 atendimentos ou mais',tabela([{h:'Colaborador',f:r=>'<b>'+esc(r.rows[0].nm)+'</b>'},{h:'Base',f:r=>fcb(r.rows[0].b)},{h:'Atendimentos',n:1,f:r=>N(r.n)},{h:'Assuntos',w:1,f:r=>[...new Set(r.rows.map(x=>x.as))].map(t=>'<span class="tagi">'+esc(t)+'</span>').join('')}],rein))};
 function ligarFC(m){
   m.querySelectorAll('[data-ff]').forEach(s=>s.onchange=()=>{FF[s.dataset.ff]=s.value;render()});
@@ -4893,8 +5015,8 @@ function ligarFC(m){
   m.querySelectorAll('[data-fco]').forEach(b=>b.onclick=()=>{FF.co=FF.co===b.dataset.fco?'':b.dataset.fco;render()});
   if(pag().id==='fc-painel')m.querySelectorAll('[data-mes]').forEach(b=>b.onclick=e=>{e.stopPropagation();FF.m=FF.m===b.dataset.mes?'':b.dataset.mes;render()});
   if($('fq')){let t;$('fq').oninput=e=>{clearTimeout(t);t=setTimeout(()=>{FF.q=e.target.value;render();const i=$('fq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},300)}}
-  if($('b-fxlsx'))$('b-fxlsx').onclick=async()=>{const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn).toUpperCase().includes(q));
-    const L=a.map(r=>({DATA:dt(r.d),'MATRÍCULA':r.mat,COLABORADOR:r.nm,BASE:fcb(r.b),'FUNÇÃO':r.fn,'ÁREA':r.ar,SUPERVISOR:r.sup,COORDENADOR:r.co,ASSUNTO:r.as,PERGUNTA:r.q,'RESOLUÇÃO':r.res,STATUS:r.st}));
+  if($('b-fxlsx'))$('b-fxlsx').onclick=async()=>{const q=FF.q.trim().toUpperCase();const a=fcRows().filter(x=>!q||(x.nm+' '+x.q+' '+x.res+' '+x.as+' '+x.fn+' '+(x.rs||'')).toUpperCase().includes(q));
+    const L=a.map(r=>({DATA:dt(r.d),'MATRÍCULA':r.mat,COLABORADOR:r.nm,BASE:fcb(r.b),'FUNÇÃO':r.fn,'ÁREA':r.ar,SUPERVISOR:r.sup,COORDENADOR:r.co,'RESPONSÁVEL':r.rs||'',ASSUNTO:r.as,PERGUNTA:r.q,'RESOLUÇÃO':r.res,CATEGORIA:(FC_GRP.find(g=>g.g===fcGrupo(r.st))||{}).t,STATUS:r.st,'DIAS NO STATUS':fcAberto(r.st)?Math.floor(fcDiasSt(r)):''}));
     try{await lib(XLSX_URL);const ws=XLSX.utils.json_to_sheet(L),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Fale Conosco');await salvarArquivo('fale_conosco.xlsx',new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})]))}
     catch(e){const cs=Object.keys(L[0]||{DATA:1});await salvarArquivo('fale_conosco.csv','﻿'+cs.join(';')+'\n'+L.map(r=>cs.map(c=>'"'+String(r[c]??'').replace(/"/g,'""')+'"').join(';')).join('\n'))}};
 }
