@@ -2154,7 +2154,6 @@ function maisMenu(itens) {
   const its = itens.filter(Boolean); if (!its.length) return "";
   return `<details class="mais"><summary aria-label="Mais ações" title="Mais ações">⋯</summary><div class="mais-pop" role="menu">${its.join("")}</div></details>`;
 }
-document.addEventListener("keydown", e => { if (e.key === "Escape" && state.ex?.painel && state.view === "extrair") { state.ex.painel = false; render(); document.querySelector(".ex-fbtn")?.focus(); } });
 document.addEventListener("toggle", e => {
   const d = e.target;
   if (d.matches && d.matches("details.mais") && d.open) {

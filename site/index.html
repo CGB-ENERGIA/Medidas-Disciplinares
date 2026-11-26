@@ -2008,7 +2008,8 @@ const ICON = {
   'ct-vagas': '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M12 11.5v4M10 13.5h4"/>',
   'ct-candidatos': '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.3 3-5 6-5s5.4 1.7 6 5"/><path d="m16 11.5 2 2 3.5-4"/>',
   'ct-agenda': '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
-  'ct-banco': '<path d="M3.5 8h17v11.5h-17z"/><path d="M2.5 4.5h19V8h-19z"/><path d="M10 12.5h4"/>'
+  'ct-banco': '<path d="M3.5 8h17v11.5h-17z"/><path d="M2.5 4.5h19V8h-19z"/><path d="M10 12.5h4"/>',
+  'ct-dados': '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'
 };
 const icone = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ""}</svg>`;
 
@@ -2908,9 +2909,10 @@ const CT_TELAS = [
   ["ct:novo", "Cadastrar candidato", "Novo candidato com currículo e documentos", "Processo", "gestor"],
   ["ct:historico", "Histórico", "Contratados e cancelados, por mês", "Registro", "todos"],
   ["ct:banco", "Banco de talentos", "Processos guardados para retomar", "Registro", "todos"],
+  ["ct:extrair", "Banco de dados", "Extraia qualquer base, com filtros", "Registro", "gestor"],
   ["ct:rm", "Integração RM", "Conferência com o RM, padrões e planilha", "Registro", "gestor"]
 ];
-const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
+const CT_ICO = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "ct-vagas", "ct:candidatos": "ct-candidatos", "ct:agenda": "ct-agenda", "ct:novo": "nova", "ct:historico": "fila", "ct:banco": "ct-banco", "ct:extrair": "ct-dados", "ct:rm": "importacao", "he:analise": "painel", "he:cadastro": "ct-candidatos", "he:carga": "importacao" };
 const ctVisivel = quem => state.user.modulos.contratacoes.nivel === "gestor" || quem === "todos";
 function menuContratacoes() {
   const grupos = []; CT_TELAS.filter(t => ctVisivel(t[4])).forEach(([k, n, d, g]) => { let x = grupos.find(y => y[0] === g); if (!x) grupos.push(x = [g, []]); x[1].push([k, n, d]); });
@@ -2918,7 +2920,7 @@ function menuContratacoes() {
   return grupos;
 }
 // Tela do módulo → tela dentro da página do módulo (contratacoes.html)
-const CT_VIEW = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "vagas", "ct:candidatos": "candidatos", "ct:agenda": "agenda", "ct:novo": "novo", "ct:historico": "historico", "ct:banco": "banco", "ct:rm": "dados" };
+const CT_VIEW = { "ct:inicio": "inicio", "ct:painel": "painel", "ct:vagas": "vagas", "ct:candidatos": "candidatos", "ct:agenda": "agenda", "ct:novo": "novo", "ct:historico": "historico", "ct:banco": "banco", "ct:extrair": "extrair", "ct:rm": "dados" };
 const CT_TAB = Object.fromEntries(Object.entries(CT_VIEW).map(([k, v]) => [v, k]));
 let ctVista = "";
 const ctFrame = () => document.getElementById("ct-frame");
