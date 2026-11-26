@@ -868,6 +868,31 @@ html.emb[data-tema="escuro"] {
 .fv-p{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}.fv-pn{display:grid;gap:3px}.fv-pe{display:grid;gap:4px;justify-items:start}.fv-pa{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 .fv-q{display:flex;gap:12px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}.fv-q>:nth-child(2){flex:1}.fv-abre{text-align:left}
 @media(max-width:900px){.fv-dados{grid-template-columns:repeat(2,1fr)}.fv-p{grid-template-columns:1fr}}
+
+.ex .ex-k{font-weight:800;margin:18px 0 8px;display:flex;align-items:center;gap:10px}
+.ex-bases{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.ex-b{position:relative;text-align:left;padding-right:52px!important;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;display:grid;gap:2px;color:var(--fg)}
+.ex-b small{color:var(--muted);font-size:12px}.ex-b em{position:absolute;top:10px;right:12px;font-style:normal;font-weight:800;font-size:12px;color:var(--accent)}
+.ex-b.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset;background:var(--accent-soft,rgba(113,20,36,.06))}
+.ex-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:20px 0 4px}
+.ex-fbtn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 16px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 2px 6px rgba(113,20,36,.25)}
+.ex-fbtn:hover{filter:brightness(1.08)}.ex-fq{background:#fff;color:var(--accent);border-radius:999px;font-size:11.5px;font-weight:800;min-width:20px;height:20px;display:inline-grid;place-items:center;padding:0 6px}
+.ex-at{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px}
+.ex-at button{border:0;background:none;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;width:22px;height:22px;border-radius:50%}.ex-at button:hover{background:var(--line);color:var(--fg)}
+.ex-lk{border:0;background:none;color:var(--accent);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline}
+.ex-ov{position:fixed;inset:0;background:rgba(20,10,12,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:2000}.ex-ov.on{opacity:1;pointer-events:auto}
+.ex-pn{position:fixed;top:88px;right:16px;bottom:16px;width:min(400px,calc(100% - 32px));border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:-12px 0 32px rgba(0,0,0,.18);transform:translateX(calc(100% + 24px));transition:transform .25s ease;z-index:2001;display:flex;flex-direction:column}
+.ex-pn.on{transform:none}.ex-pnh{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}.ex-pnh b{font-size:17px;display:block}.ex-pnh small{color:var(--muted);font-size:12.5px}
+.ex-pn .ex-fil{flex:1;overflow:auto;padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;align-content:start}
+.ex-fil label{display:grid;gap:4px;font-size:12.5px;color:var(--muted);font-weight:600}
+.ex-fil input,.ex-fil select{width:100%;box-sizing:border-box;min-width:0;font:inherit;font-size:14px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:40px}
+.ex-fil label:not(:nth-child(-n+2)){grid-column:1/-1}
+.ex-pnf{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}.ex-pnf .primary{flex:1}
+@media (prefers-reduced-motion:reduce){.ex-pn,.ex-ov{transition:none}}
+.ex-cols{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:10px 14px}.ex-cols summary{font-weight:800;cursor:pointer}
+.ex-cl{display:flex;gap:8px;margin:10px 0}.ex-cg label{display:flex!important;align-items:center;gap:8px;font-weight:500;cursor:pointer;margin:0}.ex-cg input{width:auto!important;margin:0;flex:none;accent-color:var(--accent)}.ex-cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 14px;font-size:13px}
+.ex-res{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}.ex-n{font-size:22px;color:var(--accent)}
+.ex-tw{max-height:520px;overflow:auto}.ex-tw td{white-space:nowrap}
 </style>
 
 <div class="modo-teste" id="modo-teste" hidden><b>Modo teste</b> · os dados reais estão guardados e ocultos. Tudo o que você cadastrar agora é só para treino.</div>
@@ -984,6 +1009,7 @@ const IC = {
   novo: '<circle cx="10" cy="8" r="3.5"/><path d="M3.5 20a6.5 6.5 0 0 1 11-4.7"/><path d="M19 14v6M16 17h6"/>',
   agenda: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   historico: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/>',
+  extrair: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
   banco: '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M10 13h4"/>',
   dados: '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/>',
   clip: '<path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/>',
@@ -2128,6 +2154,7 @@ function maisMenu(itens) {
   const its = itens.filter(Boolean); if (!its.length) return "";
   return `<details class="mais"><summary aria-label="Mais ações" title="Mais ações">⋯</summary><div class="mais-pop" role="menu">${its.join("")}</div></details>`;
 }
+document.addEventListener("keydown", e => { if (e.key === "Escape" && state.ex?.painel && state.view === "extrair") { state.ex.painel = false; render(); document.querySelector(".ex-fbtn")?.focus(); } });
 document.addEventListener("toggle", e => {
   const d = e.target;
   if (d.matches && d.matches("details.mais") && d.open) {
@@ -3147,10 +3174,10 @@ function desfazer() {
 const MENU = [
   ["Visão geral", [["inicio", "Início", "O que fazer hoje, por ordem de prioridade"], ["painel", "Painel", "Indicadores, gráficos e cobertura das vagas"]]],
   ["Processo", [["vagas", "Vagas", "Abrir, acompanhar e fechar vagas"], ["candidatos", "Candidatos", "Etapas de cada candidato em processo"], ["agenda", "Agenda", "Etapas marcadas por dia e atrasadas"], ["novo", "Cadastrar candidato", "Novo candidato com leitura do currículo"]]],
-  ["Registro", [["historico", "Histórico", "Contratados e cancelados, por mês"], ["banco", "Banco de talentos", "Processos guardados para retomar"], ["dados", "Integração RM", "Conferência com o RM, padrões e planilha"]]],
+  ["Registro", [["historico", "Histórico", "Contratados e cancelados, por mês"], ["banco", "Banco de talentos", "Processos guardados para retomar"], ["extrair", "Banco de dados", "Extraia qualquer base, com filtros"], ["dados", "Integração RM", "Conferência com o RM, padrões e planilha"]]],
 ];
 // O gestor solicitante não vê Integração RM (dados e configurações do RH)
-const telaPermitida = k => (k !== "novo" || pode()) && !(k === "dados" && state.role === "sol");
+const telaPermitida = k => (k !== "novo" || pode()) && !((k === "dados" || k === "extrair") && state.role === "sol");
 const TELA = Object.fromEntries(MENU.flatMap(([g, its]) => its.map(([k, n, d]) => [k, { n, d, g }])));
 function contadores() {
   const and = ANDAMENTO().filter(visivel);
@@ -3298,7 +3325,7 @@ function render() {
   if (!state.cand.size && !state.fin.size && !state.vagas.size && !podeEscrever) { el.innerHTML = `<div class="panel"><div class="empty">Você não tem acesso aos dados deste módulo.</div></div>`; return; }
   const ro = !podeEscrever ? `<p class="banner">Você está com acesso de leitura (Gestão): consulta tudo, sem alterar.</p>` : "";
   if (!telaPermitida(state.view)) state.view = "inicio";
-  const f = { inicio: vInicio, painel: vPainel, vagas: vVagas, candidatos: vCandidatos, agenda: vAgenda, novo: vNovo, historico: vHistorico, banco: vBanco, dados: vDados }[state.view] || vPainel;
+  const f = { inicio: vInicio, painel: vPainel, vagas: vVagas, candidatos: vCandidatos, agenda: vAgenda, novo: vNovo, historico: vHistorico, banco: vBanco, extrair: vExtrair, dados: vDados }[state.view] || vPainel;
   const ae = document.activeElement;
   const foco = ae && ae.id && el.contains(ae) ? { id: ae.id, s: ae.selectionStart, v: ae.value } : null;
   // Preserva o que está sendo digitado em formulários quando chega uma atualização da base
@@ -4437,6 +4464,161 @@ async function exportar() {
   catch (e) { if (e && (e.code === "unavailable" || e.code === "too_large")) toast("Não foi possível gerar o download agora."); }
 }
 
+
+/* ===================== Banco de dados: extrair qualquer base com filtros ===================== */
+const SITX = { andamento: "Em andamento", suspenso: "Suspenso", banco: "Guardado no banco", concluido: "Concluído (contratado)", cancelado: "Cancelado" };
+const exEtapa = c => { const a = etapaAtual(c); return a.k ? (ENOME[a.k] || a.k) + (a.tipo === "nok" ? " (reprovado)" : a.tipo === "ag" ? " (agendada)" : a.tipo === "pend" ? " (pendente)" : "") : "Pronto para admissão"; };
+const exCandCols = [
+  ["nome", "Nome", c => titulo(c.nome)], ["cpf", "CPF", c => c.cpf || ""], ["tel", "Telefone", c => c.telefone || ""], ["email", "E-mail", c => c.email || ""], ["cidade", "Cidade", c => c.cidade || ""],
+  ["funcao", "Função", c => c.funcao || ""], ["base", "Base", c => baseNome(c.base)], ["ct", "CT", c => c.ct || ""], ["sol", "Solicitante", c => c.solicitante || ""], ["setor", "Setor", c => c.setor || ""],
+  ["cc", "Centro de custo", c => ccRot(c.ccusto)], ["motivo", "Motivo da vaga", c => c.motivo || ""], ["data", "Abertura", c => brL(c.data)], ["sit", "Situação", c => SITX[c.situacao] || c.situacao || ""],
+  ["etapa", "Etapa atual", c => exEtapa(c)], ["parado", "Dias sem movimento", c => { const d = paradoHa(c); return d == null ? "" : d; }], ["obs", "Observação", c => c.obs || ""],
+];
+const exEtCols = ETAPAS.map(e => ["et_" + e.k, e.n, c => VAL(c.etapas?.[e.k], e.k)]);
+const EXB = {
+  cand: { n: "Candidatos em processo", d: "Em andamento e suspensos", dataRot: "Abertura", dataDe: c => c.data,
+    linhas: () => [...state.cand.values()].filter(c => (c.situacao === "andamento" || c.situacao === "suspenso") && visivel(c)),
+    cols: [...exCandCols, ...exEtCols], sits: ["andamento", "suspenso"] },
+  hist: { n: "Histórico", d: "Contratados e cancelados", dataRot: "Encerramento", dataDe: c => c.dataFim,
+    linhas: () => [...state.fin.values()].filter(visivel),
+    cols: [...exCandCols, ["fim", "Encerrado em", c => brL(c.dataFim)], ["adm", "Admissão", c => brL(c.dataAdmissao || (c.situacao === "concluido" ? c.etapas?.icgb?.d : ""))], ["mcanc", "Motivo do encerramento", c => c.motivoCancel ? c.motivoCancel + (c.motivoTexto ? " - " + c.motivoTexto : "") : ""], ...exEtCols], sits: ["concluido", "cancelado"] },
+  banco: { n: "Processos guardados", d: "Movidos para o banco de talentos", dataRot: "Guardado em", dataDe: c => c.dataBanco || c.atualizadoEm,
+    linhas: () => BANCO().filter(visivel),
+    cols: [...exCandCols, ["dbanco", "Guardado em", c => brL(c.dataBanco || c.atualizadoEm)], ...exEtCols], sits: [] },
+  vagas: { n: "Vagas", d: "Abertas e fechadas", dataRot: "Solicitação", dataDe: v => v.data,
+    linhas: () => VAGAS(),
+    cols: [["funcao", "Função", v => v.funcao || ""], ["base", "Base", v => baseNome(v.base)], ["ct", "CT", v => v.ct || ""], ["sol", "Solicitante", v => v.solicitante || ""], ["setor", "Setor", v => v.setor || ""],
+      ["cc", "Centro de custo", v => ccRot(v.ccusto)], ["motivo", "Motivo", v => v.motivo || ""], ["data", "Aberta em", v => brL(v.data)], ["sit", "Situação", v => v.status === "aberta" ? "Aberta" : "Fechada"],
+      ["diasab", "Dias aberta", v => v.status === "aberta" ? (dias(v.data) ?? "") : ""], ["vinc", "Candidato vinculado", v => { const c = [...state.cand.values(), ...state.fin.values()].find(x => x.vagaId === v.id); return c ? titulo(c.nome) : ""; }], ["obs", "Observação", v => v.obs || v.observacao || ""]],
+    sits: ["aberta", "fechada"], sitDe: v => v.status === "aberta" ? "aberta" : "fechada", sitRot: { aberta: "Aberta", fechada: "Fechada" } },
+  tal: { n: "Banco de talentos", d: "Inscritos das planilhas", dataRot: "Última inscrição", dataDe: p => p.ult,
+    linhas: () => talentos(),
+    cols: [["nome", "Nome", p => titulo(p.nome)], ["tel", "Telefone", p => p.tel || ""], ["email", "E-mail", p => p.email || ""], ["cidade", "Cidade", p => p.cidade || ""], ["base", "Base mais próxima", p => baseNome(p.base)],
+      ["km", "Distância (km)", p => p.km == null ? "" : Math.round(p.km)], ["cnh", "CNH", p => p.cnh || ""], ["pcd", "PCD", p => p.def ? "Sim" : ""], ["area", "Área", p => AREA_ROT[p.area] || ""],
+      ["sit", "Situação", p => (SIT_TAL.find(x => x[0] === p.sit) || [, p.sit])[1]], ["funcao", "Função", p => p.funcao || ""], ["ult", "Última inscrição", p => brL(p.ult)], ["prog", "Programas", p => [...(p.tags || [])].join(", ")]],
+    sits: SIT_TAL.map(x => x[0]), sitDe: p => p.sit, sitRot: Object.fromEntries(SIT_TAL.map(x => [x[0], x[1]])) },
+  etapas: { n: "Etapas", d: "Uma linha por etapa de cada candidato", dataRot: "Data da etapa", dataDe: r => r.e.d,
+    linhas: () => [...state.cand.values(), ...state.fin.values()].filter(visivel).flatMap(c => ETAPAS.filter(e => c.etapas?.[e.k]).map(e => ({ c, k: e.k, e: c.etapas[e.k], situacao: c.situacao }))),
+    cols: [["nome", "Nome", r => titulo(r.c.nome)], ["funcao", "Função", r => r.c.funcao || ""], ["base", "Base", r => baseNome(r.c.base)], ["ct", "CT", r => r.c.ct || ""], ["sol", "Solicitante", r => r.c.solicitante || ""],
+      ["sitp", "Situação do processo", r => SITX[r.c.situacao] || ""], ["etapa", "Etapa", r => ENOME[r.k]], ["res", "Resultado", r => r.e.s === "ok" || r.e.s === "nok" ? rotSt(r.k, r.e.s) : r.e.s === "na" ? "Não se aplica" : r.e.s === "ag" ? "Agendada" : "Pendente"],
+      ["data", "Data", r => brL(r.e.d)], ["obs", "Observação", r => r.e.t || ""]],
+    sits: ["andamento", "suspenso", "banco", "concluido", "cancelado"] },
+};
+const exPadrao = () => ({ b: "cand", de: "", ate: "", base: "", ct: "", sit: "", func: "", sol: "", etapa: "", q: "", cols: {} });
+function exFiltrar() {
+  const f = state.ex || (state.ex = exPadrao()), B = EXB[f.b];
+  const sitDe = B.sitDe || (x => x.situacao);
+  const fn = norm(f.func), sl = norm(f.sol), q = norm(f.q);
+  return B.linhas().filter(x => {
+    const o = x.c || x;
+    if (f.base && o.base !== f.base) return false;
+    if (f.ct && String(o.ct || "") !== f.ct) return false;
+    if (f.sit && sitDe(x) !== f.sit) return false;
+    if (fn && !norm(o.funcao).includes(fn)) return false;
+    if (sl && !norm(o.solicitante).includes(sl)) return false;
+    if (f.etapa) { if (f.b === "etapas") { if (x.k !== f.etapa) return false; } else if (etapaAtual(o).k !== f.etapa) return false; }
+    const d = (B.dataDe(x) || "").slice(0, 10);
+    if (f.de && (!d || d < f.de)) return false;
+    if (f.ate && (!d || d > f.ate)) return false;
+    if (q && !norm(B.cols.map(c => c[2](x)).join(" ")).includes(q)) return false;
+    return true;
+  });
+}
+const exColsAtivas = () => { const f = state.ex, B = EXB[f.b], sel = f.cols[f.b]; return sel ? B.cols.filter(c => sel.includes(c[0])) : B.cols.filter(c => !c[0].startsWith("et_") || f.b === "hist"); };
+function vExtrair() {
+  const f = state.ex || (state.ex = exPadrao()), B = EXB[f.b];
+  const linhas = exFiltrar(), cols = exColsAtivas(), sel = new Set(cols.map(c => c[0]));
+  const opt = (v, t, cur) => `<option value="${esc(v)}" ${v === cur ? "selected" : ""}>${esc(t)}</option>`;
+  const temCand = f.b !== "tal" && f.b !== "vagas";
+  const sitRot = B.sitRot || SITX;
+  const filtros = Object.entries({ de: f.de, ate: f.ate, base: f.base, ct: f.ct, sit: f.sit, func: f.func, sol: f.sol, etapa: f.etapa, q: f.q }).filter(([, v]) => v).length;
+  const prev = linhas.slice(0, 50);
+  const fd = d => d ? d.split("-").reverse().join("/") : "";
+  const ativos = [
+    f.de && ["de", `${B.dataRot} a partir de ${fd(f.de)}`], f.ate && ["ate", `até ${fd(f.ate)}`], f.base && ["base", baseNome(f.base)], f.ct && ["ct", "CT " + f.ct],
+    f.sit && ["sit", sitRot[f.sit] || f.sit], f.func && ["func", "Função: " + f.func], f.sol && ["sol", "Solicitante: " + f.sol],
+    f.etapa && ["etapa", "Etapa: " + ENOME[f.etapa]], f.q && ["q", `“${f.q}”`]].filter(Boolean);
+  return `<section class="panel ex">
+  <div class="phd"><h3>Banco de dados</h3><span class="muted sm">Escolha a base, filtre como quiser e baixe em Excel ou CSV.</span></div>
+  <p class="ex-k">Qual base?</p>
+  <div class="ex-bases">${Object.entries(EXB).map(([k, b]) => `<button class="ex-b ${k === f.b ? "on" : ""}" data-exb="${k}"><b>${esc(b.n)}</b><small>${esc(b.d)}</small><em>${b.linhas().length}</em></button>`).join("")}</div>
+  <div class="ex-bar">
+    <button class="ex-fbtn" data-exacao="painel" aria-expanded="${f.painel ? "true" : "false"}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg>Filtros${filtros ? `<span class="ex-fq">${filtros}</span>` : ""}</button>
+    ${ativos.map(([k, t]) => `<span class="ex-at">${esc(t)}<button data-exrm="${k}" aria-label="Remover filtro ${esc(t)}">×</button></span>`).join("")}
+    ${filtros ? `<button class="ex-lk" data-exacao="limpar">Limpar tudo</button>` : `<span class="muted sm">Nenhum filtro: mostrando a base inteira.</span>`}
+  </div>
+  <div class="ex-ov ${f.painel ? "on" : ""}" data-exacao="fechar"></div>
+  <aside class="ex-pn ${f.painel ? "on" : ""}" aria-label="Filtros" ${f.painel ? "" : "inert"}>
+    <div class="ex-pnh"><div><b>Filtros</b><small>${esc(B.n)}</small></div><button class="btn sm" data-exacao="fechar" aria-label="Fechar filtros">×</button></div>
+    <div class="ex-fil">
+    <label>${esc(B.dataRot)} de<input type="date" id="ex-de" value="${esc(f.de)}"></label>
+    <label>até<input type="date" id="ex-ate" value="${esc(f.ate)}"></label>
+    <label>Base<select id="ex-base">${opt("", "Todas", f.base)}${BASES.map(b => opt(b, baseNome(b), f.base)).join("")}</select></label>
+    ${f.b !== "tal" ? `<label>CT<select id="ex-ct">${opt("", "Todos", f.ct)}${CTS.map(c => opt(c, c, f.ct)).join("")}</select></label>` : ""}
+    ${B.sits.length ? `<label>Situação<select id="ex-sit">${opt("", "Todas", f.sit)}${B.sits.map(k => opt(k, sitRot[k] || k, f.sit)).join("")}</select></label>` : ""}
+    <label>Função<input id="ex-func" value="${esc(f.func)}" placeholder="Ex.: eletricista"></label>
+    ${f.b !== "tal" ? `<label>Solicitante<input id="ex-sol" value="${esc(f.sol)}" placeholder="Nome do solicitante"></label>` : ""}
+    ${temCand ? `<label>${f.b === "etapas" ? "Etapa" : "Etapa atual"}<select id="ex-etapa">${opt("", "Todas", f.etapa)}${ETAPAS.map(e => opt(e.k, e.n, f.etapa)).join("")}</select></label>` : ""}
+    <label class="ex-q">Buscar em tudo<input id="ex-q" value="${esc(f.q)}" placeholder="Nome, cidade, observação…"></label>
+    </div>
+    <div class="ex-pnf"><button class="btn" data-exacao="limpar" ${filtros ? "" : "disabled"}>Limpar</button><button class="btn primary" data-exacao="fechar">Ver ${linhas.length.toLocaleString("pt-BR")} registro(s)</button></div>
+  </aside>
+  <details class="ex-cols" ${f.colsAb ? "open" : ""}><summary>Colunas da planilha <span class="muted sm">(${cols.length} de ${B.cols.length})</span></summary>
+    <div class="ex-cl"><button class="btn sm" data-exacao="todas">Marcar todas</button><button class="btn sm" data-exacao="nenhuma">Desmarcar todas</button></div>
+    <div class="ex-cg">${B.cols.map(c => `<label><input type="checkbox" data-excol="${c[0]}" ${sel.has(c[0]) ? "checked" : ""}> ${esc(c[1])}</label>`).join("")}</div>
+  </details>
+  <div class="ex-res"><div><b class="ex-n">${linhas.length.toLocaleString("pt-BR")}</b> ${linhas.length === 1 ? "registro encontrado" : "registros encontrados"}${linhas.length > 50 ? ` · mostrando os 50 primeiros` : ""}</div>
+    <div class="actions"><button class="btn primary" data-exacao="xlsx" ${linhas.length && cols.length ? "" : "disabled"}>${ico("dados")}Baixar Excel</button><button class="btn" data-exacao="csv" ${linhas.length && cols.length ? "" : "disabled"}>Baixar CSV</button></div></div>
+  ${linhas.length && cols.length ? `<div class="table-wrap ex-tw"><table class="tbl"><thead><tr>${cols.map(c => `<th>${esc(c[1])}</th>`).join("")}</tr></thead><tbody>${prev.map(x => `<tr>${cols.map(c => `<td>${esc(c[2](x))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<div class="empty">Nenhum registro com esses filtros.</div>`}
+  </section>`;
+}
+async function exBaixar(tipo) {
+  const f = state.ex, B = EXB[f.b], linhas = exFiltrar(), cols = exColsAtivas();
+  const rows = [cols.map(c => c[1]), ...linhas.map(x => cols.map(c => c[2](x)))];
+  const nome = `${B.n} ${HOJE.split("-").reverse().join("-")}`;
+  if (!downloads) { toast("O download não está disponível nesta visualização."); return; }
+  try {
+    if (tipo === "csv") {
+      const csv = "﻿" + rows.map(r => r.map(v => { const t = String(v ?? ""); return /[";\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; }).join(";")).join("\r\n");
+      await downloads.save({ filename: nome + ".csv", data: new TextEncoder().encode(csv) });
+    } else {
+      if (!window.XLSX) { toast("O gerador de Excel ainda não carregou. Tente de novo em alguns segundos."); return; }
+      const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
+      ws["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: Math.max(1, rows.length - 1), c: rows[0].length - 1 } }) };
+      ws["!cols"] = rows[0].map((h, i) => ({ wch: Math.min(40, Math.max(10, ...rows.slice(0, 200).map(r => String(r[i] ?? "").length))) }));
+      XLSX.utils.book_append_sheet(wb, ws, B.n.slice(0, 31));
+      await downloads.save({ filename: nome + ".xlsx", data: XLSX.write(wb, { type: "array", bookType: "xlsx" }) });
+    }
+    toast(`${linhas.length} registro(s) baixados.`);
+  } catch (e) { toast("Não foi possível gerar o download agora."); }
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-exb], [data-exacao], [data-exrm]"); if (!t) return;
+  const f = state.ex || (state.ex = exPadrao());
+  if (t.dataset.exrm) { f[t.dataset.exrm] = ""; render(); return; }
+  if (t.dataset.exb) { f.b = t.dataset.exb; f.sit = ""; f.etapa = ""; render(); return; }
+  const a = t.dataset.exacao, B = EXB[f.b];
+  if (a === "painel" || a === "fechar") { f.painel = a === "painel" && !f.painel; render(); if (f.painel) setTimeout(() => document.getElementById("ex-de")?.focus(), 50); else document.querySelector(".ex-fbtn")?.focus(); }
+  else if (a === "limpar") { state.ex = { ...exPadrao(), b: f.b, cols: f.cols, colsAb: f.colsAb, painel: f.painel }; render(); }
+  else if (a === "todas") { f.cols[f.b] = B.cols.map(c => c[0]); render(); }
+  else if (a === "nenhuma") { f.cols[f.b] = []; render(); }
+  else if (a === "xlsx" || a === "csv") exBaixar(a);
+});
+let exTm = null;
+document.addEventListener("input", e => {
+  const el = e.target; if (!el.id || !el.id.startsWith("ex-")) return;
+  const f = state.ex || (state.ex = exPadrao()); f[el.id.slice(3)] = el.value;
+  clearTimeout(exTm); exTm = setTimeout(render, el.tagName === "INPUT" && el.type !== "date" ? 300 : 0);
+});
+document.addEventListener("change", e => {
+  const el = e.target; if (!el.dataset || el.dataset.excol == null) return;
+  const f = state.ex, cur = exColsAtivas().map(c => c[0]), k = el.dataset.excol;
+  f.cols[f.b] = el.checked ? EXB[f.b].cols.map(c => c[0]).filter(x => cur.includes(x) || x === k) : cur.filter(x => x !== k);
+  render();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && state.ex?.painel && state.view === "extrair") { state.ex.painel = false; render(); document.querySelector(".ex-fbtn")?.focus(); } });
+document.addEventListener("toggle", e => { if (e.target.classList?.contains("ex-cols") && state.ex) state.ex.colsAb = e.target.open; }, true);
+
 /* ===================== Eventos ===================== */
 document.addEventListener("click", e => {
   const t = e.target.closest("button, a[data-linkenv], [data-sel], [data-seltal], [data-abrir], [data-histmes], tr[data-abrir]");
@@ -4687,7 +4869,7 @@ document.addEventListener("submit", e => {
     state.editando = false; salvarCand(x, "Dados do candidato editados"); toast("Dados salvos.");
   }
 });
-function rota() { const h = location.hash.slice(1); if (["inicio", "painel", "vagas", "candidatos", "agenda", "novo", "historico", "banco", "dados"].includes(h)) state.view = h; }
+function rota() { const h = location.hash.slice(1); if (["inicio", "painel", "vagas", "candidatos", "agenda", "novo", "historico", "banco", "extrair", "dados"].includes(h)) state.view = h; }
 addEventListener("hashchange", () => { rota(); render(); });
 addEventListener("popstate", e => { const st = e.state; if (st && st.v) { state.view = st.v; state.sel = st.sel ?? null; state.passos = st.n || 0; } else { rota(); state.passos = 0; } state.cancelando = false; state.editando = false; render(); window.scrollTo({ top: 0 }); });
 function voltar() { if ((state.passos || 0) > 0) history.back(); else if (state.view !== "inicio") ir("inicio"); }
