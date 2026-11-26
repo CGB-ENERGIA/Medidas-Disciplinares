@@ -3197,26 +3197,31 @@ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement
 
 
 /* ===== Fale Conosco: controles do topo dentro do banner ===== */
+let FC_CTL_EL=null;
 function fcCtl(){
   const emb=document.documentElement.classList.contains('emb');
   const fc=document.body.dataset.area==='Fale Conosco';
   const dir=document.querySelector('header.top .top-dir');
-  const ids=['b-cmd','topAte','b-apres','b-copiar'];
-  let box=document.getElementById('fcctl');
+  if(!FC_CTL_EL){
+    if(!dir)return;
+    const box=document.createElement('div');box.id='fcctl';box.className='fcctl';
+    FC_CTL_EL={box,list:[$('b-cmd'),dir.querySelector('.atual'),$('b-apres'),$('b-copiar')]};
+  }
+  const E=FC_CTL_EL;
   if(emb&&fc){
-    const r=document.querySelector('.fcban');if(!r||!dir)return;
-    if(!box){box=document.createElement('div');box.id='fcctl';box.className='fcctl'}
-    if(box.parentNode!==r)r.appendChild(box);
-    const mv=[$('b-cmd'),(document.querySelector('.atual')),$('b-apres'),$('b-copiar')];
-    mv.forEach(e=>{if(e&&e.parentNode!==box)box.appendChild(e)});
+    const r=document.querySelector('#main .fcban');if(!r)return;
+    E.list.forEach(e=>{if(e&&e.parentNode!==E.box)E.box.appendChild(e)});
+    if(E.box.parentNode!==r)r.appendChild(E.box);
     document.body.classList.add('fcmov');
-  }else if(box&&dir){
-    const ref=dir.firstChild;
-    [$('b-cmd'),box.querySelector('.atual'),$('b-apres'),$('b-copiar')].forEach(e=>{if(e)dir.appendChild(e)});
-    box.remove();document.body.classList.remove('fcmov');
+  }else{
+    if(!dir)return;
+    E.list.forEach(e=>{if(e&&e.parentNode!==dir)dir.appendChild(e)});
+    if(E.box.parentNode)E.box.remove();
+    document.body.classList.remove('fcmov');
   }
 }
-{const _r=render;render=function(){const r=_r.apply(this,arguments);try{fcCtl()}catch(e){console.error(e)}setTimeout(()=>{try{fcCtl()}catch(e){}},0);setTimeout(()=>{try{fcCtl()}catch(e){}},200);return r}}
+function fcCtlVolta(){const E=FC_CTL_EL,dir=document.querySelector('header.top .top-dir');if(!E||!dir)return;E.list.forEach(e=>{if(e&&e.parentNode!==dir)dir.appendChild(e)});if(E.box.parentNode)E.box.remove()}
+{const _r=render;render=function(){try{fcCtlVolta()}catch(e){}const r=_r.apply(this,arguments);try{fcCtl()}catch(e){console.error(e)}setTimeout(()=>{try{fcCtl()}catch(e){}},0);setTimeout(()=>{try{fcCtl()}catch(e){}},200);return r}}
 
 
 /* ===== Fale Conosco: faixa dinâmica (pulso do canal) ===== */
@@ -3637,7 +3642,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-fcas
     const c=FC_CFG_ED;if(!c||!fcPode())return;const bad=['NOVA','VERIFICANDO','AGUARDANDO'].find(k=>c.lim[k][1]<c.lim[k][0]);if(bad){toast('O prazo de atraso precisa ser igual ou maior que o de atenção.');return}
     fcCfgAplica(c);try{await DBX.doc('fc_faq/config').set({j:JSON.stringify({lim:c.lim,meta1:c.meta1}),em:new Date().toISOString()});toast('Prazos salvos para todos.')}catch(x){toast('Não foi possível salvar ('+(x.message||x.code)+').')}FC_CFG_ED=null;render()}});
 /* botão "Novo atendimento" e coluna Editar nas telas do Fale Conosco */
-{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const h=(location.hash||'').slice(1);
+{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const h=(location.hash||'').slice(1)||((pag()||{}).id)||'';
   if(h==='fc-painel'||h==='fc-lista'){const m=$('main'),u=m&&m.querySelector('.ubar');if(u&&!u.querySelector('[data-fcnovo]')){let rr=u.querySelector(':scope > .ubar-r');if(!rr){rr=document.createElement('div');rr.className='ubar-r';u.appendChild(rr)}const bt=document.createElement('button');bt.type='button';bt.className='btn primary fcnbtn';bt.setAttribute('data-fcnovo','');bt.textContent='+ Novo atendimento';rr.insertBefore(bt,rr.firstChild)}}
   if(h==='fc-painel'&&!document.querySelector('#main .fcstp')){const a=fcRows('st'),tot=a.length||1;
     const pri=['NOVA','VERIFICANDO','AGUARDANDO'],pend=a.filter(x=>fcAberto(x.st)).sort((p,q)=>fcDesde(p)-fcDesde(q)||(pri.indexOf(p.st)-pri.indexOf(q.st)));
@@ -4925,6 +4930,7 @@ if(AREA){
   const i0=fica.findIndex(p=>p.id===AREA.ini);if(i0>0)fica.unshift(fica.splice(i0,1)[0]);
   PAGINAS.splice(0,PAGINAS.length,...fica);
   document.body.classList.add('area-'+AREA.id);
+  try{if(AREA.id==='atendimento'&&!location.hash)history.replaceState(null,'','#fc-painel')}catch(e){}
   try{document.title=AREA.nm+' · Central Administrativa CGB'}catch(e){}
 }
 if(AREA&&typeof TOUR!=='undefined'){TOUR[0][2]='Aqui ficam só as telas de '+AREA.nm+', mais Como usar e Sugestões e dúvidas.';TOUR[2][2]='Os cartões mostram os principais números de '+AREA.nm+'. A cor indica a situação. Clique para ver o resumo.'}
