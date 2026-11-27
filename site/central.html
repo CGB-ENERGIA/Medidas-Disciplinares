@@ -1034,6 +1034,14 @@ input[type=text],input[type=date],input[type=time]{width:100%;min-width:0;border
 /* ---- visão geral · central de comando ---- */
 .vg2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:stretch}
 @media (max-width:1150px){.vg2{grid-template-columns:minmax(0,1fr)}}
+/* Contas por base: cada base na sua cor (fc26) */
+html:not([data-tema="escuro"]) body.area-financeiro .vx-minis .vx-mini{border:1px solid rgba(60,20,30,.10);border-top:4px solid var(--bc,#8d1d31);border-radius:16px;background-color:#fff;background-image:linear-gradient(180deg,color-mix(in srgb,var(--bc,#8d1d31) 9%,#fff) 0,#fff 62%);padding:12px 14px 8px;transition:transform .15s,box-shadow .15s}
+html:not([data-tema="escuro"]) body.area-financeiro .vx-minis .vx-mini:hover{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--bc,#8d1d31) 22%,transparent)}
+.vx-mini .vx-bd{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--bc,#8d1d31);margin-right:6px;vertical-align:0}
+.vx-mini .vx-mv strong{font-size:22px}
+.vx-mini .vx-mv em{border-radius:999px;padding:2px 9px;font-style:normal;font-weight:800}
+.vx-mini .vx-mv em.up{background:rgba(192,57,43,.12)}.vx-mini .vx-mv em.dn{background:rgba(46,139,62,.12)}
+
 /* Aba Onde se gasta: cor por gráfico (fc25) */
 html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk]{--pk:#8d1d31}
 html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=cidade]{--pk:#2a8c82}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=rest]{--pk:#d9792b}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=colab]{--pk:#3a6ea5}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=aut]{--pk:#8a5aa8}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=tipo]{--pk:#e0a030}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=hora]{--pk:#4b4aa8}
@@ -4409,12 +4417,16 @@ VX.minisBase=function(L,idx){const d0=new Date(),cur=d0.getFullYear()+'-'+String
   const all=[...new Set(Object.values(tot).flatMap(o=>Object.keys(o).filter(m=>o[m]>0)))].filter(m=>(typeof LF!=='undefined'&&LF.mes)||m<cur).sort(),ms=all.slice(-8),ult=ms[ms.length-1];if(!ult)return VX.vazio('Sem contas no período.');
   const nb=b=>{const F={BDC:'Barra do Corda'};let n=b;try{n=bnome(b)}catch(e){}return n===b&&F[b]?F[b]:n};
   const it=Object.keys(tot).map(b=>{const o=tot[b],v=ms.map(m=>o[m]||0),ant=v.slice(0,-1).filter(x=>x>0),med=ant.length?ant.reduce((a,c)=>a+c,0)/ant.length:0,u=v[v.length-1];return {b,v,u,med,dif:u-med}}).filter(o=>o.u||o.med).sort((a,b)=>b.u-a.u);
-  return '<div class="vx-minis">'+it.map(o=>{const up=o.dif>0.5&&o.med>0,p=o.med?o.u/o.med-1:null,w=280,h=96,n=o.v.length,bw=(w-8)/n,mx=Math.max(...o.v,o.med)||1,yv=v=>h-16-(h-30)*v/mx;
+  return '<div class="vx-minis">'+it.map(o=>{const up=o.dif>0.5&&o.med>0,p=o.med?o.u/o.med-1:null,w=420,h=150,n=o.v.length,bw=(w-8)/n,mx=Math.max(...o.v,o.med)||1,yv=v=>h-20-(h-48)*v/mx,bc=(typeof OND_BASE!=='undefined'&&OND_BASE[o.b])||'#8d1d31';
     let g='<svg viewBox="0 0 '+w+' '+h+'" class="vx-svg">';
-    o.v.forEach((x,k)=>{const last=k===n-1,y=yv(x);g+='<rect class="'+(last?(up?'vx-bad':'vx-ok'):'vx-media')+'" x="'+(4+k*bw+bw*.18)+'" y="'+y+'" width="'+(bw*.64)+'" height="'+Math.max(x?2:0,h-16-y)+'" rx="3"><title>'+VX.M3[+ms[k].slice(5)-1]+': '+VX.brl(x)+'</title></rect><text class="vx-m" x="'+(4+k*bw+bw/2)+'" y="'+(h-3)+'" font-size="9.5" text-anchor="middle">'+VX.M3[+ms[k].slice(5)-1]+'</text>'});
-    if(o.med)g+='<line class="vx-sk" x1="2" x2="'+(w-2)+'" y1="'+yv(o.med)+'" y2="'+yv(o.med)+'" stroke-width="1.3" stroke-dasharray="4 3"/>';
+    o.v.forEach((x,k)=>{const last=k===n-1,y=yv(x),cx=4+k*bw+bw/2,mn=VX.M3[+ms[k].slice(5)-1],acima=o.med>0&&x>o.med*1.15;
+      if(x>0){g+='<rect class="'+(last?(up?'vx-bad':'vx-ok'):'')+'"'+(last?'':' style="fill:'+bc+';fill-opacity:'+(acima?.62:.28)+'"')+' x="'+(4+k*bw+bw*.2)+'" y="'+y+'" width="'+(bw*.6)+'" height="'+Math.max(3,h-20-y)+'" rx="5"><title>'+mn+': '+VX.brl(x)+'</title></rect>'}
+      else g+='<text class="vx-m" x="'+cx+'" y="'+(h-24)+'" font-size="12" text-anchor="middle" opacity=".55"><title>'+mn+': sem conta</title>–</text>';
+      if(last)g+='<text x="'+cx+'" y="'+(Math.max(12,y-6))+'" font-size="11.5" font-weight="800" text-anchor="middle" class="'+(up?'vx-bt':'vx-gt')+'" style="fill:'+(up?'#c0392b':'#2e8b3e')+'">'+VX.brl(x)+'</text>';
+      g+='<text class="vx-m" x="'+cx+'" y="'+(h-5)+'" font-size="10.5" text-anchor="middle"'+(last?' font-weight="800"':'')+'>'+mn+'</text>'});
+    if(o.med)g+='<line x1="2" x2="'+(w-2)+'" y1="'+yv(o.med)+'" y2="'+yv(o.med)+'" stroke="'+bc+'" stroke-opacity=".8" stroke-width="1.1" stroke-dasharray="3 4"/>';
     g+='</svg>';
-    return '<div class="vx-mini vx-clk" data-vxd="b|'+o.b+'|'+VX.esc(nb(o.b))+'"><b>'+VX.esc(nb(o.b))+' <span>· '+o.b+'</span></b><div class="vx-mv"><strong>'+VX.brl(o.u)+'</strong><em class="'+(up?'up':'dn')+'">'+(p==null?'sem histórico':(up?'▲ ':'▼ ')+(p>=0?'+':'')+Math.round(p*100)+'% vs média')+'</em></div><small>'+VX.M3[+ult.slice(5)-1]+' · média '+VX.brl(o.med)+'/mês</small>'+g+'</div>'}).join('')+'</div>'};
+    return '<div class="vx-mini vx-clk" style="--bc:'+bc+'" data-vxd="b|'+o.b+'|'+VX.esc(nb(o.b))+'"><b><i class="vx-bd"></i>'+VX.esc(nb(o.b))+' <span>· '+o.b+'</span></b><div class="vx-mv"><strong>'+VX.brl(o.u)+'</strong><em class="'+(up?'up':'dn')+'">'+(p==null?'sem histórico':(up?'▲ ':'▼ ')+(p>=0?'+':'')+Math.round(p*100)+'% vs média')+'</em></div><small>'+VX.M3[+ult.slice(5)-1]+' · média '+VX.brl(o.med)+'/mês</small>'+g+'</div>'}).join('')+'</div>'};
 
 /* Grade de 100 quadradinhos (waffle) */
 VX.waffle=function(parts){const tot=parts.reduce((a,p)=>a+p.n,0);if(!tot)return VX.vazio('Sem inventário registrado.');
@@ -4493,8 +4505,8 @@ VX.paginas={
     const t=VX.tempo(L,hoje);
     return [[VX.card('Linha do tempo','Próximos contratos a vencer','Cada faixa vai do início ao fim do contrato; a área rosada são os próximos 90 dias (<b>'+t.n90+'</b> contratos).',t.svg),
       VX.card('Grade de pagamentos','Situação do aluguel mês a mês','Em cima, imóveis com pendência; abaixo da linha, exemplos em dia. *Mês em andamento.',VX.grade(L,M,cur),Object.values(VX.GST).map(g=>VX.li(g[0],g[1])).join(''))],'.xg2']},
-  'loc-energia'(){const L=VX.locI();return [[VX.card('Um gráfico por base','Contas de energia por base, mês a mês'+VX.locRef(),'Cada quadro é uma base. Colunas cinza = meses anteriores; a última coluna é o último mês fechado (vermelha se subiu, verde se caiu). O tracejado é a média. O mês atual entra quando fechar.',VX.minisBase(L,1),VX.li('vx-media','Meses anteriores')+VX.li('vx-bad','Último mês acima da média')+VX.li('vx-ok','Último mês abaixo da média')+VX.li('vx-mark fina','Média'))],'.xg2']},
-  'loc-agua'(){const L=VX.locI();return [[VX.card('Um gráfico por base','Contas de água por base, mês a mês'+VX.locRef(),'Cada quadro é uma base. Colunas cinza = meses anteriores; a última coluna é o último mês fechado (vermelha se subiu, verde se caiu). O tracejado é a média. O mês atual entra quando fechar.',VX.minisBase(L,0),VX.li('vx-media','Meses anteriores')+VX.li('vx-bad','Último mês acima da média')+VX.li('vx-ok','Último mês abaixo da média')+VX.li('vx-mark fina','Média'))],'.xg2']},
+  'loc-energia'(){const L=VX.locI();return [[VX.card('Um gráfico por base','Contas de energia por base, mês a mês'+VX.locRef(),'Cada quadro é uma base, na cor dela. Colunas claras = meses anteriores (mais fortes quando passaram da média); a última coluna é o último mês fechado (vermelha se subiu, verde se caiu). O tracejado é a média. O mês atual entra quando fechar.',VX.minisBase(L,1),VX.li('vx-media','Meses anteriores')+VX.li('vx-bad','Último mês acima da média')+VX.li('vx-ok','Último mês abaixo da média')+VX.li('vx-mark fina','Média'))],'.xg2']},
+  'loc-agua'(){const L=VX.locI();return [[VX.card('Um gráfico por base','Contas de água por base, mês a mês'+VX.locRef(),'Cada quadro é uma base, na cor dela. Colunas claras = meses anteriores (mais fortes quando passaram da média); a última coluna é o último mês fechado (vermelha se subiu, verde se caiu). O tracejado é a média. O mês atual entra quando fechar.',VX.minisBase(L,0),VX.li('vx-media','Meses anteriores')+VX.li('vx-bad','Último mês acima da média')+VX.li('vx-ok','Último mês abaixo da média')+VX.li('vx-mark fina','Média'))],'.xg2']},
   'pat-painel'(){const inv=PF.m?pInv():pInv(true),at=[...atual(inv).values()],c=contSt(at),todos=pInv(true);
     const mkParts=c=>[{nm:'Em conformidade',n:c.C,cls:'vx-ok',d:'st|C|Em conformidade'},{nm:'Não conforme',n:c.NC,cls:'vx-par',d:'st|NC|Não conforme'},{nm:'Não encontrado',n:c.NE,cls:'vx-bad',d:'st|NE|Não encontrado'},{nm:'Sem status',n:c.SS,cls:'vx-sem',d:'st|SS|Sem status'}];
     const parts=mkParts(c),tot=c.C+c.NC+c.NE+c.SS||1,MN=typeof MESES!=='undefined'?MESES:VX.M3;
