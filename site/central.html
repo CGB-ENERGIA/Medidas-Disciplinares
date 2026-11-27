@@ -1034,6 +1034,20 @@ input[type=text],input[type=date],input[type=time]{width:100%;min-width:0;border
 /* ---- visão geral · central de comando ---- */
 .vg2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:stretch}
 @media (max-width:1150px){.vg2{grid-template-columns:minmax(0,1fr)}}
+/* Aluguel: legenda de status sempre visível, gráficos coloridos (fc29) */
+.lleg{position:sticky;top:72px;z-index:8;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(60,20,30,.12);border:1px solid rgba(60,20,30,.08)}
+.lleg span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;padding:4px 11px 4px 8px;border-radius:999px;background:color-mix(in srgb,var(--c) 14%,#fff);color:#2a1a1e;border:1px solid color-mix(in srgb,var(--c) 40%,#fff)}
+.lleg span i{width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff}
+.lleg small{margin-left:auto;font-size:11.5px;color:var(--muted)}
+html[data-tema="escuro"] .lleg{background:rgba(30,20,24,.94);border-color:rgba(255,255,255,.12)}html[data-tema="escuro"] .lleg span{color:#eee}
+.lgrade thead th{position:sticky;top:0}
+.ldot{width:16px;height:16px;box-shadow:0 0 0 2px #fff,0 1px 4px rgba(0,0,0,.25);transition:transform .12s}.ldot:hover{transform:scale(1.35)}
+.lgrade tbody tr:hover td{background:rgba(141,29,49,.05)}
+.lvenc>div{border-left:4px solid transparent;padding-left:10px;border-radius:6px}
+.lvenc>div:has(.ldr.v){border-left-color:#8d1d31}.lvenc>div:has(.ldr.a){border-left-color:#c0392b}.lvenc>div:has(.ldr.m){border-left-color:#d9792b}.lvenc>div:has(.ldr.b){border-left-color:#3a8f2a}
+.lvenc .ldr.v{background:#8d1d31!important;color:#fff!important}.lvenc .ldr.a{background:#c0392b!important;color:#fff!important}.lvenc .ldr.m{background:#d9792b!important;color:#fff!important}.lvenc .ldr.b{background:rgba(58,143,42,.16)!important;color:#2e7a22!important}
+.tirank-r em[style*="--bc"]{background:var(--bc)!important;background-image:none!important;opacity:1!important;box-shadow:inset 0 -2px 0 rgba(0,0,0,.1)}
+
 /* Contas por base: cada base na sua cor (fc26) */
 html:not([data-tema="escuro"]) body.area-financeiro .vx-minis .vx-mini{border:1px solid rgba(60,20,30,.10);border-top:4px solid var(--bc,#8d1d31);border-radius:16px;background-color:#fff;background-image:linear-gradient(180deg,color-mix(in srgb,var(--bc,#8d1d31) 9%,#fff) 0,#fff 62%);padding:12px 14px 8px;transition:transform .15s,box-shadow .15s}
 html:not([data-tema="escuro"]) body.area-financeiro .vx-minis .vx-mini:hover{transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--bc,#8d1d31) 22%,transparent)}
@@ -2759,7 +2773,7 @@ function icEnrich(){
 {const _r=render;render=function(){const r=_r.apply(this,arguments);try{icEnrich()}catch(e){console.error(e)}setTimeout(()=>{try{icEnrich()}catch(e){}},0);setTimeout(()=>{try{icEnrich()}catch(e){}},250);return r}}
 
 /* Aba "Onde se gasta" com cor própria em cada gráfico (fc25) — só visual, dados e textos iguais */
-const OND_BASE={BCB:'#8d1d31',PDT:'#d9792b',STI:'#2a8c82',ITM:'#3a6ea5',PDS:'#8a5aa8'};
+const OND_BASE={BCB:'#8d1d31',PDT:'#d9792b',STI:'#2a8c82',ITM:'#3a6ea5',PDS:'#8a5aa8',BDC:'#a8832a'};
 const OND_PK=[[/^gasto por base/i,'base'],[/^cidades com maior/i,'cidade'],[/^(restaurantes|hotéis) com maior/i,'rest'],[/^quem mais gerou/i,'colab'],[/^quem autoriza/i,'aut'],[/^gasto por tipo/i,'tipo'],[/^gasto por horário/i,'hora'],[/^oportunidades/i,'opor']];
 const OND_TIPO=[[/self.?service.*almo/i,'#f0cb7a'],[/self.?service.*jantar/i,'#9b9ad8'],[/self.?service.*caf/i,'#efb88a'],[/almo/i,'#e0a030'],[/jantar/i,'#4b4aa8'],[/caf/i,'#d9792b']];
 function ondeEnrich(){
@@ -2994,7 +3008,7 @@ const L_ST={pago:['Pago','#3C9E18'],parc:['Pago em parte','#d98a00'],aber:['Lan�
 const lFiltra=L=>L.filter(i=>(!LF.b||i.b===LF.b)&&(!LF.ct||lCtG(i.ct)===LF.ct));
 function lPillSt(s){const x=L_ST[s];return '<span class="lst" style="--c:'+x[1]+'"><i></i>'+x[0]+'</span>'}
 function lSel(k,lab,ops){return '<label class="lsel"><small>'+lab+'</small><select data-lf="'+k+'">'+ops.map(([v,t])=>'<option value="'+esc(v)+'"'+(LF[k]===v?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></label>'}
-function lRank(pares){const t=pares.reduce((s,x)=>s+x[1],0);return '<div class="tirank">'+pares.map(([k,v,sub])=>'<div class="tirank-r"><span>'+esc(k)+(sub?'<br><small class="muted">'+sub+'</small>':'')+'</span><i><em style="width:'+(100*v/(pares[0][1]||1))+'%"></em></i><b>'+Rk(v)+'</b><small>'+(t?Math.round(100*v/t)+'%':'')+'</small></div>').join('')+'</div>'}
+function lRank(pares){const t=pares.reduce((s,x)=>s+x[1],0);return '<div class="tirank">'+pares.map(([k,v,sub,cor])=>'<div class="tirank-r"><span>'+(cor?'<u style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+cor+';margin-right:6px"></u>':'')+esc(k)+(sub?'<br><small class="muted">'+sub+'</small>':'')+'</span><i><em style="width:'+(100*v/(pares[0][1]||1))+'%'+(cor?';--bc:'+cor:'')+'"></em></i><b>'+Rk(v)+'</b><small>'+(t?Math.round(100*v/t)+'%':'')+'</small></div>').join('')+'</div>'}
 PG.locacao=()=>{if(LTIPO!=='loc')return lUtil();const C=lCalc(),I=lFiltra(C.I),at=I.filter(i=>i.st==='ATIVO'),ref=lMesRef(),mr=MES3[+ref.slice(5)-1].toLowerCase()+'/'+ref.slice(2,4);
   const alug=at.reduce((s,i)=>s+i.v,0),prev=m=>I.filter(i=>i.sm[m]!=='fora').reduce((s,i)=>s+i.v,0);
   const soltosF=C.soltos.filter(g=>!LF.b&&(!LF.ct||lCtG(g.ct)===LF.ct));
@@ -3011,10 +3025,10 @@ PG.locacao=()=>{if(LTIPO!=='loc')return lUtil();const C=lCalc(),I=lFiltra(C.I),a
     bc(v90.length?'par':'','Contratos a vencer',N(v90.length),'em até 90 dias · '+N(venc.filter(i=>i.dr<=30).length)+' em 30 dias'+(venc.filter(i=>i.dr<0).length?' · '+N(venc.filter(i=>i.dr<0).length)+' vencido(s)':''))+
     bc('','Caução paga no ano',Rk(LOC.cau||0),'não entra como aluguel')+'</div>';
   const ms=L_MESES.filter(m=>m<='2026-11');
-  const ch=colChart(ms.map(m=>({k:'',l:MES3[+m.slice(5)-1],t:mesNome(m),v:pago(m),meta:prev(m),fut:m>ref})),{leg:'Pago (Contas a Pagar)',aria:'Previsto e pago por mês'}).replace('Meta do período','Aluguel previsto nos contratos');
+  const ch=colChart(ms.map(m=>({k:'',l:MES3[+m.slice(5)-1],t:mesNome(m),v:pago(m),meta:prev(m),fut:m>ref})),{leg:'Pago (Contas a Pagar)',aria:'Previsto e pago por mês',status:true}).replace('Meta do período','Aluguel previsto nos contratos').replace('Dentro da meta','Pago até o previsto').replace('Acima da meta','Pago acima do previsto').split(' da meta').join(' do previsto').split('Meta: ').join('Previsto: ').split('Consumo: ').join('Pago/previsto: ');
   const stp=['pago','parc','aber','sem','nid'].map(s=>[L_ST[s][0],cnt(s).reduce((a,i)=>a+i.v,0),N(cnt(s).length)+' imóveis']).filter(x=>x[1]);
   const sitRef='<div class="lsit">'+['pago','parc','aber','sem','nid'].map(s=>{const l=cnt(s);return '<button type="button" data-lst="'+s+'" class="'+(LST===s?'on':'')+'" style="--c:'+L_ST[s][1]+'"><i></i><span>'+L_ST[s][0]+'</span><b>'+N(l.length)+'</b><small>'+R(l.reduce((a,i)=>a+i.v,0))+'</small></button>'}).join('')+'</div><p class="tnota">Clique numa situação para ver só esses imóveis na grade abaixo.</p>';
-  const porB=Object.keys(LBASE).map(b=>[lbn(b),at.filter(i=>i.b===b).reduce((s,i)=>s+i.v,0),N(at.filter(i=>i.b===b).length)+' imóveis']).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
+  const porB=Object.keys(LBASE).map(b=>[lbn(b),at.filter(i=>i.b===b).reduce((s,i)=>s+i.v,0),N(at.filter(i=>i.b===b).length)+' imóveis',(typeof OND_BASE!=='undefined'&&OND_BASE[b])||'#8d1d31']).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]);
   const vlist='<div class="lvenc">'+(venc.filter(i=>i.dr<=120).slice(0,12).map(i=>'<div><span class="ldr '+(i.dr<0?'v':i.dr<=30?'a':i.dr<=60?'m':'b')+'">'+(i.dr<0?'vencido':i.dr+' dias')+'</span><b>'+esc(i.im)+'</b><small>'+lbn(i.b)+' · '+esc(i.loc)+' · CT '+i.ct+'</small><em>'+tiD(i.fim)+'</em><strong>'+R(i.v)+'</strong></div>').join('')||'<div class="empty">Nenhum contrato vence nos próximos 120 dias.</div>')+'</div>';
   const cm=k=>ms.map(m=>({l:MES3[+m.slice(5)-1],t:mesNome(m),v:at.reduce((s,i)=>s+((i.cons[m]||[0,0])[k]),0)}));
   const filtros='<div class="lfil">'+lSel('b','Base',[['','Todas']].concat(Object.keys(LBASE).map(b=>[b,lbn(b)])))+lSel('ct','Contrato',[['','Todos'],['127','127'],['169/170','169/170']])+lSel('mes','Mês de referência',[['','Último fechado ('+MES3[+lMesRef0().slice(5)-1].toLowerCase()+')']].concat(ms.map(m=>[m,mesNome(m)])))+'</div>';
@@ -3022,9 +3036,8 @@ PG.locacao=()=>{if(LTIPO!=='loc')return lUtil();const C=lCalc(),I=lFiltra(C.I),a
   let corpo='';
   if(LSEC==='grade'){const L=(LST?I.filter(i=>i.sm[ref]===LST):I).filter(i=>i.st==='ATIVO'||ms.some(m=>i.pm[m]));
     corpo=panel('Pagamentos por imóvel',N(L.length)+' imóveis'+(LST?' · '+L_ST[LST][0].toLowerCase()+' em '+mr:'')+' · passe o mouse num mês para ver o valor',
-     (LST?'<button type="button" class="btn sm" data-lst="'+LST+'">Mostrar todos</button>':'')+'<div class="tw"><table class="utab lgrade"><thead><tr><th>Imóvel</th><th>Base</th><th>CT</th><th class="n">Aluguel</th>'+ms.map(m=>'<th class="c">'+MES3[+m.slice(5)-1]+'</th>').join('')+'</tr></thead><tbody>'+
-     L.sort((a,b)=>(a.b+a.loc+a.im).localeCompare(b.b+b.loc+b.im)).map(i=>'<tr><td><a href="#loc-busca" class="lnk" data-lsel="'+i.id+'"><b>'+esc(i.im)+'</b></a><br><small>'+esc(i.lo)+'</small><br><small class="muted">'+esc(i.end||i.loc)+(i.st!=='ATIVO'?' · distratado':'')+'</small></td><td>'+i.b+'</td><td>'+i.ct+'</td><td class="n">'+R(i.v)+'</td>'+ms.map(m=>{const s=i.sm[m],p=i.pm[m]||[0,0];return '<td class="c">'+(s==='fora'?'':'<span class="ldot" style="--c:'+L_ST[s][1]+'" data-tip="'+esc('<b>'+esc(i.im)+' · '+mesNome(m)+'</b><br>'+L_ST[s][0]+'<br>Aluguel: '+R(i.v)+'<br>Pago (com baixa): '+R(p[0])+(p[1]?'<br>Lançado sem baixa: '+R(p[1]):''))+'"></span>')+'</td>'}).join('')+'</tr>').join('')+'</tbody></table></div>'+
-     '<div class="dleg">'+['pago','parc','aber','sem','nid'].map(s=>'<span><i style="background:'+L_ST[s][1]+';border-radius:50%"></i>'+L_ST[s][0]+'</span>').join('')+'</div>')}
+     '<div class="lleg">'+['pago','parc','aber','sem','nid'].map(s=>'<span style="--c:'+L_ST[s][1]+'"><i></i>'+L_ST[s][0]+'</span>').join('')+'<small>passe o mouse num mês para ver o valor</small></div>'+(LST?'<button type="button" class="btn sm" data-lst="'+LST+'">Mostrar todos</button>':'')+'<div class="tw"><table class="utab lgrade"><thead><tr><th>Imóvel</th><th>Base</th><th>CT</th><th class="n">Aluguel</th>'+ms.map(m=>'<th class="c">'+MES3[+m.slice(5)-1]+'</th>').join('')+'</tr></thead><tbody>'+
+     L.sort((a,b)=>(a.b+a.loc+a.im).localeCompare(b.b+b.loc+b.im)).map(i=>'<tr><td><a href="#loc-busca" class="lnk" data-lsel="'+i.id+'"><b>'+esc(i.im)+'</b></a><br><small>'+esc(i.lo)+'</small><br><small class="muted">'+esc(i.end||i.loc)+(i.st!=='ATIVO'?' · distratado':'')+'</small></td><td>'+i.b+'</td><td>'+i.ct+'</td><td class="n">'+R(i.v)+'</td>'+ms.map(m=>{const s=i.sm[m],p=i.pm[m]||[0,0];return '<td class="c">'+(s==='fora'?'':'<span class="ldot" style="--c:'+L_ST[s][1]+'" data-tip="'+esc('<b>'+esc(i.im)+' · '+mesNome(m)+'</b><br>'+L_ST[s][0]+'<br>Aluguel: '+R(i.v)+'<br>Pago (com baixa): '+R(p[0])+(p[1]?'<br>Lançado sem baixa: '+R(p[1]):''))+'"></span>')+'</td>'}).join('')+'</tr>').join('')+'</tbody></table></div>')}
   else if(LSEC==='conferir'){const nid=I.filter(i=>i.st==='ATIVO'&&!i.gg),pode=DBX&&CAN_EDIT;
     const desc=g=>{const vs=Object.values(g.m).flat().map(p=>p[0]).sort((a,b)=>a-b);return 'Pagamentos em '+g.cid+' · CT '+g.ct+' · valor típico '+R(vs[Math.floor(vs.length/2)]||0)+' · '+Object.keys(g.m).length+' meses'};
     corpo='<div class="note">Estes imóveis ativos não tiveram pagamento ligado automaticamente, porque o nome do locador está diferente na Contas a Pagar (ou o pagamento sai por imobiliária). '+(pode?'Escolha ao lado o grupo de pagamentos certo: a ligação fica salva.':'Quem pode editar o site consegue ligar cada um ao grupo de pagamentos certo.')+'</div>'+
