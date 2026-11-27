@@ -4368,25 +4368,28 @@ VX.bullet=function(it,o){o=o||{};if(!it.length)return VX.vazio('Sem dados para o
   if(!it.some(a=>a.g))return VX.bulletSvg(it,o);
   const id='b'+(++VX._bn);VX._bl[id]={it,o};return '<div class="vx-bl" data-bl="'+id+'">'+VX.bulletSvg(it,o)+'</div>'};
 VX.bulletSvg=function(it,o){o=o||{};
+  const pq=a=>a.meta?a.v/a.meta:-1,pd=(a,b)=>pq(b)-pq(a);
+  it=it.slice().sort(pd);
   let rows=it;
   if(it.some(a=>a.g)){const G={},ord=[];it.forEach(a=>{const k=a.g||'OUTROS';if(!G[k]){G[k]=[];ord.push(k)}G[k].push(a)});
+    const pk=k=>{const l=G[k],m=l.reduce((t,a)=>t+(a.meta||0),0);return m?l.reduce((t,a)=>t+a.v,0)/m:-1};ord.sort((a,b)=>pk(b)-pk(a));
     rows=[];ord.forEach(k=>{const l=G[k];if(l.length<2){rows.push(l[0]);return}
       const v=l.reduce((s,a)=>s+a.v,0),meta=l.reduce((s,a)=>s+(a.meta||0),0),ab=!!VX._bo[k];
       rows.push({nm:k,v,meta:meta||null,gp:k,n:l.length,ab});if(ab)l.forEach(a=>rows.push(Object.assign({},a,{sub:1})))})}
-  const W=640,rh=34,L=228,mx=Math.max(...rows.map(a=>Math.max(a.meta||0,a.v)))*1.06||1,x=v=>L+(W-L-64)*v/mx;
+  const W=640,rh=34,L=252,mx=Math.max(...rows.map(a=>Math.max(a.meta||0,a.v)))*1.06||1,x=v=>L+(W-L-64)*v/mx,mxp=Math.max(1,...rows.map(a=>a.meta?a.v/a.meta:0))*1.06,xp=q=>L+(W-L-64)*q/mxp,xm=a=>a.meta?xp(1):x(a.meta||0),xb=a=>a.meta?xp(a.v/a.meta):x(a.v);
   let s='<svg class="vx-svg" viewBox="0 0 '+W+' '+(rows.length*rh+6)+'" role="img" aria-label="'+VX.esc(o.aria||'Gasto contra meta')+'">';
   rows.forEach((a,i)=>{const y=i*rh+4,p=a.meta?a.v/a.meta:null,ov=p!=null&&p>1,sc=ov?'bad':p!=null&&p>.9?'par':p!=null?'ok':'w';
     if(a.gp){s+='<g class="vx-clk vx-gp" data-vxg="'+VX.esc(a.gp)+'" role="button" tabindex="0" aria-expanded="'+(a.ab?'true':'false')+'" aria-label="'+VX.esc(a.nm)+': '+(a.ab?'recolher':'expandir')+' '+a.n+' áreas"><rect x="0" y="'+y+'" width="'+W+'" height="'+(rh-2)+'" fill="transparent"/>'+
       '<path class="vx-chev" d="'+(a.ab?'M3 '+(y+12)+'l5 6 5-6':'M5 '+(y+9)+'l6 5-6 5')+'" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
-      '<text class="vx-t" x="20" y="'+(y+17)+'" font-size="13" font-weight="700">'+VX.esc(a.nm)+'<tspan class="vx-m" font-size="11" font-weight="600" dx="6">'+a.n+' áreas</tspan></text>'}
+      '<text class="vx-t" x="20" y="'+(y+17)+'" font-size="13" font-weight="700">'+VX.esc(a.nm.toUpperCase())+'<tspan class="vx-m" font-size="11" font-weight="600" dx="6">'+a.n+' ÁREAS</tspan></text>'}
     else{s+='<g class="vx-clk"'+(a.d?' data-vxd="'+VX.esc(a.d)+'"':'')+'><rect x="0" y="'+y+'" width="'+W+'" height="'+(rh-2)+'" fill="transparent"/>';
-      const tx=a.sub?36:20,nm=a.nm,lim=a.sub?30:28;
+      const tx=a.sub?36:20,nm=String(a.nm).toUpperCase(),lim=a.sub?29:25;
       s+='<text class="vx-t" x="'+tx+'" y="'+(y+17)+'" font-size="'+(a.sub?'12':'13')+'" font-weight="'+(a.sub?'600':'700')+'">'+VX.esc(nm.length>lim?nm.slice(0,lim-1)+'…':nm)+'<title>'+VX.esc(nm)+'</title></text>'}
     const bh=a.sub?12:14,by=a.sub?y+8:y+7;
-    if(a.meta)s+='<rect class="vx-track" x="'+L+'" y="'+by+'" width="'+(x(a.meta)-L)+'" height="'+bh+'" rx="'+bh/2+'"/>';
-    s+='<rect class="vx-'+sc+'" x="'+L+'" y="'+by+'" width="'+Math.max(4,x(a.v)-L)+'" height="'+bh+'" rx="'+bh/2+'"><title>'+VX.esc(a.nm)+': '+VX.brl(a.v)+(a.meta?' de '+VX.brl(a.meta):'')+'</title></rect>';
-    if(a.meta)s+='<rect class="vx-mark" x="'+(x(a.meta)-1.5)+'" y="'+(y+1)+'" width="3" height="26" rx="1.5"/>';
-    s+='<text class="'+(sc=='bad'?'vx-tbad':sc=='par'?'vx-tpar':sc=='ok'?'vx-tok':'vx-t')+'" x="'+(Math.max(a.meta?x(a.meta):0,x(a.v))+8)+'" y="'+(y+18)+'" font-size="12" font-weight="800">'+(p!=null?VX.pc(p):VX.brl(a.v))+'</text></g>'});
+    if(a.meta)s+='<rect class="vx-track" x="'+L+'" y="'+by+'" width="'+(xm(a)-L)+'" height="'+bh+'" rx="'+bh/2+'"/>';
+    s+='<rect class="vx-'+sc+'" x="'+L+'" y="'+by+'" width="'+Math.max(4,xb(a)-L)+'" height="'+bh+'" rx="'+bh/2+'"><title>'+VX.esc(a.nm)+': '+VX.brl(a.v)+(a.meta?' de '+VX.brl(a.meta):'')+'</title></rect>';
+    if(a.meta)s+='<rect class="vx-mark" x="'+(xm(a)-1.5)+'" y="'+(y+1)+'" width="3" height="26" rx="1.5"/>';
+    s+='<text class="'+(sc=='bad'?'vx-tbad':sc=='par'?'vx-tpar':sc=='ok'?'vx-tok':'vx-t')+'" x="'+(Math.max(a.meta?xm(a):0,xb(a))+8)+'" y="'+(y+18)+'" font-size="12" font-weight="800">'+(p!=null?VX.pc(p):VX.brl(a.v))+'</text></g>'});
   return s+'</svg>'};
 VX.bulletToggle=function(el){const b=el.closest('.vx-bl');if(!b)return;const r=VX._bl[b.dataset.bl];if(!r)return;const k=el.getAttribute('data-vxg');VX._bo[k]=!VX._bo[k];b.innerHTML=VX.bulletSvg(r.it,r.o);
   const n=b.querySelector('[data-vxg="'+k.replace(/"/g,'')+'"]');if(n&&document.activeElement===document.body)n.focus({preventScroll:true})};
