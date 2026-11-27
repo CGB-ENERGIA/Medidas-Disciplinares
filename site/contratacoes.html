@@ -1106,6 +1106,8 @@ document.addEventListener("click", async e => {
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/\s+/g, " ").trim();
+// Data e hora da movimentação no horário de Brasília (o registro é gravado em UTC; datas fixas ao meio-dia, vindas de importação, ficam como estão)
+const dhLocal = d => { d = String(d || ""); if (!/T12:00:00(\.0+)?Z?$/.test(d) && /(Z|[+-]\d\d:?\d\d)$/.test(d)) { const t = new Date(d); if (!isNaN(t)) { const p = n => String(n).padStart(2, "0"); return `${p(t.getDate())}/${p(t.getMonth() + 1)}/${String(t.getFullYear()).slice(2)} ${p(t.getHours())}:${p(t.getMinutes())}`; } } return `${br(d)} ${d.slice(11, 16)}`; };
 const br = s => s && /^\d{4}-\d{2}-\d{2}/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(2, 4)}` : "—";
 const brL = s => s && /^\d{4}-\d{2}-\d{2}/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "";
 const dias = (a, b = HOJE) => { if (!a) return null; const x = new Date(a.slice(0, 10) + "T12:00"), y = new Date(b.slice(0, 10) + "T12:00"); return Math.round((y - x) / 864e5); };
@@ -3998,7 +4000,7 @@ function detalhe(c) {
     ${!ativo && c.situacao !== "banco" && pode() ? `<div class="actions"><button class="btn" data-acao="reabrir">Reabrir processo</button></div>` : ""}
     ${blocoCV(c, ed || (pode() && !ativo))}
     ${cartaoHistorico(c, c.id, "Outros processos e vínculo com a CGB")}
-    ${(c.hist || []).length ? `<div class="sub-form"><h3>Movimentação</h3><ol class="timeline">${c.hist.map(h => `<li><time>${br(h.d)} ${h.d.slice(11, 16)}</time><span>${esc(h.t)}${h.u ? ` · <span class="muted" data-uid="${esc(h.u)}">${esc(state.nomes[h.u] || "")}</span>` : ""}</span></li>`).join("")}</ol></div>` : ""}
+    ${(c.hist || []).length ? `<div class="sub-form"><h3>Movimentação</h3><ol class="timeline">${c.hist.map(h => `<li><time>${dhLocal(h.d)}</time><span>${esc(h.t)}${h.u ? ` · <span class="muted" data-uid="${esc(h.u)}">${esc(state.nomes[h.u] || "")}</span>` : ""}</span></li>`).join("")}</ol></div>` : ""}
   </div>`;
 }
 function linhaEtapa(c, e, i, a, ed) {
