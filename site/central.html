@@ -2479,6 +2479,18 @@ body::after{display:none!important}
 .topoCirc{position:absolute;left:0;top:0;z-index:0;pointer-events:none}
 header.top>.top-in{position:relative;z-index:1}
 @media print{.topoCirc{display:none}}
+
+/* ===== Padronização visual do Financeiro (fc36) ===== */
+/* listas de barras (.mb): a coluna do nome tem largura proporcional, igual em todos os painéis e cartões; barras da mesma espessura */
+.mb{grid-template-columns:minmax(124px,32%) minmax(72px,1fr) minmax(100px,max-content);gap:12px 14px}
+.mb-k{min-width:0;overflow-wrap:anywhere}
+.mb-t{height:16px}
+.mb-v b,.mb-v small{line-height:1.2}
+/* cartões de indicador da locação: o título ocupa sempre a mesma altura, então o número fica na mesma linha em todos */
+.kpad .icard .ic-hd{min-height:32px;align-items:center}
+.kpad .icard .ic-k{white-space:normal;line-height:1.2}
+/* linha do tempo e grade de pagamentos da locação: em telas menores ficam uma sobre a outra, para o texto não ficar espremido */
+@media (max-width:1599px){.vx.vx2:has(.vx-svg[viewBox^="0 0 900"]){grid-template-columns:minmax(0,1fr)}}
 </style></head><body>
 <header class="top"><div class="top-in">
   <button class="hamb" id="hamb" type="button" aria-label="Abrir ou fechar o menu"><svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
@@ -4366,10 +4378,10 @@ VX.bulletSvg=function(it,o){o=o||{};
   rows.forEach((a,i)=>{const y=i*rh+4,p=a.meta?a.v/a.meta:null,ov=p!=null&&p>1,sc=ov?'bad':p!=null&&p>.9?'par':p!=null?'ok':'w';
     if(a.gp){s+='<g class="vx-clk vx-gp" data-vxg="'+VX.esc(a.gp)+'" role="button" tabindex="0" aria-expanded="'+(a.ab?'true':'false')+'" aria-label="'+VX.esc(a.nm)+': '+(a.ab?'recolher':'expandir')+' '+a.n+' áreas"><rect x="0" y="'+y+'" width="'+W+'" height="'+(rh-2)+'" fill="transparent"/>'+
       '<path class="vx-chev" d="'+(a.ab?'M3 '+(y+12)+'l5 6 5-6':'M5 '+(y+9)+'l6 5-6 5')+'" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
-      '<text class="vx-t" x="20" y="'+(y+17)+'" font-size="13" font-weight="800">'+VX.esc(a.nm)+'<tspan class="vx-m" font-size="11" font-weight="600" dx="6">'+a.n+' áreas</tspan></text>'}
+      '<text class="vx-t" x="20" y="'+(y+17)+'" font-size="13" font-weight="700">'+VX.esc(a.nm)+'<tspan class="vx-m" font-size="11" font-weight="600" dx="6">'+a.n+' áreas</tspan></text>'}
     else{s+='<g class="vx-clk"'+(a.d?' data-vxd="'+VX.esc(a.d)+'"':'')+'><rect x="0" y="'+y+'" width="'+W+'" height="'+(rh-2)+'" fill="transparent"/>';
-      const tx=a.sub?22:0,nm=a.nm,lim=a.sub?32:30;
-      s+='<text class="vx-t" x="'+tx+'" y="'+(y+17)+'" font-size="'+(a.sub?'12':'12.5')+'" font-weight="600">'+VX.esc(nm.length>lim?nm.slice(0,lim-1)+'…':nm)+'<title>'+VX.esc(nm)+'</title></text>'}
+      const tx=a.sub?36:20,nm=a.nm,lim=a.sub?30:28;
+      s+='<text class="vx-t" x="'+tx+'" y="'+(y+17)+'" font-size="'+(a.sub?'12':'13')+'" font-weight="'+(a.sub?'600':'700')+'">'+VX.esc(nm.length>lim?nm.slice(0,lim-1)+'…':nm)+'<title>'+VX.esc(nm)+'</title></text>'}
     const bh=a.sub?12:14,by=a.sub?y+8:y+7;
     if(a.meta)s+='<rect class="vx-track" x="'+L+'" y="'+by+'" width="'+(x(a.meta)-L)+'" height="'+bh+'" rx="'+bh/2+'"/>';
     s+='<rect class="vx-'+sc+'" x="'+L+'" y="'+by+'" width="'+Math.max(4,x(a.v)-L)+'" height="'+bh+'" rx="'+bh/2+'"><title>'+VX.esc(a.nm)+': '+VX.brl(a.v)+(a.meta?' de '+VX.brl(a.meta):'')+'</title></rect>';
@@ -4380,6 +4392,20 @@ VX.bulletToggle=function(el){const b=el.closest('.vx-bl');if(!b)return;const r=V
   const n=b.querySelector('[data-vxg="'+k.replace(/"/g,'')+'"]');if(n&&document.activeElement===document.body)n.focus({preventScroll:true})};
 document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-vxg]');if(el){e.preventDefault();VX.bulletToggle(el)}});
 document.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const el=e.target.closest&&e.target.closest('[data-vxg]');if(el){e.preventDefault();VX.bulletToggle(el);const b=document.querySelector('.vx-bl [data-vxg="'+el.getAttribute('data-vxg')+'"]');b&&b.focus({preventScroll:true})}});
+
+/* Texto dos gráficos em tamanho quase fixo na tela (11, 12 ou 13px; varia no máximo de -15% a +15% com a largura da tela): o desenho escala, a letra quase não */
+VX.fitAlvo=function(b){return b<=11.5?11:b<=12.5?12:b<=13.5?13:Math.min(Math.round(b),16)};
+VX.fit=function(){document.querySelectorAll('#main svg[viewBox]').forEach(function(sv){
+  if(sv.classList.contains('icx-ring')||sv.closest('button,.ico,.icx'))return;
+  var vb=(sv.getAttribute('viewBox')||'').split(/[\s,]+/).map(Number);if(vb.length<4||vb[2]<300)return;
+  var w=sv.getBoundingClientRect().width;if(!w)return;var k=w/vb[2];
+  sv.querySelectorAll('text,tspan').forEach(function(t){
+    if(t.tagName==='tspan'&&!t.hasAttribute('font-size'))return;
+    var f=parseFloat(t.dataset.f0);if(!f){f=parseFloat(t.getAttribute('font-size'))||parseFloat(getComputedStyle(t).fontSize)||12;t.dataset.f0=f}
+    t.style.fontSize=(VX.fitAlvo(f)*Math.min(Math.max(k,t.tagName==='tspan'?.72:.85),1.15)/k).toFixed(2)+'px'})})};
+(function(){var tm=0,go=function(){clearTimeout(tm);tm=setTimeout(function(){requestAnimationFrame(VX.fit)},40)};
+  new MutationObserver(go).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('resize',go);window.addEventListener('load',go)})();
 
 /* Linha acumulada contra o ritmo da meta */
 VX.ritmo=function(ms,real,meta){const n=ms.length;if(!n)return VX.vazio('Sem dados.');
