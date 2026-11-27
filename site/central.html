@@ -1034,6 +1034,27 @@ input[type=text],input[type=date],input[type=time]{width:100%;min-width:0;border
 /* ---- visão geral · central de comando ---- */
 .vg2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:stretch}
 @media (max-width:1150px){.vg2{grid-template-columns:minmax(0,1fr)}}
+/* Aba Onde se gasta: cor por gráfico (fc25) */
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk]{--pk:#8d1d31}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=cidade]{--pk:#2a8c82}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=rest]{--pk:#d9792b}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=colab]{--pk:#3a6ea5}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=aut]{--pk:#8a5aa8}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=tipo]{--pk:#e0a030}html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=hora]{--pk:#4b4aa8}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk]{border-top-color:var(--pk);background-image:linear-gradient(180deg,color-mix(in srgb,var(--pk) 13%,transparent) 0,color-mix(in srgb,var(--pk) 4%,transparent) 150px,transparent 100%)}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk] .mb-r{--bc:var(--pk)}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk] .mb-t{background:color-mix(in srgb,var(--bc) 13%,#fff)}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk] .mb-t i{background:linear-gradient(90deg,color-mix(in srgb,var(--bc) 78%,#000),var(--bc))!important;box-shadow:0 2px 8px color-mix(in srgb,var(--bc) 35%,transparent)}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk] .mb-v b{color:color-mix(in srgb,var(--bc) 72%,#000)}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=cidade] .mb,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=rest] .mb,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=colab] .mb,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=aut] .mb{counter-reset:rk}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=cidade] .mb-r .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=rest] .mb-r .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=colab] .mb-r .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=aut] .mb-r .mb-k::before{counter-increment:rk;content:counter(rk);display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-right:7px;font-size:10px;font-weight:800;background:color-mix(in srgb,var(--pk) 14%,#fff);color:color-mix(in srgb,var(--pk) 80%,#000);vertical-align:1px}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=cidade] .mb-r:nth-child(-n+3) .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=rest] .mb-r:nth-child(-n+3) .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=colab] .mb-r:nth-child(-n+3) .mb-k::before,html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=aut] .mb-r:nth-child(-n+3) .mb-k::before{background:var(--pk);color:#fff}
+html:not([data-tema="escuro"]) body.area-financeiro .panel[data-pk=hora] .colc{background:linear-gradient(180deg,rgba(75,74,168,.07),rgba(75,74,168,.015));border-color:rgba(75,74,168,.12)}
+html:not([data-tema="escuro"]) body.area-financeiro .ond-lg{display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-size:11.5px}html:not([data-tema="escuro"]) body.area-financeiro .ond-lg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* fc25: tiles das bases com a cor de cada base */
+html:not([data-tema="escuro"]) body.area-financeiro #main .ubases .bk[data-setbase="BCB"]{background:linear-gradient(135deg,color-mix(in srgb,#8d1d31 70%,#000),#8d1d31)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .ubases .bk[data-setbase="PDT"]{background:linear-gradient(135deg,color-mix(in srgb,#d9792b 70%,#000),#d9792b)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .ubases .bk[data-setbase="STI"]{background:linear-gradient(135deg,color-mix(in srgb,#2a8c82 70%,#000),#2a8c82)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .ubases .bk[data-setbase="ITM"]{background:linear-gradient(135deg,color-mix(in srgb,#3a6ea5 70%,#000),#3a6ea5)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .ubases .bk[data-setbase="PDS"]{background:linear-gradient(135deg,color-mix(in srgb,#8a5aa8 70%,#000),#8a5aa8)!important}
+
 /* Faixa do Painel geral mais viva (fc24): barra de meta, participação de cada base — só visual */
 #main section.upbi>.vgh .vgp{position:relative;overflow:hidden;padding-bottom:18px!important}
 #main section.upbi>.vgh .vgp::after{content:"";position:absolute;left:12px;right:12px;bottom:8px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--pc) var(--sh),rgba(255,255,255,.16) var(--sh))}
@@ -2728,6 +2749,34 @@ function icEnrich(){
     }catch(e){console.error(e)}
   })}
 {const _r=render;render=function(){const r=_r.apply(this,arguments);try{icEnrich()}catch(e){console.error(e)}setTimeout(()=>{try{icEnrich()}catch(e){}},0);setTimeout(()=>{try{icEnrich()}catch(e){}},250);return r}}
+
+/* Aba "Onde se gasta" com cor própria em cada gráfico (fc25) — só visual, dados e textos iguais */
+const OND_BASE={BCB:'#8d1d31',PDT:'#d9792b',STI:'#2a8c82',ITM:'#3a6ea5',PDS:'#8a5aa8'};
+const OND_PK=[[/^gasto por base/i,'base'],[/^cidades com maior/i,'cidade'],[/^(restaurantes|hotéis) com maior/i,'rest'],[/^quem mais gerou/i,'colab'],[/^quem autoriza/i,'aut'],[/^gasto por tipo/i,'tipo'],[/^gasto por horário/i,'hora'],[/^oportunidades/i,'opor']];
+const OND_TIPO=[[/self.?service.*almo/i,'#f0cb7a'],[/self.?service.*jantar/i,'#9b9ad8'],[/self.?service.*caf/i,'#efb88a'],[/almo/i,'#e0a030'],[/jantar/i,'#4b4aa8'],[/caf/i,'#d9792b']];
+function ondeEnrich(){
+  try{
+    const m=document.querySelector('#main');if(!m)return;
+    m.querySelectorAll('.panel:not([data-pk])').forEach(p=>{
+      const h=p.querySelector('h3,h2');if(!h)return;const t=h.textContent.trim();const e=OND_PK.find(x=>x[0].test(t));if(!e)return;
+      p.setAttribute('data-pk',e[1]);
+      if(e[1]==='base')p.querySelectorAll('.mb-r').forEach(r=>{const c=OND_BASE[r.getAttribute('data-setbase')];if(c)r.style.setProperty('--bc',c)});
+      if(e[1]==='tipo')p.querySelectorAll('.mb-r').forEach(r=>{const k=(r.querySelector('.mb-k')||{}).textContent||'';const x=OND_TIPO.find(y=>y[0].test(k));if(x)r.style.setProperty('--bc',x[1])});
+      if(e[1]==='hora'){const bars=[...p.querySelectorAll('path.cc-bar')],hs=[...p.querySelectorAll('text.cc-ax')].map(x=>parseInt(x.textContent,10));
+        const col=h=>h>=5&&h<=10?'#d9792b':h>=11&&h<=14?'#e0a030':h>=15&&h<=17?'#7a8ca3':h>=18?'#4b4aa8':'#9a9a9a';
+        bars.forEach((b,i)=>{if(!isNaN(hs[i]))b.style.fill=col(hs[i])});
+        const lg='<span class="ond-lg"><i style="background:#d9792b"></i>Manhã</span><span class="ond-lg"><i style="background:#e0a030"></i>Almoço</span><span class="ond-lg"><i style="background:#7a8ca3"></i>Tarde</span><span class="ond-lg"><i style="background:#4b4aa8"></i>Jantar</span>';
+        const L=p.querySelector('.cc-leg');if(L)L.innerHTML=lg;else{const c=p.querySelector('.colc');if(c)c.insertAdjacentHTML('afterend','<div class="cc-leg">'+lg+'</div>')}}
+    });
+    m.querySelectorAll('.vx-card svg.vx-svg[aria-label="Mapa de blocos"]:not([data-ond])').forEach(sv=>{
+      sv.setAttribute('data-ond','1');
+      const hd=[...sv.querySelectorAll('text.vx-t')].filter(t=>t.getAttribute('y')==='16').map(t=>({x:parseFloat(t.getAttribute('x')),n:t.textContent.trim()}));
+      const cor=n=>/^bacabal/i.test(n)?OND_BASE.BCB:/^presidente/i.test(n)?OND_BASE.PDT:/^santa/i.test(n)?OND_BASE.STI:/^itapecuru/i.test(n)?OND_BASE.ITM:/^(pds|pedreiras)/i.test(n)?OND_BASE.PDS:null;
+      sv.querySelectorAll('rect.vx-tm').forEach(r=>{const x=parseFloat(r.getAttribute('x'));let h=null;hd.forEach(q=>{if(q.x<=x+2)h=q});const c=h&&cor(h.n);if(c)r.style.fill=c});
+      sv.querySelectorAll('text.vx-t').forEach(t=>{if(t.getAttribute('y')==='16'){const c=cor(t.textContent.trim());if(c)t.style.fill=c}})
+    })
+  }catch(e){console.error(e)}}
+{const _r=render;render=function(){const r=_r.apply(this,arguments);try{ondeEnrich()}catch(e){}setTimeout(()=>{try{ondeEnrich()}catch(e){}},0);setTimeout(()=>{try{ondeEnrich()}catch(e){}},250);return r}}
 PG.mensal=()=>{
   const ms=MESES_DADOS(),am=filt('mes');let acR=0,acM=0;
   const linhas=ms.map((m,i)=>{const x=am.filter(r=>r.mes===m),v=sum(x,r=>r.tot),mt=F.base?null:metaPer(null,[m]);acR+=v;acM+=mt||0;const ant=i?sum(am.filter(r=>r.mes===ms[i-1]),r=>r.tot):null;
