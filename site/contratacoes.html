@@ -893,6 +893,25 @@ html.emb[data-tema="escuro"] {
 .ex-cl{display:flex;gap:8px;margin:10px 0}.ex-cg label{display:flex!important;align-items:center;gap:8px;font-weight:500;cursor:pointer;margin:0}.ex-cg input{width:auto!important;margin:0;flex:none;accent-color:var(--accent)}.ex-cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px 14px;font-size:13px}
 .ex-res{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px}.ex-n{font-size:22px;color:var(--accent)}
 .ex-tw{max-height:520px;overflow:auto}.ex-tw td{white-space:nowrap}
+/* Demandas, lixeira e permissões (27/11/2026) */
+body.sem-restrita :is([data-acao="concluir"], [data-acao="cancelar"], [data-acao="suspender"], [data-acao="banco-um"], [data-acao="editar"], [data-acao="excluir-proc"], [data-acao="mover-banco"], [data-acao="mover-banco-marc"], [data-acao="concluir-rm-todos"], [data-acao="tal-limpa"], [data-acao="tal-restaura"], [data-acao="padr-todas"], [data-acao="sol-unicos"], [data-concluirm], [data-encerrar-nok], [data-talexcl], [data-padr], [data-sol]) { display: none !important; }
+.dm-l select, .dm-tab select { font: inherit; font-size: 12.5px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: inherit; max-width: 190px; }
+.dm-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin: 0 0 12px; }
+.dm-card { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; display: grid; gap: 3px; cursor: pointer; font: inherit; color: inherit; }
+.dm-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.dm-card b { font-size: 14px; } .dm-card .n { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.dm-card small { color: var(--muted); font-weight: 600; } .dm-card .atr { color: var(--crit, #c0392b); font-weight: 700; }
+.dm-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin: 6px 0 12px; }
+.dm-form label { display: grid; gap: 2px; font-weight: 600; } .dm-form small { font-size: 11px; color: var(--muted); font-weight: 700; }
+.dm-form select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: inherit; min-width: 190px; }
+.dm-tab .pill { white-space: normal; }
+.lx-aviso { margin: 0 0 10px; }
+.dm-row { grid-column: 2 / -1; min-width: 0; display: flex; flex-wrap: wrap; align-items: end; gap: 8px 12px; margin: 8px 0 0; padding: 8px 10px; border: 1px dashed var(--line); border-radius: 10px; background: var(--surface-2, transparent); }
+.dm-row .dm-l { display: grid; gap: 2px; font-weight: 600; } .dm-row .dm-l small { font-size: 11px; color: var(--muted); font-weight: 700; }
+.dm-row select { min-width: 220px; max-width: 320px; }
+.dm-av { font-size: 12px; font-weight: 600; color: var(--muted); align-self: center; } .dm-av.ok { color: var(--ok, #1f7a4d); } .dm-av.nova { color: var(--accent); font-weight: 800; }
+.dm-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 14px; margin: 0 0 12px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 12px; font-size: 13.5px; }
+.dm-banner .btn { margin-left: auto; }
 </style>
 
 <div class="modo-teste" id="modo-teste" hidden><b>Modo teste</b> · os dados reais estão guardados e ocultos. Tudo o que você cadastrar agora é só para treino.</div>
@@ -990,6 +1009,99 @@ const ST = { ok: ["Concluído", "p-ok"], nok: ["Reprovado", "p-crit"], na: ["Nã
 const rotSt = (k, s) => { const e = ETAPAS.find(x => x.k === k); return e && e.res && s === "ok" ? e.res[0] : e && e.res && s === "nok" ? e.res[1] : (ST[s] || [""])[0]; };
 const PARADO = 7;
 
+
+/* ===================== Demandas (responsável por etapa) ===================== */
+const DMV = () => state.dm || (state.dm = { chip: "aberta", resp: "", q: "", cand: "", etapa: "", novo: "" });
+function vDemandas() {
+  const D = DMV(), todas = demLista(), sem = demSemResp(), meuId = (window.CT_ACESSO && window.CT_ACESSO.id) || uid;
+  const equipe = EQUIPE().slice(); todas.forEach(x => { if (!equipe.some(e => e.id === x.d.id)) equipe.push({ id: x.d.id, nome: x.d.n }); });
+  const dosR = id => todas.filter(x => x.d.id === id), aberta = x => DEM_ABERTA.includes(x.st[0]);
+  const cards = equipe.map(e => { const l = dosR(e.id), ab = l.filter(aberta), at = ab.filter(x => x.st[0] === "atrasada"), fe = l.filter(x => x.st[0] === "feito");
+    return `<button class="dm-card" data-dmresp="${esc(e.id)}" aria-pressed="${D.resp === e.id}"><b>${esc(e.nome)}${e.id === meuId ? " (você)" : ""}</b><span class="n">${ab.length}</span><small>em aberto${at.length ? ` · <span class="atr">${at.length} atrasada${at.length > 1 ? "s" : ""}</span>` : ""} · ${fe.length} concluída${fe.length === 1 ? "" : "s"}</small></button>`; }).join("")
+    + `<button class="dm-card" data-dmresp="__sem" aria-pressed="${D.resp === "__sem"}"><b>Sem responsável</b><span class="n">${sem.length}</span><small>etapa atual de quem está em processo</small></button>`;
+  let linhas = D.resp === "__sem" ? sem : todas.filter(x => !D.resp || x.d.id === D.resp);
+  const chips = [["aberta", "Em aberto", x => aberta(x)], ["atrasada", "Atrasadas", x => x.st[0] === "atrasada"], ["feito", "Concluídas", x => x.st[0] === "feito" || x.st[0] === "nok"], ["todas", "Todas", () => true]];
+  const q = norm(D.q);
+  if (D.resp !== "__sem") linhas = linhas.filter((chips.find(c => c[0] === D.chip) || chips[0])[2]);
+  if (q) linhas = linhas.filter(x => norm(x.c.nome + " " + x.c.funcao + " " + ENOME[x.k] + " " + (x.d ? x.d.n : "")).includes(q));
+  linhas.sort((a, b) => (a.st[0] === "atrasada" ? 0 : 1) - (b.st[0] === "atrasada" ? 0 : 1) || a.c.nome.localeCompare(b.c.nome));
+  const cs = [...state.cand.values()].filter(c => c.situacao === "andamento" && visivel(c)).sort((a, b) => a.nome.localeCompare(b.nome));
+  const optR = sel => `<option value="">Sem responsável</option>` + equipe.map(e => `<option value="${esc(e.id)}" ${sel === e.id ? "selected" : ""}>${esc(e.nome)}</option>`).join("");
+  const form = pode() && EQUIPE().length ? `<div class="dm-form"><label><small>Candidato</small><select id="dm-cand"><option value="">Escolha</option>${cs.map(c => `<option value="${c.id}" ${D.cand === c.id ? "selected" : ""}>${esc(c.nome)} · ${esc(c.funcao)}</option>`).join("")}</select></label>
+      <label><small>Etapa</small><select id="dm-etapa"><option value="">Escolha</option>${ETAPAS.map(e => `<option value="${e.k}" ${D.etapa === e.k ? "selected" : ""}>${esc(e.n)}</option>`).join("")}</select></label>
+      <label><small>Responsável</small><select id="dm-novo"><option value="">Escolha</option>${EQUIPE().map(e => `<option value="${esc(e.id)}" ${D.novo === e.id ? "selected" : ""}>${esc(e.nome)}</option>`).join("")}</select></label>
+      <button class="btn primary" data-acao="dm-atribuir">Atribuir demanda</button></div>` : (pode() ? `<p class="muted sm">Carregando a equipe do Recrutamento…</p>` : "");
+  const novas = avisosMeus();
+  const banner = novas.length ? `<div class="dm-banner"><b>Você recebeu ${novas.length === 1 ? "1 demanda nova" : novas.length + " demandas novas"}.</b> ${novas.slice(0, 3).map(x => `${esc(x.c.nome)} (${esc(ENOME[x.k])})`).join(", ")}${novas.length > 3 ? "…" : ""}<button class="btn sm primary" data-acao="dm-vistas-todas">Marcar todas como vistas</button></div>` : "";
+  const nova = x => x.d && x.d.id === meuId && x.d.aviso && !x.d.aviso.visto ? ` <span class="pill p-info">Nova</span>` : "";
+  const linha = x => `<tr><td><button class="link" data-abrir="${x.c.id}"><b>${esc(x.c.nome)}</b></button>${nova(x)}<br><small class="muted">${esc(x.c.funcao)} · ${esc(baseNome(x.c.base))}</small></td><td>${esc(ENOME[x.k])}</td>
+      <td>${pode() ? `<select data-dmc="${x.c.id}" data-dme="${x.k}" aria-label="Responsável por ${esc(ENOME[x.k])} de ${esc(x.c.nome)}">${optR(x.d ? x.d.id : "")}</select>` : esc(x.d ? x.d.n : "—")}</td>
+      <td><span class="pill ${x.st[2]}">${esc(x.st[1])}</span></td><td>${x.d ? br(x.d.em) : "—"}</td></tr>`;
+  return `<div class="vhead"><div><h2>Demandas</h2><p>Quem está encarregado de cada etapa dos processos e como está o andamento. Atribua aqui ou direto na etapa do candidato.</p></div></div>
+    ${banner}<div class="dm-cards">${cards}</div>
+    <div class="panel"><div class="phd"><b>Atribuir uma demanda</b></div>${form}
+      <div class="chips" style="margin:6px 0 10px">${chips.map(([k, n, f]) => `<button class="chip" data-dmchip="${k}" aria-pressed="${D.chip === k && D.resp !== "__sem"}">${n}<b>${(D.resp === "__sem" ? [] : todas.filter(x => !D.resp || x.d.id === D.resp)).filter(f).length}</b></button>`).join("")}
+        <input type="search" id="dm-q" placeholder="Buscar candidato, etapa ou responsável" value="${esc(D.q)}" style="margin-left:auto;min-width:240px" aria-label="Buscar demanda"></div>
+      ${linhas.length ? `<div class="table-wrap dm-tab"><table><thead><tr><th>Candidato</th><th>Etapa</th><th>Responsável</th><th>Andamento</th><th>Atribuída em</th></tr></thead><tbody>${linhas.slice(0, 300).map(linha).join("")}</tbody></table></div>${linhas.length > 300 ? `<p class="muted sm">Mostrando 300 de ${linhas.length}. Use a busca ou os filtros.</p>` : ""}`
+        : `<div class="empty">${D.resp === "__sem" ? "Toda etapa atual já tem responsável." : "Nenhuma demanda com este filtro."}</div>`}</div>`;
+}
+document.addEventListener("input", e => { if (e.target.id === "dm-q") { DMV().q = e.target.value; render(); } });
+document.addEventListener("change", e => {
+  const t = e.target, d = t.dataset;
+  if (t.id === "dm-cand") { DMV().cand = t.value; return; }
+  if (t.id === "dm-etapa") { DMV().etapa = t.value; return; }
+  if (t.id === "dm-novo") { DMV().novo = t.value; return; }
+  if (d && d.dmc) { const c = getCand(d.dmc); if (c) atribuirDemanda(c, d.dme, t.value); return; }
+  if (d && d.demanda) { const c = getCand(state.sel); if (c) atribuirDemanda(c, d.demanda, t.value); return; }
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-dmresp],[data-dmchip],[data-acao='dm-atribuir']"); if (!b) return;
+  const D = DMV();
+  if (b.dataset.dmresp !== undefined) { D.resp = D.resp === b.dataset.dmresp ? "" : b.dataset.dmresp; render(); return; }
+  if (b.dataset.dmchip) { D.chip = b.dataset.dmchip; if (D.resp === "__sem") D.resp = ""; render(); return; }
+  const c = D.cand && getCand(D.cand);
+  if (!c || !D.etapa || !D.novo) { toast("Escolha o candidato, a etapa e o responsável."); return; }
+  atribuirDemanda(c, D.etapa, D.novo); D.cand = ""; D.etapa = ""; toast("Demanda atribuída."); render();
+});
+
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-acao='dm-vista'],[data-acao='dm-reavisar'],[data-acao='dm-vistas-todas']"); if (!b) return;
+  const a = b.dataset.acao;
+  if (a === "dm-vistas-todas") { avisosMeus().forEach(x => { const c = getCand(x.c.id); if (c) marcarVista(c, x.k); }); toast("Avisos marcados como vistos."); return; }
+  const c = getCand(b.dataset.dc); if (!c) return;
+  if (a === "dm-vista") marcarVista(c, b.dataset.dk); else reenviarAviso(c, b.dataset.dk);
+});
+
+/* ===================== Lixeira (excluídos nos últimos 30 dias) ===================== */
+function vLixeira() {
+  if (!podeRestrita()) return `<div class="panel"><div class="empty">${AVISO_RESTRITA}</div></div>`;
+  const L = state.lix || (state.lix = { itens: null, erro: "" });
+  if (L.itens === null && !L.carregando && state.lixSvc) {
+    L.carregando = true;
+    state.lixSvc.listar().then(d => { L.itens = d.itens || []; L.dias = d.dias || 30; L.erro = ""; }).catch(e => { L.itens = []; L.erro = (e && e.message) || "Não consegui abrir a lixeira agora."; }).finally(() => { L.carregando = false; agendar(); });
+  }
+  const dias = L.dias || 30, resta = x => Math.max(0, dias - Math.max(0, Math.floor((Date.now() - Date.parse(x.excluidoEm)) / 864e5)));
+  const quando = x => { const d = new Date(x.excluidoEm); return isNaN(d) ? "—" : d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }); };
+  const corpo = L.itens === null ? `<div class="empty">Carregando a lixeira…</div>` : L.erro ? `<p class="note warn">${esc(L.erro)}</p>`
+    : L.itens.length ? `<div class="table-wrap"><table><thead><tr><th>Candidato</th><th>Função</th><th>Base</th><th>Estava</th><th>Excluído em</th><th>Por</th><th>Apaga em</th><th></th></tr></thead><tbody>${L.itens.map(x => `<tr><td><b>${esc(x.nome || "(sem nome)")}</b></td><td>${esc(x.funcao || "—")}</td><td>${esc(baseNome(x.base) || "—")}</td><td>${esc((SIT[x.situacao] || [x.situacao || "—"])[0])}</td><td>${quando(x)}</td><td>${esc(x.por || "—")}</td><td>${resta(x)} dia${resta(x) === 1 ? "" : "s"}</td><td><button class="btn sm primary" data-acao="lix-restaurar" data-id="${esc(x.id)}">Restaurar</button></td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="empty">A lixeira está vazia.</div>`;
+  return `<div class="vhead"><div><h2>Lixeira</h2><p>Candidatos excluídos ficam aqui por ${dias} dias. Depois disso são apagados de vez. Restaurar traz o processo de volta, do ponto em que estava.</p></div></div><div class="panel">${corpo}</div>`;
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-acao='lix-restaurar']"); if (!b) return;
+  if (!podeRestrita()) { toast(AVISO_RESTRITA); return; }
+  const L = state.lix, x = L && (L.itens || []).find(i => i.id === b.dataset.id); if (!x) return;
+  b.disabled = true;
+  try {
+    await state.lixSvc.restaurar(x.id);
+    L.itens = L.itens.filter(i => i.id !== x.id);
+    const nk = nomeBusca(x.nome), ids = state.tal && state.tal.lista ? state.tal.lista.filter(p => nomeBusca(p.nome) === nk && state.talExcl.has(p.id)).map(p => p.id) : [];
+    if (ids.length) await salvarExcl([...state.talExcl].filter(i => !ids.includes(i)), `${x.nome} foi restaurado, inclusive no Banco de talentos.`);
+    else toast(`${x.nome} foi restaurado. O processo voltou para a lista de candidatos.`);
+    render();
+  } catch (err) { b.disabled = false; toast((err && err.message) || "Não consegui restaurar agora."); }
+});
+
 /* ===================== Utilidades ===================== */
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1017,6 +1129,8 @@ const IC = {
   doc: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
 };
 IC.inicio = IC_INICIO_SVG;
+IC.demandas = '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3.2 2.6-5 5.5-5s5.1 1.8 5.5 5"/><path d="m16 11 2 2 3.5-4"/>';
+IC.lixeira = '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>';
 const ico = k => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
 
 /* ===================== Regras automáticas ===================== */
@@ -1089,6 +1203,80 @@ const VAGAS = () => [...state.vagas.values()];
 let db = null, user = null, uid = null, podeEscrever = true, downloads = null, sample = null, assets = null, iaImg = false;
 const pode = () => podeEscrever && state.role === "rh";
 const podeVaga = () => podeEscrever && state.role !== "ges";
+// Ações restritas (27/11/2026): Excluir, Encerrar processo, Suspender, Concluir contratação, Mover para o banco e Editar dados
+// só para Vanessa Oliveira Ventura Mendes (@vanessa.oliveira). O servidor (api/ct-docs.js) aplica a mesma regra.
+const LOGIN_ACOES = "vanessa.oliveira";
+const podeRestrita = () => podeEscrever && state.role === "rh" && String((window.CT_ACESSO && window.CT_ACESSO.usuario) || "").toLowerCase() === LOGIN_ACOES;
+const ACOES_RESTRITAS = new Set(["concluir", "cancelar", "confirma-cancelar", "suspender", "banco-um", "editar", "excluir-proc", "mover-banco", "mover-banco-marc", "concluir-rm-todos", "concluir-rm-sim", "tal-limpa", "tal-limpa-ok", "tal-restaura", "padr-todas", "sol-unicos"]);
+const AVISO_RESTRITA = "Só a Vanessa Oliveira Ventura Mendes pode fazer isso.";
+// Eletricista de SPOT e de GOMAN não precisa de CNH: a etapa CNH entra como "Não se aplica"
+const semCNHSetor = (f, st) => norm(f) === "ELETRICISTA" && /\b(SPOT|GOMAN)\b/.test(norm(st));
+const TXT_SEM_CNH = "Eletricista de SPOT/GOMAN: CNH não se aplica";
+function aplicarSemCNH(c, v) {
+  const f = c.funcao || (v && v.funcao), st = c.setor || (v && v.setor);
+  if (!semCNHSetor(f, st)) return c;
+  const cur = (c.etapas || {}).cnh;
+  if (cur && (cur.s === "ok" || cur.s === "nok" || (cur.s === "na" && cur.t === TXT_SEM_CNH))) return c;
+  return { ...c, etapas: { ...(c.etapas || {}), cnh: { s: "na", t: TXT_SEM_CNH, d: HOJE } } };
+}
+// Setor (GOMAN, SPOT...) e área específica (SPOT STI, LINHA VIVA, CONSTRUÇÃO...) do processo ou da vaga
+const SIGLA_BASE = { "BACABAL": "BCB", "SANTA INÊS": "STI", "PEDREIRAS": "PDS", "PRESIDENTE DUTRA": "PDT", "BARRA DO CORDA": "BDC", "ITAPECURU": "ITM" };
+function etiquetasArea(c) {
+  const out = [], st = String(c.setor || "").trim().toUpperCase(), sn = norm(st);
+  if (/\bSPOT\b/.test(sn) && SIGLA_BASE[c.base] && sn === "SPOT") out.push("SPOT " + SIGLA_BASE[c.base]);
+  else if (st) out.push(st);
+  let a = String(c.ccusto || "").trim().toUpperCase();
+  if (/^[\d.]+$/.test(a)) a = (typeof ccNome === "function" ? ccNome(a) : "").toUpperCase();
+  a = a.replace(/\s*\(RATEIO\)/, "");
+  if (!a && /LINHA VIVA/.test(norm(c.funcao))) a = "LINHA VIVA";
+  if (a && !out.includes(a) && !["GOMAN", "SPOT", "GSTC", "GERE", "ADM"].includes(a)) out.push(a);
+  return out;
+}
+const tagsArea = c => etiquetasArea(c).map(t => `<span class="tag acc">${esc(t)}</span>`).join("");
+// Demandas: responsável por etapa de cada candidato (c.demandas = { etapa: { id, n, em } })
+const EQUIPE = () => state.equipe || [];
+const meuIdCT = () => (window.CT_ACESSO && window.CT_ACESSO.id) || uid;
+const avisosMeus = () => demLista().filter(x => x.d.id === meuIdCT() && x.d.aviso && !x.d.aviso.visto);
+function marcarVista(c, k) { const dm = { ...(c.demandas || {}) }, d = dm[k]; if (!d || !d.aviso) return; dm[k] = { ...d, aviso: { ...d.aviso, visto: true, vistoEm: HOJE } }; salvarCand({ ...c, demandas: dm }, ""); }
+function reenviarAviso(c, k) { const dm = { ...(c.demandas || {}) }, d = dm[k]; if (!d) return; dm[k] = { ...d, aviso: { em: HOJE, por: (window.CT_ACESSO && window.CT_ACESSO.nome) || "", visto: false } }; salvarCand({ ...c, demandas: dm }, `${ENOME[k]}: aviso reenviado a ${d.n}`); toast(`Aviso reenviado a ${d.n.split(" ")[0]}.`); }
+const demDe = (c, k) => (c.demandas || {})[k] || null;
+function atribuirDemanda(c, k, id) {
+  const eq = EQUIPE().find(x => x.id === id), dm = { ...(c.demandas || {}) }, antes = dm[k];
+  if (eq) { const mesmo = antes && antes.id === eq.id; dm[k] = { id: eq.id, n: eq.nome, em: mesmo ? antes.em : HOJE }; if (mesmo && antes.aviso) dm[k].aviso = antes.aviso; else if (eq.id !== meuIdCT()) dm[k].aviso = { em: HOJE, por: (window.CT_ACESSO && window.CT_ACESSO.nome) || "", visto: false }; } else delete dm[k];
+  const c2 = { ...c, demandas: dm }; if (!Object.keys(dm).length) delete c2.demandas;
+  if (eq && dm[k].aviso && !dm[k].aviso.visto && !(antes && antes.id === eq.id)) toast(`Aviso enviado a ${eq.nome.split(" ")[0]}: o aviso aparece no sistema dele(a), em Demandas.`);
+  salvarCand(c2, eq ? `${ENOME[k]}: responsável ${eq.nome}` : `${ENOME[k]}: responsável removido${antes ? ` (era ${antes.n})` : ""}`);
+}
+function selDemanda(c, k) {
+  if (!pode()) return "";
+  const at = demDe(c, k), eq = EQUIPE(), lista = eq.slice(), meu = meuIdCT();
+  if (at && !lista.some(x => x.id === at.id)) lista.push({ id: at.id, nome: at.n });
+  const campo = lista.length ? `<select data-demanda="${k}" aria-label="Responsável por ${esc(ENOME[k])}"><option value="">Sem responsável</option>${lista.map(x => `<option value="${esc(x.id)}" ${at && at.id === x.id ? "selected" : ""}>${esc(x.nome)}</option>`).join("")}</select>` : `<select disabled aria-label="Responsável"><option>Carregando a equipe…</option></select>`;
+  let info = "";
+  if (at) {
+    const av = at.aviso, pn = esc(at.n.split(" ")[0]);
+    if (at.id === meu) info = av && !av.visto ? `<span class="dm-av nova">Atribuída a você${av.por ? " por " + esc(av.por.split(" ")[0]) : ""}</span><button class="btn sm primary" data-acao="dm-vista" data-dc="${esc(c.id)}" data-dk="${k}">Marcar como vista</button>` : `<span class="dm-av">Atribuída a você</span>`;
+    else if (av) info = av.visto ? `<span class="dm-av ok">✓ ${pn} viu o aviso${av.vistoEm ? " em " + br(av.vistoEm) : ""}</span>` : `<span class="dm-av">Aviso enviado em ${br(av.em)} · ${pn} ainda não viu</span><button class="btn sm" data-acao="dm-reavisar" data-dc="${esc(c.id)}" data-dk="${k}">Reenviar aviso</button>`;
+  }
+  return `<div class="dm-row"><label class="dm-l"><small>Atribuir esta etapa a (equipe do Recrutamento)</small>${campo}</label>${info}</div>`;
+}
+function demSt(c, k) {
+  const v = (c.etapas || {})[k], a = etapaAtual(c);
+  if (v && (v.s === "ok" || v.s === "na")) return ["feito", "Concluída", "p-ok"];
+  if (v && v.s === "nok") return ["nok", "Reprovada", "p-crit"];
+  if (v && v.s === "ag") return v.d && v.d < HOJE ? ["atrasada", "Atrasada · " + br(v.d), "p-warn"] : ["agendada", "Agendada · " + br(v.d), "p-info"];
+  if (v && v.s === "pend") return ["pend", "Pendente" + (v.mot ? ": " + v.mot : ""), "p-warn"];
+  if (c.situacao === "suspenso") return ["pausada", "Processo suspenso", ""];
+  return a.k === k ? ["andamento", "Em andamento (etapa atual)", "p-acc"] : ["afazer", "A fazer", ""];
+}
+const DEM_ABERTA = ["andamento", "agendada", "atrasada", "pend", "afazer", "pausada"];
+const demAtivos = () => [...state.cand.values()].filter(c => (c.situacao === "andamento" || c.situacao === "suspenso") && visivel(c));
+function demLista() {
+  const out = [];
+  demAtivos().forEach(c => Object.entries(c.demandas || {}).forEach(([k, d]) => { if (ENOME[k]) out.push({ c, k, d, st: demSt(c, k) }); }));
+  return out;
+}
+const demSemResp = () => demAtivos().filter(c => c.situacao === "andamento").map(c => ({ c, k: etapaAtual(c).k })).filter(x => x.k && !demDe(x.c, x.k)).map(x => ({ ...x, d: null, st: demSt(x.c, x.k) }));
 // O solicitante vê o registro se o nome gravado bate com o dele (aceita registros antigos só com o primeiro nome)
 const visivel = c => { if (state.role !== "sol" || !state.pessoa) return true; const b = norm(state.pessoa).split(" "), a = norm(c.solicitante); if (!a) return false; if (a.includes(norm(state.pessoa))) return true; return a.split("/").some(p => { const t = p.trim().split(" ").filter(Boolean); return t.length && t.every(x => b.includes(x)); }); };
 const solNaLista = s => !String(s || "").trim() || String(s).split("/").every(x => solOficiais().some(o => norm(o) === norm(x)));
@@ -1105,6 +1293,10 @@ async function iniciar() {
   if (!c || !c.use) { state.semDb = true; render(); return; }
   [db, user, downloads, sample, assets] = await Promise.all([c.use("db"), c.use("user"), c.use("downloads"), c.use("sample"), c.use("assets")]);
   if (window.CT_ACESSO) { state.role = window.CT_ACESSO.papel; state.pessoa = window.CT_ACESSO.pessoa; }
+  try {
+    state.lixSvc = await c.use("lixeira"); const eqs = await c.use("equipe");
+    if (eqs && state.role === "rh") eqs.listar().then(l => { state.equipe = l; agendar(); }).catch(() => {});
+  } catch {}
   if (sample) sample.limits().then(l => { iaImg = !!(l && l.images); }).catch(() => {});
   if (!db) { state.semDb = true; render(); return; }
   // MODO TESTE: pessoas, vagas e RM vêm de coleções separadas (vazias). Os dados reais ficam guardados intactos.
@@ -1177,6 +1369,11 @@ function setEtapa(c, k, patch, silencioso) {
   if (patch && patch.t !== undefined && !patch.s) txt = `${ENOME[k]}: observação "${patch.t}"`;
   if (patch && patch.d !== undefined && !patch.s && v && v.s !== "ag") txt = `${ENOME[k]}: data da atualização ${patch.d ? br(patch.d) : "removida"}`;
   // Automação: Integração CGB realizada sem reprovações → conclui a contratação
+  if (k === "icgb" && v?.s === "ok" && !ETAPAS.some(e => et[e.k]?.s === "nok") && c.situacao === "andamento" && !podeRestrita()) {
+    salvarCand(c2, txt);
+    if (!silencioso) toast("Integração registrada. A conclusão da contratação é feita pela Vanessa Oliveira Ventura Mendes.");
+    return;
+  }
   if (k === "icgb" && v?.s === "ok" && !ETAPAS.some(e => et[e.k]?.s === "nok") && c.situacao === "andamento") {
     return concluir(c2, txt + " · contratação concluída automaticamente", v.d);
   }
@@ -2300,7 +2497,7 @@ function blocoBancoDet(c) {
   const vs = VAGAS().filter(v => v.status === "aberta" && bancoPara(v).some(x => x.id === c.id));
   return `<div class="note info"><span><b>No Banco de talentos desde ${br(c.dataBanco)}.</b> ${u ? `Aprovado até ${esc(u.n)} (fase ${f.n}).` : "Nenhuma etapa aprovada ainda."} Tudo o que foi feito continua abaixo.</span></div>
     ${vs.length ? `<div class="sub-form"><h3>Vagas abertas em que esta pessoa serve</h3><div class="ini-lista">${vs.map(v => `<div class="ini-it"><span class="ini-av v">${ico("vagas")}</span><span class="ini-tx"><b>${esc(v.funcao)} · ${esc(baseNome(v.base))}</b><small>CT ${esc(v.ct)} · ${esc(v.solicitante || "—")} · aberta há ${dias(v.data) ?? "—"} dias</small></span>${pode() ? `<button class="btn sm primary" data-retvaga="${v.id}">Retomar para esta vaga</button>` : ""}</div>`).join("")}</div></div>` : ""}
-    ${pode() ? `<div class="actions"><button class="btn primary" data-acao="retomar-banco">Retomar processo</button><button class="btn danger" data-acao="excluir-proc">Excluir processo</button><span class="muted sm">Retomar: volta para Em processo, do ponto onde parou.</span></div>` : ""}`;
+    ${pode() ? `<div class="actions"><button class="btn primary" data-acao="retomar-banco">Retomar processo</button>${podeRestrita() ? `<button class="btn danger" data-acao="excluir-proc">Excluir processo</button>` : ""}<span class="muted sm">Retomar: volta para Em processo, do ponto onde parou.</span></div>` : ""}`;
 }
 function avisoBanco() {
   const l = paraOBanco(); if (!l.length || !pode()) return "";
@@ -3173,20 +3370,22 @@ function desfazer() {
 // Menu suspenso na barra do topo: cada tela com ícone, nome, para que serve e contador
 const MENU = [
   ["Visão geral", [["inicio", "Início", "O que fazer hoje, por ordem de prioridade"], ["painel", "Painel", "Indicadores, gráficos e cobertura das vagas"]]],
-  ["Processo", [["vagas", "Vagas", "Abrir, acompanhar e fechar vagas"], ["candidatos", "Candidatos", "Etapas de cada candidato em processo"], ["agenda", "Agenda", "Etapas marcadas por dia e atrasadas"], ["novo", "Cadastrar candidato", "Novo candidato com leitura do currículo"]]],
-  ["Registro", [["historico", "Histórico", "Contratados e cancelados, por mês"], ["banco", "Banco de talentos", "Processos guardados para retomar"], ["extrair", "Banco de dados", "Extraia qualquer base, com filtros"], ["dados", "Integração RM", "Conferência com o RM, padrões e planilha"]]],
+  ["Processo", [["vagas", "Vagas", "Abrir, acompanhar e fechar vagas"], ["candidatos", "Candidatos", "Etapas de cada candidato em processo"], ["demandas", "Demandas", "Quem cuida de cada etapa e como está"], ["agenda", "Agenda", "Etapas marcadas por dia e atrasadas"], ["novo", "Cadastrar candidato", "Novo candidato com leitura do currículo"]]],
+  ["Registro", [["historico", "Histórico", "Contratados e cancelados, por mês"], ["banco", "Banco de talentos", "Processos guardados para retomar"], ["extrair", "Banco de dados", "Extraia qualquer base, com filtros"], ["dados", "Integração RM", "Conferência com o RM, padrões e planilha"], ["lixeira", "Lixeira", "Excluídos nos últimos 30 dias, com opção de restaurar"]]],
 ];
 // O gestor solicitante não vê Integração RM (dados e configurações do RH)
-const telaPermitida = k => (k !== "novo" || pode()) && !((k === "dados" || k === "extrair") && state.role === "sol");
+const telaPermitida = k => (k !== "novo" || pode()) && !((k === "dados" || k === "extrair") && state.role === "sol") && (k !== "demandas" || state.role === "rh") && (k !== "lixeira" || podeRestrita());
 const TELA = Object.fromEntries(MENU.flatMap(([g, its]) => its.map(([k, n, d]) => [k, { n, d, g }])));
 function contadores() {
   const and = ANDAMENTO().filter(visivel);
   const venc = and.reduce((n, c) => n + Object.values(c.etapas || {}).filter(e => e.s === "ag" && e.d && e.d <= HOJE && !agAntigo(e)).length, 0);
-  return { vagas: VAGAS().filter(v => v.status === "aberta").length, candidatos: and.length, agenda: venc, banco: BANCO().filter(visivel).length };
+  const meuId = (window.CT_ACESSO && window.CT_ACESSO.id) || uid;
+  const dem = state.role === "rh" ? demLista().filter(x => x.d.id === meuId && DEM_ABERTA.includes(x.st[0])).length : 0;
+  return { vagas: VAGAS().filter(v => v.status === "aberta").length, candidatos: and.length, agenda: venc, banco: BANCO().filter(visivel).length, demandas: dem };
 }
 function renderNav() {
   const cont = contadores(), t = TELA[state.view] || TELA.painel;
-  const tit = { vagas: "abertas", candidatos: "em processo", agenda: "para hoje ou atrasadas" };
+  const tit = { vagas: "abertas", candidatos: "em processo", agenda: "para hoje ou atrasadas", demandas: "suas, em aberto" };
   const fixo = document.body.classList.contains("rail-fixo");
   $("#menu-pop").innerHTML = `<div class="rail-sc" id="nav">${MENU.map(([g, its]) => `<div class="rail-g"><div class="rail-gt"><span>${g}</span></div>` + its.filter(([k]) => telaPermitida(k)).map(([k, n, d]) =>
     `<button class="menu-it" data-nav="${k}" ${state.view === k ? 'aria-current="page"' : ""} title="${n}: ${d}"><span class="mi">${ico(k)}${cont[k] ? `<span class="mi-n ${k === "agenda" ? "warn" : ""}">${cont[k] > 99 ? "99+" : cont[k]}</span>` : ""}</span><span class="rail-tx"><b>${n}</b><small>${d}</small></span>${cont[k] ? `<span class="count ${k === "agenda" ? "warn" : ""}" title="${cont[k]} ${tit[k]}">${cont[k]}</span>` : ""}</button>`).join("") + `</div>`).join("")}</div>
@@ -3317,7 +3516,9 @@ document.addEventListener("keydown", e => {
 function render() {
   try { const h = history.state; if (h && h.v === state.view && (h.sel ?? null) !== (state.sel ?? null)) history.replaceState({ ...h, sel: state.sel ?? null }, "", location.hash); } catch {}
   if (window.__ctNotificar) window.__ctNotificar();
+  document.body.classList.toggle("sem-restrita", !podeRestrita());
   renderPerfil(); renderNav(); preencherListas();
+  try { const n = state.role === "rh" ? avisosMeus().length : 0; if (n > (state._avN || 0)) toast(n === 1 ? "Você recebeu 1 demanda nova. Veja em Demandas." : `Você recebeu ${n} demandas novas. Veja em Demandas.`); state._avN = n; } catch {}
   const el = $("#view");
   if (state.semDb) { el.innerHTML = `<div class="panel"><div class="empty">Seu usuário não tem acesso ao módulo Contratações. Peça ao administrador para liberar.</div></div>`; return; }
   if (!(state.pronto.a && state.pronto.v)) { el.innerHTML = `<div class="panel"><div class="empty">Carregando a base de contratações…</div></div>`; return; }
@@ -3325,7 +3526,7 @@ function render() {
   if (!state.cand.size && !state.fin.size && !state.vagas.size && !podeEscrever) { el.innerHTML = `<div class="panel"><div class="empty">Você não tem acesso aos dados deste módulo.</div></div>`; return; }
   const ro = !podeEscrever ? `<p class="banner">Você está com acesso de leitura (Gestão): consulta tudo, sem alterar.</p>` : "";
   if (!telaPermitida(state.view)) state.view = "inicio";
-  const f = { inicio: vInicio, painel: vPainel, vagas: vVagas, candidatos: vCandidatos, agenda: vAgenda, novo: vNovo, historico: vHistorico, banco: vBanco, extrair: vExtrair, dados: vDados }[state.view] || vPainel;
+  const f = { inicio: vInicio, painel: vPainel, vagas: vVagas, candidatos: vCandidatos, demandas: vDemandas, agenda: vAgenda, novo: vNovo, historico: vHistorico, banco: vBanco, extrair: vExtrair, dados: vDados, lixeira: vLixeira }[state.view] || vPainel;
   const ae = document.activeElement;
   const foco = ae && ae.id && el.contains(ae) ? { id: ae.id, s: ae.selectionStart, v: ae.value } : null;
   // Preserva o que está sendo digitado em formulários quando chega uma atualização da base
@@ -3601,7 +3802,7 @@ function painelCruz() {
 }
 async function confirmarCruz() {
   const X = state.vcruz; if (!X || X.gravando) return; X.gravando = true; const P = []; let n = 0;
-  X.pares.filter(p => !X.fora.has(p.v.id)).forEach(({ v, c }) => { const a = getCand(c.id); if (!a) return; P.push(salvarCand({ ...a, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante}, aberta em ${br(v.data)})`, { atualizadoEm: a.atualizadoEm })); n++; });
+  X.pares.filter(p => !X.fora.has(p.v.id)).forEach(({ v, c }) => { const a = getCand(c.id); if (!a) return; P.push(salvarCand(aplicarSemCNH({ ...a, vagaId: v.id, vagaAuto: false }, v), `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante}, aberta em ${br(v.data)})`, { atualizadoEm: a.atualizadoEm })); n++; });
   await Promise.all(P); state.vcruz = null; toast(`${n} candidato(s) vinculado(s) às vagas.`); render();
 }
 document.addEventListener("change", e => {
@@ -3665,7 +3866,7 @@ function vVagas() {
       <input type="search" id="vf-q" placeholder="Buscar função, solicitante, setor" value="${esc(f.q)}" aria-label="Buscar vaga">
     </div>
     ${vs.length ? `<div class="table-wrap"><table><thead><tr><th>Aberta em</th><th>CT</th><th>Função</th><th>Base</th><th>Solicitante</th><th>Setor</th><th class="n">Candidatos</th><th>Situação</th><th></th></tr></thead><tbody>
-      ${pgV.itens.map(v => { const cs = cand(v), d = dias(v.data); return `<tr><td>${br(v.data)}${v.status === "aberta" && d != null ? ` <span class="dias ${d > 30 ? "late" : ""}">${d} d</span>` : ""}</td><td>${esc(v.ct)}</td><td><button class="link fv-abre" data-fvabre="${v.id}" title="Ver a vaga e quem está concorrendo"><b>${esc(v.funcao)}</b></button>${v.obs ? `<div class="muted sm">${esc(v.obs)}</div>` : ""}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td>${esc(v.setor)}</td>
+      ${pgV.itens.map(v => { const cs = cand(v), d = dias(v.data); return `<tr><td>${br(v.data)}${v.status === "aberta" && d != null ? ` <span class="dias ${d > 30 ? "late" : ""}">${d} d</span>` : ""}</td><td>${esc(v.ct)}</td><td><button class="link fv-abre" data-fvabre="${v.id}" title="Ver a vaga e quem está concorrendo"><b>${esc(v.funcao)}</b></button>${v.obs ? `<div class="muted sm">${esc(v.obs)}</div>` : ""}</td><td>${esc(baseNome(v.base))}</td><td>${esc(v.solicitante)}</td><td>${esc(v.setor)}${etiquetasArea(v).filter(t => t !== String(v.setor || "").toUpperCase()).map(t => `<div class="muted sm">${esc(t)}</div>`).join("")}</td>
         <td class="n">${v.status === "aberta" && lig(v) ? `<button class="link" data-abrir="${lig(v).id}" title="Candidato vinculado a esta vaga">${esc(lig(v).nome.split(" ")[0])} ✓</button><div class="muted sm">${cs.length} no total</div>` : v.status === "aberta" ? (cs.length ? `<button class="link" data-candfiltro="${esc(v.funcao)}|${esc(v.base)}">${cs.length}</button>` : `<span class="pill p-crit">0</span>`) : "—"}</td>
         <td>${v.status === "aberta" ? `<span class="pill p-acc">Aberta</span>` : `<span class="pill p-ok">Fechada</span>${v.fechadaEm ? ` <span class="muted sm">${br(v.fechadaEm)}</span>` : ""}${v.preenchidaPor && getCand(v.preenchidaPor) ? `<div class="sm"><button class="link" data-abrir="${v.preenchidaPor}">${esc(getCand(v.preenchidaPor).nome)}</button>${v.fechadaAuto ? ` <span class="muted">(automático: ${esc(v.fechadaAuto)})</span>` : ""}</div>` : v.obsFech ? `<div class="muted sm">${esc(v.obsFech)}</div>` : ""}`}</td>
         <td><div class="actions nowrap">${v.status === "aberta" && pode() ? `<button class="btn sm" data-indicar="${v.id}">Indicar</button>` : ""}${maisMenu([
@@ -3768,7 +3969,7 @@ function detalhe(c) {
   const venc = ETAPAS.filter(e => agRecente(c.etapas?.[e.k])), antigos = ETAPAS.filter(e => agAntigo(c.etapas?.[e.k]));
   return `<div class="panel">
     <div class="det-head">
-      <div class="det-tags"><span class="pill ${scl}">${sl}</span>${c.ct ? `<span class="tag">CT ${esc(c.ct)}</span>` : ""}${c.motivo ? `<span class="tag">${esc(c.motivo)}</span>` : ""}${ant.length ? `<span class="tag acc">${ant.length} processo${ant.length > 1 ? "s" : ""} anterior${ant.length > 1 ? "es" : ""}</span>` : ""}${!exigeCNH(c.funcao) ? `<span class="tag">Função sem CNH</span>` : ""}${state.rm.pronto && exRM(c) ? `<span class="tag acc">Ex-funcionário</span>` : ""}</div>
+      <div class="det-tags"><span class="pill ${scl}">${sl}</span>${c.ct ? `<span class="tag">CT ${esc(c.ct)}</span>` : ""}${tagsArea(c)}${c.motivo ? `<span class="tag">${esc(c.motivo)}</span>` : ""}${ant.length ? `<span class="tag acc">${ant.length} processo${ant.length > 1 ? "s" : ""} anterior${ant.length > 1 ? "es" : ""}</span>` : ""}${!exigeCNH(c.funcao) ? `<span class="tag">Função sem CNH</span>` : ""}${state.rm.pronto && exRM(c) ? `<span class="tag acc">Ex-funcionário</span>` : ""}</div>
       <h2>${esc(c.nome)}</h2>
       <span class="muted">${esc(c.funcao)} · ${esc(baseNome(c.base) || "sem base")}</span>
     </div>
@@ -3782,16 +3983,17 @@ function detalhe(c) {
     ${ed && nok ? `<div class="note crit"><span><b>${esc(nok.n)}: ${esc(rotSt(nok.k, "nok").toLowerCase())}.</b> Encerre o processo ou altere o resultado se o candidato for refazer a etapa.</span><button class="btn danger sm" data-encerrar-nok="${nok.k}">Encerrar como reprovado</button></div>` : ""}
     ${ed && antigos.length ? `<div class="note info"><span><b>Registro:</b> ${antigos.map(e => `${e.n} foi agendado para ${br(c.etapas[e.k].d)} e ficou sem resultado registrado`).join("; ")}. Não aparece mais como pendência; se souber o resultado, lance abaixo.</span></div>` : ""}
     ${ed && venc.length ? `<div class="note warn"><span>${venc.map(e => `${e.n} estava agendado para ${br(c.etapas[e.k].d)}`).join("; ")}. Lance o resultado abaixo.</span></div>` : ""}
-    ${ed && a.tipo === "pronto" ? `<div class="note ok"><span>Todas as etapas obrigatórias foram concluídas.</span><button class="btn primary sm" data-acao="concluir">Concluir contratação</button></div>` : ""}
+    ${ed && a.tipo === "pronto" ? `<div class="note ok"><span>Todas as etapas obrigatórias foram concluídas.${podeRestrita() ? "" : " A conclusão da contratação é feita pela Vanessa Oliveira Ventura Mendes."}</span>${podeRestrita() ? `<button class="btn primary sm" data-acao="concluir">Concluir contratação</button>` : ""}</div>` : ""}
     ${state.cancelando ? formCancelar(c) : ""}
     ${blocoFases(c, a, ed)}
     ${ed ? `<div class="actions">
-      ${a.tipo !== "pronto" ? `<button class="btn" data-acao="concluir">Concluir contratação</button>` : ""}
-      <button class="btn danger" data-acao="cancelar">Encerrar processo</button>
-      ${c.situacao === "suspenso" ? `<button class="btn" data-acao="retomar">Retomar</button>` : `<button class="btn" data-acao="suspender">Suspender</button>`}
-      <button class="btn" data-acao="banco-um" title="Guarda o processo no Banco de talentos sem apagar nada">Mover para o banco</button>
-      <button class="btn" data-acao="editar">Editar dados</button>
-      ${pode() ? `<button class="btn danger" data-acao="excluir-proc" title="Tira a pessoa de todo o site, sem deixar histórico">Excluir</button>` : ""}</div>` : ""}
+      ${podeRestrita() && a.tipo !== "pronto" ? `<button class="btn" data-acao="concluir">Concluir contratação</button>` : ""}
+      ${podeRestrita() ? `<button class="btn danger" data-acao="cancelar">Encerrar processo</button>` : ""}
+      ${c.situacao === "suspenso" ? `<button class="btn" data-acao="retomar">Retomar</button>` : podeRestrita() ? `<button class="btn" data-acao="suspender">Suspender</button>` : ""}
+      ${podeRestrita() ? `<button class="btn" data-acao="banco-um" title="Guarda o processo no Banco de talentos sem apagar nada">Mover para o banco</button>
+      <button class="btn" data-acao="editar">Editar dados</button>` : ""}
+      ${podeRestrita() && pode() ? `<button class="btn danger" data-acao="excluir-proc" title="Manda a pessoa para a Lixeira por 30 dias; depois é apagada de vez">Excluir</button>` : ""}
+      ${podeRestrita() ? "" : `<span class="muted sm">Concluir, encerrar, suspender, mover para o banco, editar dados e excluir ficam com Vanessa Oliveira Ventura Mendes.</span>`}</div>` : ""}
     ${c.situacao === "banco" ? blocoBancoDet(c) : ""}
     ${!ativo && c.situacao !== "banco" && pode() ? `<div class="actions"><button class="btn" data-acao="reabrir">Reabrir processo</button></div>` : ""}
     ${blocoCV(c, ed || (pode() && !ativo))}
@@ -3814,11 +4016,12 @@ function linhaEtapa(c, e, i, a, ed) {
         <button class="v-pend" data-et="${e.k}" data-v="pend" aria-pressed="${s === "pend"}">Pendente</button>
         <button class="v-na" data-et="${e.k}" data-v="na" aria-pressed="${s === "na"}">Não se aplica</button>
       </span>
-      <label class="dt-l"><small>${s && s !== "ag" ? (v.sol && s === "pend" && !v.mot ? "Solicitado em" : "Atualizado em") : e.ag ? "Agendar para" : "Solicitado / contato em"}</small><input type="date" id="dt-${e.k}" data-agenda="${e.k}" value="${v?.d || ""}" class="${s === "ag" ? "tem" : ""}" title="${s && s !== "ag" ? "Data da última atualização desta etapa (preenchida com hoje; pode corrigir)" : e.ag ? "Escolha a data para agendar" : "Data em que pedimos ao candidato ou ao setor responsável"}"></label>
+      <label class="dt-l"><small>${s && s !== "ag" ? (v.sol && s === "pend" && !v.mot ? "Solicitado em" : "Atualizado em") : e.ag ? "Agendar para" : "Solicitado / contato em"}</small><input type="date" id="dt-${e.k}" data-agenda="${e.k}" value="${v?.d || ""}" class="${s === "ag" ? "tem" : ""}"  title="${s && s !== "ag" ? "Data da última atualização desta etapa (preenchida com hoje; pode corrigir)" : e.ag ? "Escolha a data para agendar" : "Data em que pedimos ao candidato ou ao setor responsável"}"></label>
     </div>
     ${s === "pend" && !v.sol ? `<div class="et-obs et-pend"><label>Motivo da pendência<input type="text" id="pm-${e.k}" data-pendmot="${e.k}" value="${esc(v?.mot || "")}" placeholder="Ex.: falta certificado NR-35, aguardando retorno do candidato" aria-label="Motivo da pendência de ${esc(e.n)}"></label></div>` : ""}
-    <div class="et-obs"><input type="text" id="ob-${e.k}" data-obs="${e.k}" value="${esc(v?.t || "")}" placeholder="Observação (ex.: reteste 2x, aguardando DP)" aria-label="Observação de ${esc(e.n)}"></div>` : "";
-  return `<li class="et ${s ? "s-" + s : ""} ${now ? "now" : ""}"><span class="et-n">${i + 1}</span><span class="et-nome"><b>${esc(e.n)}</b>${e.dica ? `<small class="et-dica">${esc(e.dica)}</small>` : ""}${st}${!ed && e.k === "ent" && v?.resp ? `<small class="muted">Entrevistador: ${esc(v.resp)}</small>` : ""}</span>${ctl}${ed && e.k === "link" ? blocoLink(c) : ""}${e.k === "cv" ? blocoAnexos(c, ed) : e.k === "req" ? blocoRP(c, ed) : ed ? extraEtapa(c, e, v) : ""}</li>`;
+    <div class="et-obs"><input type="text" id="ob-${e.k}" data-obs="${e.k}" value="${esc(v?.t || "")}" placeholder="Observação (ex.: reteste 2x, aguardando DP)" aria-label="Observação de ${esc(e.n)}"></div>
+    ${selDemanda(c, e.k)}` : "";
+  return `<li class="et ${s ? "s-" + s : ""} ${now ? "now" : ""}"><span class="et-n">${i + 1}</span><span class="et-nome"><b>${esc(e.n)}</b>${e.dica ? `<small class="et-dica">${esc(e.dica)}</small>` : ""}${st}${!ed && e.k === "ent" && v?.resp ? `<small class="muted">Entrevistador: ${esc(v.resp)}</small>` : ""}${!ed && demDe(c, e.k) ? `<small class="muted">Responsável: ${esc(demDe(c, e.k).n)}</small>` : ""}</span>${ctl}${ed && e.k === "link" ? blocoLink(c) : ""}${e.k === "cv" ? blocoAnexos(c, ed) : e.k === "req" ? blocoRP(c, ed) : ed ? extraEtapa(c, e, v) : ""}</li>`;
 }
 function formCancelar(c) {
   const nok = ETAPAS.find(e => c.etapas?.[e.k]?.s === "nok");
@@ -4010,7 +4213,7 @@ function conferencias(n) {
   const out = [], f = norm(n.funcao), cert = norm(n.certificados);
   if (n.ct && n.base && !baseValida(n.ct, n.base)) out.push(`O CT ${n.ct} não atua em ${baseNome(n.base)}. O CT 170 só atua em Barra do Corda e Santa Inês.`);
   if (n.cpf && !cpfValido(n.cpf)) out.push("O CPF tem dígitos que não conferem. Verifique se foi digitado certo.");
-  if (n.funcao && exigeCNH(n.funcao) && !n.cnhCat) out.push(`A função ${n.funcao} exige CNH e o currículo não menciona habilitação.`);
+  if (n.funcao && exigeCNH(n.funcao) && !semCNHSetor(n.funcao, n.setor) && !n.cnhCat) out.push(`A função ${n.funcao} exige CNH e o currículo não menciona habilitação.`);
   if (/ELETRICISTA/.test(f) && !/^AUXILIAR/.test(f)) { if (!/NR-?10/.test(cert)) out.push("O currículo não menciona NR-10."); if (!/\bSEP\b/.test(cert)) out.push("O currículo não menciona SEP."); }
   if (n.ccusto && listaCC().length) { const cc = ccInfo(String(n.ccusto).trim()); if (!cc) out.push(`O centro de custo "${n.ccusto}" não é um código do RM. Use o formato 2.${n.ct || "127"}.05.`); else if (n.ct && cc.ct !== n.ct) out.push(`O centro de custo ${n.ccusto} é do CT ${cc.ct}, mas o cadastro é do CT ${n.ct}.`); }
   if (n.funcao && funcOficiais().length && !ehFuncOficial(n.funcao)) { const s = sugerirFuncao(n.funcao); out.push(`A função "${n.funcao}" não está na lista oficial do RM${s ? `; a mais parecida é ${s}` : ""}.`); }
@@ -4251,6 +4454,7 @@ function avisosNovo() {
     ${n.nome.trim().length > 5 || soDig(n.cpf).length === 11 ? cartaoHistorico(n, null) : ""}
     ${(() => { if (n.nome.trim().length < 8) return ""; const ex = new Set(ant.map(x => x.id)), ps = parecidos(n.nome, ex); return ps.length ? `<div class="hc-parec"><b>Nomes parecidos já cadastrados. Confira se é a mesma pessoa:</b>${ps.map(x => `<span><button class="link" data-abrir="${x.id}">${esc(x.nome)}</button> · ${esc(x.funcao)} · ${esc(x.base || "")} · ${esc(resultadoTxt(x))}</span>`).join("")}</div>` : ""; })()}
     ${atvRM ? `<div class="note info"><span><b>Esta pessoa é funcionária ativa da CGB</b> desde ${br(atvRM.adm)}, como ${esc(atvRM.funcao)} em ${esc(baseNome(atvRM.base))}. Confira se é transferência ou outra pessoa com o mesmo nome.</span></div>` : ""}
+    ${semCNHSetor(n.funcao, n.setor) ? `<div class="note info"><span>Eletricista de ${esc(norm(n.setor).includes("SPOT") ? "SPOT" : "GOMAN")}: a etapa CNH entra como "Não se aplica".</span></div>` : ""}
     ${cnh === false ? `<div class="note info"><span>${esc(n.funcao)} não exige CNH: Direção defensiva e CNH entram como "Não se aplica".</span></div>` : cnh && n.cnhCat === "NÃO POSSUI" ? `<div class="note warn"><span>${esc(n.funcao)} exige CNH e o currículo diz que o candidato não possui.</span></div>` : ""}
 `;
 }
@@ -4331,7 +4535,9 @@ async function salvarNovo() {
   const etapas = {};
   const exige = exigeCNH(n.funcao);
   if (!exige) { etapas.dd = { s: "na", t: "Função não exige CNH" }; etapas.cnh = { s: "na", t: "Função não exige CNH" }; }
+  else if (semCNHSetor(n.funcao, n.setor)) etapas.cnh = { s: "na", t: TXT_SEM_CNH };
   else if (n.cnhCat) etapas.cnh = { s: "pend", t: n.cnhCat === "NÃO POSSUI" ? "Currículo diz que não possui CNH: conferir" : `Currículo: ${n.cnhCat}. Conferir documento` };
+  if (semCNHSetor(n.funcao, n.setor)) etapas.cnh = { s: "na", t: TXT_SEM_CNH };
   if (n.certificados || anexos.length) etapas.cv = { s: "pend", t: [n.certificados ? `Currículo: ${n.certificados}` : "", anexos.length ? `${anexos.length} documento(s) enviado(s)` : ""].filter(Boolean).join(" · ").slice(0, 180) };
   const id = novoId("c");
   const c = { id, nome: UP(n.nome), ct: n.ct, data: n.data, situacao: "andamento", funcao: UP(n.funcao), solicitante: UP(n.solicitante), setor: UP(n.setor), ccusto: UP(n.ccusto), base: n.base, motivo: n.motivo, etapas, obs: (n.obs || "").trim(), vagaId: n.vagaId || "", origem: "site",
@@ -4678,7 +4884,7 @@ document.addEventListener("click", e => {
   if (d.talchamar) { const p = talentos().find(x => x.id === d.talchamar); if (p) chamarTal(p); return; }
   if (d.bfase !== undefined) { state.bf.fase = d.bfase; render(); return; }
   if (d.bancovaga) { const v = state.vagas.get(d.bancovaga); if (v) { state.bf = { q: "", funcao: v.funcao, base: "", fase: "" }; state.bancoVaga = v.id; state.bancoAba = "processos"; state.sel = null; ir("banco"); } return; }
-  if (d.retvaga) { const c = getCand(state.sel), v = state.vagas.get(d.retvaga); if (c && v) { salvarCand({ ...c, vagaId: v.id }, `Retomado do Banco de talentos para a vaga de ${v.funcao} em ${baseNome(v.base)}`, { situacao: "andamento" }); state.filtro.chip = "todos"; toast("Processo retomado e ligado à vaga."); ir("candidatos", c.id); } return; }
+  if (d.retvaga) { const c = getCand(state.sel), v = state.vagas.get(d.retvaga); if (c && v) { salvarCand(aplicarSemCNH({ ...c, vagaId: v.id }, v), `Retomado do Banco de talentos para a vaga de ${v.funcao} em ${baseNome(v.base)}`, { situacao: "andamento" }); state.filtro.chip = "todos"; toast("Processo retomado e ligado à vaga."); ir("candidatos", c.id); } return; }
   if (d.pag) { const [k, n] = d.pag.split("|"); if (state.pag[k]) state.pag[k].p = +n; render(); const al = document.querySelector(".pag"); if (al) al.closest(".panel")?.scrollIntoView({ block: "start" }); return; }
   if (d.aba) { state.dadosAba = d.aba; render(); return; }
   if (d.faseIr) { const c = getCand(state.sel); if (c) { fasesAbertas(c).add(d.faseIr); render(); document.querySelector(`details[data-fase="${d.faseIr}"]`)?.scrollIntoView({ block: "nearest", behavior: "smooth" }); } return; }
@@ -4696,7 +4902,7 @@ document.addEventListener("click", e => {
   if (d.chip) { state.filtro.chip = d.chip; render(); return; }
   if (d.vst !== undefined) { state.vf.st = d.vst; render(); return; }
   if (d.fvabre) { state.vagaSel = d.fvabre; render(); setTimeout(() => document.getElementById("fichavaga")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); return; }
-  if (d.fvvinc) { const c = getCand(d.fvvinc), v = state.vagas.get(state.vagaSel); if (!c || !v) return; salvarCand({ ...c, vagaId: v.id, vagaAuto: false }, `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante || "sem solicitante"}, aberta em ${br(v.data)})`, { atualizadoEm: c.atualizadoEm }); toast(`${c.nome} vinculado a esta vaga.`); render(); return; }
+  if (d.fvvinc) { const c = getCand(d.fvvinc), v = state.vagas.get(state.vagaSel); if (!c || !v) return; salvarCand(aplicarSemCNH({ ...c, vagaId: v.id, vagaAuto: false }, v), `Vinculado à vaga de ${v.funcao} em ${baseNome(v.base)} (CT ${v.ct}, ${v.solicitante || "sem solicitante"}, aberta em ${br(v.data)})`, { atualizadoEm: c.atualizadoEm }); toast(`${c.nome} vinculado a esta vaga.`); render(); return; }
   if (d.fvdesv) { const c = getCand(d.fvdesv), v = state.vagas.get(state.vagaSel); if (!c || !confirm(`Desvincular ${c.nome} desta vaga? A pessoa continua no processo.`)) return; const x = { ...c }; delete x.vagaId; delete x.vagaAuto; salvarCand(x, `Desvinculado da vaga de ${v ? v.funcao + " em " + baseNome(v.base) : "—"}`, { atualizadoEm: c.atualizadoEm }); toast("Desvinculado."); render(); return; }
   if (d.indicar) { const v = state.vagas.get(d.indicar); state.novo = { nome: "", ct: v.ct || "127", funcao: v.funcao, base: v.base, solicitante: v.solicitante, setor: v.setor, ccusto: v.ccusto, motivo: MOTIVOS.includes(v.motivo) ? v.motivo : "SUBSTITUIÇÃO", vagaId: v.id, obs: "", data: HOJE }; return ir("novo"); }
   if (d.fechavaga) { const v = state.vagas.get(d.fechavaga); salvarVaga({ ...v, status: "fechada", fechadaEm: HOJE, obsFech: "Fechada manualmente" }); toast("Vaga fechada."); return; }
@@ -4715,15 +4921,17 @@ document.addEventListener("click", e => {
     comDesfazer(`Vaga trocada para ${nova.solicitante} (CT ${nova.ct}).`, () => {
       reabrirVaga(v);
       salvarVaga({ ...nova, status: "fechada", fechadaEm: v.fechadaEm || HOJE, preenchidaPor: c.id, obsFech: `Preenchida por ${c.nome}`, revisada: HOJE });
-      salvarCand({ ...c, vagaId: nova.id, vagaAuto: false }, `Vaga corrigida: de ${v.solicitante} (CT ${v.ct}) para ${nova.solicitante} (CT ${nova.ct})`);
+      salvarCand(aplicarSemCNH({ ...c, vagaId: nova.id, vagaAuto: false }, nova), `Vaga corrigida: de ${v.solicitante} (CT ${v.ct}) para ${nova.solicitante} (CT ${nova.ct})`);
     });
     return;
   }
   if (d.concluirm) { const c = getCand(d.concluirm); if (c && concluirRM(c)) ir("candidatos", c.id); return; }
   if (d.agc) { const c = getCand(d.agc); setEtapa(c, d.et, { s: d.v, d: c.etapas[d.et].d <= HOJE ? c.etapas[d.et].d : HOJE }); return; }
   if (d.et && d.v) { const c = getCand(state.sel); if (!c) return; const cur = c.etapas?.[d.et]?.s; setEtapa(c, d.et, cur === d.v ? null : { s: d.v, sol: false }); if (d.v === "pend" && cur !== "pend") setTimeout(() => document.getElementById("pm-" + d.et)?.focus(), 60); return; }
+  if ((d.encerrarNok || d.concluirm || d.talexcl || d.padr || d.sol) && !podeRestrita()) { toast(AVISO_RESTRITA); return; }
   if (d.encerrarNok) { encerrar(getCand(state.sel), "Reprovado na etapa", d.encerrarNok); return; }
   const c = getCand(state.sel);
+  if (d.acao && ACOES_RESTRITAS.has(d.acao) && !podeRestrita()) { toast(AVISO_RESTRITA); return; }
   switch (d.acao) {
     case "abrir-vaga": state.novaVaga = true; ir("vagas"); return;
     case "vimp-cancela": state.vimp = null; render(); return;
@@ -4771,12 +4979,12 @@ document.addEventListener("click", e => {
     case "tal-limpa-fecha": state.talLimpa = null; render(); return;
     case "tal-limpa-ok": { const a = talAntigos(2026), ids = [...a.antes, ...(state.talLimpa && state.talLimpa.sem ? a.sem : [])].map(p => p.id); if (!ids.length || !confirm(`Tirar ${ids.length} pessoa(s) do Banco de talentos?`)) return; state.talLimpa = null; salvarExcl([...state.talExcl, ...ids], `${ids.length} pessoa(s) saíram do Banco de talentos. Ficaram só as inscrições de 2026 em diante.`); return; }
     case "tal-restaura": if (!confirm(`Restaurar ${state.talExcl.size} pessoa(s) na lista do Banco de talentos?`)) return; salvarExcl([], "Pessoas restauradas no Banco de talentos."); return;
-    case "excluir-proc": { const c = getCand(state.sel); if (!c || !confirm(`Excluir ${c.nome} do site?\n\nO processo e o nome saem de tudo: Processos, guardados, Banco de talentos e histórico. Não dá para desfazer pelo site.`)) return;
+    case "excluir-proc": { const c = getCand(state.sel); if (!c || !confirm(`Excluir ${c.nome} do site?\n\nO processo e o nome saem de Processos, guardados, Banco de talentos e histórico.\n\nFicam na Lixeira por 30 dias e dá para restaurar. Depois disso são apagados de vez.`)) return;
       const nk = nomeBusca(c.nome), ids = state.tal.lista.filter(x => nomeBusca(x.nome) === nk && !state.talExcl.has(x.id)).map(x => x.id);
       db.collection("candidatos").doc(c.id).delete().then(async () => {
         state.cand.delete(c.id); state.fin.delete(c.id); state.sel = null; state.marcados && state.marcados.delete(c.id);
-        if (ids.length) await salvarExcl([...state.talExcl, ...ids], `${c.nome} foi excluído do site, inclusive do Banco de talentos.`);
-        else { toast(`${c.nome} foi excluído do site.`); render(); }
+        if (ids.length) await salvarExcl([...state.talExcl, ...ids], `${c.nome} foi para a Lixeira (30 dias para restaurar), inclusive do Banco de talentos.`);
+        else { toast(`${c.nome} foi para a Lixeira (30 dias para restaurar).`); render(); }
       }).catch(() => toast("Não consegui excluir agora. Tente de novo.")); return; }
     case "mover-banco-marc": { const l = paraOBanco().filter(c => state.marcados.has(c.id)); moverParaBanco(l); l.forEach(c => state.marcados.delete(c.id)); return; }
     case "fixar-menu": fixarMenu(!document.body.classList.contains("rail-fixo")); return;
@@ -4869,13 +5077,14 @@ document.addEventListener("submit", e => {
     state.novaVaga = false; state.vf.st = "aberta"; toast(`${qtd} vaga(s) aberta(s).`); render();
   }
   if (e.target.id === "form-editar") {
+    if (!podeRestrita()) { toast(AVISO_RESTRITA); return; }
     const c = getCand(state.sel), g = id => document.getElementById(id).value;
     if (g("ed-ct") && g("ed-base") && !baseValida(g("ed-ct"), g("ed-base"))) { toast(`O CT ${g("ed-ct")} não atua em ${g("ed-base")}.`); return; }
     const x = { ...c, nome: up(g("ed-nome")), ct: g("ed-ct"), funcao: up(g("ed-funcao")), base: g("ed-base"), solicitante: up(g("ed-sol")), setor: up(g("ed-setor")), ccusto: up(g("ed-cc")), motivo: g("ed-motivo"), obs: g("ed-obs").trim(), cpf: g("ed-cpf").trim(), telefone: g("ed-tel").trim(), email: g("ed-email").trim(), cidade: g("ed-cidade").trim(), escolaridade: g("ed-esc").trim(), cnhCat: g("ed-cnh").trim(), certificados: g("ed-cert").trim(), experiencia: g("ed-exp").trim(), resumo: g("ed-resumo").trim() };
     state.editando = false; salvarCand(x, "Dados do candidato editados"); toast("Dados salvos.");
   }
 });
-function rota() { const h = location.hash.slice(1); if (["inicio", "painel", "vagas", "candidatos", "agenda", "novo", "historico", "banco", "extrair", "dados"].includes(h)) state.view = h; }
+function rota() { const h = location.hash.slice(1); if (["inicio", "painel", "vagas", "candidatos", "demandas", "agenda", "novo", "historico", "banco", "extrair", "dados", "lixeira"].includes(h)) state.view = h; }
 addEventListener("hashchange", () => { rota(); render(); });
 addEventListener("popstate", e => { const st = e.state; if (st && st.v) { state.view = st.v; state.sel = st.sel ?? null; state.passos = st.n || 0; } else { rota(); state.passos = 0; } state.cancelando = false; state.editando = false; render(); window.scrollTo({ top: 0 }); });
 function voltar() { if ((state.passos || 0) > 0) history.back(); else if (state.view !== "inicio") ir("inicio"); }

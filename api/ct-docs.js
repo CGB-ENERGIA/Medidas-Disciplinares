@@ -3,11 +3,15 @@
 //   GET  /api/ct-docs?col=vagas&id=v123     → um documento
 //   POST /api/ct-docs { col, id, dados }    → grava (cria ou substitui)
 //   POST /api/ct-docs { col, id, remover: true }   → esconde (nada é apagado de verdade)
+//   POST /api/ct-docs { col: "candidatos", id, restaurar: true }  → tira da lixeira (só a Vanessa)
+//   GET  /api/ct-docs?lixeira=1             → candidatos excluídos nos últimos 30 dias (só a Vanessa); depois disso são apagados de vez
 //   POST /api/ct-docs { ops: [ ...as duas formas acima... ] }   → várias de uma vez
 // Quem pode o quê (nível do usuário em Contratações):
 //   gestor  (Recrutamento) lê e grava tudo
 //   usuario (Solicitante)  lê só as vagas e candidatos dele, as configurações e o resumo do RM;
 //                          abre vagas em nome dele e anexa a RP assinada nos candidatos das vagas dele
+// Ações restritas (decidido em 27/11/2026): Excluir, Encerrar processo, Suspender, Concluir contratação, Mover para o banco
+// e Editar dados (corrigir dado já preenchido) só a Vanessa Oliveira Ventura Mendes (@vanessa.oliveira). Vale para os demais, inclusive administradores.
 import { consulta, rota } from "./_lib/db.js";
 import { comLogin, lerJSON, ok, erro } from "./_lib/auth.js";
 import { COLECOES, norm, visivelPara, mesmoConteudo } from "./_lib/ct.js";
@@ -17,6 +21,12 @@ const MAX_DOCS = 400;
 const MAX_DOC = 3_500_000;      // tamanho máximo de um documento gravado
 const MAX_OPS = 60;
 const COM_SOLICITANTE = ["candidatos", "vagas"];
+const RESPONSAVEL_ACOES = "vanessa.oliveira";                 // login de quem pode as ações restritas
+const DIAS_LIXEIRA = 30;                                      // tempo na lixeira antes de apagar de vez
+const SIT_RESTRITAS = ["concluido", "cancelado", "suspenso", "banco"];
+const CAMPOS_CADASTRO = ["nome", "ct", "funcao", "base", "solicitante", "setor", "ccusto", "motivo", "obs", "cpf", "telefone", "email", "cidade", "escolaridade", "cnhCat", "certificados", "experiencia", "resumo"];
+const podeAcoesRestritas = u => String(u.usuario || "").toLowerCase() === RESPONSAVEL_ACOES;
+const vazio = v => v === undefined || v === null || v === "";
 
 const nivelDe = u => u.modulos.contratacoes.nivel;
 
@@ -27,7 +37,11 @@ function regraLeitura(nivel, col) {
 }
 const ehDele = (u, r) => r.criado_por === u.id || visivelPara(r.solicitante_norm, u.nome);
 
+// Apaga de vez o que está na lixeira há mais de 30 dias
+const purgarLixeira = () => consulta(`delete from ct_docs where colecao = 'candidatos' and removido and atualizado_em < now() - make_interval(days => $1)`, [DIAS_LIXEIRA]);
+
 async function listar(u, col, desde) {
+  if (col === "candidatos" && String(desde) === "0") { try { await purgarLixeira(); } catch {} }
   const regra = regraLeitura(nivelDe(u), col);
   if (!regra) return { docs: [], removidos: [], proximo: desde, mais: false };
   const leves = await consulta(`select id, versao::text as versao, length(dados::text)::int as tam, solicitante_norm, criado_por::text as criado_por, removido
@@ -44,7 +58,17 @@ async function listar(u, col, desde) {
   return { docs, removidos: pagina.filter(r => r.removido).map(r => r.id), proximo, mais };
 }
 
+async function listarLixeira(u) {
+  if (!podeAcoesRestritas(u)) return erro("Seu acesso não permite ver a lixeira.", 403);
+  await purgarLixeira();
+  const linhas = await consulta(`select d.id, d.dados, d.atualizado_em, us.nome as por
+                                   from ct_docs d left join usuarios us on us.id = d.atualizado_por
+                                  where d.colecao = 'candidatos' and d.removido order by d.atualizado_em desc limit 500`);
+  return ok({ dias: DIAS_LIXEIRA, itens: linhas.map(r => { const d = r.dados || {}; return { id: r.id, nome: d.nome || "", funcao: d.funcao || "", setor: d.setor || "", base: d.base || "", ct: d.ct || "", situacao: d.situacao || "", excluidoEm: r.atualizado_em, por: r.por || "" }; }) });
+}
+
 export const GET = rota(comLogin(async (_req, q, u) => {
+  if (q.get("lixeira")) return listarLixeira(u);
   const col = q.get("col"); if (!COLECOES.includes(col)) return erro("Coleção inválida.", 400);
   if (q.get("id")) {
     const regra = regraLeitura(nivelDe(u), col);
@@ -78,12 +102,34 @@ function erroUsuario(u, op, atual) {
   return "Seu acesso não permite gravar nesta área.";
 }
 
+// Regras de quem não é a pessoa autorizada às ações restritas (gestores de Recrutamento e administradores).
+// Devolve o motivo da recusa, ou null se pode.
+function erroRestrito(op, atual) {
+  const QUEM = "Só a Vanessa Oliveira Ventura Mendes pode fazer isso.";
+  if (op.remover) return `Seu acesso não permite excluir candidatos. ${QUEM}`;
+  if (!atual) return null;
+  if (atual.removido) return `Seu acesso não permite restaurar candidatos excluídos. ${QUEM}`;
+  const a = atual.dados || {}, n = op.dados || {};
+  if (n.situacao !== a.situacao && SIT_RESTRITAS.includes(n.situacao)) return `Seu acesso não permite concluir, encerrar, suspender nem mover para o banco. ${QUEM}`;
+  // corrigir um dado já preenchido é "Editar dados"; preencher um campo vazio (ex.: leitura do currículo) continua liberado
+  if (CAMPOS_CADASTRO.some(k => !vazio(a[k]) && String(a[k]) !== String(n[k] ?? ""))) return `Seu acesso não permite editar os dados cadastrais. ${QUEM}`;
+  return null;
+}
+
 async function gravarOp(u, op) {
   const { col, id } = op || {};
   if (!COLECOES.includes(col) || !id || typeof id !== "string" || id.length > 200) return "Coleção ou id inválido.";
   const nivel = nivelDe(u);
   const [atual] = await consulta("select dados, removido, solicitante_norm, criado_por::text as criado_por from ct_docs where colecao = $1 and id = $2", [col, id]);
   if (nivel === "usuario") { const e = erroUsuario(u, op, atual); if (e) return e; }
+  else if (col === "candidatos" && !podeAcoesRestritas(u)) { const e = erroRestrito(op, atual); if (e) return e; }
+  if (op.restaurar) {
+    if (col !== "candidatos" || !podeAcoesRestritas(u)) return "Seu acesso não permite restaurar da lixeira.";
+    if (!atual || !atual.removido) return "Este cadastro não está na lixeira.";
+    await consulta("update ct_docs set removido = false, atualizado_por = $3, atualizado_em = now(), versao = nextval('ct_versao_seq') where colecao = $1 and id = $2", [col, id, u.id]);
+    await registrar(u, col, id, "restaurou");
+    return null;
+  }
   if (op.remover) {
     if (atual && !atual.removido) {
       await consulta("update ct_docs set removido = true, atualizado_por = $3, atualizado_em = now(), versao = nextval('ct_versao_seq') where colecao = $1 and id = $2", [col, id, u.id]);

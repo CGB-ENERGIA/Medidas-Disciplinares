@@ -29,7 +29,7 @@
     if (r.status === 401) { pai({ tipo: "sessao" }); return null; }
     const eu = await r.json(), m = eu.modulos && eu.modulos.contratacoes;
     if (!m) return null;
-    window.CT_ACESSO = { id: eu.id, nome: eu.nome, admin: !!eu.admin, nivel: m.nivel, papel: PAPEL[m.nivel], pessoa: m.nivel === "usuario" ? eu.nome : "" };
+    window.CT_ACESSO = { id: eu.id, usuario: eu.usuario, nome: eu.nome, admin: !!eu.admin, nivel: m.nivel, papel: PAPEL[m.nivel], pessoa: m.nivel === "usuario" ? eu.nome : "" };
     return window.CT_ACESSO;
   })());
 
@@ -129,7 +129,15 @@
     }
   };
 
-  window.claude = { use: async nome => { const a = await acesso(); if (!a) return null; return ({ db, user, downloads, assets, sample: null })[nome] || null; } };
+  // Lixeira (só quem o servidor autoriza): lista os candidatos excluídos nos últimos 30 dias e restaura
+  const lixeira = {
+    listar: () => api("/api/ct-docs?lixeira=1"),
+    restaurar: id => api("/api/ct-docs", { method: "POST", headers: J, body: JSON.stringify({ col: "candidatos", id, restaurar: true }) })
+  };
+  // Equipe do Recrutamento (para atribuir demandas)
+  const equipe = { listar: async () => (await api("/api/ct-nomes?equipe=1")).equipe || [] };
+
+  window.claude = { use: async nome => { const a = await acesso(); if (!a) return null; return ({ db, user, downloads, assets, lixeira, equipe, sample: null })[nome] || null; } };
 
   // ---------- conversa com o site principal ----------
   let ultima = "";
