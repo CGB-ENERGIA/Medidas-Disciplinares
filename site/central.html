@@ -1034,6 +1034,41 @@ input[type=text],input[type=date],input[type=time]{width:100%;min-width:0;border
 /* ---- visão geral · central de comando ---- */
 .vg2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:stretch}
 @media (max-width:1150px){.vg2{grid-template-columns:minmax(0,1fr)}}
+/* Faixa do Painel geral mais viva (fc24): barra de meta, participação de cada base — só visual */
+#main section.upbi>.vgh .vgp{position:relative;overflow:hidden;padding-bottom:18px!important}
+#main section.upbi>.vgh .vgp::after{content:"";position:absolute;left:12px;right:12px;bottom:8px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--pc) var(--sh),rgba(255,255,255,.16) var(--sh))}
+#main section.upbi>.vgh .vgp em.vgp-s{display:block!important;font-style:normal;font-size:10.5px;font-weight:600;color:rgba(255,225,232,.72);white-space:nowrap}
+#main section.upbi>.vgh .vgh-hora{display:grid;justify-items:end;gap:2px}
+#main section.upbi>.vgh .vgh-hora b{font-size:32px!important;letter-spacing:-.02em;line-height:1.05}
+#main section.upbi>.vgh .vgh-bar{display:block;width:210px;height:6px;border-radius:6px;background:rgba(255,255,255,.18);margin-top:8px;overflow:hidden}
+#main section.upbi>.vgh .vgh-bar i{display:block;height:100%;width:var(--bw);border-radius:6px;background:var(--bc);box-shadow:0 0 12px var(--bc)}
+#main section.upbi>.vgh .vgh-bt{font-style:normal;font-size:11.5px;font-weight:700;color:rgba(255,235,240,.85)}
+
+/* Fundo dos cartões e dos gráficos com tom de cor, como no Atendimento (fc23) — só visual */
+html:not([data-tema="escuro"]) body.area-financeiro .vx-card,html:not([data-tema="escuro"]) body.area-financeiro .panel{background-color:#fff;background-image:linear-gradient(180deg,rgba(141,29,49,.09) 0,rgba(141,29,49,.035) 140px,#fff 100%);border:0;border-top:5px solid #8d1d31;border-radius:20px;box-shadow:0 2px 14px rgba(90,15,28,.08),0 12px 30px rgba(90,15,28,.06)}
+html:not([data-tema="escuro"]) body.area-financeiro .vx-b,html:not([data-tema="escuro"]) body.area-financeiro .colc{background-color:#fff;background-image:linear-gradient(180deg,rgba(141,29,49,.07),rgba(141,29,49,.02));border:1px solid rgba(141,29,49,.08);border-radius:14px;padding:10px 12px}
+html:not([data-tema="escuro"]) body.area-financeiro .cc-g{stroke:rgba(141,29,49,.16)}
+html:not([data-tema="escuro"]) body.area-financeiro .vx{--vxtr:rgba(141,29,49,.13)}
+html:not([data-tema="escuro"]) body.area-financeiro .vx-rs span{background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(141,29,49,.1)}
+html:not([data-tema="escuro"]) body.area-financeiro .vx-dv{border-top-color:rgba(141,29,49,.2)}
+html:not([data-tema="escuro"]) body.area-financeiro .vgdest .vgl{background:rgba(255,255,255,.7)}
+html:not([data-tema="escuro"]) body.area-financeiro #main .icard:not([data-ind]){background-color:#fff!important;background-image:linear-gradient(135deg,rgba(141,29,49,.15) 0,#fff 70%)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .icard:not([data-ind]):has(.ic-v.ate){background-color:#fff!important;background-image:linear-gradient(135deg,rgba(46,139,62,.19) 0,#fff 70%)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .icard:not([data-ind]):has(.ic-v.par){background-color:#fff!important;background-image:linear-gradient(135deg,rgba(217,154,30,.22) 0,#fff 70%)!important}
+html:not([data-tema="escuro"]) body.area-financeiro #main .icard:not([data-ind]):has(.ic-v.nao){background-color:#fff!important;background-image:linear-gradient(135deg,rgba(192,57,43,.17) 0,#fff 70%)!important}
+
+.vg2>.vx-card{display:flex;flex-direction:column}.vg2>.vx-card>.vx-b{flex:1}
+.vx-rs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.vx-rs span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:5px 11px;border-radius:999px;background:rgba(0,0,0,.04);color:var(--vxm)}
+.vx-rs span b{color:var(--fg);font-weight:800}.vx-rs i{width:9px;height:9px;border-radius:50%}
+.vx-dvh{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--vxm);margin:14px 0 4px}
+.vx-dv{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 2px;border-top:1px dashed rgba(0,0,0,.12);font-size:13px}
+.vx-dv .vx-dn{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vx-dv b{font-weight:800}.vx-dv .vx-dd{color:var(--vxm);font-size:12px;min-width:112px;text-align:right}
+.vx-dv.vx-clk{cursor:pointer}.vx-dv.vx-clk:hover{background:rgba(113,20,36,.05)}
+html[data-tema="escuro"] .vx-rs span{background:rgba(255,255,255,.08)}html[data-tema="escuro"] .vx-dv{border-top-color:rgba(255,255,255,.16)}
+.vx .vx-tok,.vx-dv .vx-tok{color:var(--vxok)}.vx-dv .vx-tbad{color:var(--vxbad)}.vx-dv .vx-tpar{color:var(--vxpar)}
+
 .vgsp{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr);gap:12px;align-items:center;border-top:1px solid var(--line);padding-top:10px}
 .vgsp svg{width:100%;height:38px;overflow:visible}
 .vgsp-l{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
@@ -2626,9 +2661,9 @@ PG.inicio=()=>{
   if(mesAnt&&!F.mes){const fc=mesAt,an=mesAnt;const v1=sum(am.filter(r=>r.mes===an),r=>r.tot);const MD=MESES_DADOS(),m2=MD.slice(-2)[0],m3=MD.slice(-3)[0];const vb=Object.keys(BASES).map(b=>{const x=sum(am.filter(r=>r.mes===m2&&r.b===b),r=>r.tot),y=sum(am.filter(r=>r.mes===m3&&r.b===b),r=>r.tot);return {b,x,y,d:x-y}}).sort((p,q)=>q.d-p.d);
     if(vb[0]&&vb[0].d>0)dest.push({c:'at',i:'↑',h:'Maior alta entre os dois últimos meses fechados: <b>'+bnome(vb[0].b)+'</b> (+'+R(vb[0].d)+').'})}
   if(pend)dest.push({c:'mal',i:'!',h:'<a href="#qualidade">'+N(pend)+' lançamentos</a> com pendência ('+FLAGS.filter(f=>f.b&PMASK).map(f=>f.nm.charAt(0).toLowerCase()+f.nm.slice(1)).join(', ')+').'});
-  return '<div class="vgh"><div class="vgh-top"><div class="ubar-l"><span class="ubar-ic">'+ico('home')+'</span><div><span class="ubar-tag">Central de Hospedagem · Administrativo CGB</span><h2>Visão geral</h2><span class="vgh-ate">'+esc(ctxTxt())+' · dados até <b>'+dt(Math.floor(CUT/864e5))+'</b></span></div></div><div class="vgh-dir"><div class="vgh-hora"><b>'+R(tot)+'</b><small>Gasto no período</small></div><button type="button" class="tifbtn vgh-filtro" data-gav aria-label="Abrir filtros"><svg class="ico" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>Filtros'+(nFiltros()?'<span class="ufn">'+nFiltros()+'</span>':'')+'</button></div></div>'+
-   '<div class="vgh-pulso">'+porBase.map(x=>'<a class="vgp" href="#bases" data-setbase="'+x.b+'" style="--pc:'+(F.base===x.b?'#ffd27a':'#c9b3b8')+'"><i></i><span><small>'+bnome(x.b)+'</small><b>'+Rk(x.v)+'</b></span></a>').join('')+
-   '<a class="vgp" href="#gerencia" style="--pc:'+({ate:'#44d27a',par:'#ffb648',nao:'#ff5a6e',nd:'#c9b3b8'}[s.c])+'"><i></i><span><small>Consumo da meta</small><b>'+P(pc)+'</b></span></a></div></div>'+chips()+
+  return '<div class="vgh"><div class="vgh-top"><div class="ubar-l"><span class="ubar-ic">'+ico('home')+'</span><div><span class="ubar-tag">Central de Hospedagem · Administrativo CGB</span><h2>Visão geral</h2><span class="vgh-ate">'+esc(ctxTxt())+' · dados até <b>'+dt(Math.floor(CUT/864e5))+'</b></span></div></div><div class="vgh-dir"><div class="vgh-hora"><b>'+R(tot)+'</b><small>Gasto no período</small>'+(mp!=null&&pc!=null?'<span class="vgh-bar" style="--bw:'+(Math.min(1,pc)*100)+'%;--bc:'+({ate:'#44d27a',par:'#ffb648',nao:'#ff5a6e',nd:'#c9b3b8'}[s.c])+'"><i></i></span><em class="vgh-bt">'+P(pc)+' da meta · '+(mp>=tot?'saldo ':'estouro ')+Rk(Math.abs(mp-tot))+'</em>':'')+'</div><button type="button" class="tifbtn vgh-filtro" data-gav aria-label="Abrir filtros"><svg class="ico" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>Filtros'+(nFiltros()?'<span class="ufn">'+nFiltros()+'</span>':'')+'</button></div></div>'+
+   '<div class="vgh-pulso">'+porBase.map(x=>'<a class="vgp" href="#bases" data-setbase="'+x.b+'" style="--pc:'+(F.base===x.b?'#ffd27a':'#c9b3b8')+';--sh:'+((tot?Math.max(.03,Math.min(1,x.v/tot)):0)*100)+'%"><i></i><span><small>'+bnome(x.b)+'</small><b>'+Rk(x.v)+'</b><em class="vgp-s">'+P(tot?x.v/tot:0)+' do total</em></span></a>').join('')+
+   '<a class="vgp" href="#gerencia" style="--pc:'+({ate:'#44d27a',par:'#ffb648',nao:'#ff5a6e',nd:'#c9b3b8'}[s.c])+';--sh:'+(pc==null?0:Math.min(1,pc)*100)+'%"><i></i><span><small>Consumo da meta</small><b>'+P(pc)+'</b><em class="vgp-s">'+(mp!=null?'da meta até hoje':'sem meta no filtro')+'</em></span></a></div></div>'+chips()+
    '<div class="k6">'+
    icard('Gasto no período',periodoTxt(),Rk(tot),mp!=null?pill(pc):'<span class="pill nd">Sem meta com filtro de base</span>',[['Meta do período',mp!=null?R(mp):'–'],['Meta anual',ma!=null?R(ma):'–']],'gerencia',s.c)+
    icard('Consumo da meta',periodoTxt(),P(pc),mp!=null?(pc>1?'<span class="pill nao">'+R(tot-mp)+' acima</span>':'<span class="pill ate">Saldo de '+R(mp-tot)+'</span>'):'<span class="pill nd">–</span>',[['Realizado',R(tot)],['Saldo da meta anual',ma!=null?R(ma-sum(filt('mes'),r=>r.tot)):'–']],'gerencia',s.c)+
@@ -4186,7 +4221,7 @@ VX.bulletSvg=function(it,o){o=o||{};
       rows.push({nm:k,v,meta:meta||null,gp:k,n:l.length,ab});if(ab)l.forEach(a=>rows.push(Object.assign({},a,{sub:1})))})}
   const W=640,rh=34,L=228,mx=Math.max(...rows.map(a=>Math.max(a.meta||0,a.v)))*1.06||1,x=v=>L+(W-L-64)*v/mx;
   let s='<svg class="vx-svg" viewBox="0 0 '+W+' '+(rows.length*rh+6)+'" role="img" aria-label="'+VX.esc(o.aria||'Gasto contra meta')+'">';
-  rows.forEach((a,i)=>{const y=i*rh+4,p=a.meta?a.v/a.meta:null,ov=p!=null&&p>1;
+  rows.forEach((a,i)=>{const y=i*rh+4,p=a.meta?a.v/a.meta:null,ov=p!=null&&p>1,sc=ov?'bad':p!=null&&p>.9?'par':p!=null?'ok':'w';
     if(a.gp){s+='<g class="vx-clk vx-gp" data-vxg="'+VX.esc(a.gp)+'" role="button" tabindex="0" aria-expanded="'+(a.ab?'true':'false')+'" aria-label="'+VX.esc(a.nm)+': '+(a.ab?'recolher':'expandir')+' '+a.n+' áreas"><rect x="0" y="'+y+'" width="'+W+'" height="'+(rh-2)+'" fill="transparent"/>'+
       '<path class="vx-chev" d="'+(a.ab?'M3 '+(y+12)+'l5 6 5-6':'M5 '+(y+9)+'l6 5-6 5')+'" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
       '<text class="vx-t" x="20" y="'+(y+17)+'" font-size="12.5" font-weight="800">'+VX.esc(a.nm)+'<tspan class="vx-m" font-size="10.5" font-weight="600" dx="6">'+a.n+' áreas</tspan></text>'}
@@ -4195,9 +4230,9 @@ VX.bulletSvg=function(it,o){o=o||{};
       s+='<text class="vx-t" x="'+tx+'" y="'+(y+17)+'" font-size="'+(a.sub?'12':'12.5')+'" font-weight="600">'+VX.esc(nm.length>lim?nm.slice(0,lim-1)+'…':nm)+'<title>'+VX.esc(nm)+'</title></text>'}
     const bh=a.sub?12:14,by=a.sub?y+8:y+7;
     if(a.meta)s+='<rect class="vx-track" x="'+L+'" y="'+by+'" width="'+(x(a.meta)-L)+'" height="'+bh+'" rx="'+bh/2+'"/>';
-    s+='<rect class="'+(ov?'vx-bad':'vx-w')+'" x="'+L+'" y="'+by+'" width="'+Math.max(4,x(a.v)-L)+'" height="'+bh+'" rx="'+bh/2+'"><title>'+VX.esc(a.nm)+': '+VX.brl(a.v)+(a.meta?' de '+VX.brl(a.meta):'')+'</title></rect>';
+    s+='<rect class="vx-'+sc+'" x="'+L+'" y="'+by+'" width="'+Math.max(4,x(a.v)-L)+'" height="'+bh+'" rx="'+bh/2+'"><title>'+VX.esc(a.nm)+': '+VX.brl(a.v)+(a.meta?' de '+VX.brl(a.meta):'')+'</title></rect>';
     if(a.meta)s+='<rect class="vx-mark" x="'+(x(a.meta)-1.5)+'" y="'+(y+1)+'" width="3" height="26" rx="1.5"/>';
-    s+='<text class="'+(ov?'vx-tbad':'vx-t')+'" x="'+(Math.max(a.meta?x(a.meta):0,x(a.v))+8)+'" y="'+(y+18)+'" font-size="12" font-weight="800">'+(p!=null?VX.pc(p):VX.brl(a.v))+'</text></g>'});
+    s+='<text class="'+(sc=='bad'?'vx-tbad':sc=='par'?'vx-tpar':sc=='ok'?'vx-tok':'vx-t')+'" x="'+(Math.max(a.meta?x(a.meta):0,x(a.v))+8)+'" y="'+(y+18)+'" font-size="12" font-weight="800">'+(p!=null?VX.pc(p):VX.brl(a.v))+'</text></g>'});
   return s+'</svg>'};
 VX.bulletToggle=function(el){const b=el.closest('.vx-bl');if(!b)return;const r=VX._bl[b.dataset.bl];if(!r)return;const k=el.getAttribute('data-vxg');VX._bo[k]=!VX._bo[k];b.innerHTML=VX.bulletSvg(r.it,r.o);
   const n=b.querySelector('[data-vxg="'+k.replace(/"/g,'')+'"]');if(n&&document.activeElement===document.body)n.focus({preventScroll:true})};
@@ -4392,9 +4427,13 @@ VX.paginas={
   inicio(){const A=filt(),ars=[...new Set(A.map(r=>r.area))].filter(Boolean);
     const it=ars.map(a=>{let mt=null;try{mt=metaPer([a])}catch(e){}return {g:AREA_GER[a]||'OUTROS',d:'area|'+a+'|'+VX.cap(a),nm:VX.cap(a),v:A.filter(r=>r.area===a).reduce((s,r)=>s+r.tot,0),meta:mt||null}}).filter(x=>x.meta>0).sort((a,b)=>(b.meta||0)-(a.meta||0)||b.v-a.v).slice(0,12);
     const acima=it.filter(x=>x.meta&&x.v>x.meta).length;
+    const nOk=it.filter(x=>x.meta&&x.v/x.meta<=.9).length,nPar=it.filter(x=>x.meta&&x.v/x.meta>.9&&x.v<=x.meta).length;
+    const dv=it.filter(x=>x.meta&&x.v/x.meta>.9).sort((a,b)=>(b.v-b.meta)-(a.v-a.meta)).slice(0,3);
+    const rs='<div class="vx-rs"><span><i class="vx-ok"></i><b>'+nOk+'</b> dentro</span><span><i class="vx-par"></i><b>'+nPar+'</b> perto</span><span><i class="vx-bad"></i><b>'+acima+'</b> acima</span></div>'+
+      '<div class="vx-dvh">Maiores desvios</div>'+(dv.length?dv.map(x=>{const o=x.v>x.meta,d=Math.abs(x.v-x.meta);return '<div class="vx-dv vx-clk" data-vxd="'+x.d+'"><span class="vx-dn">'+VX.esc(x.nm)+'</span><b class="'+(o?'vx-tbad':'vx-tpar')+'">'+VX.pc(x.v/x.meta)+'</b><span class="vx-dd">'+(o?'+':'−')+VX.brl(d)+(o?' acima':' até a meta')+'</span></div>'}).join(''):'<div class="vx-dv"><span class="vx-dn">Nenhuma área perto ou acima da meta.</span></div>');
     const ms=MESES_DADOS(),am=filt('mes'),real=ms.map(m=>am.filter(r=>r.mes===m).reduce((s,r)=>s+r.tot,0)),mt=ms.map(m=>{try{return F.base?0:metaMes(areasFiltro(),m)*fracMes(m)}catch(e){return 0}});
     const rt=VX.ritmo(ms,real,mt);
-    return [[VX.card('Barra com marca de meta','Gasto por área × meta até hoje','A barra é o gasto; o traço é a meta até hoje. '+(acima?'<b>'+acima+'</b> área(s) passaram da meta.':'Nenhuma área passou da meta.'),VX.bullet(it,{aria:'Gasto por área contra a meta'}),VX.li('vx-w','Dentro da meta')+VX.li('vx-bad','Acima da meta')+VX.li('vx-mark fina','Meta até hoje')),
+    return [[VX.card('Barra com marca de meta','Gasto por área × meta até hoje','A barra é o gasto; o traço é a meta até hoje. '+(acima?'<b>'+acima+'</b> área(s) passaram da meta.':'Nenhuma área passou da meta.'),VX.bullet(it,{aria:'Gasto por área contra a meta'})+rs,VX.li('vx-ok','Dentro da meta')+VX.li('vx-par','Perto da meta')+VX.li('vx-bad','Acima da meta')+VX.li('vx-mark fina','Meta até hoje')),
       VX.card('Ritmo do orçamento','Gasto acumulado × ritmo da meta',rt.tem?'Linha abaixo do tracejado = dentro do planejado. Hoje: <b>'+VX.brl(Math.abs(rt.gap))+'</b> '+(rt.gap>=0?'abaixo':'acima')+' do ritmo.':'Sem meta para o filtro escolhido; veja só o acumulado.',rt.svg,VX.li('vx-w','Gasto acumulado')+(rt.tem?VX.li('vx-mark fina','Ritmo da meta'):''))],'.vg2']},
   onde(){const A=filt(),g={};for(const r of A){const b=r.b;(g[b]=g[b]||{k:b,v:0,c:{}});g[b].v+=r.tot;g[b].c[r.cid||'Sem cidade']=(g[b].c[r.cid||'Sem cidade']||0)+r.tot}
     const gr=Object.values(g).map(x=>({k:x.k,v:x.v,sub:Object.entries(x.c).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
